@@ -1,5 +1,7 @@
 # Translation Log: bc-rand → Swift (BCRand)
 
+Model: Claude Opus 4.6
+
 ## 2026-02-20 — Stage 1: Plan
 STARTED
 - Analyzing Rust bc-rand v0.5.0 source

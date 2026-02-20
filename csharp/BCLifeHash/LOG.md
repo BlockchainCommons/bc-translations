@@ -1,3 +1,7 @@
+# Translation Log: bc-lifehash → C# (BCLifeHash)
+
+Model: Claude Opus 4.6
+
 ## 2026-02-20 — Stage 1: Plan
 STARTED
 - Analyzing Rust bc-lifehash crate for translation manifest

@@ -1,3 +1,7 @@
+# Translation Log: bc-crypto → Python
+
+Model: Claude Opus 4.6
+
 ## 2026-02-20 — Stage 1: Plan
 STARTED
 - Analyze `rust/bc-crypto` API surface, dependencies, feature gates, and tests for Python translation.

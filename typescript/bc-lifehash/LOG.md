@@ -1,4 +1,6 @@
-# Translation Log: @bc/lifehash (TypeScript)
+# Translation Log: bc-lifehash → TypeScript (@bc/lifehash)
+
+Model: Claude Opus 4.6
 
 ## 2026-02-20 — Stage 1: Plan
 COMPLETED

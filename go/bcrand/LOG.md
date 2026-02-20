@@ -1,3 +1,7 @@
+# Translation Log: bc-rand → Go (bcrand)
+
+Model: Claude Opus 4.6
+
 ## 2026-02-20 — Stage 1: Plan
 STARTED
 - Reusing language-agnostic manifest from Python/Kotlin translations

@@ -1,4 +1,6 @@
-# Translation Log: bc-lifehash (Kotlin)
+# Translation Log: bc-lifehash → Kotlin
+
+Model: GPT 5.3 Codex
 
 ## 2026-02-20 — Stage 1: Plan
 STARTED

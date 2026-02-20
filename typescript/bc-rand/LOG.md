@@ -1,5 +1,7 @@
 # Translation Log: bc-rand → TypeScript (@bc/rand)
 
+Model: Claude Opus 4.6
+
 ## 2026-02-20 — Stage 1: Plan
 STARTED
 - Analyzing Rust bc-rand crate and producing TypeScript manifest

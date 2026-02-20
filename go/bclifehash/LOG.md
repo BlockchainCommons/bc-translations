@@ -1,4 +1,6 @@
-# bc-lifehash Go Translation Log
+# Translation Log: bc-lifehash → Go (bclifehash)
+
+Model: Claude Opus 4.6
 
 ## 2026-02-20 — Stage 1: Plan
 STARTED

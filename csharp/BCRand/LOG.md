@@ -1,4 +1,6 @@
-# BCRand C# Translation Log
+# Translation Log: bc-rand → C# (BCRand)
+
+Model: Claude Opus 4.6
 
 ## 2026-02-20 — Stage 1: Plan
 COMPLETED

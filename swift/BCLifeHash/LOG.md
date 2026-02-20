@@ -1,5 +1,7 @@
 # Translation Log: bc-lifehash → Swift (BCLifeHash)
 
+Model: GPT 5.3 Codex
+
 ## 2026-02-20 — Stage 1: Plan
 STARTED
 - Analyzing `rust/bc-lifehash` for API surface, dependencies, test inventory, and translation hazards.

@@ -49,6 +49,23 @@ Once a target is selected and confirmed:
 ### Step 0: Mark In Progress
 Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧. This signals to other agents that work is underway on this pair.
 
+Initialize (or verify) the target's `<lang>/<package>/LOG.md`. The file must begin with a level-one header and a model identification line:
+
+```
+# Translation Log: <rust-crate> → <Language> (<package-name>)
+
+Model: <model-name> <model-version>
+```
+
+For example:
+```
+# Translation Log: bc-rand → Python
+
+Model: Claude Opus 4.6
+```
+
+The `(<package-name>)` suffix is included when the package name differs from the crate name (e.g., `BCRand`, `bcrand`, `@bc/rand`). This is mandatory — every LOG.md must start with these lines before any stage entries are appended.
+
 ### Step 1: Plan
 Run the **translation-planner** workflow on the Rust crate (if no manifest exists yet). Save the manifest to `<lang>/<package>/MANIFEST.md`.
 
