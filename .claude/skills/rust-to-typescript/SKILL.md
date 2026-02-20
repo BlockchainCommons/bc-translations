@@ -17,7 +17,7 @@ user-invocable: false
 | `MyStruct`        | `MyStruct` (classes), `MyInterface` (interfaces) |
 | `SCREAMING_SNAKE` | `SCREAMING_SNAKE` (constants) |
 | `mod my_mod`      | `my-mod.ts` (file) or `my-mod/index.ts` (directory) |
-| `my_crate`        | `@bcts/name` (npm scoped package) |
+| `my_crate`        | `@bc/name` (npm scoped package) |
 
 ## Type Mappings
 
@@ -206,7 +206,7 @@ Use `#private` fields (ES private) for true private class members.
 
 ```
 typescript/rand/
-├── package.json          # name: "@bcts/rand"
+├── package.json          # name: "@bc/rand"
 ├── tsconfig.json
 ├── src/
 │   ├── index.ts          # public API re-exports
