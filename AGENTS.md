@@ -12,19 +12,19 @@ The following status markers are used to indicate the current state of each tran
 
 ## Translations
 
-| rust/           | version | 🚧 csharp/        | 🚧 go/            | 🚧 kotlin/         | 🚧 python/         | ⏳ swift/         | ⏳ typescript/           |
+| rust/           | version | 🚧 csharp/        | 🚧 go/            | 🚧 kotlin/         | 🚧 python/         | 🚧 swift/         | ⏳ typescript/           |
 |-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-------------------------|
-| bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ⏳ BCRand         | ⏳ @bcts/rand            |
-| bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ⏳ bc-crypto       | ⏳ BCCrypto       | ⏳ @bcts/crypto          |
-| bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bcts/shamir          |
-| dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bcts/dcbor           |
-| bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bcts/tags            |
-| bc-ur           | 0.19.0  | ⏳ BCUR           | ⏳ bcur           | ⏳ bc-ur           | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bcts/ur              |
-| sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bcts/sskr            |
-| bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bcts/components      |
-| known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bcts/known-values    |
-| bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bcts/envelope        |
-| provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bcts/provenance-mark |
+| bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ✅ BCRand         | ⏳ @bc/rand            |
+| bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ⏳ bc-crypto       | ⏳ BCCrypto       | ⏳ @bc/crypto          |
+| bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bc/shamir          |
+| dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bc/dcbor           |
+| bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bc/tags            |
+| bc-ur           | 0.19.0  | ⏳ BCUR           | ⏳ bcur           | ⏳ bc-ur           | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bc/ur              |
+| sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bc/sskr            |
+| bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bc/components      |
+| known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bc/known-values    |
+| bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bc/envelope        |
+| provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bc/provenance-mark |
 
 ## Internal Dependencies
 
