@@ -2,19 +2,29 @@
 
 The goal of this project is to provide a set of native translations of the reference Rust implementations of the Blockchains Common libraries. Each of the target languages has its own directory. The goal of each translation is to be as close as possible to the reference Rust implementation, including at *least* as much test coverage, while still being idiomatic in the target language.
 
-| rust/           | version | csharp/        | go/            | kotlin/         | python/         | swift/          | typescript/          |
-|-----------------|---------|----------------|----------------|-----------------|-----------------|-----------------|----------------------|
-| bc-rand         | 0.5.0   | BCRand         | bcrand         | bc-rand         | bc-rand         | BCRand          | @bcts/rand           |
-| bc-crypto       | 0.14.0  | BCCrypto       | bccrypto       | bc-crypto       | bc-crypto       | BCCrypto        | @bcts/crypto         |
-| bc-shamir       | 0.13.0  | BCShamir       | bcshamir       | bc-shamir       | bc-shamir       | BCShamir        | @bcts/shamir         |
-| dcbor           | 0.25.1  | DCbor          | dcbor          | dcbor           | dcbor           | DCBOR           | @bcts/dcbor          |
-| bc-tags         | 0.12.0  | BCTags         | bctags         | bc-tags         | bc-tags         | BCTags          | @bcts/tags           |
-| bc-ur           | 0.19.0  | BCUR           | bcur           | bc-ur           | bc-ur           | BCUR            | @bcts/ur             |
-| sskr            | 0.12.0  | SSKR           | sskr           | sskr            | sskr            | SSKR            | @bcts/sskr           |
-| bc-components   | 0.31.1  | BCComponents   | bccomponents   | bc-components   | bc-components   | BCComponents    | @bcts/components     |
-| known-values    | 0.15.4  | KnownValues    | knownvalues    | known-values    | known-values    | KnownValues     | @bcts/known-values   |
-| bc-envelope     | 0.43.0  | BCEnvelope     | bcenvelope     | bc-envelope     | bc-envelope     | BCEnvelope      | @bcts/envelope       |
-| provenance-mark | 0.23.0  | ProvenanceMark | provenancemark | provenance-mark | provenance-mark | ProvenanceMark  | @bcts/provenance-mark|
+## Status Markers
+
+The following status markers are used to indicate the current state of each translation:
+
+- ⏳ Not Started: No work has been done on this translation yet.
+- 🚧 In Progress: Work has begun on this translation, but it is not yet complete.
+- ✅ Completed: The translation is complete and fully tested.
+
+## Translations
+
+| rust/           | version | ⏳ csharp/        | ⏳ go/            | ⏳ kotlin/         | ⏳ python/         | ⏳ swift/         | ⏳ typescript/           |
+|-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-------------------------|
+| bc-rand         | 0.5.0   | ⏳ BCRand         | ⏳ bcrand         | ⏳ bc-rand         | ⏳ bc-rand         | ⏳ BCRand         | ⏳ @bcts/rand            |
+| bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ⏳ bc-crypto       | ⏳ BCCrypto       | ⏳ @bcts/crypto          |
+| bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bcts/shamir          |
+| dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bcts/dcbor           |
+| bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bcts/tags            |
+| bc-ur           | 0.19.0  | ⏳ BCUR           | ⏳ bcur           | ⏳ bc-ur           | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bcts/ur              |
+| sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bcts/sskr            |
+| bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bcts/components      |
+| known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bcts/known-values    |
+| bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bcts/envelope        |
+| provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bcts/provenance-mark |
 
 ## Internal Dependencies
 
@@ -38,6 +48,56 @@ There are two independent dependency trees that merge at `bc-components`:
 
 - **Crypto tree:** bc-rand → bc-crypto → bc-shamir → sskr
 - **CBOR tree:** dcbor → bc-tags, bc-ur
+
+## Orchestration
+
+Translation of each (crate, language) pair follows a four-stage pipeline. Use `/kickoff` to select the next eligible target and run the pipeline.
+
+### Pipeline Stages
+
+```
+1. PLAN  →  2. CODE  →  3. CHECK  →  4. CRITIQUE
+   ↑            ↑            │            │
+   │            └────────────┘            │
+   │            (fill gaps)               │
+   │                                      │
+   └──────────────────────────────────────┘
+              (fix + retest)
+```
+
+**Stage 1 — Plan** (`translation-planner` skill): Analyze the Rust crate and produce a translation manifest. The manifest catalogs the public API surface, external dependencies needing equivalents, feature flags, test inventory, and translation hazards. Produced once per crate, reused across all six languages. Saved to `<lang>/<package>/MANIFEST.md`.
+
+**Stage 2 — Code** (`translation-coder` skill + `rust-to-<lang>` skill): Translate the source and tests following the manifest's translation unit order. Prioritize correctness over style. Build and run tests. Iterate up to 5 times on compile/test failures.
+
+**Stage 3 — Check** (`completeness-checker` skill): Compare the translation against the manifest. Verify all public types, functions, constants, and traits are translated. Verify all tests are translated with matching test vectors. If gaps are found, return to Stage 2.
+
+**Stage 4 — Critique** (`fluency-critic` skill + `rust-to-<lang>` skill): Review the translation for target-language idiomaticness without looking at the Rust source. Check naming, error handling, API design, structure, and documentation. Apply fixes. Re-run tests to confirm fixes don't break anything.
+
+### Translation Order
+
+Work respects the dependency graph. A (crate, language) pair is eligible only when all its internal BC dependencies are ✅ for that language.
+
+```
+Phase 1 (no deps):      bc-rand, dcbor
+Phase 2 (Phase 1):      bc-crypto, bc-tags, bc-ur
+Phase 3 (Phase 2):      bc-shamir
+Phase 4 (Phase 3):      sskr
+Phase 5 (Phase 4):      bc-components
+Phase 6 (Phase 5):      known-values
+Phase 7 (Phase 6):      bc-envelope
+Phase 8 (Phase 7):      provenance-mark
+```
+
+Within each phase, all six languages can proceed in parallel. Across phases, the dependency ordering ensures translated packages are available for import.
+
+### Key Principles
+
+- **Translate, don't rewrite.** Stay close to the Rust structure. Faithful translation, not reimagination.
+- **Correctness first, idiomaticness second.** Get it right, then make it pretty. These are separate stages for a reason (see SACTOR research on two-phase translation).
+- **Test vectors are sacred.** Crypto test vectors must produce identical byte-for-byte output across all languages. They are the primary cross-language validation signal.
+- **Default features only.** For initial translations, translate only code gated by default features. Non-default features are documented as future work.
+- **One manifest per crate.** The planner's output is language-agnostic and reused across all six targets.
+- **Aggressive context management.** The planner reads the full Rust source. The coder reads only the current translation unit plus its deps. The fluency critic reads only the target-language code.
 
 ## Package Search Indexes
 
