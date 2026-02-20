@@ -1,0 +1,30 @@
+{
+  "name": "@bc/crypto",
+  "version": "0.14.0",
+  "description": "A uniform API for cryptographic primitives used in Blockchain Commons projects.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bc/rand": "file:../bc-rand",
+    "@noble/curves": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
