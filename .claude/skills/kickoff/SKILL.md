@@ -86,10 +86,10 @@ Update the status in CLAUDE.md:
 Append a row to the top-level `LOG.md` table recording what was done:
 
 ```
-| <date> | <crate> | <version> | <target> | <model> | <status> |
+| <date> | <crate> | <version> | <language> | <package> | <model> | <task> |
 ```
 
-Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The target column uses the language name, with the package name in parentheses when it differs from the crate name (e.g., `Go (bcrand)`, `C# (BCRand)`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
+Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The language column is the target language name (e.g., `Go`, `C#`, `Python`). The package column is the target-language package name (e.g., `bcrand`, `BCRand`, `bc-rand`). The task column describes what was done (e.g., `Translation`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
 
 Commit the result.
 
