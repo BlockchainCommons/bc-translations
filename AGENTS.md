@@ -12,20 +12,20 @@ The following status markers are used to indicate the current state of each tran
 
 ## Translations
 
-| rust/           | version | 🚧 csharp/       | 🚧 go/           | 🚧 kotlin/        | 🚧 python/        | 🚧 swift/        | 🚧 typescript/        |
-|-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-----------------------|
-| bc-lifehash     | 0.1.0   | ✅ BCLifeHash     | ✅ bclifehash     | ✅ bc-lifehash     | ✅ bc-lifehash     | ✅ BCLifeHash     | ✅ @bc/lifehash        |
-| bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ✅ BCRand         | ✅ @bc/rand            |
-| bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ✅ bc-crypto       | ✅ BCCrypto       | ⏳ @bc/crypto          |
-| bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bc/shamir          |
-| dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bc/dcbor           |
-| bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bc/tags            |
-| bc-ur           | 0.19.0  | ⏳ BCUR           | ⏳ bcur           | ⏳ bc-ur           | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bc/ur              |
-| sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bc/sskr            |
-| bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bc/components      |
-| known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bc/known-values    |
-| bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bc/envelope        |
-| provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bc/provenance-mark |
+| rust/             | version | 🚧 csharp/       | 🚧 go/           | 🚧 kotlin/        | 🚧 python/        | 🚧 swift/        | 🚧 typescript/        |
+|-------------------|---------|------------------|------------------|-------------------|-------------------|------------------|-----------------------|
+| ✅ bc-lifehash     | 0.1.0   | ✅ BCLifeHash     | ✅ bclifehash     | ✅ bc-lifehash     | ✅ bc-lifehash     | ✅ BCLifeHash     | ✅ @bc/lifehash        |
+| ✅ bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ✅ BCRand         | ✅ @bc/rand            |
+| 🚧 bc-crypto      | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ✅ bc-crypto       | ✅ BCCrypto       | ⏳ @bc/crypto          |
+| ⏳ bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bc/shamir          |
+| ⏳ dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bc/dcbor           |
+| ⏳ bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bc/tags            |
+| ⏳ bc-ur           | 0.19.0  | ⏳ BCUR           | ⏳ bcur           | ⏳ bc-ur           | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bc/ur              |
+| ⏳ sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bc/sskr            |
+| ⏳ bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bc/components      |
+| ⏳ known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bc/known-values    |
+| ⏳ bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bc/envelope        |
+| ⏳ provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bc/provenance-mark |
 
 ## Internal Dependencies
 
@@ -46,7 +46,7 @@ bc-envelope     → bc-rand, bc-crypto, dcbor, bc-ur, bc-components, known-value
 provenance-mark → bc-rand, dcbor, bc-tags, bc-ur, bc-envelope?
 ```
 
-There are two independent dependency trees that merge at `bc-components`:
+There are three independent dependency trees that merge at `bc-components`:
 
 - **Crypto tree:** bc-rand → bc-crypto → bc-shamir → sskr
 - **CBOR tree:** dcbor → bc-tags, bc-ur
@@ -57,7 +57,7 @@ There are two independent dependency trees that merge at `bc-components`:
 This is a massively-parallel monorepo. Multiple agents may be working on different (crate, language) pairs simultaneously. Follow these rules:
 
 - **Do not commit unless explicitly asked.** When asked, commit only the files you worked on — never `git add -A` or `git add .`.
-- **Stay in your lane.** Only modify files under your assigned `<lang>/<package>/` directory. Do not touch other languages, other crates, or shared files (CLAUDE.md, root .gitignore, etc.) without being asked.
+- **Stay in your lane.** Only modify files under your assigned `<lang>/<package>/` directory. Do not touch other languages, other crates, or shared files (CLAUDE.md, AGENTS.md, root .gitignore, etc.) without being asked.
 - **Do not modify `rust/`.** The Rust source is the reference implementation. Read it, never write to it.
 - **Scaffold a `.gitignore` first.** When creating a new target-language project, the very first file must be a `.gitignore` appropriate for that language (build outputs, dependency caches, IDE files, OS artifacts). This prevents build artifacts from being accidentally committed.
 
