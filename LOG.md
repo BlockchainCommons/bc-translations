@@ -18,3 +18,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-20 | bc-lifehash | 0.1.0   | Python                    | Claude Opus 4.6 | ✅      |
 | 2026-02-20 | bc-lifehash | 0.1.0   | Swift (BCLifeHash)        | GPT 5.3 Codex   | ✅      |
 | 2026-02-20 | bc-lifehash | 0.1.0   | TypeScript (@bc/lifehash) | Claude Opus 4.6 | ✅      |
+| 2026-02-20 | bc-crypto   | 0.14.0  | Go (bccrypto)             | GPT 5.3 Codex   | ✅      |
