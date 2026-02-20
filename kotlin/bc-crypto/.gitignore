@@ -1,0 +1,17 @@
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Native library extraction (secp256k1-kmp)
+fr/
+
+# OS
+.DS_Store
+Thumbs.db
