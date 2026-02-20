@@ -83,6 +83,14 @@ Update the status in CLAUDE.md:
 - 🚧 if translation exists but has known gaps or failing tests
 - ✅ if translation is complete with all tests passing
 
+Append a row to the top-level `LOG.md` table recording what was done:
+
+```
+| <date> | <crate> | <version> | <target> | <model> | <status> |
+```
+
+Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The target column uses the language name, with the package name in parentheses when it differs from the crate name (e.g., `Go (bcrand)`, `C# (BCRand)`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
+
 Commit the result.
 
 ### Step 6: Capture Lessons (Rule One)
