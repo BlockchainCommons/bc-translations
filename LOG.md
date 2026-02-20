@@ -21,3 +21,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-20 | bc-crypto   | 0.14.0  | Go         | bccrypto     | GPT 5.3 Codex   | Translation |
 | 2026-02-20 | bc-crypto   | 0.14.0  | C#         | BCCrypto     | Claude Opus 4.6 | Translation |
 | 2026-02-20 | bc-crypto   | 0.14.0  | TypeScript | @bc/crypto   | GPT 5.3 Codex   | Translation |
+| 2026-02-20 | bc-crypto   | 0.14.0  | Kotlin     | bc-crypto    | Claude Opus 4.6 | Translation |
