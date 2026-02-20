@@ -1,4 +1,5 @@
 // swift-tools-version: 6.0
+// BCRand — Blockchain Commons Random Number Utilities
 
 import PackageDescription
 

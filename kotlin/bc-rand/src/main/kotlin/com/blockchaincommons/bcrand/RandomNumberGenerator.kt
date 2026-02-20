@@ -1,18 +1,33 @@
+/**
+ * # Blockchain Commons Random Number Utilities
+ *
+ * `bc-rand` exposes a uniform API for the random number primitives used in
+ * higher-level [Blockchain Commons](https://blockchaincommons.com) projects,
+ * including a cryptographically strong random number generator
+ * [SecureRandomNumberGenerator] and a deterministic random number generator
+ * [SeededRandomNumberGenerator].
+ *
+ * These primitive random number generators extend the [RandomNumberGenerator]
+ * abstract class to produce random numbers compatible with the deterministic
+ * random number generator used for cross-platform testing.
+ *
+ * The package also includes several convenience functions for generating secure
+ * and deterministic random numbers.
+ */
 package com.blockchaincommons.bcrand
 
-/**
- * Abstract base for random number generators.
- *
- * Concrete subclasses must implement [nextU32] and [nextU64].
- * Default implementations of [randomData] and [fillRandomData] use
- * little-endian packing of [nextU64] values.
- */
 abstract class RandomNumberGenerator {
 
     abstract fun nextU32(): UInt
 
     abstract fun nextU64(): ULong
 
+    /**
+     * Returns a byte array of random bytes of the given size.
+     *
+     * @param size The number of random bytes to generate.
+     * @return A new [ByteArray] containing [size] random bytes.
+     */
     open fun randomData(size: Int): ByteArray {
         val data = ByteArray(size)
         fillRandomData(data)

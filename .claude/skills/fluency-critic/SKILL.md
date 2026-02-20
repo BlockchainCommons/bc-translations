@@ -77,6 +77,9 @@ Do NOT read the Rust source during this review. Judge the code solely as target-
 
 - [ ] Public API has doc comments in target format (/// vs /** vs docstring vs #)
 - [ ] Doc comments describe what, not how it was translated from Rust
+- [ ] Doc comments read naturally in the target language (not mechanical translations)
+- [ ] Module/file-level documentation exists where the Rust source had it
+- [ ] Package metadata description is present and accurate
 
 ## Output
 

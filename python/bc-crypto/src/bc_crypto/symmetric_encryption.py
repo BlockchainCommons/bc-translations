@@ -18,7 +18,10 @@ def aead_chacha20_poly1305_encrypt_with_aad(
     nonce: bytes,
     aad: bytes | bytearray | memoryview,
 ) -> tuple[bytes, bytes]:
-    """Encrypt data and return `(ciphertext, auth_tag)`."""
+    """Symmetrically encrypt the given plaintext using ChaCha20-Poly1305 and the given additional authenticated data (AAD).
+
+    Returns the ciphertext and the authentication tag.
+    """
     cipher = ChaCha20Poly1305(key)
     encrypted = cipher.encrypt(bytes(nonce), bytes(plaintext), bytes(aad))
     return encrypted[:-SYMMETRIC_AUTH_SIZE], encrypted[-SYMMETRIC_AUTH_SIZE:]
@@ -29,7 +32,10 @@ def aead_chacha20_poly1305_encrypt(
     key: bytes,
     nonce: bytes,
 ) -> tuple[bytes, bytes]:
-    """Encrypt data without AAD and return `(ciphertext, auth_tag)`."""
+    """Symmetrically encrypt the given plaintext using ChaCha20-Poly1305.
+
+    Returns the ciphertext and the authentication tag.
+    """
     return aead_chacha20_poly1305_encrypt_with_aad(plaintext, key, nonce, b"")
 
 
@@ -40,7 +46,10 @@ def aead_chacha20_poly1305_decrypt_with_aad(
     aad: bytes | bytearray | memoryview,
     auth: bytes,
 ) -> bytes:
-    """Decrypt data and verify auth tag; raise ``AeadError`` on failure."""
+    """Symmetrically decrypt the given ciphertext using ChaCha20-Poly1305 and the given additional authenticated data (AAD).
+
+    Returns the plaintext, or raises an error if the decryption failed.
+    """
     cipher = ChaCha20Poly1305(key)
     payload = bytes(ciphertext) + bytes(auth)
     try:
@@ -55,7 +64,10 @@ def aead_chacha20_poly1305_decrypt(
     nonce: bytes,
     auth: bytes,
 ) -> bytes:
-    """Decrypt data without AAD and verify auth tag."""
+    """Symmetrically decrypt the given ciphertext using ChaCha20-Poly1305.
+
+    Returns the plaintext, or raises an error if the decryption failed.
+    """
     return aead_chacha20_poly1305_decrypt_with_aad(
         ciphertext,
         key,

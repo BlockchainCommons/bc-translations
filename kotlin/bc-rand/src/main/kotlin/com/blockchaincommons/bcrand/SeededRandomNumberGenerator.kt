@@ -1,16 +1,29 @@
 package com.blockchaincommons.bcrand
 
 /**
- * A deterministic PRNG for testing.
+ * A random number generator that can be used as a source of deterministic
+ * pseudo-randomness for testing purposes.
  *
- * Seeded with four [ULong] values. Uses Xoshiro256** internally.
- * NOT cryptographically secure.
+ * Uses Xoshiro256** internally. The [randomData] and [fillRandomData] methods
+ * generate each byte individually from `nextU64() and 0xFF` to ensure
+ * cross-platform test-vector compatibility.
  *
- * The [randomData] and [fillRandomData] methods generate each byte
- * individually from `nextU64() and 0xFF` to match the Swift implementation
- * and ensure cross-platform test-vector compatibility.
+ * This is not cryptographically secure, and should only be used for testing purposes.
  */
-class SeededRandomNumberGenerator(seed: ULongArray) : RandomNumberGenerator() {
+class SeededRandomNumberGenerator
+/**
+ * Creates a new seeded random number generator.
+ *
+ * The seed should be a 256-bit value, represented as an array of 4 [ULong]
+ * values. For the output distribution to look random, the seed should not
+ * have any obvious patterns, like all zeroes or all ones.
+ *
+ * This is not cryptographically secure, and should only be used for
+ * testing purposes.
+ *
+ * @param seed An array of exactly 4 [ULong] values used to seed the generator.
+ */
+(seed: ULongArray) : RandomNumberGenerator() {
 
     init {
         require(seed.size == 4) { "Seed must have exactly 4 ULong values" }
@@ -39,10 +52,19 @@ private val FAKE_SEED = ulongArrayOf(
     7953171132032326923uL,
 )
 
-/** Return a [SeededRandomNumberGenerator] with the standard test seed. */
+/**
+ * Creates a seeded random number generator with a fixed seed.
+ *
+ * @return A [SeededRandomNumberGenerator] initialized with the standard test seed.
+ */
 fun makeFakeRandomNumberGenerator(): SeededRandomNumberGenerator =
     SeededRandomNumberGenerator(FAKE_SEED)
 
-/** Return [size] bytes of deterministic random data from the standard test seed. */
+/**
+ * Creates a byte array of random data with a fixed seed.
+ *
+ * @param size The number of random bytes to generate.
+ * @return A new [ByteArray] containing [size] bytes of deterministic random data.
+ */
 fun fakeRandomData(size: Int): ByteArray =
     makeFakeRandomNumberGenerator().randomData(size)

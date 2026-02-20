@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "bc-crypto"
 version = "0.14.0"
-description = "Blockchain Commons cryptographic primitives"
+description = "A uniform API for cryptographic primitives used in Blockchain Commons projects."
 requires-python = ">=3.10"
 license = "BSD-2-Clause-Patent"
 keywords = ["cryptography", "blockchain", "bitcoin"]

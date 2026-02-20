@@ -1,6 +1,23 @@
-"""Blockchain Commons cryptographic primitive APIs.
+"""A uniform API for cryptographic primitives used in Blockchain Commons projects.
 
-Python translation of Rust `bc-crypto`.
+The various providers listed below may change, but the API this package
+provides should be stable.
+
+| Category                            | Algorithm              | Provider              |
+|-------------------------------------|------------------------|-----------------------|
+| Cryptographic digest                | SHA-256                | hashlib               |
+| Cryptographic digest                | SHA-512                | hashlib               |
+| Checksum                            | CRC-32                 | binascii              |
+| Hashed Message Authentication Codes | HMAC-SHA-256           | hmac                  |
+| Hashed Message Authentication Codes | HMAC-SHA-512           | hmac                  |
+| Password Expansion                  | PBKDF2-HMAC-SHA-256   | hashlib               |
+| Password Expansion                  | PBKDF2-HMAC-SHA-512   | hashlib               |
+| Key Derivation                      | HKDF-HMAC-SHA-256     | hmac                  |
+| Key Derivation                      | HKDF-HMAC-SHA-512     | hmac                  |
+| Symmetric Encryption                | ChaCha20-Poly1305     | cryptography          |
+| Key Agreement                       | X25519                | cryptography          |
+| Memory Zeroing                      | N/A                   | built-in              |
+| Password KDF                        | scrypt                | hashlib               |
 """
 
 from .argon import argon2id

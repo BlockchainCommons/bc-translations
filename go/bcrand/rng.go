@@ -1,8 +1,17 @@
 // Package bcrand provides random number utilities for Blockchain Commons projects.
 //
-// It exposes a uniform API for random number primitives, including a
-// cryptographically strong [SecureRandomNumberGenerator] and a deterministic
-// [SeededRandomNumberGenerator] for cross-platform testing.
+// It exposes a uniform API for the random number primitives used in
+// higher-level Blockchain Commons projects, including a cryptographically
+// strong [SecureRandomNumberGenerator] and a deterministic
+// [SeededRandomNumberGenerator].
+//
+// Both generators implement the [RandomNumberGenerator] interface to produce
+// random numbers compatible with the RandomNumberGenerator Swift protocol
+// used in macOS and iOS, which is important when using the deterministic
+// random number generator for cross-platform testing.
+//
+// The package also includes several convenience functions for generating
+// secure and deterministic random numbers.
 package bcrand
 
 import (
@@ -13,6 +22,7 @@ import (
 type RandomNumberGenerator interface {
 	NextU32() uint32
 	NextU64() uint64
+	// RandomData returns a slice of random bytes of the given size.
 	RandomData(size int) []byte
 	FillRandomData(data []byte)
 }
@@ -58,10 +68,11 @@ func wideMul(a, b uint64, bw uint) (lo, hi uint64) {
 	}
 }
 
-// RngNextWithUpperBound returns a random value in [0, upperBound) using
-// Lemire's "nearly divisionless" method.
+// RngNextWithUpperBound returns a random value that is less than the given
+// upper bound. The upperBound must be non-zero. Every value in [0, upperBound)
+// is equally likely to be returned.
 //
-// The bits parameter specifies the working bit width (8, 16, 32, or 64).
+// The bw parameter specifies the working bit width (8, 16, 32, or 64).
 func RngNextWithUpperBound(rng RandomNumberGenerator, upperBound uint64, bw uint) uint64 {
 	if upperBound == 0 {
 		panic("upper bound must be non-zero")
@@ -87,9 +98,10 @@ func RngNextWithUpperBound(rng RandomNumberGenerator, upperBound uint64, bw uint
 	return hi
 }
 
-// RngNextInRange returns a random value in the half-open range [start, end).
+// RngNextInRange returns a random value within the specified range, using the
+// given generator as a source for randomness. The range is half-open: [start, end).
 //
-// The bits parameter specifies the working bit width (8, 16, 32, or 64).
+// The bw parameter specifies the working bit width (8, 16, 32, or 64).
 func RngNextInRange(rng RandomNumberGenerator, start, end int64, bw uint) int64 {
 	if start >= end {
 		panic("start must be less than end")

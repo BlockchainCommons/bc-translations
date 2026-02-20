@@ -7,9 +7,15 @@ namespace BlockchainCommons.BCRand;
 public static class RandomNumberGeneratorExtensions
 {
     /// <summary>
-    /// Returns a random value less than <paramref name="upperBound"/> using
-    /// Lemire's "nearly divisionless" method (32-bit variant).
+    /// Returns a random value that is less than the given upper bound.
     /// </summary>
+    /// <param name="rng">The random number generator to use.</param>
+    /// <param name="upperBound">The upper bound for the randomly generated value. Must be non-zero.</param>
+    /// <returns>A random value in the range [0, <paramref name="upperBound"/>). Every value
+    /// in the range is equally likely to be returned.</returns>
+    /// <remarks>
+    /// Uses Lemire's "nearly divisionless" method (32-bit variant).
+    /// </remarks>
     public static uint NextWithUpperBound(this IRandomNumberGenerator rng, uint upperBound)
     {
         if (upperBound == 0)
@@ -34,9 +40,15 @@ public static class RandomNumberGeneratorExtensions
     }
 
     /// <summary>
-    /// Returns a random value less than <paramref name="upperBound"/> using
-    /// Lemire's "nearly divisionless" method (64-bit variant).
+    /// Returns a random value that is less than the given upper bound.
     /// </summary>
+    /// <param name="rng">The random number generator to use.</param>
+    /// <param name="upperBound">The upper bound for the randomly generated value. Must be non-zero.</param>
+    /// <returns>A random value in the range [0, <paramref name="upperBound"/>). Every value
+    /// in the range is equally likely to be returned.</returns>
+    /// <remarks>
+    /// Uses Lemire's "nearly divisionless" method (64-bit variant).
+    /// </remarks>
     public static ulong NextWithUpperBound(this IRandomNumberGenerator rng, ulong upperBound)
     {
         if (upperBound == 0)
@@ -61,8 +73,14 @@ public static class RandomNumberGeneratorExtensions
     }
 
     /// <summary>
-    /// Returns a random value in the half-open range [<paramref name="start"/>, <paramref name="end"/>).
+    /// Returns a random value within the specified range, using the given
+    /// generator as a source for randomness.
     /// </summary>
+    /// <param name="rng">The random number generator to use.</param>
+    /// <param name="start">The inclusive lower bound of the range.</param>
+    /// <param name="end">The exclusive upper bound of the range.</param>
+    /// <returns>A random value within the half-open range
+    /// [<paramref name="start"/>, <paramref name="end"/>).</returns>
     public static int NextInRange(this IRandomNumberGenerator rng, int start, int end)
     {
         if (start >= end)
@@ -119,7 +137,6 @@ public static class RandomNumberGeneratorExtensions
 
     /// <summary>
     /// Returns a shared thread-safe <see cref="IRandomNumberGenerator"/> instance.
-    /// Equivalent to Rust's <c>thread_rng()</c>.
     /// </summary>
     public static IRandomNumberGenerator ThreadRng()
     {

@@ -17,24 +17,31 @@ X25519_PUBLIC_KEY_SIZE = 32
 def derive_agreement_private_key(
     key_material: bytes | bytearray | memoryview | str,
 ) -> bytes:
-    """Derive 32-byte agreement private key with "agreement" domain salt."""
+    """Derive a 32-byte agreement private key from the given key material.
+
+    May be used for key agreement or key encapsulation. Enforces domain
+    separation from signing keys.
+    """
     return hkdf_hmac_sha256(key_material, b"agreement", GENERIC_PRIVATE_KEY_SIZE)
 
 
 def derive_signing_private_key(
     key_material: bytes | bytearray | memoryview | str,
 ) -> bytes:
-    """Derive 32-byte signing private key with "signing" domain salt."""
+    """Derive a 32-byte signing private key from the given key material.
+
+    Enforces domain separation from agreement keys.
+    """
     return hkdf_hmac_sha256(key_material, b"signing", GENERIC_PUBLIC_KEY_SIZE)
 
 
 def x25519_new_private_key_using(rng) -> bytes:
-    """Generate X25519 private key bytes using the provided RNG."""
+    """Create a new X25519 private key using the given random number generator."""
     return bytes(rng.random_data(X25519_PRIVATE_KEY_SIZE))
 
 
 def x25519_public_key_from_private_key(x25519_private_key: bytes) -> bytes:
-    """Derive X25519 public key from 32-byte private key."""
+    """Derive an X25519 public key from a private key."""
     sk = x25519.X25519PrivateKey.from_private_bytes(bytes(x25519_private_key))
     pk = sk.public_key()
     return pk.public_bytes(
@@ -47,7 +54,7 @@ def x25519_shared_key(
     x25519_private_key: bytes,
     x25519_public_key: bytes,
 ) -> bytes:
-    """Compute shared key and HKDF-expand to symmetric key size."""
+    """Compute the shared symmetric key from the given X25519 private and public keys."""
     sk = x25519.X25519PrivateKey.from_private_bytes(bytes(x25519_private_key))
     pk = x25519.X25519PublicKey.from_public_bytes(bytes(x25519_public_key))
     shared_secret = sk.exchange(pk)

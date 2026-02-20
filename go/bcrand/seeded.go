@@ -13,6 +13,9 @@ type SeededRandomNumberGenerator struct {
 // The seed is a 256-bit value represented as an array of 4 uint64 values.
 // For the output distribution to look random, the seed should not have any
 // obvious patterns like all zeroes or all ones.
+//
+// This is not cryptographically secure, and should only be used for testing
+// purposes.
 func NewSeededRandomNumberGenerator(seed [4]uint64) *SeededRandomNumberGenerator {
 	return &SeededRandomNumberGenerator{
 		rng: newXoshiro256StarStar(seed[0], seed[1], seed[2], seed[3]),
@@ -56,14 +59,13 @@ var fakeSeed = [4]uint64{
 	7953171132032326923,
 }
 
-// MakeFakeRandomNumberGenerator creates a SeededRandomNumberGenerator with a
-// fixed seed for deterministic testing.
+// MakeFakeRandomNumberGenerator creates a seeded random number generator with a
+// fixed seed.
 func MakeFakeRandomNumberGenerator() *SeededRandomNumberGenerator {
 	return NewSeededRandomNumberGenerator(fakeSeed)
 }
 
-// FakeRandomData returns deterministic pseudo-random bytes using the standard
-// test seed.
+// FakeRandomData creates a slice of random data with a fixed seed.
 func FakeRandomData(size int) []byte {
 	return MakeFakeRandomNumberGenerator().RandomData(size)
 }

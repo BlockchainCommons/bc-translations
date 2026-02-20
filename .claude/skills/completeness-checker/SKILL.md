@@ -85,6 +85,21 @@ For types that derive traits in Rust, verify the equivalent protocol conformance
 - `Debug`/`Display` → string representation
 - `CBOREncodable`/`CBORDecodable` → CBOR serialization
 
+### Pass 5: Documentation Coverage
+
+For every public item in the manifest's doc catalog that has a doc comment in Rust, verify the translated item also has a doc comment:
+
+```
+DOC COVERAGE:
+  ✅ ShamirShare — has doc comment
+  ✅ split_secret — has doc comment
+  ❌ MISSING DOC: recover_secret — Rust has doc comment, translation does not
+  ⬚ validate_shares — no doc in Rust, no doc in translation (OK)
+```
+
+Also verify:
+- Package metadata has a description
+
 ### Output
 
 Produce a summary:
@@ -96,6 +111,7 @@ API Coverage:  N/M items (X%)
 Test Coverage: N/M tests (X%)
 Signatures:    N mismatches
 Derives:       N missing conformances
+Docs:          N/M items
 
 VERDICT: COMPLETE | INCOMPLETE (list gaps)
 ```

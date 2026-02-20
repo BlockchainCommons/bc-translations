@@ -12,7 +12,20 @@ def scrypt(
     salt: bytes | bytearray | memoryview | str,
     output_len: int,
 ) -> bytes:
-    """Compute scrypt with Rust-equivalent recommended parameters."""
+    """Compute the scrypt key derivation function using recommended parameters.
+
+    Args:
+        password: The password or passphrase.
+        salt: The salt.
+        output_len: The desired length of the derived key in bytes. Must be
+            greater than 9 and less than or equal to 64.
+
+    Returns:
+        A bytes object containing the derived key of the specified length.
+
+    Raises:
+        ValueError: If the scrypt function fails or the output length is invalid.
+    """
     pass_bytes = password.encode("utf-8") if isinstance(password, str) else bytes(password)
     salt_bytes = salt.encode("utf-8") if isinstance(salt, str) else bytes(salt)
     # Rust scrypt::Params::recommended(): log_n=15, r=8, p=1

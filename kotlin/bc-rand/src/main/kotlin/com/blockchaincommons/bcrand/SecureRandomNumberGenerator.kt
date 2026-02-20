@@ -4,17 +4,27 @@ import java.security.SecureRandom
 
 private val secureRandom = SecureRandom()
 
-/** Return [size] cryptographically strong random bytes. */
+/**
+ * Generates a byte array of cryptographically strong random bytes of the given size.
+ *
+ * @param size The number of random bytes to generate.
+ * @return A new [ByteArray] containing [size] cryptographically strong random bytes.
+ */
 fun randomData(size: Int): ByteArray =
     ByteArray(size).also { secureRandom.nextBytes(it) }
 
-/** Fill [data] with cryptographically strong random bytes. */
+/**
+ * Fills the given byte array with cryptographically strong random bytes.
+ *
+ * @param data The byte array to fill with random bytes.
+ */
 fun fillRandomData(data: ByteArray) {
     secureRandom.nextBytes(data)
 }
 
 /**
- * A cryptographically secure random number generator.
+ * A random number generator that can be used as a source of
+ * cryptographically-strong randomness.
  *
  * Backed by [java.security.SecureRandom].
  */
@@ -32,5 +42,4 @@ class SecureRandomNumberGenerator : RandomNumberGenerator() {
     }
 }
 
-/** Return a thread-safe cryptographically secure RNG. */
 fun threadRng(): SecureRandomNumberGenerator = SecureRandomNumberGenerator()

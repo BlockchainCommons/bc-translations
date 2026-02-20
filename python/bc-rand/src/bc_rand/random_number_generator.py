@@ -11,9 +11,7 @@ BitWidth = Literal[8, 16, 32, 64]
 class RandomNumberGenerator(ABC):
     """Abstract base for random number generators.
 
-    Translates the Rust ``RandomNumberGenerator`` trait which extends
-    ``RngCore + CryptoRng``.  Concrete subclasses must implement
-    ``next_u32`` and ``next_u64``.
+    Concrete subclasses must implement ``next_u32`` and ``next_u64``.
     """
 
     @abstractmethod
@@ -27,6 +25,7 @@ class RandomNumberGenerator(ABC):
         ...
 
     def random_data(self, size: int) -> bytes:
+        """Return a bytes object of random bytes of the given size."""
         data = bytearray(size)
         self.fill_random_data(data)
         return bytes(data)
@@ -49,14 +48,14 @@ class RandomNumberGenerator(ABC):
 
 
 def rng_random_data(rng: RandomNumberGenerator, size: int) -> bytes:
-    """Return *size* random bytes from *rng*."""
+    """Return a bytes object of random bytes of the given size."""
     data = bytearray(size)
     rng.fill_random_data(data)
     return bytes(data)
 
 
 def rng_fill_random_data(rng: RandomNumberGenerator, data: bytearray) -> None:
-    """Fill *data* with random bytes from *rng*."""
+    """Fill the given bytearray with random bytes."""
     rng.fill_random_data(data)
 
 
@@ -66,11 +65,21 @@ def rng_next_with_upper_bound(
     *,
     bits: BitWidth = 64,
 ) -> int:
-    """Return a random value in ``[0, upper_bound)`` using Lemire's method.
+    """Return a random value that is less than the given upper bound.
 
-    *bits* is the unsigned integer width used for the algorithm (e.g. 32 for
-    u32 semantics, 64 for u64).  It controls the bit-mask applied to the raw
-    ``next_u64`` output and the width of the wide multiplication.
+    Uses Lemire's "nearly divisionless" method for generating random integers
+    in an interval.
+
+    Args:
+        rng: The random number generator to use.
+        upper_bound: The upper bound for the randomly generated value.
+            Must be non-zero.
+        bits: The unsigned integer width (8, 16, 32, or 64) used for the
+            algorithm.
+
+    Returns:
+        A random value in ``[0, upper_bound)``. Every value in the range
+        is equally likely to be returned.
     """
     if upper_bound <= 0:
         raise ValueError(f"upper_bound must be positive, got {upper_bound}")
@@ -99,7 +108,21 @@ def rng_next_in_range(
     *,
     bits: BitWidth = 64,
 ) -> int:
-    """Return a random value in the half-open range ``[start, end)``."""
+    """Return a random value within the specified range.
+
+    Use this function to generate an integer within a specific range using a
+    custom random number generator.
+
+    Args:
+        rng: The random number generator to use as a source for randomness.
+        start: The lower bound (inclusive) of the range.
+        end: The upper bound (exclusive) of the range.
+        bits: The unsigned integer width (8, 16, 32, or 64) used for the
+            algorithm.
+
+    Returns:
+        A random value within ``[start, end)``.
+    """
     if start >= end:
         raise ValueError(f"start must be less than end, got [{start}, {end})")
     max_val = (1 << bits) - 1
@@ -131,8 +154,7 @@ def rng_next_in_closed_range(
 
 
 rng_random_array = rng_random_data
-"""Alias for ``rng_random_data`` (Rust distinguishes ``Vec<u8>`` from ``[u8; N]``;
-Python uses ``bytes`` for both)."""
+"""Alias for ``rng_random_data``."""
 
 
 def rng_random_bool(rng: RandomNumberGenerator) -> bool:

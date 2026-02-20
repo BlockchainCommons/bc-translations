@@ -5,6 +5,7 @@
     <RootNamespace>BlockchainCommons.BCRand</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>Blockchain Commons Random Number Utilities.</Description>
   </PropertyGroup>
 
 </Project>

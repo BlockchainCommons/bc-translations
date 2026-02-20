@@ -14,19 +14,20 @@ _FAKE_SEED = (
 
 
 class SeededRandomNumberGenerator(RandomNumberGenerator):
-    """A deterministic PRNG for testing.
-
-    Seeded with four u64 values.  Uses Xoshiro256** internally.
-    NOT cryptographically secure.
-
-    The ``random_data`` and ``fill_random_data`` methods generate each
-    byte individually from ``next_u64() & 0xFF`` to match the Swift
-    implementation and ensure cross-platform test-vector compatibility.
-    """
+    """A random number generator that can be used as a source of deterministic pseudo-randomness for testing purposes."""
 
     __slots__ = ("_rng",)
 
     def __init__(self, seed: tuple[int, int, int, int]) -> None:
+        """Create a new seeded random number generator.
+
+        The seed should be a 256-bit value, represented as a tuple of four
+        64-bit integers. For the output distribution to look random, the seed
+        should not have any obvious patterns, like all zeroes or all ones.
+
+        This is not cryptographically secure, and should only be used for
+        testing purposes.
+        """
         self._rng = Xoshiro256StarStar(seed[0], seed[1], seed[2], seed[3])
 
     def next_u32(self) -> int:
@@ -44,10 +45,10 @@ class SeededRandomNumberGenerator(RandomNumberGenerator):
 
 
 def make_fake_random_number_generator() -> SeededRandomNumberGenerator:
-    """Return a ``SeededRandomNumberGenerator`` with the standard test seed."""
+    """Create a seeded random number generator with a fixed seed."""
     return SeededRandomNumberGenerator(_FAKE_SEED)
 
 
 def fake_random_data(size: int) -> bytes:
-    """Return *size* bytes of deterministic random data from the standard test seed."""
+    """Create a bytes object of random data with a fixed seed."""
     return make_fake_random_number_generator().random_data(size)

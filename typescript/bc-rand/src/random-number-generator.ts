@@ -21,13 +21,19 @@ export interface RandomNumberGenerator {
     nextU32(): number;
     /** Returns a random 64-bit unsigned integer. */
     nextU64(): bigint;
-    /** Returns a new Uint8Array of the given size filled with random bytes. */
+    /** Returns random bytes of the given size as a Uint8Array. */
     randomData(size: number): Uint8Array;
     /** Fills the given Uint8Array with random bytes. */
     fillRandomData(data: Uint8Array): void;
 }
 
-/** Returns a new Uint8Array of the given size filled with random bytes. */
+/**
+ * Returns random bytes of the given size as a Uint8Array.
+ *
+ * @param rng - The random number generator to use.
+ * @param size - The number of random bytes to generate.
+ * @returns A new Uint8Array filled with random bytes.
+ */
 export function rngRandomData(
     rng: RandomNumberGenerator,
     size: number,
@@ -37,7 +43,12 @@ export function rngRandomData(
     return data;
 }
 
-/** Fills the given Uint8Array with random bytes. */
+/**
+ * Fills the given Uint8Array with random bytes.
+ *
+ * @param rng - The random number generator to use.
+ * @param data - The Uint8Array to fill with random bytes.
+ */
 export function rngFillRandomData(
     rng: RandomNumberGenerator,
     data: Uint8Array,
@@ -52,8 +63,9 @@ function wideMul(a: bigint, b: bigint, bits: BitWidth): [bigint, bigint] {
 }
 
 /**
- * Returns a uniformly distributed random value in `[0, upperBound)`.
+ * Returns a random value that is less than the given upper bound.
  *
+ * Every value in the range `[0, upperBound)` is equally likely to be returned.
  * Uses Lemire's "nearly divisionless" method for unbiased bounded generation.
  *
  * @param rng - The random number generator to use.
@@ -87,7 +99,8 @@ export function rngNextWithUpperBound(
 }
 
 /**
- * Returns a uniformly distributed random value in the half-open range `[start, end)`.
+ * Returns a random value within the specified range, using the given
+ * generator as a source for randomness.
  *
  * @param rng - The random number generator to use.
  * @param start - The inclusive lower bound.

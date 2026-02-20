@@ -3,9 +3,12 @@ using System.Buffers.Binary;
 namespace BlockchainCommons.BCRand;
 
 /// <summary>
-/// A deterministic pseudo-random number generator for testing purposes.
-/// Uses Xoshiro256** internally. Not cryptographically secure.
+/// A random number generator that can be used as a source of deterministic
+/// pseudo-randomness for testing purposes.
 /// </summary>
+/// <remarks>
+/// Uses Xoshiro256** internally. Not cryptographically secure.
+/// </remarks>
 public sealed class SeededRandomNumberGenerator : IRandomNumberGenerator
 {
     private static readonly ulong[] FakeSeed =
@@ -20,8 +23,16 @@ public sealed class SeededRandomNumberGenerator : IRandomNumberGenerator
 
     /// <summary>
     /// Creates a new seeded random number generator.
-    /// The seed must contain exactly 4 unsigned 64-bit integers.
     /// </summary>
+    /// <param name="seed">
+    /// A 256-bit seed represented as an array of 4 unsigned 64-bit integers.
+    /// The seed should not have any obvious patterns (such as all zeroes or all ones)
+    /// for the output distribution to appear random.
+    /// </param>
+    /// <remarks>
+    /// This generator is not cryptographically secure and should only be used
+    /// for testing purposes.
+    /// </remarks>
     public SeededRandomNumberGenerator(ulong[] seed)
     {
         if (seed.Length != 4)
@@ -57,9 +68,16 @@ public sealed class SeededRandomNumberGenerator : IRandomNumberGenerator
             data[i] = (byte)NextUInt64();
     }
 
-    /// <summary>Creates a seeded RNG with a fixed seed for deterministic testing.</summary>
+    /// <summary>
+    /// Creates a seeded random number generator with a fixed seed.
+    /// </summary>
+    /// <returns>A new <see cref="SeededRandomNumberGenerator"/> initialized with a fixed seed.</returns>
     public static SeededRandomNumberGenerator CreateFake() => new(FakeSeed);
 
-    /// <summary>Creates deterministic random data from a fixed seed.</summary>
+    /// <summary>
+    /// Creates an array of random data with a fixed seed.
+    /// </summary>
+    /// <param name="size">The number of random bytes to generate.</param>
+    /// <returns>An array containing <paramref name="size"/> deterministic random bytes.</returns>
     public static byte[] FakeRandomData(int size) => CreateFake().RandomData(size);
 }

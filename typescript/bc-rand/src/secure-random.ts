@@ -2,9 +2,8 @@ import { randomFillSync } from 'node:crypto';
 import type { RandomNumberGenerator } from './random-number-generator.js';
 
 /**
- * A cryptographically-secure random number generator.
- *
- * Uses Node.js crypto.randomFillSync for cryptographic randomness.
+ * A random number generator that can be used as a source of
+ * cryptographically-strong randomness.
  */
 export class SecureRandomNumberGenerator implements RandomNumberGenerator {
     nextU32(): number {
@@ -30,14 +29,24 @@ export class SecureRandomNumberGenerator implements RandomNumberGenerator {
     }
 }
 
-/** Returns a new Uint8Array of the given size filled with cryptographically-secure random bytes. */
+/**
+ * Generate random bytes of the given size using cryptographically strong
+ * randomness.
+ *
+ * @param size - The number of random bytes to generate.
+ * @returns A new Uint8Array filled with cryptographically strong random bytes.
+ */
 export function secureRandomData(size: number): Uint8Array {
     const data = new Uint8Array(size);
     randomFillSync(data);
     return data;
 }
 
-/** Fills the given Uint8Array with cryptographically-secure random bytes. */
+/**
+ * Fill the given Uint8Array with cryptographically strong random bytes.
+ *
+ * @param data - The Uint8Array to fill with random bytes.
+ */
 export function secureFillRandomData(data: Uint8Array): void {
     randomFillSync(data);
 }

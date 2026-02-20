@@ -8,12 +8,12 @@ from .random_number_generator import RandomNumberGenerator
 
 
 def random_data(size: int) -> bytes:
-    """Return *size* cryptographically strong random bytes."""
+    """Generate a bytes object of cryptographically strong random bytes of the given size."""
     return os.urandom(size)
 
 
 def fill_random_data(data: bytearray) -> None:
-    """Fill *data* with cryptographically strong random bytes."""
+    """Fill the given bytearray with cryptographically strong random bytes."""
     data[:] = os.urandom(len(data))
 
 
@@ -23,10 +23,7 @@ def next_u64() -> int:
 
 
 class SecureRandomNumberGenerator(RandomNumberGenerator):
-    """A cryptographically secure random number generator.
-
-    Backed by ``os.urandom`` (the OS CSPRNG).
-    """
+    """A random number generator that can be used as a source of cryptographically-strong randomness."""
 
     __slots__ = ()
 

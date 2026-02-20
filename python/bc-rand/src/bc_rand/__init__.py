@@ -1,9 +1,17 @@
 """Blockchain Commons Random Number Utilities.
 
-Provides a uniform API for random number primitives used in higher-level
-Blockchain Commons projects, including a cryptographically strong generator
-(``SecureRandomNumberGenerator``) and a deterministic generator for testing
-(``SeededRandomNumberGenerator``).
+``bc_rand`` exposes a uniform API for the random number primitives used in
+higher-level Blockchain Commons projects, including a cryptographically strong
+random number generator (``SecureRandomNumberGenerator``) and a deterministic
+random number generator (``SeededRandomNumberGenerator``).
+
+These primitive random number generators implement the
+``RandomNumberGenerator`` protocol to produce random numbers, which is
+important when using the deterministic random number generator for
+cross-platform testing.
+
+The package also includes several convenience functions for generating secure
+and deterministic random numbers.
 """
 
 from .random_number_generator import (
@@ -30,10 +38,7 @@ from .seeded_random import (
 )
 
 def thread_rng() -> SecureRandomNumberGenerator:
-    """Return a thread-safe cryptographically secure RNG.
-
-    Equivalent to Rust's ``rand::rng()`` / ``thread_rng()``.
-    """
+    """Return a thread-safe cryptographically secure RNG."""
     return SecureRandomNumberGenerator()
 
 

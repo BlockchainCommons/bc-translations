@@ -4,9 +4,12 @@ using CryptoRng = System.Security.Cryptography.RandomNumberGenerator;
 namespace BlockchainCommons.BCRand;
 
 /// <summary>
-/// A cryptographically secure random number generator.
-/// Thread-safe; delegates to <see cref="System.Security.Cryptography.RandomNumberGenerator"/>.
+/// A random number generator that can be used as a source of
+/// cryptographically-strong randomness.
 /// </summary>
+/// <remarks>
+/// Thread-safe; delegates to <see cref="System.Security.Cryptography.RandomNumberGenerator"/>.
+/// </remarks>
 public sealed class SecureRandomNumberGenerator : IRandomNumberGenerator
 {
     /// <summary>Shared thread-safe instance.</summary>
@@ -33,9 +36,16 @@ public sealed class SecureRandomNumberGenerator : IRandomNumberGenerator
         CryptoRng.Fill(data);
     }
 
-    /// <summary>Generate cryptographically secure random bytes (module-level convenience).</summary>
+    /// <summary>
+    /// Generates an array of cryptographically strong random bytes of the given size.
+    /// </summary>
+    /// <param name="size">The number of random bytes to generate.</param>
+    /// <returns>An array containing <paramref name="size"/> cryptographically strong random bytes.</returns>
     public static byte[] SecureRandomData(int size) => Shared.RandomData(size);
 
-    /// <summary>Fill a buffer with cryptographically secure random bytes (module-level convenience).</summary>
+    /// <summary>
+    /// Fills the given span with cryptographically strong random bytes.
+    /// </summary>
+    /// <param name="data">The span to fill with random bytes.</param>
     public static void SecureFillRandomData(Span<byte> data) => Shared.FillRandomData(data);
 }

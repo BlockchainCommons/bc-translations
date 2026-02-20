@@ -27,6 +27,7 @@ Create the target-language project skeleton:
 - Test directory structure
 - Declare dependencies on already-translated BC packages
 - **Create a `.gitignore`** appropriate for the target language (build outputs, dependency caches, IDE files, OS artifacts). Every scaffolded project must have one before any other files are added.
+- Copy or adapt the package metadata description from the manifest's doc catalog into the target package config (e.g., `description` field in pyproject.toml, Package.swift summary, etc.)
 
 ### 2. Translate in Manifest Order
 
@@ -37,6 +38,7 @@ Follow the translation unit order from the manifest. For each unit:
 3. Translate function signatures, mapping Rust idioms to target idioms
 4. Translate function bodies
 5. Handle hazards noted in the manifest
+6. Translate doc comments for this unit. Use the manifest's doc catalog — translate comments that exist in Rust into the target language's doc format. Do not invent documentation for items that lack it in Rust.
 
 ### 3. Prioritize Correctness Over Style
 

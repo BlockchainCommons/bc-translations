@@ -23,10 +23,16 @@ private fun wideMul(a: ULong, b: ULong, bits: Int): Pair<ULong, ULong> {
 }
 
 /**
- * Return a random value in `[0, upperBound)` using Lemire's method.
+ * Returns a random value that is less than the given upper bound.
  *
- * [bits] is the unsigned integer width used for the algorithm (e.g. 32 for
- * u32 semantics, 64 for u64).
+ * Uses Lemire's "nearly divisionless" method for generating random integers
+ * in an interval.
+ *
+ * @param rng The random number generator to use.
+ * @param upperBound The upper bound for the randomly generated value. Must be non-zero.
+ * @param bits The unsigned integer width used for the algorithm (e.g. 32 or 64).
+ * @return A random value in the range `[0, upperBound)`. Every value in that range
+ *   is equally likely to be returned.
  */
 fun rngNextWithUpperBound(
     rng: RandomNumberGenerator,
@@ -53,7 +59,14 @@ fun rngNextWithUpperBound(
 }
 
 /**
- * Return a random value in the half-open range `[start, end)`.
+ * Returns a random value within the specified range, using the given
+ * generator as a source for randomness.
+ *
+ * @param rng The random number generator to use when creating the new random value.
+ * @param start The inclusive lower bound of the range.
+ * @param end The exclusive upper bound of the range.
+ * @param bits The unsigned integer width used for the algorithm (e.g. 32 or 64).
+ * @return A random value within the bounds of `[start, end)`.
  */
 fun rngNextInRange(
     rng: RandomNumberGenerator,
@@ -74,9 +87,6 @@ fun rngNextInRange(
     return start + random.toLong()
 }
 
-/**
- * Return a random value in the closed range `[start, end]`.
- */
 fun rngNextInClosedRange(
     rng: RandomNumberGenerator,
     start: Long,
@@ -96,26 +106,34 @@ fun rngNextInClosedRange(
     return start + random.toLong()
 }
 
-/** Return [size] random bytes from [rng]. */
+/**
+ * Returns a byte array of random bytes of the given size.
+ *
+ * @param rng The random number generator to use.
+ * @param size The number of random bytes to generate.
+ * @return A new [ByteArray] containing [size] random bytes.
+ */
 fun rngRandomData(rng: RandomNumberGenerator, size: Int): ByteArray {
     val data = ByteArray(size)
     rng.fillRandomData(data)
     return data
 }
 
-/** Fill [data] with random bytes from [rng]. */
+/**
+ * Fills the given byte array with random bytes.
+ *
+ * @param rng The random number generator to use.
+ * @param data The byte array to fill with random bytes.
+ */
 fun rngFillRandomData(rng: RandomNumberGenerator, data: ByteArray) {
     rng.fillRandomData(data)
 }
 
-/** Alias for [rngRandomData]. */
 fun rngRandomArray(rng: RandomNumberGenerator, size: Int): ByteArray =
     rngRandomData(rng, size)
 
-/** Return a random boolean with equal probability. */
 fun rngRandomBool(rng: RandomNumberGenerator): Boolean =
     rng.nextU32() % 2u == 0u
 
-/** Return a random unsigned 32-bit integer from [rng]. */
 fun rngRandomU32(rng: RandomNumberGenerator): UInt =
     rng.nextU32()

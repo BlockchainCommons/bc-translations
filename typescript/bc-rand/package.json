@@ -1,7 +1,7 @@
 {
   "name": "@bc/rand",
   "version": "0.5.0",
-  "description": "Random number utilities for Blockchain Commons",
+  "description": "Blockchain Commons Random Number Utilities.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

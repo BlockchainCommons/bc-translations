@@ -8,7 +8,7 @@ from __future__ import annotations
 
 
 def memzero(buffer) -> None:
-    """Zero a mutable sequence in place."""
+    """Zero out a mutable buffer of bytes."""
     if isinstance(buffer, bytearray):
         buffer[:] = b"\x00" * len(buffer)
         return
@@ -18,7 +18,7 @@ def memzero(buffer) -> None:
 
 
 def memzero_vec_vec_u8(buffers) -> None:
-    """Zero each mutable byte sequence in a collection."""
+    """Zero out a list of mutable byte buffers."""
     for item in buffers:
         memzero(item)
 

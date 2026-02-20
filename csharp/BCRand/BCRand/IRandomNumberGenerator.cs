@@ -13,6 +13,8 @@ public interface IRandomNumberGenerator
     ulong NextUInt64();
 
     /// <summary>Returns an array of random bytes of the given size.</summary>
+    /// <param name="size">The number of random bytes to generate.</param>
+    /// <returns>An array containing <paramref name="size"/> random bytes.</returns>
     byte[] RandomData(int size);
 
     /// <summary>Fills the given span with random bytes.</summary>

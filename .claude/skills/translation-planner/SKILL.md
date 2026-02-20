@@ -52,7 +52,21 @@ TRAIT CATALOG:
   supertraits: [...]
 ```
 
-### 3. Identify External Dependency Equivalents
+### 3. Catalog Documentation
+
+Record what documentation exists in the Rust source. This is descriptive — it tells the coder what to translate, not what to invent.
+
+```
+DOC CATALOG:
+- Crate-level doc comment: (yes/no, summary)
+- Module-level doc comments: [list of modules with /// or //! docs]
+- Public items with doc comments: [list — most will have them]
+- Public items WITHOUT doc comments: [list — these need not be documented in target either]
+- Package metadata description: (from Cargo.toml `description` field)
+- README: (exists yes/no, summary of content)
+```
+
+### 4. Identify External Dependency Equivalents
 
 For each non-BC external dependency, note:
 - What it provides (e.g., `sha2` provides SHA-256/SHA-512)
@@ -80,14 +94,14 @@ Common mappings for this project:
 | `miniz_oxide`      | Deflate compression   | Most languages have stdlib zlib            |
 | `scrypt`/`argon2`  | Password KDF          | Varies; often needs library                |
 
-### 4. Analyze Feature Flags
+### 5. Analyze Feature Flags
 
 For each feature flag, determine:
 - What code it gates (conditional compilation)
 - Whether to translate as: compile-time option, runtime option, separate package, or always-on
 - Recommendation: for initial translation, translate default features only. Document non-default features as future work.
 
-### 5. Inventory Tests
+### 6. Inventory Tests
 
 Catalog every `#[test]` and `#[cfg(test)]` block:
 - Test name, location (inline or integration test file)
@@ -95,7 +109,7 @@ Catalog every `#[test]` and `#[cfg(test)]` block:
 - Whether it uses test vectors (hardcoded expected byte values) — these are critical for cross-language validation
 - Whether it depends on deterministic RNG (`fake_random_data` / `SeededRandomNumberGenerator`)
 
-### 6. Determine Translation Unit Order
+### 7. Determine Translation Unit Order
 
 Within the crate, order translation units by reverse call graph (leaves first):
 1. Error types and constants
@@ -107,7 +121,7 @@ Within the crate, order translation units by reverse call graph (leaves first):
 7. Top-level public functions
 8. Tests
 
-### 7. Note Hazards
+### 8. Note Hazards
 
 Flag Rust patterns that need special attention:
 - `impl Trait` in argument position → generics or interface parameter
@@ -118,12 +132,12 @@ Flag Rust patterns that need special attention:
 - `Deref`/`AsRef` coercions → explicit conversion in target language
 - Builder patterns via method chaining on `&mut self` → target-idiomatic builder
 
-### 8. Write Manifest
+### 9. Write Manifest
 
 Save the manifest to: `<lang>/<package>/MANIFEST.md`
 
 The manifest is the contract between planner and coder. The coder must translate every item in the manifest. The completeness checker verifies against it.
 
-### 9. Log
+### 10. Log
 
 Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. See the Orchestration section of CLAUDE.md for the log format. If a LOG.md already exists with a STARTED entry for this stage but no COMPLETED, this is a resumed session — pick up where it left off rather than redoing work.

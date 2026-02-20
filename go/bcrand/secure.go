@@ -5,8 +5,8 @@ import (
 	"encoding/binary"
 )
 
-// SecureRandomNumberGenerator is a random number generator backed by the
-// operating system's cryptographic random number source.
+// SecureRandomNumberGenerator is a random number generator that can be used as
+// a source of cryptographically-strong randomness.
 type SecureRandomNumberGenerator struct{}
 
 // NewSecureRandomNumberGenerator returns a new SecureRandomNumberGenerator.
@@ -40,7 +40,8 @@ func (s *SecureRandomNumberGenerator) FillRandomData(data []byte) {
 	}
 }
 
-// RandomData returns a slice of cryptographically strong random bytes.
+// RandomData returns a slice of cryptographically strong random bytes of the
+// given size.
 func RandomData(size int) []byte {
 	data := make([]byte, size)
 	if _, err := rand.Read(data); err != nil {

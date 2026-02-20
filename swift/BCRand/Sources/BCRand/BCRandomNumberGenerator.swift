@@ -1,3 +1,14 @@
+// BCRand — Blockchain Commons Random Number Utilities
+//
+// BCRand exposes a uniform API for the random number primitives used in
+// higher-level Blockchain Commons projects, including a cryptographically
+// strong generator (`SecureRandomNumberGenerator`) and a deterministic
+// generator (`SeededRandomNumberGenerator`).
+//
+// Both generators conform to the `BCRandomNumberGenerator` protocol,
+// providing a consistent interface for producing random numbers and
+// byte sequences suitable for cross-platform testing.
+
 import Foundation
 
 /// A protocol for random number generators used by Blockchain Commons libraries.
@@ -7,7 +18,10 @@ import Foundation
 public protocol BCRandomNumberGenerator {
     mutating func nextUInt32() -> UInt32
     mutating func nextUInt64() -> UInt64
+
+    /// Returns random data of the given size.
     mutating func randomData(count: Int) -> Data
+
     mutating func fillRandomData(_ data: inout Data)
 }
 
