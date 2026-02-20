@@ -14,7 +14,7 @@ The following status markers are used to indicate the current state of each tran
 
 | rust/           | version | 🚧 csharp/       | 🚧 go/           | 🚧 kotlin/        | 🚧 python/        | 🚧 swift/        | 🚧 typescript/        |
 |-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-----------------------|
-| bc-lifehash     | 0.1.0   | ✅ BCLifeHash     | ✅ bclifehash     | ✅ bc-lifehash     | ⏳ bc-lifehash     | ⏳ BCLifeHash     | ⏳ @bc/lifehash        |
+| bc-lifehash     | 0.1.0   | ✅ BCLifeHash     | ✅ bclifehash     | ✅ bc-lifehash     | ✅ bc-lifehash     | ✅ BCLifeHash     | ⏳ @bc/lifehash        |
 | bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ✅ BCRand         | ✅ @bc/rand            |
 | bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ✅ bc-crypto       | ✅ BCCrypto       | ⏳ @bc/crypto          |
 | bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bc/shamir          |

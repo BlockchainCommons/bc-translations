@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bc-lifehash"
+version = "0.1.0"
+description = "LifeHash visual hashing algorithm."
+requires-python = ">=3.10"
+license = "BSD-2-Clause-Patent"
+keywords = ["lifehash", "hash", "visualization"]
+
+[project.optional-dependencies]
+dev = ["pytest", "Pillow"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bc_lifehash"]
