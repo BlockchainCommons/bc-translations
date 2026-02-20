@@ -1,0 +1,16 @@
+# SwiftPM build artifacts
+.build/
+.swiftpm/
+Package.resolved
+out/
+
+# Xcode / IDE artifacts
+DerivedData/
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+
+# OS/editor artifacts
+.DS_Store
+*.swp
+*~
