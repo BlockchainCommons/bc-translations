@@ -123,3 +123,7 @@ Flag Rust patterns that need special attention:
 Save the manifest to: `<lang>/<package>/MANIFEST.md`
 
 The manifest is the contract between planner and coder. The coder must translate every item in the manifest. The completeness checker verifies against it.
+
+### 9. Log
+
+Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. See the Orchestration section of CLAUDE.md for the log format. If a LOG.md already exists with a STARTED entry for this stage but no COMPLETED, this is a resumed session — pick up where it left off rather than redoing work.

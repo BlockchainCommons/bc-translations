@@ -98,3 +98,7 @@ VERDICT: IDIOMATIC | NEEDS REVISION (N issues)
 ```
 
 After producing the review, apply the fixes directly. Then re-run the tests to verify the fixes don't break anything.
+
+### Log
+
+Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include the number of issues found, number fixed, and final verdict. See the Orchestration section of CLAUDE.md for the log format.

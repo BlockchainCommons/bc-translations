@@ -101,3 +101,7 @@ VERDICT: COMPLETE | INCOMPLETE (list gaps)
 ```
 
 If incomplete, list specific items the coder needs to add or fix.
+
+### Log
+
+Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include the summary metrics (API coverage %, test coverage %, mismatches, verdict). See the Orchestration section of CLAUDE.md for the log format.

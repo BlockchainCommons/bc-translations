@@ -49,6 +49,15 @@ There are two independent dependency trees that merge at `bc-components`:
 - **Crypto tree:** bc-rand → bc-crypto → bc-shamir → sskr
 - **CBOR tree:** dcbor → bc-tags, bc-ur
 
+## Monorepo Discipline
+
+This is a massively-parallel monorepo. Multiple agents may be working on different (crate, language) pairs simultaneously. Follow these rules:
+
+- **Do not commit unless explicitly asked.** When asked, commit only the files you worked on — never `git add -A` or `git add .`.
+- **Stay in your lane.** Only modify files under your assigned `<lang>/<package>/` directory. Do not touch other languages, other crates, or shared files (CLAUDE.md, root .gitignore, etc.) without being asked.
+- **Do not modify `rust/`.** The Rust source is the reference implementation. Read it, never write to it.
+- **Scaffold a `.gitignore` first.** When creating a new target-language project, the very first file must be a `.gitignore` appropriate for that language (build outputs, dependency caches, IDE files, OS artifacts). This prevents build artifacts from being accidentally committed.
+
 ## Orchestration
 
 Translation of each (crate, language) pair follows a four-stage pipeline. Use `/kickoff` to select the next eligible target and run the pipeline.
@@ -89,6 +98,25 @@ Phase 8 (Phase 7):      provenance-mark
 ```
 
 Within each phase, all six languages can proceed in parallel. Across phases, the dependency ordering ensures translated packages are available for import.
+
+### Per-Target Log
+
+Each (crate, language) pair maintains a log at `<lang>/<package>/LOG.md`. Every pipeline stage appends an entry when it starts and when it finishes. If a session is interrupted, any agent (or `/kickoff`) can check for a started-but-not-finished entry and resume from there.
+
+Log entry format:
+
+```
+## <date> — Stage N: <Name>
+STARTED
+- <what is being done>
+
+## <date> — Stage N: <Name>
+COMPLETED
+- <summary of results>
+- <key metrics: API coverage, test counts, issues found, etc.>
+```
+
+An entry with STARTED but no corresponding COMPLETED means that stage was interrupted and should be resumed.
 
 ### Key Principles
 

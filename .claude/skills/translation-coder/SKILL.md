@@ -26,6 +26,7 @@ Create the target-language project skeleton:
 - Source directory structure
 - Test directory structure
 - Declare dependencies on already-translated BC packages
+- **Create a `.gitignore`** appropriate for the target language (build outputs, dependency caches, IDE files, OS artifacts). Every scaffolded project must have one before any other files are added.
 
 ### 2. Translate in Manifest Order
 
@@ -61,9 +62,9 @@ After completing the translation:
 
 Maximum 5 compile-fix iterations. If stuck, document the issue and stop.
 
-### 6. Update Status
+### 6. Log
 
-After a successful translation with passing tests, update the status marker in CLAUDE.md from ⏳ to 🚧 (in progress) or ✅ (complete, all tests passing).
+Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include: number of files translated, number of tests translated, build result, test result. See the Orchestration section of CLAUDE.md for the log format. If a LOG.md already exists with a STARTED entry for this stage but no COMPLETED, this is a resumed session — pick up where it left off rather than redoing work.
 
 ## Key Principles
 

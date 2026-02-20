@@ -23,13 +23,14 @@ Select and begin the next translation target. Optionally specify a language and/
 ## Selection Logic
 
 1. Read the status table in CLAUDE.md
-2. Find all ⏳ (not started) entries
-3. Filter to entries whose internal dependencies are ✅ (completed) for the same language
-4. From the eligible set:
+2. Find all ⏳ (not started) entries **and** any 🚧 (in progress) entries
+3. For 🚧 entries, check `<lang>/<package>/LOG.md` for interrupted stages (STARTED without COMPLETED) — these take priority as resume candidates
+4. For ⏳ entries, filter to those whose internal dependencies are ✅ (completed) for the same language
+5. From the eligible set:
    - If a language was specified, filter to that language
    - If a crate was specified, filter to that crate
-   - Otherwise, prefer crates higher in the dependency graph (fewer deps) and languages with the most progress
-5. Present the selection to the user for confirmation before proceeding
+   - Otherwise, prefer resuming interrupted work first, then crates higher in the dependency graph (fewer deps), then languages with the most progress
+6. Present the selection to the user for confirmation before proceeding
 
 ## Dependency Rules
 
