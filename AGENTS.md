@@ -12,8 +12,9 @@ The following status markers are used to indicate the current state of each tran
 
 ## Translations
 
-| rust/           | version | 🚧 csharp/        | 🚧 go/            | 🚧 kotlin/         | 🚧 python/         | 🚧 swift/         | 🚧 typescript/           |
-|-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-------------------------|
+| rust/           | version | 🚧 csharp/       | 🚧 go/           | 🚧 kotlin/        | 🚧 python/        | 🚧 swift/        | 🚧 typescript/        |
+|-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-----------------------|
+| bc-lifehash     | 0.1.0   | ⏳ BCLifeHash     | ⏳ bclifehash     | ⏳ bc-lifehash     | ⏳ bc-lifehash     | ⏳ BCLifeHash     | ⏳ @bc/lifehash        |
 | bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ✅ BCRand         | ✅ @bc/rand            |
 | bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ✅ bc-crypto       | ✅ BCCrypto       | ⏳ @bc/crypto          |
 | bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bc/shamir          |
@@ -31,6 +32,7 @@ The following status markers are used to indicate the current state of each tran
 These are the dependencies between the crates in this project. Optional dependencies are marked with `?`. The crates are listed in topological order (a valid build order).
 
 ```
+bc-lifehash     → (none)
 bc-rand         → (none)
 dcbor           → (none)
 bc-crypto       → bc-rand
@@ -48,6 +50,7 @@ There are two independent dependency trees that merge at `bc-components`:
 
 - **Crypto tree:** bc-rand → bc-crypto → bc-shamir → sskr
 - **CBOR tree:** dcbor → bc-tags, bc-ur
+- **Visual hash tree:** bc-lifehash (standalone)
 
 ## Monorepo Discipline
 
@@ -87,7 +90,7 @@ Translation of each (crate, language) pair follows a four-stage pipeline. Use `/
 Work respects the dependency graph. A (crate, language) pair is eligible only when all its internal BC dependencies are ✅ for that language.
 
 ```
-Phase 1 (no deps):      bc-rand, dcbor
+Phase 1 (no deps):      bc-lifehash, bc-rand, dcbor
 Phase 2 (Phase 1):      bc-crypto, bc-tags, bc-ur
 Phase 3 (Phase 2):      bc-shamir
 Phase 4 (Phase 3):      sskr
