@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BCLifeHash/BCLifeHash.csproj" />
+  <Project Path="BCLifeHash.Tests/BCLifeHash.Tests.csproj" />
+</Solution>
