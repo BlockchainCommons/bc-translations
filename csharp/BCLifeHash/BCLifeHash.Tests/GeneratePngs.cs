@@ -6,7 +6,7 @@ namespace BlockchainCommons.BCLifeHash.Tests;
 
 public class GeneratePngs
 {
-    [Fact(Skip = "Visual test")]
+    [Fact]
     public void GenerateAllPngs()
     {
         var versions = new (string Name, LifeHashVersion Version)[]
