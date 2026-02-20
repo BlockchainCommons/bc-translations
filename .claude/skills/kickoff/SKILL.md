@@ -46,6 +46,9 @@ Examples:
 
 Once a target is selected and confirmed:
 
+### Step 0: Mark In Progress
+Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧. This signals to other agents that work is underway on this pair.
+
 ### Step 1: Plan
 Run the **translation-planner** workflow on the Rust crate (if no manifest exists yet). Save the manifest to `<lang>/<package>/MANIFEST.md`.
 
