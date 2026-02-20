@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BCShamir.Tests/BCShamir.Tests.csproj" />
+  <Project Path="BCShamir/BCShamir.csproj" />
+</Solution>

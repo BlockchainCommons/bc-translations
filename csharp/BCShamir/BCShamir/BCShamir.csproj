@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BlockchainCommons.BCShamir</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Shamir's Secret Sharing (SSS) for C#.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BCRand\BCRand\BCRand.csproj" />
+    <ProjectReference Include="..\..\BCCrypto\BCCrypto\BCCrypto.csproj" />
+  </ItemGroup>
+
+</Project>
