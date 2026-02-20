@@ -10,13 +10,20 @@ The following status markers are used to indicate the current state of each tran
 - 🚧 In Progress: Work has begun on this translation, but it is not yet complete.
 - ✅ Completed: The translation is complete and fully tested.
 
+## Model Markers
+
+The following model markers indicate which AI model was used for each translation:
+
+- 🎻 Claude Opus
+- 📖 GPT Codex
+
 ## Translations
 
 | rust/             | version | 🚧 csharp/       | 🚧 go/           | 🚧 kotlin/        | 🚧 python/        | 🚧 swift/        | 🚧 typescript/        |
 |-------------------|---------|------------------|------------------|-------------------|-------------------|------------------|-----------------------|
-| ✅ bc-lifehash     | 0.1.0   | ✅ BCLifeHash     | ✅ bclifehash     | ✅ bc-lifehash     | ✅ bc-lifehash     | ✅ BCLifeHash     | ✅ @bc/lifehash        |
-| ✅ bc-rand         | 0.5.0   | ✅ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ✅ BCRand         | ✅ @bc/rand            |
-| ✅ bc-crypto       | 0.14.0  | ✅ BCCrypto       | ✅ bccrypto       | ✅ bc-crypto       | ✅ bc-crypto       | ✅ BCCrypto       | ✅ @bc/crypto          |
+| ✅ bc-lifehash     | 0.1.0   | ✅🎻 BCLifeHash   | ✅🎻 bclifehash   | ✅📖 bc-lifehash   | ✅🎻 bc-lifehash   | ✅📖 BCLifeHash   | ✅🎻 @bc/lifehash      |
+| ✅ bc-rand         | 0.5.0   | ✅🎻 BCRand       | ✅🎻 bcrand       | ✅🎻 bc-rand       | ✅🎻 bc-rand       | ✅🎻 BCRand       | ✅🎻 @bc/rand          |
+| ✅ bc-crypto       | 0.14.0  | ✅🎻 BCCrypto     | ✅📖 bccrypto     | ✅🎻 bc-crypto     | ✅🎻 bc-crypto     | ✅📖 BCCrypto     | ✅📖 @bc/crypto        |
 | ⏳ bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bc/shamir          |
 | ⏳ dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bc/dcbor           |
 | ⏳ bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bc/tags            |

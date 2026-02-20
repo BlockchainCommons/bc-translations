@@ -83,13 +83,15 @@ Update the status in CLAUDE.md:
 - 🚧 if translation exists but has known gaps or failing tests
 - ✅ if translation is complete with all tests passing
 
+When marking ✅, also append the model marker emoji (see the Model Markers section of CLAUDE.md). For example, `✅🎻 BCRand` for a Claude Opus translation, `✅📖 BCRand` for a GPT Codex translation.
+
 Append a row to the top-level `LOG.md` table recording what was done:
 
 ```
 | <date> | <crate> | <version> | <language> | <package> | <model> | <task> |
 ```
 
-Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The language column is the target language name (e.g., `Go`, `C#`, `Python`). The package column is the target-language package name (e.g., `bcrand`, `BCRand`, `bc-rand`). The task column describes what was done (e.g., `Translation`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
+Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The model column includes the model marker emoji followed by the model name (e.g., `🎻 Claude Opus 4.6`, `📖 GPT 5.3 Codex`). The language column is the target language name (e.g., `Go`, `C#`, `Python`). The package column is the target-language package name (e.g., `bcrand`, `BCRand`, `bc-rand`). The task column describes what was done (e.g., `Translation`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
 
 Commit the result.
 
