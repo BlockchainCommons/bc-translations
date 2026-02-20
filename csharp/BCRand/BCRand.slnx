@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BCRand.Tests/BCRand.Tests.csproj" />
+  <Project Path="BCRand/BCRand.csproj" />
+</Solution>
