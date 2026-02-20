@@ -1,6 +1,6 @@
 # Blockchains Common Cross-Language Translations
 
-The goal of this project is to provide a set of native translations of the reference Rust implementations of the Blockchains Common libraries. Each of the target languages has its own directory.
+The goal of this project is to provide a set of native translations of the reference Rust implementations of the Blockchains Common libraries. Each of the target languages has its own directory. The goal of each translation is to be as close as possible to the reference Rust implementation, including at *least* as much test coverage, while still being idiomatic in the target language.
 
 | rust/           | version | csharp/        | go/            | kotlin/         | python/         | swift/          | typescript/          |
 |-----------------|---------|----------------|----------------|-----------------|-----------------|-----------------|----------------------|
@@ -15,6 +15,29 @@ The goal of this project is to provide a set of native translations of the refer
 | known-values    | 0.15.4  | KnownValues    | knownvalues    | known-values    | known-values    | KnownValues     | @bcts/known-values   |
 | bc-envelope     | 0.43.0  | BCEnvelope     | bcenvelope     | bc-envelope     | bc-envelope     | BCEnvelope      | @bcts/envelope       |
 | provenance-mark | 0.23.0  | ProvenanceMark | provenancemark | provenance-mark | provenance-mark | ProvenanceMark  | @bcts/provenance-mark|
+
+## Internal Dependencies
+
+These are the dependencies between the crates in this project. Optional dependencies are marked with `?`. The crates are listed in topological order (a valid build order).
+
+```
+bc-rand         → (none)
+dcbor           → (none)
+bc-crypto       → bc-rand
+bc-tags         → dcbor
+bc-ur           → dcbor
+bc-shamir       → bc-rand, bc-crypto
+sskr            → bc-rand, bc-shamir
+bc-components   → bc-rand, bc-crypto, dcbor, bc-tags, bc-ur, sskr
+known-values    → dcbor, bc-components
+bc-envelope     → bc-rand, bc-crypto, dcbor, bc-ur, bc-components, known-values?
+provenance-mark → bc-rand, dcbor, bc-tags, bc-ur, bc-envelope?
+```
+
+There are two independent dependency trees that merge at `bc-components`:
+
+- **Crypto tree:** bc-rand → bc-crypto → bc-shamir → sskr
+- **CBOR tree:** dcbor → bc-tags, bc-ur
 
 ## Package Search Indexes
 
