@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BCCrypto.Tests/BCCrypto.Tests.csproj" />
+  <Project Path="BCCrypto/BCCrypto.csproj" />
+</Solution>
