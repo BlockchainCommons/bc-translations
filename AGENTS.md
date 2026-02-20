@@ -12,9 +12,9 @@ The following status markers are used to indicate the current state of each tran
 
 ## Translations
 
-| rust/           | version | ⏳ csharp/        | ⏳ go/            | 🚧 kotlin/         | 🚧 python/         | ⏳ swift/         | ⏳ typescript/           |
+| rust/           | version | ⏳ csharp/        | 🚧 go/            | 🚧 kotlin/         | 🚧 python/         | ⏳ swift/         | ⏳ typescript/           |
 |-----------------|---------|------------------|------------------|-------------------|-------------------|------------------|-------------------------|
-| bc-rand         | 0.5.0   | ⏳ BCRand         | ⏳ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ⏳ BCRand         | ⏳ @bcts/rand            |
+| bc-rand         | 0.5.0   | ⏳ BCRand         | ✅ bcrand         | ✅ bc-rand         | ✅ bc-rand         | ⏳ BCRand         | ⏳ @bcts/rand            |
 | bc-crypto       | 0.14.0  | ⏳ BCCrypto       | ⏳ bccrypto       | ⏳ bc-crypto       | ⏳ bc-crypto       | ⏳ BCCrypto       | ⏳ @bcts/crypto          |
 | bc-shamir       | 0.13.0  | ⏳ BCShamir       | ⏳ bcshamir       | ⏳ bc-shamir       | ⏳ bc-shamir       | ⏳ BCShamir       | ⏳ @bcts/shamir          |
 | dcbor           | 0.25.1  | ⏳ DCbor          | ⏳ dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bcts/dcbor           |
