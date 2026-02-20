@@ -65,5 +65,14 @@ Update the status in CLAUDE.md:
 
 Commit the result.
 
-### Step 6: Next
+### Step 6: Capture Lessons (Rule One)
+Before reporting results, apply Rule One: review what went wrong or was unexpected during the session, and record lessons learned in the auto memory files. Check for:
+- Build/toolchain surprises (wrong JDK version, missing deps, etc.)
+- Language-specific gotchas discovered during translation
+- Fluency patterns that should be done right the first time next time
+- Test vector or cross-language compatibility issues
+
+Update the relevant `memory/<lang>.md` file and `memory/translation-lessons.md`. Create a new language memory file if this is the first translation for that language.
+
+### Step 7: Next
 Report what was completed and suggest the next eligible target.
