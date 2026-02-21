@@ -244,3 +244,26 @@ COMPLETED
 - API coverage unchanged: 60/83 key manifest targets
 - Test coverage improved from 44/86 to 45/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (steady progress; remaining default-feature parity is still substantial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity additions across encode, conversion, and tag behavior
+- Translating remaining medium-sized vector sets that do not require major API redesign
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added additional encode float-boundary vectors and date encode vector in `encode_test.go`
+- Added tag behavior parity tests in `tag_parity_test.go`
+- Added reflective conversion and set-validation parity tests in `conversion_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (49 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after the latest encode/conversion/tag parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect expanded conversion and tag parity coverage
+- API coverage unchanged: 60/83 key manifest targets
+- Test coverage improved from 45/86 to 49/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (coverage now above 57%; remaining gaps are mostly large-format fidelity and residual API surface)

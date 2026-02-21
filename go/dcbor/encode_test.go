@@ -334,6 +334,27 @@ func TestEncodeAdditionalFloatBoundaryVectors(t *testing.T) {
 		"1.7976931348623157e308",
 		"fb7fefffffffffffff",
 	)
+	assertEncodedFromAny(
+		t,
+		-9223372036854777856.0,
+		"negative(-9223372036854777856)",
+		"-9223372036854777856",
+		"3b80000000000007ff",
+	)
+	assertEncodedFromAny(
+		t,
+		-18446744073709549568.0,
+		"negative(-18446744073709549568)",
+		"-18446744073709549568",
+		"3bfffffffffffff7ff",
+	)
+	assertEncodedFromAny(
+		t,
+		-18446742974197924000.0,
+		"negative(-18446742974197923840)",
+		"-18446742974197923840",
+		"3bfffffeffffffffff",
+	)
 }
 
 func TestEncodeDecodeNaNAndInfinityCanonicalization(t *testing.T) {
@@ -453,4 +474,12 @@ func TestEncodeDateUsesRegisteredTagName(t *testing.T) {
 	if got, want := fractionalDate.String(), "1970-01-01"; got != want {
 		t.Fatalf("date string mismatch: got %q want %q", got, want)
 	}
+
+	assertEncodedCBOR(
+		t,
+		DateFromTimestamp(1675854714.0).TaggedCBOR(),
+		"tagged(date, unsigned(1675854714))",
+		"date(1675854714)",
+		"c11a63e3837a",
+	)
 }

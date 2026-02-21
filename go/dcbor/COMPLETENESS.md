@@ -39,14 +39,15 @@
 
 ### Implemented in Go
 
-- 45 tests total across:
+- 49 tests total across:
   - core scalar encode/decode
-  - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors)
+  - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
   - canonical NaN/Infinity encode+decode behavior
   - non-canonical numeric and non-NFC string rejection paths
   - translated `format.rs` parity checks for display/debug/diagnostic/date formatting (including tagged and positive-date vectors)
+  - tag semantics and expected-tag extraction parity checks
   - map ordering/misorder validation
   - expected-text-output-rubric-style whole-text diagnostic assertion
   - date tag round-trip
@@ -68,7 +69,7 @@
 
 Applicable Rust behavior tests for parity target (excluding Rust metadata checks): 86
 
-Current translated tests: 45/86 (52.3%)
+Current translated tests: 49/86 (57.0%)
 
 ## Derive/Protocol Coverage
 
@@ -83,7 +84,7 @@ Current translated tests: 45/86 (52.3%)
 ## Completeness Summary
 
 - API Coverage: 60/83 key manifest items (72.3%)
-- Test Coverage: 45/86 applicable behavior tests (52.3%)
+- Test Coverage: 49/86 applicable behavior tests (57.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
 - Docs parity: partial
@@ -94,5 +95,5 @@ Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
 2. Bring diagnostic and annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Expand translated tests from 45 to near-complete default-feature parity.
+3. Expand translated tests from 49 to near-complete default-feature parity.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.

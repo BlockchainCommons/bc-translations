@@ -184,3 +184,49 @@ func TestNumericOutOfRangeConversions(t *testing.T) {
 		t.Fatalf("expected ErrOutOfRange for large negative->int64, got %v", err)
 	}
 }
+
+func TestReflectiveFromAnyConversions(t *testing.T) {
+	cborArray, err := FromAny([]int{1, 2, 3})
+	if err != nil {
+		t.Fatalf("FromAny []int failed: %v", err)
+	}
+	if got, want := cborArray.DiagnosticFlat(), "[1, 2, 3]"; got != want {
+		t.Fatalf("[]int conversion mismatch: got %q want %q", got, want)
+	}
+
+	cborMap, err := FromAny(map[string]int{"b": 2, "a": 1})
+	if err != nil {
+		t.Fatalf("FromAny map[string]int failed: %v", err)
+	}
+	if got, want := cborMap.DiagnosticFlat(), `{"a": 1, "b": 2}`; got != want {
+		t.Fatalf("map conversion mismatch: got %q want %q", got, want)
+	}
+
+	cborNested, err := FromAny(map[string]any{
+		"name":  "Alice",
+		"roles": []string{"admin", "operator"},
+	})
+	if err != nil {
+		t.Fatalf("FromAny nested map failed: %v", err)
+	}
+	if got := cborNested.DiagnosticFlat(); got == "" {
+		t.Fatalf("expected non-empty nested conversion diagnostic")
+	}
+}
+
+func TestSetFromVecDeterminismAndValidation(t *testing.T) {
+	set := SetFromVec([]CBOR{MustFromAny(2), MustFromAny(1), MustFromAny(3)})
+	if got, want := NewCBORArray(set.AsVec()).DiagnosticFlat(), "[1, 2, 3]"; got != want {
+		t.Fatalf("SetFromVec ordering mismatch: got %q want %q", got, want)
+	}
+
+	_, err := TrySetFromVec([]CBOR{MustFromAny(2), MustFromAny(1)})
+	if !errors.Is(err, ErrMisorderedMapKey) {
+		t.Fatalf("expected ErrMisorderedMapKey from TrySetFromVec, got %v", err)
+	}
+
+	_, err = TrySetFromVec([]CBOR{MustFromAny(1), MustFromAny(1)})
+	if !errors.Is(err, ErrDuplicateMapKey) {
+		t.Fatalf("expected ErrDuplicateMapKey from TrySetFromVec, got %v", err)
+	}
+}
