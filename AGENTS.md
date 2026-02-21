@@ -128,6 +128,16 @@ COMPLETED
 
 An entry with STARTED but no corresponding COMPLETED means that stage was interrupted and should be resumed.
 
+### Root Activity Log
+
+In addition to per-target logs, append a row to the root `LOG.md` table for any substantial translation activity that changes status or code quality outcomes.
+
+- Always log full translation completions with task `Translation`.
+- Always log Stage 4 fluency review work (including reruns requested after completion) with task text beginning `Fluency critique`.
+- Follow the root `LOG.md` table format exactly:
+  `| <date> | <crate> | <version> | <language> | <package> | <model> | <task> |`
+- Use concrete task text that distinguishes reruns (example: `Fluency critique (Stage 4 rerun + doc fixes)`).
+
 ### Key Principles
 
 - **Translate, don't rewrite.** Stay close to the Rust structure. Faithful translation, not reimagination.

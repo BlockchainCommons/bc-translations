@@ -9,3 +9,4 @@
 - In this parallel monorepo, refresh the exact `AGENTS.md` row immediately before writing final status changes to avoid clobbering concurrent updates from other agents.
 - For Go targets, lock `GOTOOLCHAIN=local` during `go mod tidy` and tests when the repo baseline is Go 1.21; otherwise dependency resolution can silently bump the module `go` directive.
 - For dCBOR translations, remember map-key deterministic ordering is by encoded CBOR bytes (including major-type/length header), which can differ from lexical source-key order and should be asserted explicitly in tests.
+- For any Stage 4 fluency review pass (including reruns on completed targets), always append a root `LOG.md` table row with task text starting `Fluency critique`, not just the per-target `<lang>/<package>/LOG.md` entries.

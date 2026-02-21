@@ -135,6 +135,8 @@ Append a row to the top-level `LOG.md` table recording what was done:
 
 Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The model column includes the model marker emoji followed by the model name (e.g., `🎻 Claude Opus 4.6`, `📖 GPT 5.3 Codex`). The language column is the target language name (e.g., `Go`, `C#`, `Python`). The package column is the target-language package name (e.g., `bcrand`, `BCRand`, `bc-rand`). The task column describes what was done (e.g., `Translation`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
 
+When Step 4 runs as a standalone rerun or a post-completion revision, still append a root `LOG.md` row using the same 7-column format, with task text beginning `Fluency critique` (for example: `Fluency critique (Stage 4 rerun + API docs)`).
+
 Commit the result.
 
 ### Step 6: Capture Lessons (Rule One)

@@ -106,3 +106,9 @@ After producing the review, apply the fixes directly. Then re-run the tests to v
 ### Log
 
 Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include the number of issues found, number fixed, and final verdict. See the Orchestration section of CLAUDE.md for the log format.
+
+Also append a row to the root `LOG.md` table for every fluency critique pass (including reruns after a translation was already marked complete). Use the repository's current table format:
+
+`| <date> | <crate> | <version> | <language> | <package> | <model> | <task> |`
+
+The task must begin with `Fluency critique` and should summarize scope (for example: `Fluency critique (Stage 4 rerun + naming fixes)`).
