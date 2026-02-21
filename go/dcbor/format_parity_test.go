@@ -1,9 +1,6 @@
 package dcbor
 
-import (
-	"strings"
-	"testing"
-)
+import "testing"
 
 func runFormatCheck(
 	t *testing.T,
@@ -116,7 +113,7 @@ func TestFormatUnsignedAndNegativeParity(t *testing.T) {
 		"65546",
 		"65546",
 		"1a0001000a",
-		"1a 00 01 00 0a  # unsigned(65546)",
+		"1a0001000a  # unsigned(65546)",
 	)
 	runFormatCheck(
 		t,
@@ -129,7 +126,7 @@ func TestFormatUnsignedAndNegativeParity(t *testing.T) {
 		"-1000000",
 		"-1000000",
 		"3a000f423f",
-		"3a 00 0f 42 3f  # negative(-1000000)",
+		"3a000f423f  # negative(-1000000)",
 	)
 }
 
@@ -171,7 +168,7 @@ func TestFormatUnsignedAdditionalParity(t *testing.T) {
 		"1000000000",
 		"1000000000",
 		"1a3b9aca00",
-		"1a 3b 9a ca 00  # unsigned(1000000000)",
+		"1a3b9aca00  # unsigned(1000000000)",
 	)
 }
 
@@ -200,7 +197,7 @@ func TestFormatNegativeAdditionalParity(t *testing.T) {
 		"-1000",
 		"-1000",
 		"3903e7",
-		"39 03 e7  # negative(-1000)",
+		"3903e7  # negative(-1000)",
 	)
 }
 
@@ -216,7 +213,7 @@ func TestFormatSimpleArrayParity(t *testing.T) {
 		"[1, 2, 3]",
 		"[1, 2, 3]",
 		"83010203",
-		`83  # array(3)
+		`83      # array(3)
     01  # unsigned(1)
     02  # unsigned(2)
     03  # unsigned(3)`,
@@ -239,12 +236,12 @@ func TestFormatSimpleMapParity(t *testing.T) {
 		`{1: "A", 2: "B"}`,
 		`{1: "A", 2: "B"}`,
 		"a2016141026142",
-		`a2  # map(2)
-    01  # unsigned(1)
-    61  # text(1)
+		`a2          # map(2)
+    01      # unsigned(1)
+    61      # text(1)
         41  # "A"
-    02  # unsigned(2)
-    61  # text(1)
+    02      # unsigned(2)
+    61      # text(1)
         42  # "B"`,
 	)
 }
@@ -261,8 +258,8 @@ func TestFormatStringAndNestedArrayParity(t *testing.T) {
 		`"Test"`,
 		`"Test"`,
 		"6454657374",
-		`64        # text(4)
-    54657374  # "Test"`,
+		`64              # text(4)
+    54657374    # "Test"`,
 	)
 
 	a := arrayFromAny(1, 2, 3)
@@ -285,17 +282,17 @@ func TestFormatStringAndNestedArrayParity(t *testing.T) {
 		`[[1, 2, 3], ["A", "B", "C"]]`,
 		`[[1, 2, 3], ["A", "B", "C"]]`,
 		"828301020383614161426143",
-		`82  # array(2)
-    83  # array(3)
-        01  # unsigned(1)
-        02  # unsigned(2)
-        03  # unsigned(3)
-    83  # array(3)
-        61  # text(1)
+		`82              # array(2)
+    83          # array(3)
+        01      # unsigned(1)
+        02      # unsigned(2)
+        03      # unsigned(3)
+    83          # array(3)
+        61      # text(1)
             41  # "A"
-        61  # text(1)
+        61      # text(1)
             42  # "B"
-        61  # text(1)
+        61      # text(1)
             43  # "C"`,
 	)
 
@@ -310,8 +307,8 @@ func TestFormatStringAndNestedArrayParity(t *testing.T) {
 		`100("Hello")`,
 		`100("Hello")`,
 		"d8646548656c6c6f",
-		`d8 64       # tag(100)
-    65          # text(5)
+		`d8 64               # tag(100)
+    65              # text(5)
         48656c6c6f  # "Hello"`,
 	)
 }
@@ -349,27 +346,27 @@ func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
 		`{10: 1, 100: 2, -1: 3, "z": 4, "aa": 5, [100]: 6, [-1]: 7, false: 8}`,
 		`{10: 1, 100: 2, -1: 3, "z": 4, "aa": 5, [100]: 6, [-1]: 7, false: 8}`,
 		"a80a011864022003617a046261610581186406812007f408",
-		`a8     # map(8)
-    0a     # unsigned(10)
-    01     # unsigned(1)
-    18 64  # unsigned(100)
-    02     # unsigned(2)
-    20     # negative(-1)
-    03     # unsigned(3)
-    61     # text(1)
-        7a     # "z"
-    04     # unsigned(4)
-    62     # text(2)
-        6161   # "aa"
-    05     # unsigned(5)
-    81     # array(1)
-        18 64  # unsigned(100)
-    06     # unsigned(6)
-    81     # array(1)
-        20     # negative(-1)
-    07     # unsigned(7)
-    f4     # false
-    08     # unsigned(8)`,
+		`a8              # map(8)
+    0a          # unsigned(10)
+    01          # unsigned(1)
+    1864        # unsigned(100)
+    02          # unsigned(2)
+    20          # negative(-1)
+    03          # unsigned(3)
+    61          # text(1)
+        7a      # "z"
+    04          # unsigned(4)
+    62          # text(2)
+        6161    # "aa"
+    05          # unsigned(5)
+    81          # array(1)
+        1864    # unsigned(100)
+    06          # unsigned(6)
+    81          # array(1)
+        20      # negative(-1)
+    07          # unsigned(7)
+    f4          # false
+    08          # unsigned(8)`,
 	)
 
 	RegisterTags()
@@ -385,8 +382,8 @@ func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
 		"1(-100)",
 		"1969-12-31T23:58:20Z",
 		"c13863",
-		`c1     # tag(1) date
-    38 63  # negative(-100)`,
+		`c1          # tag(1) date
+    3863    # negative(-100)`,
 	)
 	runFormatCheck(
 		t,
@@ -400,7 +397,7 @@ func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
 		"2022-03-21T18:24:31Z",
 		"c11a6238c2df",
 		`c1              # tag(1) date
-    1a 62 38 c2 df  # unsigned(1647887071)`,
+    1a6238c2df  # unsigned(1647887071)`,
 	)
 	runFormatCheck(
 		t,
@@ -413,8 +410,8 @@ func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
 		"1(0.5)",
 		"1970-01-01",
 		"c1f93800",
-		`c1        # tag(1) date
-    f9 38 00  # 0.5`,
+		`c1          # tag(1) date
+    f93800  # 0.5`,
 	)
 }
 
@@ -448,21 +445,23 @@ func TestFormatComplexStructuresParity(t *testing.T) {
 		structureDisplay,
 		structureDisplay,
 		structureHex,
-		"",
+		`d8 31                                   # tag(49)
+    83                                  # array(3)
+        01                              # unsigned(1)
+        5829                            # bytes(41)
+            536f6d65206d7973746572696573206172656e2774206d65616e7420746f20626520736f6c7665642e # "Some mysteries aren't meant to be solved."
+        82                              # array(2)
+            d9 02c3                     # tag(707)
+                82                      # array(2)
+                    01                  # unsigned(1)
+                    5840                # bytes(64)
+                        2b9238e19eafbc154b49ec89edd4e0fb1368e97332c6913b4beb637d1875824f3e43bd7fb0c41fb574f08ce00247413d3ce2d9466e0ccfa4a89b92504982710a
+            d9 02c3                     # tag(707)
+                82                      # array(2)
+                    01                  # unsigned(1)
+                    5840                # bytes(64)
+                        0f9c7af36804ffe5313c00115e5a31aa56814abaa77ff301da53d48613496e9c51a98b36d55f6fb5634fdb0123910cfa4904f1c60523df41013dc3749b377900`,
 	)
-	structureHexAnnotated := structure.HexAnnotated()
-	for _, fragment := range []string{
-		"d8 31",
-		"# tag(49)",
-		"58 29",
-		`"Some mysteries aren't meant to be solved."`,
-		"d9 02 c3",
-		"# bytes(64)",
-	} {
-		if !strings.Contains(structureHexAnnotated, fragment) {
-			t.Fatalf("format_structure hex_annotated missing fragment %q", fragment)
-		}
-	}
 
 	structure2Hex := "d9012ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e"
 	structure2, err := TryFromHex(structure2Hex)
@@ -497,19 +496,19 @@ func TestFormatComplexStructuresParity(t *testing.T) {
 		structure2Display,
 		structure2Summary,
 		structure2Hex,
-		"",
+		`d9 012c                                 # tag(300)
+    a4                                  # map(4)
+        01                              # unsigned(1)
+        50                              # bytes(16)
+            59f2293a5bce7d4de59e71b4207ac5d2
+        02                              # unsigned(2)
+        c1                              # tag(1) date
+            1a60359700                  # unsigned(1614124800)
+        03                              # unsigned(3)
+        75                              # text(21)
+            4461726b20507572706c652041717561204c6f7665 # "Dark Purple Aqua Love"
+        04                              # unsigned(4)
+        78 7b                           # text(123)
+            4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e # "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."`,
 	)
-	structure2HexAnnotated := structure2.HexAnnotated()
-	for _, fragment := range []string{
-		"d9 01 2c",
-		"# tag(300)",
-		"c1",
-		"# tag(1) date",
-		"# text(123)",
-		`"Dark Purple Aqua Love"`,
-	} {
-		if !strings.Contains(structure2HexAnnotated, fragment) {
-			t.Fatalf("format_structure_2 hex_annotated missing fragment %q", fragment)
-		}
-	}
 }

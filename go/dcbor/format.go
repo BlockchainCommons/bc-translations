@@ -222,21 +222,21 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 	case CBORKindUnsigned:
 		return []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorUnsigned, c.value.(uint64))),
+			hexText: hex.EncodeToString(encodeHead(majorUnsigned, c.value.(uint64))),
 			comment: fmt.Sprintf("unsigned(%d)", c.value.(uint64)),
 		}}
 	case CBORKindNegative:
 		encodedMagnitude := c.value.(uint64)
 		return []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorNegative, encodedMagnitude)),
+			hexText: hex.EncodeToString(encodeHead(majorNegative, encodedMagnitude)),
 			comment: fmt.Sprintf("negative(%s)", formatNegativeDisplay(encodedMagnitude)),
 		}}
 	case CBORKindByteString:
 		payload := c.value.(ByteString).AsRef()
 		lines := []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorBytes, uint64(len(payload)))),
+			hexText: hex.EncodeToString(encodeHead(majorBytes, uint64(len(payload)))),
 			comment: fmt.Sprintf("bytes(%d)", len(payload)),
 		}}
 		if len(payload) > 0 {
@@ -254,9 +254,10 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 	case CBORKindText:
 		text := c.value.(string)
 		payload := []byte(text)
+		headerData := encodeHead(majorText, uint64(len(payload)))
 		lines := []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorText, uint64(len(payload)))),
+			hexText: splitHeaderHex(headerData),
 			comment: fmt.Sprintf("text(%d)", len(payload)),
 		}}
 		if len(payload) > 0 {
@@ -269,9 +270,10 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 		return lines
 	case CBORKindArray:
 		items := c.value.([]CBOR)
+		headerData := encodeHead(majorArray, uint64(len(items)))
 		lines := []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorArray, uint64(len(items)))),
+			hexText: splitHeaderHex(headerData),
 			comment: fmt.Sprintf("array(%d)", len(items)),
 		}}
 		for _, item := range items {
@@ -281,9 +283,10 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 	case CBORKindMap:
 		m := c.value.(Map)
 		entries := m.AsEntries()
+		headerData := encodeHead(majorMap, uint64(len(entries)))
 		lines := []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorMap, uint64(len(entries)))),
+			hexText: splitHeaderHex(headerData),
 			comment: fmt.Sprintf("map(%d)", len(entries)),
 		}}
 		for _, entry := range entries {
@@ -297,9 +300,10 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 		if name, ok := lookupTagName(opts.tags, tagged.Tag); ok {
 			tagComment = fmt.Sprintf("tag(%d) %s", tagged.Tag.Value(), name)
 		}
+		headerData := encodeHead(majorTagged, tagged.Tag.Value())
 		lines := []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(encodeHead(majorTagged, tagged.Tag.Value())),
+			hexText: splitHeaderHex(headerData),
 			comment: tagComment,
 		}}
 		lines = append(lines, tagged.Value.annotatedHexLines(level+1, opts)...)
@@ -316,7 +320,7 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 		}
 		return []annotatedHexLine{{
 			indent:  level,
-			hexText: hexWithSpaces(simpleData),
+			hexText: hex.EncodeToString(simpleData),
 			comment: simpleHexComment(s),
 		}}
 	default:
@@ -342,15 +346,14 @@ func simpleHexComment(simple Simple) string {
 	}
 }
 
-func hexWithSpaces(data []byte) string {
+func splitHeaderHex(data []byte) string {
 	if len(data) == 0 {
 		return ""
 	}
-	parts := make([]string, len(data))
-	for i, b := range data {
-		parts[i] = fmt.Sprintf("%02x", b)
+	if len(data) == 1 {
+		return fmt.Sprintf("%02x", data[0])
 	}
-	return strings.Join(parts, " ")
+	return fmt.Sprintf("%02x %s", data[0], hex.EncodeToString(data[1:]))
 }
 
 func renderAnnotatedHex(lines []annotatedHexLine) string {
@@ -358,28 +361,31 @@ func renderAnnotatedHex(lines []annotatedHexLine) string {
 		return ""
 	}
 
-	maxHexLen := 0
+	noteColumn := 0
 	for _, line := range lines {
-		if len(line.hexText) > maxHexLen {
-			maxHexLen = len(line.hexText)
+		column1Len := len(strings.Repeat("    ", line.indent)) + len(line.hexText)
+		if column1Len > noteColumn {
+			noteColumn = column1Len
 		}
 	}
-	// Extremely long payload lines should not force huge comment columns.
-	if maxHexLen > 32 {
-		maxHexLen = 32
-	}
+	// Match Rust layout behavior: round up to nearest multiple of 4, then minus 1.
+	noteColumn = ((noteColumn + 4) &^ 3) - 1
 
 	var out strings.Builder
 	for i, line := range lines {
 		if i > 0 {
 			out.WriteByte('\n')
 		}
-		out.WriteString(strings.Repeat("    ", line.indent))
-		out.WriteString(line.hexText)
+		column1 := strings.Repeat("    ", line.indent) + line.hexText
+		out.WriteString(column1)
 		if line.comment != "" {
-			padding := maxHexLen - len(line.hexText) + 2
-			if padding < 2 {
-				padding = 2
+			targetColumn := noteColumn
+			if targetColumn > 39 {
+				targetColumn = 39
+			}
+			padding := targetColumn - len(column1) + 1
+			if padding < 1 {
+				padding = 1
 			}
 			out.WriteString(strings.Repeat(" ", padding))
 			out.WriteString("# ")

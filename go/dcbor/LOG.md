@@ -894,3 +894,29 @@ COMPLETED
 - API coverage improved from 73/83 to 74/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (macro/trait surface improved; format fidelity and remaining API gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing format-fidelity parity work by aligning Go `hex_annotated` rendering with Rust dump grouping/alignment behavior
+- Replacing fragment-only checks for large structures with exact whole-text expected-output assertions
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Updated `format.go` annotated-hex rendering to mirror Rust dump behavior:
+  - contiguous numeric/byte-string/simple header hex where applicable
+  - split-first-byte grouping for text/tag/array/map varint headers
+  - Rust-style note-column alignment calculation/padding logic
+- Updated `format_parity_test.go` expectations to Rust-style grouped output
+- Upgraded both complex structure `hex_annotated` checks from fragment assertions to full exact-text assertions
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (101 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after annotated-hex format-fidelity alignment and exact large-structure assertions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to mark complex `hex_annotated` parity milestone as complete for translated vectors
+- API coverage improved from 74/83 to 75/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (major format-fidelity gap closed; remaining API/trait/docs edge gaps persist)

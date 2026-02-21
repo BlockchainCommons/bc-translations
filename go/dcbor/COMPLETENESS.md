@@ -37,8 +37,7 @@
 - ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ✅ Added global tag-store helper APIs (`WithTags`, `WithTagsMut`) as macro-style equivalents for Rust tag-store access patterns
-- ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
-- ⚠️ Complex structure `hex_annotated` checks now validate critical fragments, but exact full-text layout/comment alignment still differs from Rust
+- ✅ `hex_annotated` rendering now follows Rust-like grouping/alignment rules, with exact whole-text parity assertions for the two translated large-structure vectors
 - ⚠️ Trait/protocol equivalence is partial: helper defaults now cover tagged encode/decode data paths and `ToCBORData`, but full Rust trait-level parity is still incomplete
 - ⚠️ Some conversion APIs and formatting edge cases remain below full Rust-equivalent parity
 
@@ -68,7 +67,7 @@
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
   - canonical NaN/Infinity encode+decode behavior
   - non-canonical numeric and non-NFC string rejection paths
-  - translated `format.rs` parity checks for display/debug/diagnostic/date formatting, including additional unsigned/negative/simple-array/simple-map vectors plus two large structure vectors
+  - translated `format.rs` parity checks for display/debug/diagnostic/date formatting, including additional unsigned/negative/simple-array/simple-map vectors plus two large structure vectors with exact whole-text `hex_annotated` assertions
   - tag semantics and expected-tag extraction parity checks
   - map ordering/misorder validation
   - expected-text-output-rubric-style whole-text diagnostic assertion
@@ -113,7 +112,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 74/83 key manifest items (89.2%)
+- API Coverage: 75/83 key manifest items (90.4%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
@@ -124,5 +123,4 @@ VERDICT: INCOMPLETE
 Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity), now focused on residual Rust trait/macro-driven surfaces and remaining edge helpers.
-2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Continue closing remaining API-surface/trait parity gaps and improving exact annotated-format fidelity.
+2. Continue closing remaining API-surface/trait parity gaps and residual formatting edge cases.
