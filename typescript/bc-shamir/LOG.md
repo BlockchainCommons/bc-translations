@@ -53,3 +53,15 @@ COMPLETED
 - [naming] Changed snake_case comment `secret_length` to camelCase `secretLength`
 - All 4 tests pass after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing `@bc/shamir` public API for legacy/compatibility symbols and transitional wrappers
+- Re-running build/tests as part of cross-target TypeScript fluency review
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Issues found: 0
+- No legacy/compatibility symbols detected in `@bc/shamir` public API
+- Verification: `npm run build` and `npm test` pass (4/4 tests)
+- VERDICT: IDIOMATIC

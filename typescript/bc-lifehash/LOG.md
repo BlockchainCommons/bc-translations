@@ -49,3 +49,15 @@ COMPLETED
 - Verified PNG generation tests are default-on (`npm test` runs `tests/generate-pngs.test.ts`: 5 passing tests)
 - Verification: 41/41 tests passing
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Fluency Review
+STARTED
+- Auditing public API for legacy/compatibility symbols and transitional wrappers
+- Re-verifying package quality gates for cross-target TypeScript review
+
+## 2026-02-21 — Stage 4: Fluency Review
+COMPLETED
+- Issues found: 0
+- No legacy/compatibility symbols detected in `@bc/lifehash` public API
+- Verification: `npm run build` and `npm test` pass (41/41 tests)
+- VERDICT: IDIOMATIC

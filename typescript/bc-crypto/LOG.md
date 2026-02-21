@@ -45,3 +45,15 @@ COMPLETED
 - No additional fluency fixes required after review
 - Key metrics: 0 new issues, 44/44 tests still passing
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing `@bc/crypto` public API for legacy/compatibility symbols and transitional wrappers
+- Re-running build/tests as part of cross-target TypeScript fluency review
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Issues found: 0
+- No legacy/compatibility symbols detected in `@bc/crypto` public API
+- Verification: `npm run build` and `npm test` pass (44/44 tests)
+- VERDICT: IDIOMATIC

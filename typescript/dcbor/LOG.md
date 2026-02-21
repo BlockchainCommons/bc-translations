@@ -69,3 +69,16 @@ COMPLETED
 COMPLETED
 - Suggested next eligible TypeScript target: `bc-tags`
 - Also eligible in same phase: `bc-ur`
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing `@bc/dcbor` public exports for legacy/compatibility symbols and wrappers
+- Preparing targeted API cleanup and full verification across extant TypeScript targets
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Issues found: 1
+- Issues fixed: 1/1
+- Removed compatibility-only exports and wrappers: `tryIntoText`, `tryIntoBool`, `tryIntoByteString`, `tryExpectedTaggedValue`, `asTaggedValue`, `asByteString`, `asCborArray`, `asCborMap`, and `CborArrayWrapper`
+- Verification: `npm run build` and `npm test` pass (211/211 tests)
+- VERDICT: IDIOMATIC

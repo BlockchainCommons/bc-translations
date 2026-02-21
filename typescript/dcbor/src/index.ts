@@ -116,6 +116,7 @@ export {
   isUnsigned,
   isNegative,
   isInteger,
+  isNumber,
   isBytes,
   isText,
   isArray,
@@ -153,10 +154,6 @@ export {
   expectBoolean,
   expectFloat,
   expectNumber,
-  // Aliases for envelope compatibility
-  expectText as tryIntoText,
-  expectBoolean as tryIntoBool,
-  expectBytes as tryIntoByteString,
 } from "./conveniences";
 
 // Convenience utilities - array operations
@@ -172,19 +169,7 @@ export {
   hasTag,
   getTaggedContent,
   expectTaggedContent,
-  // Alias for envelope compatibility
-  expectTaggedContent as tryExpectedTaggedValue,
 } from "./conveniences";
 
 // Extract native JavaScript value from CBOR
 export { extractCbor } from "./conveniences";
-
-// Envelope compatibility functions
-export {
-  asTaggedValue,
-  asByteString,
-  asCborArray,
-  type CborArrayWrapper,
-  asCborMap,
-  isNumber,
-} from "./conveniences";

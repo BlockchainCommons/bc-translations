@@ -50,3 +50,15 @@ COMPLETED
 - Key changes: makeFake→createFake, Error→RangeError, JSDoc on all public API
 - 8/8 tests passing after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing `@bc/rand` public API for legacy/compatibility symbols and transitional wrappers
+- Re-running build/tests as part of cross-target TypeScript fluency review
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Issues found: 0
+- No legacy/compatibility symbols detected in `@bc/rand` public API
+- Verification: `npm run build` and `npm test` pass (8/8 tests)
+- VERDICT: IDIOMATIC
