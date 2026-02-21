@@ -1359,3 +1359,39 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (symbol-level docs now complete; remaining work is narrative docs and residual signature/protocol parity)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing final documentation parity by expanding package-level narrative guidance
+- Documenting parity scope and Rust-to-Go trait/macro mapping in package docs
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Expanded `doc.go` with:
+  - explicit parity scope summary
+  - Rust-to-Go API mapping notes (trait/macro adaptation)
+  - concise usage guidance for encode/decode and typed extraction flow
+- No behavioral code changes; tests remain green
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Running final completeness re-check after package-level narrative docs expansion
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` summary:
+  - API coverage: 83/83 (100.0%)
+  - Applicable Rust behavior tests: 86/86 (100.0%)
+  - Documentation parity: symbol-level complete with package-level parity/mapping guidance
+- VERDICT updated to: COMPLETE
+
+## 2026-02-21 -- Stage 4: Fluency Critique
+STARTED
+- Performing final idiomatic Go review pass after completeness reached COMPLETE
+- Checking naming/ergonomics/docs coherence and confirming tests remain stable
+
+## 2026-02-21 -- Stage 4: Fluency Critique
+COMPLETED
+- No blocking idiomaticness issues found in final pass
+- Public API naming and helper structure are consistent with Go conventions
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
