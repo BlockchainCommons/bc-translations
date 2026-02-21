@@ -147,6 +147,14 @@ func TestConversionSetParity(t *testing.T) {
 	if _, ok := decodedSet[50]; !ok {
 		t.Fatalf("decoded set missing 50")
 	}
+
+	decodedSetSlice, err := DecodeSetSlice(cborSet, decodeInt)
+	if err != nil {
+		t.Fatalf("DecodeSetSlice failed: %v", err)
+	}
+	if len(decodedSetSlice) != 3 || decodedSetSlice[0] != 1 || decodedSetSlice[1] != 25 || decodedSetSlice[2] != 50 {
+		t.Fatalf("decoded set slice mismatch: got %#v", decodedSetSlice)
+	}
 }
 
 func TestUsageVectorsParity(t *testing.T) {

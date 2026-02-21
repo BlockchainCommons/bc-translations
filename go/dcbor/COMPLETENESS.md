@@ -32,6 +32,7 @@
 - ✅ `TryIntoFloat64` now follows Rust cast-back exactness semantics for integer CBOR (including large integer edge cases)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
 - ✅ Added map value extraction helpers with typed decode flow (`DecodeMapValue`, `ExtractMapValue`, `MustExtractMapValue`) to mirror Rust-style typed `Map` access ergonomics
+- ✅ Added set typed extraction helper (`DecodeSetSlice`) for ordered typed set conversion parity
 - ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `TrySimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
 - ✅ Added decode helpers for simple/tagged extraction parity (`DecodeSimpleValue`, `DecodeTaggedValue`, `DecodeExpectedTaggedValue`)
 - ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
@@ -71,6 +72,7 @@
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
   - expanded map API parity checks for typed decode/extract helper behavior
   - set conversion helper parity checks (`TryIntoSet`/`TrySet`/`IntoSet`) including misordered/duplicate rejection
+  - set typed extraction helper parity checks (`DecodeSetSlice`)
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
   - canonical NaN/Infinity encode+decode behavior
@@ -122,7 +124,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 80/83 key manifest items (96.4%)
+- API Coverage: 81/83 key manifest items (97.6%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

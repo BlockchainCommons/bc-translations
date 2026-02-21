@@ -1046,3 +1046,25 @@ COMPLETED
 - API coverage improved from 79/83 to 80/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (set conversion surface improved; residual API/trait/docs gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing set conversion parity with typed ordered extraction from CBOR sets
+- Adding a decode helper for typed set->slice conversion semantics
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `DecodeSetSlice` in `conversion.go` for typed ordered extraction from deterministic set values
+- Expanded `TestConversionSetParity` in `conversion_parity_test.go` to cover ordered set-slice decoding
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (105 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after `DecodeSetSlice` addition
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect typed set extraction helper parity
+- API coverage improved from 80/83 to 81/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (set conversion parity improved; residual API/trait/docs gaps remain)

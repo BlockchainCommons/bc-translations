@@ -151,3 +151,20 @@ func DecodeSet[T comparable](c CBOR, decodeItem CBORDecodeFunc[T]) (map[T]struct
 	}
 	return out, nil
 }
+
+func DecodeSetSlice[T any](c CBOR, decodeItem CBORDecodeFunc[T]) ([]T, error) {
+	set, err := c.TryIntoSet()
+	if err != nil {
+		return nil, err
+	}
+	values := set.AsVec()
+	out := make([]T, 0, len(values))
+	for _, value := range values {
+		decoded, err := decodeItem(value)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, decoded)
+	}
+	return out, nil
+}
