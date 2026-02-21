@@ -11,8 +11,8 @@ func Memzero[T any](s []T) {
 	runtime.KeepAlive(s)
 }
 
-// MemzeroVecVecU8 zeros each inner byte slice.
-func MemzeroVecVecU8(s [][]byte) {
+// MemzeroByteSlices zeros each inner byte slice.
+func MemzeroByteSlices(s [][]byte) {
 	for i := range s {
 		Memzero(s[i])
 	}

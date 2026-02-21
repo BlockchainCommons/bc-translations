@@ -8,10 +8,10 @@ const (
 	argon2IDThreads = 1
 )
 
-// Argon2ID computes Argon2id with Rust argon2 default parameters.
+// Argon2ID computes Argon2id with standard parameters (time=2, memory=19456 KiB, threads=1).
 func Argon2ID(pass, salt []byte, outputLen int) []byte {
 	if outputLen < 0 {
-		panic("argon2 failed")
+		panic("bccrypto: argon2id: output length must be non-negative")
 	}
 	return argon2.IDKey(
 		pass,

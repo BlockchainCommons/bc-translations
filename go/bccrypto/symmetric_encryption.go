@@ -3,9 +3,12 @@ package bccrypto
 import "golang.org/x/crypto/chacha20poly1305"
 
 const (
-	SymmetricKeySize   = 32
+	// SymmetricKeySize is the byte length of a ChaCha20-Poly1305 key.
+	SymmetricKeySize = 32
+	// SymmetricNonceSize is the byte length of a ChaCha20-Poly1305 nonce.
 	SymmetricNonceSize = 12
-	SymmetricAuthSize  = 16
+	// SymmetricAuthSize is the byte length of a Poly1305 authentication tag.
+	SymmetricAuthSize = 16
 )
 
 // AEADChaCha20Poly1305EncryptWithAAD encrypts plaintext and returns

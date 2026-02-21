@@ -13,31 +13,31 @@ type ed25519Vector struct {
 	signature string
 }
 
-func TestED25519Signing(t *testing.T) {
+func TestEd25519Signing(t *testing.T) {
 	message := []byte("Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.")
 
-	privateKeyBytes := bcrand.FakeRandomData(ED25519PrivateKeySize)
-	var privateKey [ED25519PrivateKeySize]byte
+	privateKeyBytes := bcrand.FakeRandomData(Ed25519PrivateKeySize)
+	var privateKey [Ed25519PrivateKeySize]byte
 	copy(privateKey[:], privateKeyBytes)
 	if privateKey != must32("7eb559bbbf6cce2632cf9f194aeb50943de7e1cbad54dcfab27a42759f5e2fed") {
 		t.Fatalf("private key = %x", privateKey)
 	}
 
-	publicKey := ED25519PublicKeyFromPrivateKey(privateKey)
+	publicKey := Ed25519PublicKeyFromPrivateKey(privateKey)
 	if publicKey != must32("76f863e1024d8ff6cd8ad56c434e01dbbf2999cfc2f132fc7f41ca19fed7a97c") {
 		t.Fatalf("public key = %x", publicKey)
 	}
 
-	signature := ED25519Sign(privateKey, message)
+	signature := Ed25519Sign(privateKey, message)
 	if signature != must64("647cc65243e8a61dc273242b13008994e4658a7e0bcbb1fd621b01dad2ddf7577901c4c4d4ea484ae5ca3172c4b8a75877bd7d5349a7055acdc023b04fcd0406") {
 		t.Fatalf("signature = %x", signature)
 	}
-	if !ED25519Verify(publicKey, message, signature) {
-		t.Fatalf("ED25519Verify returned false")
+	if !Ed25519Verify(publicKey, message, signature) {
+		t.Fatalf("Ed25519Verify returned false")
 	}
 }
 
-func TestED25519Vectors(t *testing.T) {
+func TestEd25519Vectors(t *testing.T) {
 	vectors := []ed25519Vector{
 		{
 			secretKey: "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
@@ -71,10 +71,10 @@ func TestED25519Vectors(t *testing.T) {
 		signature := must64(vector.signature)
 		message := mustHex(vector.message)
 
-		if got := ED25519PublicKeyFromPrivateKey(secretKey); got != publicKey {
+		if got := Ed25519PublicKeyFromPrivateKey(secretKey); got != publicKey {
 			t.Fatalf("public key mismatch\n got  %x\n want %x", got, publicKey)
 		}
-		if !ED25519Verify(publicKey, message, signature) {
+		if !Ed25519Verify(publicKey, message, signature) {
 			t.Fatalf("verify failed for vector public key %x", publicKey)
 		}
 	}

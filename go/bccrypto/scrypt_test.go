@@ -24,8 +24,8 @@ func TestScryptDifferentSalt(t *testing.T) {
 	}
 }
 
-func TestScryptOptBasic(t *testing.T) {
-	out := ScryptOpt([]byte("password"), []byte("salt"), 32, 15, 8, 1)
+func TestScryptWithParamsBasic(t *testing.T) {
+	out := ScryptWithParams([]byte("password"), []byte("salt"), 32, 15, 8, 1)
 	if len(out) != 32 {
 		t.Fatalf("len = %d, want 32", len(out))
 	}

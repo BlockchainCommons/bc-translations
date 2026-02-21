@@ -8,6 +8,7 @@ import (
 	bcrand "github.com/nickel-blockchaincommons/bcrand-go"
 )
 
+// SchnorrSignatureSize is the byte length of a BIP340 Schnorr signature.
 const SchnorrSignatureSize = 64
 
 func taggedHash(tag string, parts ...[]byte) [32]byte {
@@ -28,13 +29,13 @@ func taggedHash(tag string, parts ...[]byte) [32]byte {
 func parseXOnlyPublicKeyStrict(publicKey [SchnorrPublicKeySize]byte) *btcec.PublicKey {
 	var x btcec.FieldVal
 	if x.SetByteSlice(publicKey[:]) {
-		panic("32 bytes, serialized according to the spec")
+		panic("bccrypto: x-only public key x-coordinate overflows field")
 	}
 	x.Normalize()
 
 	var y btcec.FieldVal
 	if !btcec.DecompressY(&x, false, &y) {
-		panic("32 bytes, serialized according to the spec")
+		panic("bccrypto: x-only public key is not on the curve")
 	}
 	return btcec.NewPublicKey(&x, &y)
 }
@@ -68,7 +69,7 @@ func SchnorrSignWithAuxRand(
 ) [SchnorrSignatureSize]byte {
 	var d btcec.ModNScalar
 	if d.SetByteSlice(ecdsaPrivateKey[:]) || d.IsZero() {
-		panic("32 bytes, within curve order")
+		panic("bccrypto: private key must be non-zero and within curve order")
 	}
 
 	sk := btcec.PrivKeyFromScalar(&d)
@@ -92,7 +93,7 @@ func SchnorrSignWithAuxRand(
 	var k btcec.ModNScalar
 	k.SetByteSlice(nonceHash[:])
 	if k.IsZero() {
-		panic("schnorr signing failed")
+		panic("bccrypto: schnorr signing produced zero nonce")
 	}
 
 	var rJac btcec.JacobianPoint

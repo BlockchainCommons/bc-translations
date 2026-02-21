@@ -49,3 +49,24 @@ COMPLETED
   - Improved Schnorr vector subtests with stable names and safe loop-variable capture
 - Re-ran `go test ./...` after fixes; all tests still pass
 - Verdict: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex)
+- Reviewing naming, error handling, API design, documentation, and Go idioms
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- 10 fluency issues found and fixed:
+  - Renamed `MemzeroVecVecU8` to `MemzeroByteSlices` (Rust `Vec<Vec<u8>>` naming leaked through)
+  - Renamed `CRC32DataOpt` to `CRC32DataWithEndian` (idiomatic Go naming)
+  - Renamed `ScryptOpt` to `ScryptWithParams` (idiomatic Go naming)
+  - Renamed `ED25519*` exports to `Ed25519*` (Go acronym convention)
+  - Renamed `hkdfExpand` to `hkdfDerive` (more accurate: function does extract+expand)
+  - Fixed `DeriveSigningPrivateKey` return type from `[GenericPublicKeySize]byte` to `[GenericPrivateKeySize]byte`
+  - Replaced all Rust-style panic messages with descriptive `bccrypto:`-prefixed Go panic messages
+  - Fixed `Argon2ID` doc comment to remove Rust source reference
+  - Added doc comments to all exported constants across all source files
+  - Improved `ErrAEAD` error message to include package prefix
+- Re-ran `go test ./...` and `go vet ./...` after fixes; all pass
+- Verdict: IDIOMATIC

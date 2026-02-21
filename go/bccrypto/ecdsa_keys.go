@@ -7,19 +7,25 @@ import (
 )
 
 const (
-	ECDSAPrivateKeySize            = 32
-	ECDSAPublicKeySize             = 33
+	// ECDSAPrivateKeySize is the byte length of a secp256k1 private key.
+	ECDSAPrivateKeySize = 32
+	// ECDSAPublicKeySize is the byte length of a compressed secp256k1 public key.
+	ECDSAPublicKeySize = 33
+	// ECDSAUncompressedPublicKeySize is the byte length of an uncompressed secp256k1 public key.
 	ECDSAUncompressedPublicKeySize = 65
-	ECDSAMessageHashSize           = 32
-	ECDSASignatureSize             = 64
-	SchnorrPublicKeySize           = 32
+	// ECDSAMessageHashSize is the byte length of the message hash used in ECDSA signing.
+	ECDSAMessageHashSize = 32
+	// ECDSASignatureSize is the byte length of a compact (r||s) ECDSA signature.
+	ECDSASignatureSize = 64
+	// SchnorrPublicKeySize is the byte length of an x-only Schnorr public key.
+	SchnorrPublicKeySize = 32
 )
 
 func privateKeyFromBytesStrict(privateKey [ECDSAPrivateKeySize]byte) *btcec.PrivateKey {
 	var scalar btcec.ModNScalar
 	overflow := scalar.SetByteSlice(privateKey[:])
 	if overflow || scalar.IsZero() {
-		panic("32 bytes, within curve order")
+		panic("bccrypto: private key must be non-zero and within curve order")
 	}
 	return btcec.PrivKeyFromScalar(&scalar)
 }
@@ -29,7 +35,7 @@ func parseCompressedPublicKeyStrict(
 ) *btcec.PublicKey {
 	pk, err := btcec.ParsePubKey(publicKey[:])
 	if err != nil {
-		panic("33 or 65 bytes, serialized according to the spec")
+		panic("bccrypto: invalid compressed public key")
 	}
 	return pk
 }
@@ -60,7 +66,7 @@ func ECDSADecompressPublicKey(
 ) [ECDSAUncompressedPublicKeySize]byte {
 	pk, err := btcec.ParsePubKey(compressedPublicKey[:])
 	if err != nil {
-		panic("65 bytes, serialized according to the spec")
+		panic("bccrypto: invalid compressed public key")
 	}
 	var out [ECDSAUncompressedPublicKeySize]byte
 	copy(out[:], pk.SerializeUncompressed())
@@ -73,7 +79,7 @@ func ECDSACompressPublicKey(
 ) [ECDSAPublicKeySize]byte {
 	pk, err := btcec.ParsePubKey(uncompressedPublicKey[:])
 	if err != nil {
-		panic("33 bytes, serialized according to the spec")
+		panic("bccrypto: invalid uncompressed public key")
 	}
 	var out [ECDSAPublicKeySize]byte
 	copy(out[:], pk.SerializeCompressed())
@@ -98,10 +104,10 @@ func SchnorrPublicKeyFromPrivateKey(
 func ecdsaSignatureFromCompact(signature [ECDSASignatureSize]byte) *btecdsa.Signature {
 	var r, s btcec.ModNScalar
 	if r.SetByteSlice(signature[:32]) || s.SetByteSlice(signature[32:]) {
-		panic("64 bytes, signature according to the spec")
+		panic("bccrypto: signature components overflow curve order")
 	}
 	if r.IsZero() || s.IsZero() {
-		panic("64 bytes, signature according to the spec")
+		panic("bccrypto: signature components must be non-zero")
 	}
 	return btecdsa.NewSignature(&r, &s)
 }

@@ -14,8 +14,11 @@ import (
 )
 
 const (
-	CRC32Size  = 4
+	// CRC32Size is the byte length of a CRC-32 checksum.
+	CRC32Size = 4
+	// SHA256Size is the byte length of a SHA-256 digest.
 	SHA256Size = 32
+	// SHA512Size is the byte length of a SHA-512 digest.
 	SHA512Size = 64
 )
 
@@ -24,8 +27,8 @@ func CRC32(data []byte) uint32 {
 	return crc32.ChecksumIEEE(data)
 }
 
-// CRC32DataOpt computes CRC-32 and returns bytes in selected endianness.
-func CRC32DataOpt(data []byte, littleEndian bool) [CRC32Size]byte {
+// CRC32DataWithEndian computes CRC-32 and returns bytes in the selected endianness.
+func CRC32DataWithEndian(data []byte, littleEndian bool) [CRC32Size]byte {
 	checksum := CRC32(data)
 	var result [CRC32Size]byte
 	if littleEndian {
@@ -38,7 +41,7 @@ func CRC32DataOpt(data []byte, littleEndian bool) [CRC32Size]byte {
 
 // CRC32Data computes CRC-32 and returns bytes in big-endian format.
 func CRC32Data(data []byte) [CRC32Size]byte {
-	return CRC32DataOpt(data, false)
+	return CRC32DataWithEndian(data, false)
 }
 
 // SHA256 computes the SHA-256 digest of data.
@@ -85,21 +88,21 @@ func PBKDF2HMACSHA512(pass, salt []byte, iterations uint32, keyLen int) []byte {
 	return pbkdf2.Key(pass, salt, int(iterations), keyLen, sha512.New)
 }
 
-func hkdfExpand(h func() hash.Hash, keyMaterial, salt []byte, keyLen int) []byte {
+func hkdfDerive(h func() hash.Hash, keyMaterial, salt []byte, keyLen int) []byte {
 	reader := hkdf.New(h, keyMaterial, salt, nil)
 	key := make([]byte, keyLen)
 	if _, err := io.ReadFull(reader, key); err != nil {
-		panic("hkdf failed")
+		panic("bccrypto: hkdf derivation failed")
 	}
 	return key
 }
 
 // HKDFHMACSHA256 computes HKDF-HMAC-SHA-256.
 func HKDFHMACSHA256(keyMaterial, salt []byte, keyLen int) []byte {
-	return hkdfExpand(sha256.New, keyMaterial, salt, keyLen)
+	return hkdfDerive(sha256.New, keyMaterial, salt, keyLen)
 }
 
 // HKDFHMACSHA512 computes HKDF-HMAC-SHA-512.
 func HKDFHMACSHA512(keyMaterial, salt []byte, keyLen int) []byte {
-	return hkdfExpand(sha512.New, keyMaterial, salt, keyLen)
+	return hkdfDerive(sha512.New, keyMaterial, salt, keyLen)
 }

@@ -110,7 +110,7 @@ func SplitSecret(threshold, shareCount int, secret []byte, rng bcrand.RandomNumb
 	// clean up
 	bccrypto.Memzero(digest)
 	bccrypto.Memzero(x)
-	bccrypto.MemzeroVecVecU8(y)
+	bccrypto.MemzeroByteSlices(y)
 
 	return result, nil
 }

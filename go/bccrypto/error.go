@@ -8,6 +8,6 @@ func (e Error) Error() string {
 }
 
 const (
-	// ErrAEAD indicates authenticated decryption failure.
-	ErrAEAD Error = "AEAD error"
+	// ErrAEAD indicates that authenticated decryption failed.
+	ErrAEAD Error = "bccrypto: AEAD decryption failed"
 )

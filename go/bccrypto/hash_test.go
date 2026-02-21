@@ -13,8 +13,8 @@ func TestCRC32(t *testing.T) {
 	if got := CRC32Data(input); got != must4("ebe6c6e6") {
 		t.Fatalf("CRC32Data() = %x, want ebe6c6e6", got)
 	}
-	if got := CRC32DataOpt(input, true); got != must4("e6c6e6eb") {
-		t.Fatalf("CRC32DataOpt(true) = %x, want e6c6e6eb", got)
+	if got := CRC32DataWithEndian(input, true); got != must4("e6c6e6eb") {
+		t.Fatalf("CRC32DataWithEndian(true) = %x, want e6c6e6eb", got)
 	}
 }
 

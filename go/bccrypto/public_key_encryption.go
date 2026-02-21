@@ -6,10 +6,14 @@ import (
 )
 
 const (
+	// GenericPrivateKeySize is the byte length of a generic private key.
 	GenericPrivateKeySize = 32
-	GenericPublicKeySize  = 32
-	X25519PrivateKeySize  = 32
-	X25519PublicKeySize   = 32
+	// GenericPublicKeySize is the byte length of a generic public key.
+	GenericPublicKeySize = 32
+	// X25519PrivateKeySize is the byte length of an X25519 private key.
+	X25519PrivateKeySize = 32
+	// X25519PublicKeySize is the byte length of an X25519 public key.
+	X25519PublicKeySize = 32
 )
 
 // DeriveAgreementPrivateKey derives a 32-byte agreement private key from key material.
@@ -21,9 +25,9 @@ func DeriveAgreementPrivateKey(keyMaterial []byte) [GenericPrivateKeySize]byte {
 }
 
 // DeriveSigningPrivateKey derives a 32-byte signing private key from key material.
-func DeriveSigningPrivateKey(keyMaterial []byte) [GenericPublicKeySize]byte {
-	derived := HKDFHMACSHA256(keyMaterial, []byte("signing"), GenericPublicKeySize)
-	var out [GenericPublicKeySize]byte
+func DeriveSigningPrivateKey(keyMaterial []byte) [GenericPrivateKeySize]byte {
+	derived := HKDFHMACSHA256(keyMaterial, []byte("signing"), GenericPrivateKeySize)
+	var out [GenericPrivateKeySize]byte
 	copy(out[:], derived)
 	return out
 }
@@ -42,7 +46,7 @@ func X25519PublicKeyFromPrivateKey(
 ) [X25519PublicKeySize]byte {
 	publicKey, err := curve25519.X25519(privateKey[:], curve25519.Basepoint)
 	if err != nil {
-		panic("invalid X25519 private key")
+		panic("bccrypto: invalid X25519 private key")
 	}
 	var out [X25519PublicKeySize]byte
 	copy(out[:], publicKey)
@@ -56,7 +60,7 @@ func X25519SharedKey(
 ) [SymmetricKeySize]byte {
 	sharedSecret, err := curve25519.X25519(privateKey[:], publicKey[:])
 	if err != nil {
-		panic("invalid X25519 key material")
+		panic("bccrypto: invalid X25519 key material")
 	}
 	derived := HKDFHMACSHA256(sharedSecret, []byte("agreement"), SymmetricKeySize)
 	var out [SymmetricKeySize]byte

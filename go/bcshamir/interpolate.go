@@ -97,7 +97,7 @@ func interpolate(n int, xi []byte, yl int, yij [][]byte, x byte) ([]byte, error)
 	bccrypto.Memzero(ySlice[:])
 	bccrypto.Memzero(resultSlice[:])
 	bccrypto.Memzero(temp[:])
-	bccrypto.MemzeroVecVecU8(y)
+	bccrypto.MemzeroByteSlices(y)
 	bccrypto.Memzero(values)
 
 	return result, nil
