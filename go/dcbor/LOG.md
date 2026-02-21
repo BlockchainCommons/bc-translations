@@ -1190,3 +1190,24 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (equality parity improved; docs/signature/remaining derive breadth still partial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing documentation parity with comment coverage for exported collection APIs
+- Improving discoverability of deterministic map/set behavior in public docs
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added concise exported API comments across `map.go` and `set.go` for constructors, iterators, insertion/extraction, encoding, and clone/equality helpers
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after collection API documentation expansion
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated documentation coverage note in `COMPLETENESS.md` to reflect improved collection API comment parity
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (API surface complete; broader docs/signature/derive breadth still partial)

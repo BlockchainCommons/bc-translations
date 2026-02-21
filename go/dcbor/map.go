@@ -16,24 +16,29 @@ type Map struct {
 	entries []mapEntry
 }
 
+// NewMap creates an empty deterministic map.
 func NewMap() Map {
 	return Map{entries: nil}
 }
 
+// Len returns the number of entries.
 func (m Map) Len() int {
 	return len(m.entries)
 }
 
+// IsEmpty reports whether the map has no entries.
 func (m Map) IsEmpty() bool {
 	return len(m.entries) == 0
 }
 
+// Iter returns an iterator over entries in deterministic key-encoding order.
 func (m Map) Iter() MapIter {
 	copied := make([]mapEntry, len(m.entries))
 	copy(copied, m.entries)
 	return MapIter{entries: copied}
 }
 
+// Insert sets or replaces a key/value pair while preserving deterministic order.
 func (m *Map) Insert(key CBOR, value CBOR) {
 	keyData := key.ToCBORData()
 	idx := m.indexForKeyData(keyData)
@@ -48,6 +53,7 @@ func (m *Map) Insert(key CBOR, value CBOR) {
 	m.entries[insertAt] = entry
 }
 
+// InsertAny converts key/value from common Go values before insertion.
 func (m *Map) InsertAny(key any, value any) error {
 	keyCBOR, err := FromAny(key)
 	if err != nil {
@@ -61,6 +67,7 @@ func (m *Map) InsertAny(key any, value any) error {
 	return nil
 }
 
+// MustInsertAny inserts a converted key/value pair and panics on conversion failure.
 func (m *Map) MustInsertAny(key any, value any) {
 	if err := m.InsertAny(key, value); err != nil {
 		panic(err)
@@ -85,6 +92,7 @@ func (m *Map) insertNext(key CBOR, value CBOR) error {
 	return nil
 }
 
+// Get returns a cloned value for the given key.
 func (m Map) Get(key CBOR) (CBOR, bool) {
 	keyData := key.ToCBORData()
 	idx := m.indexForKeyData(keyData)
@@ -94,6 +102,7 @@ func (m Map) Get(key CBOR) (CBOR, bool) {
 	return m.entries[idx].value.Clone(), true
 }
 
+// GetAny converts the key and returns a cloned value for it.
 func (m Map) GetAny(key any) (CBOR, bool) {
 	keyCBOR, err := FromAny(key)
 	if err != nil {
@@ -102,11 +111,13 @@ func (m Map) GetAny(key any) (CBOR, bool) {
 	return m.Get(keyCBOR)
 }
 
+// ContainsKey reports whether the key exists.
 func (m Map) ContainsKey(key CBOR) bool {
 	_, ok := m.Get(key)
 	return ok
 }
 
+// Extract returns a required map value.
 func (m Map) Extract(key CBOR) (CBOR, error) {
 	value, ok := m.Get(key)
 	if !ok {
@@ -115,6 +126,7 @@ func (m Map) Extract(key CBOR) (CBOR, error) {
 	return value, nil
 }
 
+// ExtractAny converts the key and returns a required map value.
 func (m Map) ExtractAny(key any) (CBOR, error) {
 	keyCBOR, err := FromAny(key)
 	if err != nil {
@@ -169,6 +181,7 @@ func (m Map) keyDataHexes() []string {
 	return keys
 }
 
+// CBORData returns deterministic binary encoding for the map.
 func (m Map) CBORData() []byte {
 	result := encodeHead(majorMap, uint64(len(m.entries)))
 	for _, entry := range m.entries {
@@ -178,6 +191,7 @@ func (m Map) CBORData() []byte {
 	return result
 }
 
+// AsEntries returns a cloned key/value view of the map.
 func (m Map) AsEntries() []MapEntry {
 	out := make([]MapEntry, 0, len(m.entries))
 	for _, entry := range m.entries {
@@ -186,6 +200,7 @@ func (m Map) AsEntries() []MapEntry {
 	return out
 }
 
+// Clone returns a deep copy of the map entries and key encodings.
 func (m Map) Clone() Map {
 	cloned := make([]mapEntry, len(m.entries))
 	for i, entry := range m.entries {
@@ -248,6 +263,7 @@ type MapIter struct {
 	index   int
 }
 
+// Next yields the next key/value pair in deterministic order.
 func (it *MapIter) Next() (CBOR, CBOR, bool) {
 	if it.index >= len(it.entries) {
 		return CBOR{}, CBOR{}, false
