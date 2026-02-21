@@ -701,6 +701,25 @@ func (c CBOR) IntoMap() (Map, bool) {
 	return value, true
 }
 
+func (c CBOR) TryIntoSimpleValue() (Simple, error) {
+	if value, ok := c.AsSimpleValue(); ok {
+		return value, nil
+	}
+	return Simple{}, ErrWrongType
+}
+
+func (c CBOR) TrySimpleValue() (Simple, error) {
+	return c.TryIntoSimpleValue()
+}
+
+func (c CBOR) IntoSimpleValue() (Simple, bool) {
+	value, err := c.TryIntoSimpleValue()
+	if err != nil {
+		return Simple{}, false
+	}
+	return value, true
+}
+
 func (c CBOR) IsBool() bool {
 	simple, ok := c.AsSimpleValue()
 	if !ok {

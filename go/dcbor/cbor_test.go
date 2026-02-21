@@ -131,3 +131,32 @@ func TestHexAnnotatedIncludesComment(t *testing.T) {
 		t.Fatalf("expected annotated hex output")
 	}
 }
+
+func TestSimpleValueConvenienceParity(t *testing.T) {
+	simple, err := False().TryIntoSimpleValue()
+	if err != nil {
+		t.Fatalf("TryIntoSimpleValue failed: %v", err)
+	}
+	if simple.Kind() != SimpleFalse {
+		t.Fatalf("unexpected simple kind: got %v want %v", simple.Kind(), SimpleFalse)
+	}
+
+	simpleAlias, err := True().TrySimpleValue()
+	if err != nil {
+		t.Fatalf("TrySimpleValue failed: %v", err)
+	}
+	if simpleAlias.Kind() != SimpleTrue {
+		t.Fatalf("unexpected simple alias kind: got %v want %v", simpleAlias.Kind(), SimpleTrue)
+	}
+
+	if _, ok := Null().IntoSimpleValue(); !ok {
+		t.Fatalf("IntoSimpleValue unexpectedly failed for null")
+	}
+
+	if _, err := MustFromAny(1).TryIntoSimpleValue(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for non-simple value, got %v", err)
+	}
+	if _, ok := MustFromAny("text").IntoSimpleValue(); ok {
+		t.Fatalf("expected IntoSimpleValue to fail for text")
+	}
+}

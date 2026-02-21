@@ -333,3 +333,25 @@ COMPLETED
 - API coverage unchanged: 60/83 key manifest targets
 - Test coverage improved from 54/86 to 57/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (coverage now >66%; significant API and remaining behavior parity still pending)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing convenience-API parity against `conveniences.rs`
+- Implementing missing simple-value extraction helpers and adding direct parity tests
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TryIntoSimpleValue`, `TrySimpleValue`, and `IntoSimpleValue` to `cbor.go`
+- Added `TestSimpleValueConvenienceParity` in `cbor_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (58 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after simple-value convenience parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with simple-value convenience coverage and refreshed metrics
+- API coverage improved from 60/83 to 61/83 key manifest targets
+- Test coverage improved from 57/86 to 58/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (steady progress; remaining API breadth and behavior parity still substantial)
