@@ -141,7 +141,12 @@ func ToTaggedValue(tag Tag, value CBOR) CBOR {
 // FromAny converts common Go values into CBOR.
 func FromAny(value any) (CBOR, error) {
 	if encodable, ok := value.(CBOREncodable); ok {
-		return encodable.ToCBOR().Clone(), nil
+		rv := reflect.ValueOf(value)
+		if rv.Kind() == reflect.Pointer && rv.IsNil() {
+			// Defer to explicit nil-pointer cases below to preserve type-specific semantics.
+		} else {
+			return encodable.ToCBOR().Clone(), nil
+		}
 	}
 
 	switch v := value.(type) {

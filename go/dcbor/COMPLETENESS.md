@@ -60,9 +60,9 @@
 
 ### Implemented in Go
 
-- 107 tests total across:
+- 108 tests total across:
   - core scalar encode/decode
-  - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
+  - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion, nil-pointer `CBOREncodable` safety cases)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
   - supplemental decode helper parity checks for simple/tagged extraction behavior
   - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)

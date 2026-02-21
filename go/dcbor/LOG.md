@@ -1240,3 +1240,25 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (display parity improved; broader docs/signature/derive breadth still partial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion robustness by hardening `FromAny` handling for nil pointers that satisfy `CBOREncodable`
+- Adding regression coverage for nil pointer conversion semantics (`*CBOR`, `*Date`, `*Map`)
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Fixed `FromAny` in `cbor.go` to avoid invoking `ToCBOR()` on nil pointer `CBOREncodable` values before nil-specific handling
+- Added `TestFromAnyNilPointerEncodableParity` in `conversion_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after nil-pointer conversion safety fix
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` test inventory note and totals with nil-pointer conversion parity coverage
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (robustness improved; docs/signature/derive breadth still partial)

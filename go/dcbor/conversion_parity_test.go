@@ -312,6 +312,35 @@ func TestReflectiveFromAnyConversions(t *testing.T) {
 	}
 }
 
+func TestFromAnyNilPointerEncodableParity(t *testing.T) {
+	var nilCBOR *CBOR
+	cborFromNilCBOR, err := FromAny(nilCBOR)
+	if err != nil {
+		t.Fatalf("FromAny nil *CBOR failed: %v", err)
+	}
+	if !cborFromNilCBOR.IsNull() {
+		t.Fatalf("FromAny nil *CBOR expected null, got %s", cborFromNilCBOR.DiagnosticFlat())
+	}
+
+	var nilDate *Date
+	cborFromNilDate, err := FromAny(nilDate)
+	if err != nil {
+		t.Fatalf("FromAny nil *Date failed: %v", err)
+	}
+	if !cborFromNilDate.IsNull() {
+		t.Fatalf("FromAny nil *Date expected null, got %s", cborFromNilDate.DiagnosticFlat())
+	}
+
+	var nilMap *Map
+	cborFromNilMap, err := FromAny(nilMap)
+	if err != nil {
+		t.Fatalf("FromAny nil *Map failed: %v", err)
+	}
+	if got, want := cborFromNilMap.DiagnosticFlat(), "{}"; got != want {
+		t.Fatalf("FromAny nil *Map mismatch: got %q want %q", got, want)
+	}
+}
+
 func TestSetFromVecDeterminismAndValidation(t *testing.T) {
 	set := SetFromVec([]CBOR{MustFromAny(2), MustFromAny(1), MustFromAny(3)})
 	if got, want := NewCBORArray(set.AsVec()).DiagnosticFlat(), "[1, 2, 3]"; got != want {
