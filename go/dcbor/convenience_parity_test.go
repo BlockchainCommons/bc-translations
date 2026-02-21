@@ -28,6 +28,17 @@ func TestByteStringAndTextConvenienceParity(t *testing.T) {
 	if _, err := ToByteStringFromHex("zz"); err == nil {
 		t.Fatalf("expected hex decode failure")
 	}
+	if got, want := MustToByteStringFromHex("001122").DiagnosticFlat(), "h'001122'"; got != want {
+		t.Fatalf("MustToByteStringFromHex mismatch: got %q want %q", got, want)
+	}
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Fatalf("expected MustToByteStringFromHex to panic on invalid hex")
+			}
+		}()
+		_ = MustToByteStringFromHex("zz")
+	}()
 
 	text := MustFromAny("hello")
 	if !text.IsText() {

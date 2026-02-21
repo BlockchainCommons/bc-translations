@@ -125,6 +125,14 @@ func ToByteStringFromHex(value string) (CBOR, error) {
 	return ToByteString(bytesValue), nil
 }
 
+func MustToByteStringFromHex(value string) CBOR {
+	cbor, err := ToByteStringFromHex(value)
+	if err != nil {
+		panic(err)
+	}
+	return cbor
+}
+
 func ToTaggedValue(tag Tag, value CBOR) CBOR {
 	return NewCBORTagged(tag, value)
 }

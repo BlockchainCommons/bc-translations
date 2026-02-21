@@ -1096,3 +1096,25 @@ COMPLETED
 - API coverage improved from 81/83 to 82/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (trait parity improved further; residual docs/derive/signature edge gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing convenience-surface parity with panic-style hex byte-string constructor behavior
+- Adding Rust-style `to_byte_string_from_hex` panic equivalent for Go API ergonomics
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `MustToByteStringFromHex` in `cbor.go`
+- Expanded convenience parity tests in `convenience_parity_test.go` for success and expected panic behavior
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after panic-style byte-string hex convenience addition
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to include `MustToByteStringFromHex` parity coverage
+- API coverage improved from 82/83 to 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (API target surface now complete; derive/docs/signature parity work remains)

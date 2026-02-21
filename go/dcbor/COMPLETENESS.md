@@ -33,6 +33,7 @@
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
 - ✅ Added map value extraction helpers with typed decode flow (`DecodeMapValue`, `ExtractMapValue`, `MustExtractMapValue`) to mirror Rust-style typed `Map` access ergonomics
 - ✅ Added set typed extraction helper (`DecodeSetSlice`) for ordered typed set conversion parity
+- ✅ Added panic-style byte-string hex convenience parity (`MustToByteStringFromHex`) matching Rust `to_byte_string_from_hex` ergonomics
 - ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `TrySimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
 - ✅ Added decode helpers for simple/tagged extraction parity (`DecodeSimpleValue`, `DecodeTaggedValue`, `DecodeExpectedTaggedValue`)
 - ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
@@ -95,6 +96,7 @@
   - translated `byte_string.rs` fixed-length conversion parity behavior
   - supplemental byte-string method parity checks (`Len`, `IsEmpty`, `Data`, `Extend`, `ToVec`, `Iter`, `AsRef`)
   - supplemental convenience helper parity checks (byte/text/array/map/tagged helpers, bool/null/nan helpers, sort/normalize utility behavior)
+  - panic-style byte-string hex convenience parity checks (`MustToByteStringFromHex`)
   - trait-helper parity checks for default-style helper behavior (`ToCBORData`, tagged encode/decode helpers, tagged/untagged data decode helpers, `TryFromCBOR*` wrappers, tagged-provider wrappers)
 
 ### Rust Baseline (default-feature applicable)
@@ -125,7 +127,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 82/83 key manifest items (98.8%)
+- API Coverage: 83/83 key manifest items (100.0%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
