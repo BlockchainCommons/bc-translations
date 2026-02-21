@@ -35,6 +35,23 @@ public sealed class SeededRandomNumberGenerator : IRandomNumberGenerator
     /// </remarks>
     public SeededRandomNumberGenerator(ulong[] seed)
     {
+        ArgumentNullException.ThrowIfNull(seed);
+        _rng = CreateRngFromSeed(seed);
+    }
+
+    /// <summary>
+    /// Creates a new seeded random number generator.
+    /// </summary>
+    /// <param name="seed">
+    /// A 256-bit seed represented as a span of 4 unsigned 64-bit integers.
+    /// </param>
+    public SeededRandomNumberGenerator(ReadOnlySpan<ulong> seed)
+    {
+        _rng = CreateRngFromSeed(seed);
+    }
+
+    private static Xoshiro256StarStar CreateRngFromSeed(ReadOnlySpan<ulong> seed)
+    {
         if (seed.Length != 4)
             throw new ArgumentException("Seed must contain exactly 4 elements.", nameof(seed));
 
@@ -42,7 +59,7 @@ public sealed class SeededRandomNumberGenerator : IRandomNumberGenerator
         for (int i = 0; i < 4; i++)
             BinaryPrimitives.WriteUInt64LittleEndian(seedBytes.Slice(i * 8, 8), seed[i]);
 
-        _rng = new Xoshiro256StarStar(seedBytes);
+        return new Xoshiro256StarStar(seedBytes);
     }
 
     public uint NextUInt32() => (uint)NextUInt64();
@@ -56,6 +73,8 @@ public sealed class SeededRandomNumberGenerator : IRandomNumberGenerator
     /// </summary>
     public byte[] RandomData(int size)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(size);
+
         var data = new byte[size];
         for (int i = 0; i < size; i++)
             data[i] = (byte)NextUInt64();

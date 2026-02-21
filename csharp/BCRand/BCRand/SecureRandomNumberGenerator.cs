@@ -13,9 +13,14 @@ namespace BlockchainCommons.BCRand;
 public sealed class SecureRandomNumberGenerator : IRandomNumberGenerator
 {
     /// <summary>Shared thread-safe instance.</summary>
-    public static readonly SecureRandomNumberGenerator Shared = new();
+    public static SecureRandomNumberGenerator Shared { get; } = new();
 
-    public uint NextUInt32() => (uint)NextUInt64();
+    public uint NextUInt32()
+    {
+        Span<byte> buf = stackalloc byte[4];
+        CryptoRng.Fill(buf);
+        return BitConverter.ToUInt32(buf);
+    }
 
     public ulong NextUInt64()
     {
@@ -26,6 +31,8 @@ public sealed class SecureRandomNumberGenerator : IRandomNumberGenerator
 
     public byte[] RandomData(int size)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(size);
+
         var data = new byte[size];
         CryptoRng.Fill(data);
         return data;

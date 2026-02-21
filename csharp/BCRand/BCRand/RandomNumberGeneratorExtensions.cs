@@ -18,19 +18,21 @@ public static class RandomNumberGeneratorExtensions
     /// </remarks>
     public static uint NextWithUpperBound(this IRandomNumberGenerator rng, uint upperBound)
     {
+        ArgumentNullException.ThrowIfNull(rng);
+
         if (upperBound == 0)
             throw new ArgumentException("Upper bound must be non-zero.", nameof(upperBound));
 
-        uint random = (uint)(rng.NextUInt64() & 0xFFFFFFFF);
+        uint random = rng.NextUInt32();
         ulong m = (ulong)random * upperBound;
         uint low = (uint)m;
 
         if (low < upperBound)
         {
-            uint t = (0u - upperBound) % upperBound;
+            uint t = unchecked(0u - upperBound) % upperBound;
             while (low < t)
             {
-                random = (uint)(rng.NextUInt64() & 0xFFFFFFFF);
+                random = rng.NextUInt32();
                 m = (ulong)random * upperBound;
                 low = (uint)m;
             }
@@ -51,6 +53,8 @@ public static class RandomNumberGeneratorExtensions
     /// </remarks>
     public static ulong NextWithUpperBound(this IRandomNumberGenerator rng, ulong upperBound)
     {
+        ArgumentNullException.ThrowIfNull(rng);
+
         if (upperBound == 0)
             throw new ArgumentException("Upper bound must be non-zero.", nameof(upperBound));
 
@@ -60,7 +64,7 @@ public static class RandomNumberGeneratorExtensions
 
         if (low < upperBound)
         {
-            ulong t = (0UL - upperBound) % upperBound;
+            ulong t = unchecked(0UL - upperBound) % upperBound;
             while (low < t)
             {
                 random = rng.NextUInt64();
@@ -83,8 +87,10 @@ public static class RandomNumberGeneratorExtensions
     /// [<paramref name="start"/>, <paramref name="end"/>).</returns>
     public static int NextInRange(this IRandomNumberGenerator rng, int start, int end)
     {
+        ArgumentNullException.ThrowIfNull(rng);
+
         if (start >= end)
-            throw new ArgumentException("Start must be less than end.", nameof(start));
+            throw new ArgumentOutOfRangeException(nameof(end), "End must be greater than start.");
 
         uint delta = (uint)(end - start);
 
@@ -100,8 +106,10 @@ public static class RandomNumberGeneratorExtensions
     /// </summary>
     public static int NextInClosedRange(this IRandomNumberGenerator rng, int start, int end)
     {
+        ArgumentNullException.ThrowIfNull(rng);
+
         if (start > end)
-            throw new ArgumentException("Start must be less than or equal to end.", nameof(start));
+            throw new ArgumentOutOfRangeException(nameof(end), "End must be greater than or equal to start.");
 
         uint delta = (uint)(end - start);
 
@@ -118,6 +126,9 @@ public static class RandomNumberGeneratorExtensions
     /// </summary>
     public static byte[] RandomArray(this IRandomNumberGenerator rng, int size)
     {
+        ArgumentNullException.ThrowIfNull(rng);
+        ArgumentOutOfRangeException.ThrowIfNegative(size);
+
         var data = new byte[size];
         rng.FillRandomData(data);
         return data;
@@ -126,12 +137,14 @@ public static class RandomNumberGeneratorExtensions
     /// <summary>Returns a random boolean value.</summary>
     public static bool RandomBool(this IRandomNumberGenerator rng)
     {
+        ArgumentNullException.ThrowIfNull(rng);
         return rng.NextUInt32() % 2 == 0;
     }
 
     /// <summary>Returns a random 32-bit unsigned integer.</summary>
     public static uint RandomUInt32(this IRandomNumberGenerator rng)
     {
+        ArgumentNullException.ThrowIfNull(rng);
         return rng.NextUInt32();
     }
 

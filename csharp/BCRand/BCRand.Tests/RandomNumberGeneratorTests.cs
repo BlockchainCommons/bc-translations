@@ -25,4 +25,23 @@ public class RandomNumberGeneratorTests
 
         Assert.Equal(expected, array);
     }
+
+    [Fact]
+    public void TestExtensionMethodsNullRng()
+    {
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.RandomBool(null!));
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.RandomUInt32(null!));
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.RandomArray(null!, 1));
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.NextWithUpperBound(null!, 10u));
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.NextWithUpperBound(null!, 10UL));
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.NextInRange(null!, 0, 10));
+        Assert.Throws<ArgumentNullException>(() => RandomNumberGeneratorExtensions.NextInClosedRange(null!, 0, 10));
+    }
+
+    [Fact]
+    public void TestRandomArrayNegativeSize()
+    {
+        var rng = SeededRandomNumberGenerator.CreateFake();
+        Assert.Throws<ArgumentOutOfRangeException>(() => rng.RandomArray(-1));
+    }
 }

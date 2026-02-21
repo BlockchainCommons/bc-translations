@@ -31,3 +31,17 @@ COMPLETED
 - Added paramName to ArgumentException in range methods
 - All 8 tests still passing after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-running fluency review focused on C# API ergonomics, argument validation idioms, and dependent-package compatibility
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 7 issues found (0 MUST FIX, 6 SHOULD FIX, 1 NICE TO HAVE), all fixed
+- Added explicit null/argument validation in extension APIs and random-data size paths
+- Improved secure RNG `NextUInt32()` to generate 4 random bytes directly
+- Added `ReadOnlySpan<ulong>` seed constructor overload and null guard on array constructor
+- Clarified unchecked wraparound intent in Lemire threshold calculations
+- Tests: BCRand 14/14 passing; dependent checks BCCrypto 42/42, BCShamir 4/4
+- VERDICT: IDIOMATIC

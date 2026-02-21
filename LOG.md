@@ -50,3 +50,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-lifehash | 0.1.0   | C#         | BCLifeHash   | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-lifehash | 0.1.0   | Python     | bc-lifehash  | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-lifehash | 0.1.0   | TypeScript | @bc/lifehash | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-rand     | 0.5.0   | C#         | BCRand       | 📖 GPT 5.3 Codex   | Fluency     |

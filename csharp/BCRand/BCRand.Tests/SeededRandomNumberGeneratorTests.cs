@@ -134,4 +134,24 @@ public class SeededRandomNumberGeneratorTests
 
         Assert.Equal(v1, v2);
     }
+
+    [Fact]
+    public void TestNullSeed()
+    {
+        Assert.Throws<ArgumentNullException>(() => new SeededRandomNumberGenerator(null!));
+    }
+
+    [Fact]
+    public void TestSpanSeedConstructor()
+    {
+        var rng = new SeededRandomNumberGenerator(TestSeed.AsSpan());
+        Assert.Equal(1104683000648959614UL, rng.NextUInt64());
+    }
+
+    [Fact]
+    public void TestRandomDataNegativeSize()
+    {
+        var rng = new SeededRandomNumberGenerator(TestSeed);
+        Assert.Throws<ArgumentOutOfRangeException>(() => rng.RandomData(-1));
+    }
 }

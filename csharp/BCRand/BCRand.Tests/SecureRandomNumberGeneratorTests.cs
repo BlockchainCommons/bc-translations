@@ -15,4 +15,11 @@ public class SecureRandomNumberGeneratorTests
         Assert.NotEqual(data1, data2);
         Assert.NotEqual(data1, data3);
     }
+
+    [Fact]
+    public void TestRandomDataNegativeSize()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            SecureRandomNumberGenerator.SecureRandomData(-1));
+    }
 }
