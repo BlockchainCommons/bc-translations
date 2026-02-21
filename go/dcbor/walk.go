@@ -21,6 +21,7 @@ func walkKeyValue(key CBOR, value CBOR) WalkElement {
 	return WalkElement{key: &k, value: &v, keyValue: true}
 }
 
+// AsSingle returns the element as a single CBOR value.
 func (w WalkElement) AsSingle() (CBOR, bool) {
 	if w.single == nil {
 		return CBOR{}, false
@@ -28,6 +29,7 @@ func (w WalkElement) AsSingle() (CBOR, bool) {
 	return w.single.Clone(), true
 }
 
+// AsKeyValue returns the element as a map key/value pair.
 func (w WalkElement) AsKeyValue() (CBOR, CBOR, bool) {
 	if !w.keyValue || w.key == nil || w.value == nil {
 		return CBOR{}, CBOR{}, false
@@ -35,6 +37,7 @@ func (w WalkElement) AsKeyValue() (CBOR, CBOR, bool) {
 	return w.key.Clone(), w.value.Clone(), true
 }
 
+// DiagnosticFlat returns a flat diagnostic representation of the walk element.
 func (w WalkElement) DiagnosticFlat() string {
 	if single, ok := w.AsSingle(); ok {
 		return single.DiagnosticFlat()
@@ -64,30 +67,37 @@ type EdgeType struct {
 	Index int
 }
 
+// EdgeNone returns an edge marker for the root element.
 func EdgeNone() EdgeType {
 	return EdgeType{Kind: EdgeKindNone}
 }
 
+// EdgeArrayElement returns an edge marker for an array child at index.
 func EdgeArrayElement(index int) EdgeType {
 	return EdgeType{Kind: EdgeKindArrayElement, Index: index}
 }
 
+// EdgeMapKeyValue returns an edge marker for a combined map key/value node.
 func EdgeMapKeyValue() EdgeType {
 	return EdgeType{Kind: EdgeKindMapKeyValue}
 }
 
+// EdgeMapKey returns an edge marker for a map key child.
 func EdgeMapKey() EdgeType {
 	return EdgeType{Kind: EdgeKindMapKey}
 }
 
+// EdgeMapValue returns an edge marker for a map value child.
 func EdgeMapValue() EdgeType {
 	return EdgeType{Kind: EdgeKindMapValue}
 }
 
+// EdgeTaggedContent returns an edge marker for tagged-value content.
 func EdgeTaggedContent() EdgeType {
 	return EdgeType{Kind: EdgeKindTaggedContent}
 }
 
+// Label returns the stable short label for the edge.
 func (e EdgeType) Label() (string, bool) {
 	switch e.Kind {
 	case EdgeKindArrayElement:

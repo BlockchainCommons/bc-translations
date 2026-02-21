@@ -1283,3 +1283,29 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (docs improved; full rust-doc breadth still not matched)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing docs parity by adding exported comments for date and remaining wrapper/tag/walk APIs
+- Improving Godoc discoverability without behavioral changes
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added concise exported comments in:
+  - `date.go` (date constructors, timestamp/arithmetic helpers, tagged/untagged encode/decode helpers)
+  - `byte_string.go` (constructor and core data/iteration helpers)
+  - `simple.go` (simple constructors, kind constants, and value accessors)
+  - `tag.go` (constructors and accessor/equality/string behavior)
+  - `walk.go` (walk element extraction helpers and edge constructors/labels)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after expanded exported API documentation coverage
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` documentation and remaining-work notes after broader exported comment coverage
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (documentation parity improved further; residual signature/derive/doc breadth remains)

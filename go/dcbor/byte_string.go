@@ -7,38 +7,46 @@ type ByteString struct {
 	data []byte
 }
 
+// NewByteString constructs a byte-string wrapper from a copied slice.
 func NewByteString(data []byte) ByteString {
 	copied := make([]byte, len(data))
 	copy(copied, data)
 	return ByteString{data: copied}
 }
 
+// Data returns a copy of the underlying bytes.
 func (b ByteString) Data() []byte {
 	copied := make([]byte, len(b.data))
 	copy(copied, b.data)
 	return copied
 }
 
+// Len returns the number of bytes.
 func (b ByteString) Len() int {
 	return len(b.data)
 }
 
+// IsEmpty reports whether the byte string has zero length.
 func (b ByteString) IsEmpty() bool {
 	return len(b.data) == 0
 }
 
+// Extend appends bytes to the receiver.
 func (b *ByteString) Extend(other []byte) {
 	b.data = append(b.data, other...)
 }
 
+// ToVec returns a copy of the underlying bytes.
 func (b ByteString) ToVec() []byte {
 	return b.Data()
 }
 
+// Iter returns a copy of the underlying bytes for iteration-style usage.
 func (b ByteString) Iter() []byte {
 	return b.Data()
 }
 
+// AsRef returns a copy of the underlying bytes.
 func (b ByteString) AsRef() []byte {
 	return b.Data()
 }
