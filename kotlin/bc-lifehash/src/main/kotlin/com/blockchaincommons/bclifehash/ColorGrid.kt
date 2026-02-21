@@ -1,12 +1,10 @@
 package com.blockchaincommons.bclifehash
 
-private data class Transform(
-    val transpose: Boolean,
-    val reflectX: Boolean,
-    val reflectY: Boolean,
-)
-
-class ColorGrid(fracGrid: FracGrid, gradient: ColorFunc, pattern: Pattern) {
+/**
+ * Applies a color gradient and symmetry pattern to a [FracGrid] to produce the
+ * final colored image data.
+ */
+internal class ColorGrid(fracGrid: FracGrid, gradient: ColorFunc, pattern: Pattern) {
     val grid: Grid<Color>
 
     init {
@@ -78,3 +76,9 @@ class ColorGrid(fracGrid: FracGrid, gradient: ColorFunc, pattern: Pattern) {
         return result
     }
 }
+
+private data class Transform(
+    val transpose: Boolean,
+    val reflectX: Boolean,
+    val reflectY: Boolean,
+)

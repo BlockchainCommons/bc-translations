@@ -9,31 +9,31 @@ private fun selectGrayscale(entropy: BitEnumerator): ColorFunc =
         reverse(grayscale())
     }
 
-private fun makeHue(t: Double): Color = HSBColor.fromHue(t).color()
+private fun makeHue(t: Double): Color = HSBColor.fromHue(t).toColor()
 
 private fun spectrum(): ColorFunc =
     blend(
         listOf(
-            Color.fromUInt8Values(0, 168, 222),
-            Color.fromUInt8Values(51, 51, 145),
-            Color.fromUInt8Values(233, 19, 136),
-            Color.fromUInt8Values(235, 45, 46),
-            Color.fromUInt8Values(253, 233, 43),
-            Color.fromUInt8Values(0, 158, 84),
-            Color.fromUInt8Values(0, 168, 222),
+            Color.fromRgb(0, 168, 222),
+            Color.fromRgb(51, 51, 145),
+            Color.fromRgb(233, 19, 136),
+            Color.fromRgb(235, 45, 46),
+            Color.fromRgb(253, 233, 43),
+            Color.fromRgb(0, 158, 84),
+            Color.fromRgb(0, 168, 222),
         ),
     )
 
 private fun spectrumCmykSafe(): ColorFunc =
     blend(
         listOf(
-            Color.fromUInt8Values(0, 168, 222),
-            Color.fromUInt8Values(41, 60, 130),
-            Color.fromUInt8Values(210, 59, 130),
-            Color.fromUInt8Values(217, 63, 53),
-            Color.fromUInt8Values(244, 228, 81),
-            Color.fromUInt8Values(0, 158, 84),
-            Color.fromUInt8Values(0, 168, 222),
+            Color.fromRgb(0, 168, 222),
+            Color.fromRgb(41, 60, 130),
+            Color.fromRgb(210, 59, 130),
+            Color.fromRgb(217, 63, 53),
+            Color.fromRgb(244, 228, 81),
+            Color.fromRgb(0, 158, 84),
+            Color.fromRgb(0, 168, 222),
         ),
     )
 
@@ -267,7 +267,8 @@ private fun analogousFiducial(entropy: BitEnumerator): ColorFunc {
     return if (isReversed) reverse(gradient) else gradient
 }
 
-fun selectGradient(entropy: BitEnumerator, version: Version): ColorFunc {
+/** Selects a color gradient based on the rendering [version] and available [entropy]. */
+internal fun selectGradient(entropy: BitEnumerator, version: Version): ColorFunc {
     if (version == Version.GrayscaleFiducial) {
         return selectGrayscale(entropy)
     }

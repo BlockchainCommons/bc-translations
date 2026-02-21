@@ -1,6 +1,10 @@
 package com.blockchaincommons.bclifehash
 
-class FracGrid(width: Int, height: Int) {
+/**
+ * A grid of fractional values recording how late in the Game of Life
+ * simulation each cell was last alive.
+ */
+internal class FracGrid(width: Int, height: Int) {
     val grid = Grid(width, height, 0.0)
 
     fun overlay(cellGrid: CellGrid, frac: Double) {

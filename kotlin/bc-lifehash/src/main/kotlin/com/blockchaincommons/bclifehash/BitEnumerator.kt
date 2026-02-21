@@ -1,6 +1,11 @@
 package com.blockchaincommons.bclifehash
 
-class BitEnumerator(
+/**
+ * Reads individual bits from a byte array, MSB-first.
+ *
+ * Used to extract entropy from a digest for pattern and gradient selection.
+ */
+internal class BitEnumerator(
     private val data: ByteArray,
 ) {
     private var index: Int = 0
@@ -59,14 +64,17 @@ class BitEnumerator(
 
     fun nextFrac(): Double = nextUInt16().toDouble() / 65535.0
 
-    fun forAll(block: (Boolean) -> Unit) {
+    fun forEach(block: (Boolean) -> Unit) {
         while (hasNext()) {
             block(next())
         }
     }
 }
 
-class BitAggregator {
+/**
+ * Accumulates individual bits into a byte array, MSB-first.
+ */
+internal class BitAggregator {
     private val data: MutableList<Byte> = mutableListOf()
     private var bitMask: Int = 0
 
@@ -84,5 +92,5 @@ class BitAggregator {
         bitMask = bitMask ushr 1
     }
 
-    fun data(): ByteArray = data.toByteArray()
+    fun toByteArray(): ByteArray = data.toByteArray()
 }

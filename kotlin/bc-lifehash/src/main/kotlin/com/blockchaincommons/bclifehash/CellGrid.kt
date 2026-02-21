@@ -1,6 +1,9 @@
 package com.blockchaincommons.bclifehash
 
-class CellGrid(width: Int, height: Int) {
+/**
+ * A boolean grid representing alive/dead cells for Conway's Game of Life.
+ */
+internal class CellGrid(width: Int, height: Int) {
     val grid = Grid(width, height, false)
 
     private fun isAliveInNextGeneration(currentAlive: Boolean, neighborsCount: Int): Boolean =
@@ -12,29 +15,29 @@ class CellGrid(width: Int, height: Int) {
 
     private fun countNeighbors(px: Int, py: Int): Int {
         var total = 0
-        grid.forNeighborhood(px, py) { ox, oy, nx, ny ->
-            if (ox == 0 && oy == 0) {
+        grid.forNeighborhood(px, py) { offsetX, offsetY, neighborX, neighborY ->
+            if (offsetX == 0 && offsetY == 0) {
                 return@forNeighborhood
             }
-            if (grid.getValue(nx, ny)) {
+            if (grid.getValue(neighborX, neighborY)) {
                 total += 1
             }
         }
         return total
     }
 
-    fun data(): ByteArray {
+    fun toByteArray(): ByteArray {
         val aggregator = BitAggregator()
-        grid.forAll { x, y ->
+        grid.forEach { x, y ->
             aggregator.append(grid.getValue(x, y))
         }
-        return aggregator.data()
+        return aggregator.toByteArray()
     }
 
-    fun setData(data: ByteArray) {
+    fun loadFrom(data: ByteArray) {
         val enumerator = BitEnumerator(data.copyOf())
         var index = 0
-        enumerator.forAll { bit ->
+        enumerator.forEach { bit ->
             grid.storage[index] = bit
             index += 1
         }
@@ -46,8 +49,8 @@ class CellGrid(width: Int, height: Int) {
         nextCellGrid: CellGrid,
         nextChangeGrid: ChangeGrid,
     ) {
-        nextCellGrid.grid.setAll(false)
-        nextChangeGrid.grid.setAll(false)
+        nextCellGrid.grid.fill(false)
+        nextChangeGrid.grid.fill(false)
 
         val width = grid.width
         val height = grid.height

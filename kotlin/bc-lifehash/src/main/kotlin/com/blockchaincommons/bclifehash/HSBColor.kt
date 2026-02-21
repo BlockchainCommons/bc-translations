@@ -1,15 +1,22 @@
 package com.blockchaincommons.bclifehash
 
-class HSBColor(
+/**
+ * A color in the HSB (hue-saturation-brightness) color space.
+ *
+ * All components are normalized to the range 0.0..1.0.
+ */
+internal data class HSBColor(
     val hue: Double,
     val saturation: Double,
     val brightness: Double,
 ) {
     companion object {
+        /** Creates a fully saturated, full-brightness color from a hue value (0.0..1.0). */
         fun fromHue(hue: Double): HSBColor = HSBColor(hue, 1.0, 1.0)
     }
 
-    fun color(): Color {
+    /** Converts this HSB color to an RGB [Color]. */
+    fun toColor(): Color {
         val v = clamped(brightness)
         val s = clamped(saturation)
 

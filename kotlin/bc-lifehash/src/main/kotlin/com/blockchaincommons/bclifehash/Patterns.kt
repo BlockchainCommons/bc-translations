@@ -1,12 +1,14 @@
 package com.blockchaincommons.bclifehash
 
-enum class Pattern {
+/** The symmetry pattern used when rendering a LifeHash image. */
+internal enum class Pattern {
     Snowflake,
     Pinwheel,
     Fiducial,
 }
 
-fun selectPattern(entropy: BitEnumerator, version: Version): Pattern =
+/** Selects a [Pattern] based on the rendering [version] and available [entropy]. */
+internal fun selectPattern(entropy: BitEnumerator, version: Version): Pattern =
     when (version) {
         Version.Fiducial,
         Version.GrayscaleFiducial,

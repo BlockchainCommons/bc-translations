@@ -24,7 +24,7 @@ class GeneratePngsTest {
 
             for (i in 0 until 100) {
                 val input = i.toString()
-                val image = makeFromUtf8(input, version, 1, false)
+                val image = LifeHash.fromUtf8(input, version, 1, false)
 
                 val buffered = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
                 for (y in 0 until image.height) {

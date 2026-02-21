@@ -57,3 +57,26 @@ COMPLETED
 - Fixed: 0
 - Verification: `gradle test` passed for `kotlin/bc-lifehash`.
 - Verdict: IDIOMATIC (no compatibility shims found)
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency pass by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing naming, API design, visibility, documentation, types, and structure.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- Issues found: 20 (8 must-fix, 7 should-fix, 5 nice-to-have)
+- Issues fixed: 20
+- Key changes:
+  - Moved public API from top-level functions to `LifeHash` object; renamed `makeFromX` to `fromX`
+  - Added `equals`/`hashCode`/`toString` to `Image` (ByteArray-aware)
+  - Renamed `Grid.forAll` to `forEach`, `Grid.setAll` to `fill`
+  - Renamed `CellGrid.data()` to `toByteArray()`, `CellGrid.setData()` to `loadFrom()`
+  - Renamed `BitAggregator.data()` to `toByteArray()`, `BitEnumerator.forAll` to `forEach`
+  - Renamed `Color.fromUInt8Values` to `Color.fromRgb`
+  - Made `HSBColor` a data class; renamed `color()` to `toColor()`
+  - Marked internal types with `internal` visibility: Grid, BitEnumerator, BitAggregator, CellGrid, ChangeGrid, FracGrid, ColorGrid, HSBColor, Pattern, ColorFunc utilities
+  - Added KDoc to all public and internal types/functions
+  - Used `PropertyNamingStrategies.SNAKE_CASE` in test JSON mapper instead of per-field `@JsonProperty`
+- Verification: `gradle clean test` passed (1 vector test, 0 failures).
+- Verdict: IDIOMATIC

@@ -8,6 +8,12 @@ package com.blockchaincommons.bclifehash
 
 import java.security.MessageDigest
 
+/**
+ * The rendering variant for a LifeHash image.
+ *
+ * Each version produces a different grid size, generation count, and color
+ * palette selection strategy.
+ */
 enum class Version {
     Version1,
     Version2,
@@ -16,11 +22,34 @@ enum class Version {
     GrayscaleFiducial,
 }
 
+/**
+ * A LifeHash image stored as a flat array of RGB or RGBA bytes.
+ *
+ * @property width  Image width in pixels.
+ * @property height Image height in pixels.
+ * @property colors Raw pixel data in row-major order (3 bytes per pixel for
+ *                  RGB, 4 for RGBA).
+ */
 class Image(
     val width: Int,
     val height: Int,
     val colors: ByteArray,
-)
+) {
+    override fun equals(other: Any?): Boolean =
+        other is Image &&
+            width == other.width &&
+            height == other.height &&
+            colors.contentEquals(other.colors)
+
+    override fun hashCode(): Int {
+        var result = width
+        result = 31 * result + height
+        result = 31 * result + colors.contentHashCode()
+        return result
+    }
+
+    override fun toString(): String = "Image(width=$width, height=$height, bytes=${colors.size})"
+}
 
 private class ByteArrayKey(
     private val bytes: ByteArray,
@@ -36,7 +65,7 @@ private fun sha256(data: ByteArray): ByteArray =
         .getInstance("SHA-256")
         .digest(data)
 
-private fun makeImage(
+private fun renderImage(
     width: Int,
     height: Int,
     floatColors: DoubleArray,
@@ -77,155 +106,198 @@ private fun makeImage(
     )
 }
 
-fun makeFromUtf8(
-    s: String,
-    version: Version,
-    moduleSize: Int,
-    hasAlpha: Boolean,
-): Image = makeFromData(s.toByteArray(Charsets.UTF_8), version, moduleSize, hasAlpha)
+/**
+ * Entry point for generating LifeHash images.
+ *
+ * Three factory methods are provided depending on whether the input is a
+ * UTF-8 string, arbitrary binary data, or a pre-computed 32-byte SHA-256
+ * digest.
+ */
+object LifeHash {
 
-fun makeFromData(
-    data: ByteArray,
-    version: Version,
-    moduleSize: Int,
-    hasAlpha: Boolean,
-): Image {
-    val digest = sha256(data)
-    return makeFromDigest(digest, version, moduleSize, hasAlpha)
-}
+    /**
+     * Generates a LifeHash image from a UTF-8 string.
+     *
+     * The string is encoded to UTF-8 bytes, SHA-256 hashed, and then
+     * rendered.
+     *
+     * @param input      The input string.
+     * @param version    The rendering variant.
+     * @param moduleSize Pixel scaling factor (must be > 0).
+     * @param hasAlpha   Whether to include an alpha channel in the output.
+     * @return The rendered [Image].
+     */
+    fun fromUtf8(
+        input: String,
+        version: Version,
+        moduleSize: Int,
+        hasAlpha: Boolean,
+    ): Image = fromData(input.toByteArray(Charsets.UTF_8), version, moduleSize, hasAlpha)
 
-fun makeFromDigest(
-    digest: ByteArray,
-    version: Version,
-    moduleSize: Int,
-    hasAlpha: Boolean,
-): Image {
-    require(digest.size == 32) { "Digest must be 32 bytes" }
-
-    val (length, maxGenerations) = when (version) {
-        Version.Version1,
-        Version.Version2,
-        -> 16 to 150
-
-        Version.Detailed,
-        Version.Fiducial,
-        Version.GrayscaleFiducial,
-        -> 32 to 300
+    /**
+     * Generates a LifeHash image from arbitrary binary data.
+     *
+     * The data is SHA-256 hashed and then rendered.
+     *
+     * @param data       The input bytes.
+     * @param version    The rendering variant.
+     * @param moduleSize Pixel scaling factor (must be > 0).
+     * @param hasAlpha   Whether to include an alpha channel in the output.
+     * @return The rendered [Image].
+     */
+    fun fromData(
+        data: ByteArray,
+        version: Version,
+        moduleSize: Int,
+        hasAlpha: Boolean,
+    ): Image {
+        val digest = sha256(data)
+        return fromDigest(digest, version, moduleSize, hasAlpha)
     }
 
-    var currentCellGrid = CellGrid(length, length)
-    var nextCellGrid = CellGrid(length, length)
-    var currentChangeGrid = ChangeGrid(length, length)
-    var nextChangeGrid = ChangeGrid(length, length)
+    /**
+     * Generates a LifeHash image from a pre-computed 32-byte SHA-256 digest.
+     *
+     * @param digest     A 32-byte SHA-256 digest.
+     * @param version    The rendering variant.
+     * @param moduleSize Pixel scaling factor (must be > 0).
+     * @param hasAlpha   Whether to include an alpha channel in the output.
+     * @return The rendered [Image].
+     * @throws IllegalArgumentException if [digest] is not exactly 32 bytes.
+     */
+    fun fromDigest(
+        digest: ByteArray,
+        version: Version,
+        moduleSize: Int,
+        hasAlpha: Boolean,
+    ): Image {
+        require(digest.size == 32) { "Digest must be 32 bytes" }
 
-    when (version) {
-        Version.Version1 -> {
-            nextCellGrid.setData(digest)
+        val (length, maxGenerations) = when (version) {
+            Version.Version1,
+            Version.Version2,
+            -> 16 to 150
+
+            Version.Detailed,
+            Version.Fiducial,
+            Version.GrayscaleFiducial,
+            -> 32 to 300
         }
 
-        Version.Version2 -> {
-            val hashed = sha256(digest)
-            nextCellGrid.setData(hashed)
-        }
+        var currentCellGrid = CellGrid(length, length)
+        var nextCellGrid = CellGrid(length, length)
+        var currentChangeGrid = ChangeGrid(length, length)
+        var nextChangeGrid = ChangeGrid(length, length)
 
-        Version.Detailed,
-        Version.Fiducial,
-        Version.GrayscaleFiducial,
-        -> {
-            var digest1 = digest.copyOf()
-            if (version == Version.GrayscaleFiducial) {
-                digest1 = sha256(digest1)
+        when (version) {
+            Version.Version1 -> {
+                nextCellGrid.loadFrom(digest)
             }
-            val digest2 = sha256(digest1)
-            val digest3 = sha256(digest2)
-            val digest4 = sha256(digest3)
-            val digestFinal = digest1 + digest2 + digest3 + digest4
-            nextCellGrid.setData(digestFinal)
-        }
-    }
 
-    nextChangeGrid.grid.setAll(true)
-
-    val historySet = mutableSetOf<ByteArrayKey>()
-    val history = mutableListOf<ByteArray>()
-
-    while (history.size < maxGenerations) {
-        val tmpCell = currentCellGrid
-        currentCellGrid = nextCellGrid
-        nextCellGrid = tmpCell
-
-        val tmpChange = currentChangeGrid
-        currentChangeGrid = nextChangeGrid
-        nextChangeGrid = tmpChange
-
-        val data = currentCellGrid.data()
-        val hash = sha256(data)
-        val key = ByteArrayKey(hash)
-
-        if (historySet.contains(key)) {
-            break
-        }
-
-        historySet.add(key)
-        history.add(data)
-
-        currentCellGrid.nextGeneration(currentChangeGrid, nextCellGrid, nextChangeGrid)
-    }
-
-    val fracGrid = FracGrid(length, length)
-    for ((i, historyData) in history.withIndex()) {
-        currentCellGrid.setData(historyData)
-        val frac = clamped(lerpFrom(0.0, history.size.toDouble(), (i + 1).toDouble()))
-        fracGrid.overlay(currentCellGrid, frac)
-    }
-
-    if (version != Version.Version1) {
-        var minValue = Double.POSITIVE_INFINITY
-        var maxValue = Double.NEGATIVE_INFINITY
-
-        fracGrid.grid.forAll { x, y ->
-            val value = fracGrid.grid.getValue(x, y)
-            if (value < minValue) {
-                minValue = value
+            Version.Version2 -> {
+                val hashed = sha256(digest)
+                nextCellGrid.loadFrom(hashed)
             }
-            if (value > maxValue) {
-                maxValue = value
+
+            Version.Detailed,
+            Version.Fiducial,
+            Version.GrayscaleFiducial,
+            -> {
+                var digest1 = digest.copyOf()
+                if (version == Version.GrayscaleFiducial) {
+                    digest1 = sha256(digest1)
+                }
+                val digest2 = sha256(digest1)
+                val digest3 = sha256(digest2)
+                val digest4 = sha256(digest3)
+                val digestFinal = digest1 + digest2 + digest3 + digest4
+                nextCellGrid.loadFrom(digestFinal)
             }
         }
 
-        val width = fracGrid.grid.width
-        val height = fracGrid.grid.height
-        for (y in 0 until height) {
-            for (x in 0 until width) {
+        nextChangeGrid.grid.fill(true)
+
+        val historySet = mutableSetOf<ByteArrayKey>()
+        val history = mutableListOf<ByteArray>()
+
+        while (history.size < maxGenerations) {
+            val tmpCell = currentCellGrid
+            currentCellGrid = nextCellGrid
+            nextCellGrid = tmpCell
+
+            val tmpChange = currentChangeGrid
+            currentChangeGrid = nextChangeGrid
+            nextChangeGrid = tmpChange
+
+            val data = currentCellGrid.toByteArray()
+            val hash = sha256(data)
+            val key = ByteArrayKey(hash)
+
+            if (key in historySet) {
+                break
+            }
+
+            historySet.add(key)
+            history.add(data)
+
+            currentCellGrid.nextGeneration(currentChangeGrid, nextCellGrid, nextChangeGrid)
+        }
+
+        val fracGrid = FracGrid(length, length)
+        for ((i, historyData) in history.withIndex()) {
+            currentCellGrid.loadFrom(historyData)
+            val frac = clamped(lerpFrom(0.0, history.size.toDouble(), (i + 1).toDouble()))
+            fracGrid.overlay(currentCellGrid, frac)
+        }
+
+        if (version != Version.Version1) {
+            var minValue = Double.POSITIVE_INFINITY
+            var maxValue = Double.NEGATIVE_INFINITY
+
+            fracGrid.grid.forEach { x, y ->
                 val value = fracGrid.grid.getValue(x, y)
-                val normalized = lerpFrom(minValue, maxValue, value)
-                fracGrid.grid.setValue(normalized, x, y)
+                if (value < minValue) {
+                    minValue = value
+                }
+                if (value > maxValue) {
+                    maxValue = value
+                }
+            }
+
+            val width = fracGrid.grid.width
+            val height = fracGrid.grid.height
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    val value = fracGrid.grid.getValue(x, y)
+                    val normalized = lerpFrom(minValue, maxValue, value)
+                    fracGrid.grid.setValue(normalized, x, y)
+                }
             }
         }
-    }
 
-    val entropy = BitEnumerator(digest.copyOf())
-    when (version) {
-        Version.Detailed -> {
-            entropy.next()
+        val entropy = BitEnumerator(digest.copyOf())
+        when (version) {
+            Version.Detailed -> {
+                entropy.next()
+            }
+
+            Version.Version2 -> {
+                entropy.nextUInt2()
+            }
+
+            else -> Unit
         }
 
-        Version.Version2 -> {
-            entropy.nextUInt2()
-        }
+        val gradient = selectGradient(entropy, version)
+        val pattern = selectPattern(entropy, version)
+        val colorGrid = ColorGrid(fracGrid, gradient, pattern)
 
-        else -> Unit
+        return renderImage(
+            colorGrid.grid.width,
+            colorGrid.grid.height,
+            colorGrid.colors(),
+            moduleSize,
+            hasAlpha,
+        )
     }
-
-    val gradient = selectGradient(entropy, version)
-    val pattern = selectPattern(entropy, version)
-    val colorGrid = ColorGrid(fracGrid, gradient, pattern)
-
-    return makeImage(
-        colorGrid.grid.width,
-        colorGrid.grid.height,
-        colorGrid.colors(),
-        moduleSize,
-        hasAlpha,
-    )
 }

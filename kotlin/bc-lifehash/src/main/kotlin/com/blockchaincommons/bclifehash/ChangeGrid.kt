@@ -1,6 +1,9 @@
 package com.blockchaincommons.bclifehash
 
-class ChangeGrid(width: Int, height: Int) {
+/**
+ * Tracks which cells (and their neighbors) changed between generations.
+ */
+internal class ChangeGrid(width: Int, height: Int) {
     val grid = Grid(width, height, false)
 
     fun setChanged(px: Int, py: Int) {

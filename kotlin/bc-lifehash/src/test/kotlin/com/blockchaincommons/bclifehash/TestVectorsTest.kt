@@ -1,6 +1,6 @@
 package com.blockchaincommons.bclifehash
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlin.test.Test
@@ -9,12 +9,9 @@ import kotlin.test.fail
 
 private data class TestVector(
     val input: String,
-    @JsonProperty("input_type")
     val inputType: String,
     val version: String,
-    @JsonProperty("module_size")
     val moduleSize: Int,
-    @JsonProperty("has_alpha")
     val hasAlpha: Boolean,
     val width: Int,
     val height: Int,
@@ -42,6 +39,10 @@ private fun decodeHex(hex: String): ByteArray {
     return bytes
 }
 
+private val mapper = jacksonObjectMapper().apply {
+    propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+}
+
 class TestVectorsTest {
     @Test
     fun testAllVectors() {
@@ -50,7 +51,7 @@ class TestVectorsTest {
                 "Missing test-vectors.json in test resources"
             }.bufferedReader().use { it.readText() }
 
-        val vectors: List<TestVector> = jacksonObjectMapper().readValue(json)
+        val vectors: List<TestVector> = mapper.readValue(json)
         assertEquals(35, vectors.size, "Expected 35 test vectors")
 
         for ((index, vector) in vectors.withIndex()) {
@@ -58,12 +59,12 @@ class TestVectorsTest {
             val image =
                 if (vector.inputType == "hex") {
                     if (vector.input.isEmpty()) {
-                        makeFromData(byteArrayOf(), version, vector.moduleSize, vector.hasAlpha)
+                        LifeHash.fromData(byteArrayOf(), version, vector.moduleSize, vector.hasAlpha)
                     } else {
-                        makeFromData(decodeHex(vector.input), version, vector.moduleSize, vector.hasAlpha)
+                        LifeHash.fromData(decodeHex(vector.input), version, vector.moduleSize, vector.hasAlpha)
                     }
                 } else {
-                    makeFromUtf8(vector.input, version, vector.moduleSize, vector.hasAlpha)
+                    LifeHash.fromUtf8(vector.input, version, vector.moduleSize, vector.hasAlpha)
                 }
 
             assertEquals(
