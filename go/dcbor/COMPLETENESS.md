@@ -26,6 +26,7 @@
 - ✅ Date tag-1 encode/decode helpers are implemented
 - ✅ Date arithmetic helpers added (`AddSeconds`, `SubSeconds`, `AddDuration`, `SubDuration`, `DiffSeconds`) for closer `date.rs` parity
 - ✅ Added date conversion helpers on `CBOR` (`TryIntoDate`, `TryDate`, `IntoDate`) and decode helper (`DecodeDate`)
+- ✅ Added date tagged/untagged CBOR-data helpers (`TaggedCBORData`, `UntaggedCBORData`, `DateFromTaggedCBORData`, `DateFromUntaggedCBORData`) and `Date.ToCBOR` for `CBOREncodable` parity
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ `TryIntoFloat64` now follows Rust cast-back exactness semantics for integer CBOR (including large integer edge cases)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
@@ -54,7 +55,7 @@
 
 ### Implemented in Go
 
-- 103 tests total across:
+- 104 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -79,6 +80,7 @@
   - date arithmetic parity checks
   - supplemental `DateNow`/`DateWithDurationFromNow` bounded-behavior checks
   - date conversion helper parity checks (`TryIntoDate`/`TryDate`/`IntoDate`/`DecodeDate`)
+  - date tagged/untagged CBOR-data helper parity checks (`TaggedCBORData`, `UntaggedCBORData`, `DateFromTaggedCBORData`, `DateFromUntaggedCBORData`)
   - date named-tag display behavior after tag registration
   - annotated hex smoke test
   - translated `walk.rs` traversal parity checks (counts, stop semantics, edge types, key-value semantics, depth limits, primitive/empty structure behavior, text extraction, realistic document traversal)
@@ -116,7 +118,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 77/83 key manifest items (92.8%)
+- API Coverage: 78/83 key manifest items (94.0%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

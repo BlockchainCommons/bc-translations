@@ -147,3 +147,34 @@ func TestDateConversionHelpersParity(t *testing.T) {
 		t.Fatalf("expected WrongTagError for TryIntoDate wrong tag, got %T", err)
 	}
 }
+
+func TestDateTaggedAndUntaggedDataHelpersParity(t *testing.T) {
+	date := DateFromTimestamp(1675854714.25)
+
+	taggedData := date.TaggedCBORData()
+	fromTaggedData, err := DateFromTaggedCBORData(taggedData)
+	if err != nil {
+		t.Fatalf("DateFromTaggedCBORData failed: %v", err)
+	}
+	if math.Abs(fromTaggedData.Timestamp()-date.Timestamp()) > 1e-9 {
+		t.Fatalf("DateFromTaggedCBORData timestamp mismatch: got %.12f want %.12f", fromTaggedData.Timestamp(), date.Timestamp())
+	}
+
+	untaggedData := date.UntaggedCBORData()
+	fromUntaggedData, err := DateFromUntaggedCBORData(untaggedData)
+	if err != nil {
+		t.Fatalf("DateFromUntaggedCBORData failed: %v", err)
+	}
+	if math.Abs(fromUntaggedData.Timestamp()-date.Timestamp()) > 1e-9 {
+		t.Fatalf("DateFromUntaggedCBORData timestamp mismatch: got %.12f want %.12f", fromUntaggedData.Timestamp(), date.Timestamp())
+	}
+
+	if got, want := ToCBORData(date), taggedData; string(got) != string(want) {
+		t.Fatalf("ToCBORData(Date) mismatch: got=%x want=%x", got, want)
+	}
+
+	wrongTagData := ToTaggedValue(TagWithValue(2), MustFromAny(0)).ToCBORData()
+	if _, err := DateFromTaggedCBORData(wrongTagData); err == nil {
+		t.Fatalf("expected wrong-tag failure for DateFromTaggedCBORData")
+	}
+}

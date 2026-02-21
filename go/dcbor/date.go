@@ -97,9 +97,17 @@ func (d Date) CBORTags() []Tag {
 	return TagsForValues([]TagValue{TAG_DATE})
 }
 
+func (d Date) ToCBOR() CBOR {
+	return d.TaggedCBOR()
+}
+
 func (d Date) UntaggedCBOR() CBOR {
 	c, _ := FromAny(d.Timestamp())
 	return c
+}
+
+func (d Date) UntaggedCBORData() []byte {
+	return d.UntaggedCBOR().ToCBORData()
 }
 
 func (d Date) TaggedCBOR() CBOR {
@@ -108,6 +116,10 @@ func (d Date) TaggedCBOR() CBOR {
 		return NewCBORTagged(TagWithValue(TAG_DATE), d.UntaggedCBOR())
 	}
 	return NewCBORTagged(tags[0], d.UntaggedCBOR())
+}
+
+func (d Date) TaggedCBORData() []byte {
+	return d.TaggedCBOR().ToCBORData()
 }
 
 func DateFromUntaggedCBOR(cbor CBOR) (Date, error) {
@@ -135,4 +147,20 @@ func DateFromTaggedCBOR(cbor CBOR) (Date, error) {
 		return Date{}, WrongTagError{Expected: TagWithValue(TAG_DATE), Actual: tag}
 	}
 	return DateFromUntaggedCBOR(value)
+}
+
+func DateFromTaggedCBORData(data []byte) (Date, error) {
+	cbor, err := TryFromData(data)
+	if err != nil {
+		return Date{}, err
+	}
+	return DateFromTaggedCBOR(cbor)
+}
+
+func DateFromUntaggedCBORData(data []byte) (Date, error) {
+	cbor, err := TryFromData(data)
+	if err != nil {
+		return Date{}, err
+	}
+	return DateFromUntaggedCBOR(cbor)
 }
