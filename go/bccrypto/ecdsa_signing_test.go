@@ -9,7 +9,7 @@ import (
 var ecdsaMessage = []byte("Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.")
 
 func TestECDSASigning(t *testing.T) {
-	rng := bcrand.MakeFakeRandomNumberGenerator()
+	rng := bcrand.NewFakeRandomNumberGenerator()
 	privateKey := ECDSANewPrivateKeyUsing(rng)
 	publicKey := ECDSAPublicKeyFromPrivateKey(privateKey)
 	signature := ECDSASign(privateKey, ecdsaMessage)

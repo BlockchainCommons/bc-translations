@@ -36,12 +36,6 @@ func (b *ByteString) Extend(other []byte) {
 	b.data = append(b.data, other...)
 }
 
-// Bytes returns a copy of the underlying bytes.
-// This is an alias for Data provided for idiomatic Go naming.
-func (b ByteString) Bytes() []byte {
-	return b.Data()
-}
-
 // Equal reports byte-for-byte equality.
 func (b ByteString) Equal(other ByteString) bool {
 	return bytes.Equal(b.data, other.data)

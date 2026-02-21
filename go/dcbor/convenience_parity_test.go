@@ -15,8 +15,8 @@ func TestByteStringAndTextConvenienceParity(t *testing.T) {
 	if !byteString.IsByteString() {
 		t.Fatalf("expected byte string")
 	}
-	if got, err := byteString.TryByteString(); err != nil || !bytes.Equal(got, []byte{0x00, 0x11, 0x22}) {
-		t.Fatalf("TryByteString mismatch: got=%x err=%v", got, err)
+	if got, err := byteString.TryIntoByteString(); err != nil || !bytes.Equal(got, []byte{0x00, 0x11, 0x22}) {
+		t.Fatalf("TryIntoByteString mismatch: got=%x err=%v", got, err)
 	}
 	if got, ok := byteString.IntoByteString(); !ok || !bytes.Equal(got, []byte{0x00, 0x11, 0x22}) {
 		t.Fatalf("IntoByteString mismatch: got=%x ok=%v", got, ok)
@@ -44,8 +44,8 @@ func TestByteStringAndTextConvenienceParity(t *testing.T) {
 	if !text.IsText() {
 		t.Fatalf("expected text type")
 	}
-	if got, err := text.TryText(); err != nil || got != "hello" {
-		t.Fatalf("TryText mismatch: got=%q err=%v", got, err)
+	if got, err := text.TryIntoText(); err != nil || got != "hello" {
+		t.Fatalf("TryIntoText mismatch: got=%q err=%v", got, err)
 	}
 	if got, ok := text.IntoText(); !ok || got != "hello" {
 		t.Fatalf("IntoText mismatch: got=%q ok=%v", got, ok)
@@ -64,8 +64,8 @@ func TestArrayMapAndTaggedConvenienceParity(t *testing.T) {
 	if !array.IsArray() {
 		t.Fatalf("expected array type")
 	}
-	if got, err := array.TryArray(); err != nil || len(got) != 3 {
-		t.Fatalf("TryArray mismatch: len=%d err=%v", len(got), err)
+	if got, err := array.TryIntoArray(); err != nil || len(got) != 3 {
+		t.Fatalf("TryIntoArray mismatch: len=%d err=%v", len(got), err)
 	}
 	if got, ok := array.IntoArray(); !ok || len(got) != 3 {
 		t.Fatalf("IntoArray mismatch: len=%d ok=%v", len(got), ok)
@@ -80,8 +80,8 @@ func TestArrayMapAndTaggedConvenienceParity(t *testing.T) {
 	if !mapCBOR.IsMap() {
 		t.Fatalf("expected map type")
 	}
-	if got, err := mapCBOR.TryMap(); err != nil || got.Len() != 1 {
-		t.Fatalf("TryMap mismatch: len=%d err=%v", got.Len(), err)
+	if got, err := mapCBOR.TryIntoMap(); err != nil || got.Len() != 1 {
+		t.Fatalf("TryIntoMap mismatch: len=%d err=%v", got.Len(), err)
 	}
 	if got, ok := mapCBOR.IntoMap(); !ok || got.Len() != 1 {
 		t.Fatalf("IntoMap mismatch: len=%d ok=%v", got.Len(), ok)
@@ -94,9 +94,9 @@ func TestArrayMapAndTaggedConvenienceParity(t *testing.T) {
 	if !tagged.IsTaggedValue() {
 		t.Fatalf("expected tagged value")
 	}
-	tag, content, err := tagged.TryTaggedValue()
+	tag, content, err := tagged.TryIntoTaggedValue()
 	if err != nil {
-		t.Fatalf("TryTaggedValue failed: %v", err)
+		t.Fatalf("TryIntoTaggedValue failed: %v", err)
 	}
 	if got, want := tag.Value(), TagValue(100); got != want {
 		t.Fatalf("tag value mismatch: got %d want %d", got, want)
@@ -113,8 +113,8 @@ func TestBoolNullNaNConvenienceParity(t *testing.T) {
 	if !True().IsBool() || !False().IsBool() {
 		t.Fatalf("expected bool convenience flags")
 	}
-	if got, err := True().TryBool(); err != nil || !got {
-		t.Fatalf("TryBool(true) mismatch: got=%v err=%v", got, err)
+	if got, err := True().TryIntoBool(); err != nil || !got {
+		t.Fatalf("TryIntoBool(true) mismatch: got=%v err=%v", got, err)
 	}
 	if got, err := False().TryIntoBool(); err != nil || got {
 		t.Fatalf("TryIntoBool(false) mismatch: got=%v err=%v", got, err)

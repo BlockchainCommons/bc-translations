@@ -1,17 +1,11 @@
-// Package bcrand provides random number utilities for Blockchain Commons projects.
+// Package bcrand provides random number generators and helper utilities.
 //
-// It exposes a uniform API for the random number primitives used in
-// higher-level Blockchain Commons projects, including a cryptographically
-// strong [SecureRandomNumberGenerator] and a deterministic
-// [SeededRandomNumberGenerator].
+// The package exposes two generators:
+//   - [SecureRandomNumberGenerator] for cryptographically strong randomness.
+//   - [SeededRandomNumberGenerator] for deterministic test vectors.
 //
-// Both generators implement the [RandomNumberGenerator] interface to produce
-// random numbers compatible with the RandomNumberGenerator Swift protocol
-// used in macOS and iOS, which is important when using the deterministic
-// random number generator for cross-platform testing.
-//
-// The package also includes several convenience functions for generating
-// secure and deterministic random numbers.
+// Both satisfy [RandomNumberGenerator], which makes them interchangeable in
+// callers that need either secure randomness or deterministic output.
 package bcrand
 
 import (
@@ -27,30 +21,40 @@ type RandomNumberGenerator interface {
 	FillRandomData(data []byte)
 }
 
-// RngRandomData returns a slice of random bytes of the given size.
-func RngRandomData(rng RandomNumberGenerator, size int) []byte {
+// RandomDataFrom returns a slice of random bytes using rng.
+func RandomDataFrom(rng RandomNumberGenerator, size int) []byte {
 	data := make([]byte, size)
 	rng.FillRandomData(data)
 	return data
 }
 
-// RngFillRandomData fills the given slice with random bytes.
-func RngFillRandomData(rng RandomNumberGenerator, data []byte) {
+// FillRandomDataFrom fills data with random bytes using rng.
+func FillRandomDataFrom(rng RandomNumberGenerator, data []byte) {
 	rng.FillRandomData(data)
 }
 
-// bitMask returns the bitmask for the given bit width.
-func bitMask(bw uint) uint64 {
-	if bw >= 64 {
+// bitMask returns the bit mask for bitWidth.
+//
+// bitWidth must be one of: 8, 16, 32, or 64.
+func bitMask(bitWidth uint) uint64 {
+	switch bitWidth {
+	case 8:
+		return 0xFF
+	case 16:
+		return 0xFFFF
+	case 32:
+		return 0xFFFFFFFF
+	case 64:
 		return ^uint64(0)
+	default:
+		panic("bit width must be 8, 16, 32, or 64")
 	}
-	return (1 << bw) - 1
 }
 
 // wideMul performs a full-width multiplication of two values,
 // returning (lo, hi) components at the specified bit width.
-func wideMul(a, b uint64, bw uint) (lo, hi uint64) {
-	switch bw {
+func wideMul(a, b uint64, bitWidth uint) (lo, hi uint64) {
+	switch bitWidth {
 	case 8:
 		product := uint16(a) * uint16(b)
 		return uint64(product & 0xFF), uint64(product >> 8)
@@ -64,98 +68,98 @@ func wideMul(a, b uint64, bw uint) (lo, hi uint64) {
 		hi, lo := bits.Mul64(a, b)
 		return lo, hi
 	default:
-		panic("unsupported bit width")
+		panic("bit width must be 8, 16, 32, or 64")
 	}
 }
 
-// RngNextWithUpperBound returns a random value that is less than the given
+// NextWithUpperBound returns a random value that is less than the given
 // upper bound. The upperBound must be non-zero. Every value in [0, upperBound)
 // is equally likely to be returned.
 //
-// The bw parameter specifies the working bit width (8, 16, 32, or 64).
-func RngNextWithUpperBound(rng RandomNumberGenerator, upperBound uint64, bw uint) uint64 {
+// bitWidth specifies the working bit width (8, 16, 32, or 64).
+func NextWithUpperBound(rng RandomNumberGenerator, upperBound uint64, bitWidth uint) uint64 {
 	if upperBound == 0 {
 		panic("upper bound must be non-zero")
 	}
 
-	mask := bitMask(bw)
+	mask := bitMask(bitWidth)
 	random := rng.NextU64() & mask
-	lo, hi := wideMul(random, upperBound, bw)
+	lo, hi := wideMul(random, upperBound, bitWidth)
 
 	if lo < upperBound {
 		var t uint64
-		if bw >= 64 {
+		if bitWidth >= 64 {
 			t = (0 - upperBound) % upperBound
 		} else {
-			t = ((1 << bw) - upperBound) % upperBound
+			t = ((1 << bitWidth) - upperBound) % upperBound
 		}
 		for lo < t {
 			random = rng.NextU64() & mask
-			lo, hi = wideMul(random, upperBound, bw)
+			lo, hi = wideMul(random, upperBound, bitWidth)
 		}
 	}
 
 	return hi
 }
 
-// RngNextInRange returns a random value within the specified range, using the
-// given generator as a source for randomness. The range is half-open: [start, end).
+// NextInRange returns a random value within the specified range using rng as
+// the randomness source. The range is half-open: [start, end).
 //
-// The bw parameter specifies the working bit width (8, 16, 32, or 64).
-func RngNextInRange(rng RandomNumberGenerator, start, end int64, bw uint) int64 {
+// bitWidth specifies the working bit width (8, 16, 32, or 64).
+func NextInRange(rng RandomNumberGenerator, start, end int64, bitWidth uint) int64 {
 	if start >= end {
 		panic("start must be less than end")
 	}
 
 	delta := uint64(end - start)
-	mask := bitMask(bw)
+	mask := bitMask(bitWidth)
 
 	if delta == mask {
-		if bw >= 64 {
+		if bitWidth >= 64 {
 			return int64(rng.NextU64())
 		}
 		return start + int64(rng.NextU64()&mask)
 	}
 
-	random := RngNextWithUpperBound(rng, delta, bw)
+	random := NextWithUpperBound(rng, delta, bitWidth)
 	return start + int64(random)
 }
 
-// RngNextInClosedRange returns a random value in the closed range [start, end].
+// NextInClosedRange returns a random value in the closed range [start, end].
 //
-// The bits parameter specifies the working bit width (8, 16, 32, or 64).
-func RngNextInClosedRange(rng RandomNumberGenerator, start, end int64, bw uint) int64 {
+// bitWidth specifies the working bit width (8, 16, 32, or 64).
+func NextInClosedRange(rng RandomNumberGenerator, start, end int64, bitWidth uint) int64 {
 	if start > end {
 		panic("start must not be greater than end")
 	}
 
 	delta := uint64(end - start)
-	mask := bitMask(bw)
+	mask := bitMask(bitWidth)
 
 	if delta == mask {
-		if bw >= 64 {
+		if bitWidth >= 64 {
 			return int64(rng.NextU64())
 		}
 		return start + int64(rng.NextU64()&mask)
 	}
 
-	random := RngNextWithUpperBound(rng, delta+1, bw)
+	random := NextWithUpperBound(rng, delta+1, bitWidth)
 	return start + int64(random)
 }
 
-// RngRandomArray returns a slice of random bytes of the given size.
-func RngRandomArray(rng RandomNumberGenerator, size int) []byte {
+// RandomArrayFrom returns a slice of random bytes using rng.
+func RandomArrayFrom(rng RandomNumberGenerator, size int) []byte {
 	data := make([]byte, size)
 	rng.FillRandomData(data)
 	return data
 }
 
-// RngRandomBool returns a random boolean value.
-func RngRandomBool(rng RandomNumberGenerator) bool {
+// RandomBool returns a random boolean using rng.
+func RandomBool(rng RandomNumberGenerator) bool {
 	return rng.NextU32()%2 == 0
 }
 
-// RngRandomU32 returns a random uint32 value.
-func RngRandomU32(rng RandomNumberGenerator) uint32 {
+// RandomU32 returns a random uint32 using rng.
+func RandomU32(rng RandomNumberGenerator) uint32 {
 	return rng.NextU32()
 }

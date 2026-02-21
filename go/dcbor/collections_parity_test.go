@@ -147,8 +147,8 @@ func TestSetConversionHelperParity(t *testing.T) {
 	if got, want := NewCBORArray(set.AsVec()).DiagnosticFlat(), "[1, 2, 3]"; got != want {
 		t.Fatalf("TryIntoSet ordering mismatch: got %q want %q", got, want)
 	}
-	if got, err := orderedArray.TrySet(); err != nil || got.Len() != 3 {
-		t.Fatalf("TrySet mismatch: len=%d err=%v", got.Len(), err)
+	if got, err := orderedArray.TryIntoSet(); err != nil || got.Len() != 3 {
+		t.Fatalf("TryIntoSet mismatch: len=%d err=%v", got.Len(), err)
 	}
 	if got, ok := orderedArray.IntoSet(); !ok || got.Len() != 3 {
 		t.Fatalf("IntoSet mismatch: len=%d ok=%v", got.Len(), ok)

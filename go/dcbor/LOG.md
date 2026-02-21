@@ -1418,3 +1418,21 @@ COMPLETED
 - Re-ran gofmt on all files
 - All 97 tests passing after fixes: `go test ./... -count=1`
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 -- Stage 4: Fluency Critique
+STARTED
+- Auditing all extant Go targets for remaining compatibility/legacy symbols.
+- Removing compatibility aliases in `go/dcbor` and propagating breakages if any.
+
+## 2026-02-21 -- Stage 4: Fluency Critique
+COMPLETED
+- Removed compatibility alias APIs from `CBOR`: deleted `Try*` alias methods that duplicated `TryInto*`.
+- Removed `ByteString.Bytes()` compatibility alias and retained `Data()` as the single byte accessor.
+- Updated `dcbor` parity tests and completeness notes to reference canonical APIs.
+- Validation passed:
+  - `go test ./...` in `go/dcbor`
+  - `go test ./...` in `go/bclifehash`
+  - `go test ./...` in `go/bcrand`
+  - `go test ./...` in `go/bccrypto`
+  - `go test ./...` in `go/bcshamir`
+- VERDICT: IDIOMATIC

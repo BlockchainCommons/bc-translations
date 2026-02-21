@@ -120,8 +120,8 @@ func TestDateConversionHelpersParity(t *testing.T) {
 	if got, err := tagged.TryIntoDate(); err != nil || got.String() != "2022-03-21T18:24:31Z" {
 		t.Fatalf("TryIntoDate mismatch: got=%v err=%v", got, err)
 	}
-	if got, err := tagged.TryDate(); err != nil || got.String() != "2022-03-21T18:24:31Z" {
-		t.Fatalf("TryDate mismatch: got=%v err=%v", got, err)
+	if got, err := tagged.TryIntoDate(); err != nil || got.String() != "2022-03-21T18:24:31Z" {
+		t.Fatalf("TryIntoDate mismatch: got=%v err=%v", got, err)
 	}
 	if got, ok := tagged.IntoDate(); !ok || got.String() != "2022-03-21T18:24:31Z" {
 		t.Fatalf("IntoDate mismatch: got=%v ok=%v", got, ok)

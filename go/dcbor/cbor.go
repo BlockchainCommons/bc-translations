@@ -503,11 +503,6 @@ func (c CBOR) TryIntoUInt64() (uint64, error) {
 	return 0, ErrWrongType
 }
 
-// TryUInt64 is an alias for TryIntoUInt64.
-func (c CBOR) TryUInt64() (uint64, error) {
-	return c.TryIntoUInt64()
-}
-
 // IntoUInt64 converts the value to uint64, returning false on failure.
 func (c CBOR) IntoUInt64() (uint64, bool) {
 	value, err := c.TryIntoUInt64()
@@ -537,11 +532,6 @@ func (c CBOR) TryIntoInt64() (int64, error) {
 	}
 }
 
-// TryInt64 is an alias for TryIntoInt64.
-func (c CBOR) TryInt64() (int64, error) {
-	return c.TryIntoInt64()
-}
-
 // IntoInt64 converts the value to int64, returning false on failure.
 func (c CBOR) IntoInt64() (int64, bool) {
 	value, err := c.TryIntoInt64()
@@ -561,11 +551,6 @@ func (c CBOR) TryIntoInt32() (int32, error) {
 		return 0, ErrOutOfRange
 	}
 	return int32(value), nil
-}
-
-// TryInt32 is an alias for TryIntoInt32.
-func (c CBOR) TryInt32() (int32, error) {
-	return c.TryIntoInt32()
 }
 
 // IntoInt32 converts the value to int32, returning false on failure.
@@ -589,11 +574,6 @@ func (c CBOR) TryIntoInt16() (int16, error) {
 	return int16(value), nil
 }
 
-// TryInt16 is an alias for TryIntoInt16.
-func (c CBOR) TryInt16() (int16, error) {
-	return c.TryIntoInt16()
-}
-
 // IntoInt16 converts the value to int16, returning false on failure.
 func (c CBOR) IntoInt16() (int16, bool) {
 	value, err := c.TryIntoInt16()
@@ -613,11 +593,6 @@ func (c CBOR) TryIntoInt8() (int8, error) {
 		return 0, ErrOutOfRange
 	}
 	return int8(value), nil
-}
-
-// TryInt8 is an alias for TryIntoInt8.
-func (c CBOR) TryInt8() (int8, error) {
-	return c.TryIntoInt8()
 }
 
 // IntoInt8 converts the value to int8, returning false on failure.
@@ -641,11 +616,6 @@ func (c CBOR) TryIntoInt() (int, error) {
 	return int(value), nil
 }
 
-// TryInt is an alias for TryIntoInt.
-func (c CBOR) TryInt() (int, error) {
-	return c.TryIntoInt()
-}
-
 // IntoInt converts the value to native-size int, returning false on failure.
 func (c CBOR) IntoInt() (int, bool) {
 	value, err := c.TryIntoInt()
@@ -665,11 +635,6 @@ func (c CBOR) TryIntoUInt32() (uint32, error) {
 		return 0, ErrOutOfRange
 	}
 	return uint32(value), nil
-}
-
-// TryUInt32 is an alias for TryIntoUInt32.
-func (c CBOR) TryUInt32() (uint32, error) {
-	return c.TryIntoUInt32()
 }
 
 // IntoUInt32 converts the value to uint32, returning false on failure.
@@ -693,11 +658,6 @@ func (c CBOR) TryIntoUInt16() (uint16, error) {
 	return uint16(value), nil
 }
 
-// TryUInt16 is an alias for TryIntoUInt16.
-func (c CBOR) TryUInt16() (uint16, error) {
-	return c.TryIntoUInt16()
-}
-
 // IntoUInt16 converts the value to uint16, returning false on failure.
 func (c CBOR) IntoUInt16() (uint16, bool) {
 	value, err := c.TryIntoUInt16()
@@ -719,11 +679,6 @@ func (c CBOR) TryIntoUInt8() (uint8, error) {
 	return uint8(value), nil
 }
 
-// TryUInt8 is an alias for TryIntoUInt8.
-func (c CBOR) TryUInt8() (uint8, error) {
-	return c.TryIntoUInt8()
-}
-
 // IntoUInt8 converts the value to uint8, returning false on failure.
 func (c CBOR) IntoUInt8() (uint8, bool) {
 	value, err := c.TryIntoUInt8()
@@ -743,11 +698,6 @@ func (c CBOR) TryIntoUInt() (uint, error) {
 		return 0, ErrOutOfRange
 	}
 	return uint(value), nil
-}
-
-// TryUInt is an alias for TryIntoUInt.
-func (c CBOR) TryUInt() (uint, error) {
-	return c.TryIntoUInt()
 }
 
 // IntoUInt converts the value to native-size uint, returning false on failure.
@@ -824,11 +774,6 @@ func (c CBOR) TryIntoBigUint() (*big.Int, error) {
 	}
 }
 
-// TryBigUint is an alias for TryIntoBigUint.
-func (c CBOR) TryBigUint() (*big.Int, error) {
-	return c.TryIntoBigUint()
-}
-
 // IntoBigUint converts to big integer, returning false on failure.
 func (c CBOR) IntoBigUint() (*big.Int, bool) {
 	value, err := c.TryIntoBigUint()
@@ -863,11 +808,6 @@ func (c CBOR) TryIntoBigInt() (*big.Int, error) {
 	default:
 		return nil, ErrWrongType
 	}
-}
-
-// TryBigInt is an alias for TryIntoBigInt.
-func (c CBOR) TryBigInt() (*big.Int, error) {
-	return c.TryIntoBigInt()
 }
 
 // IntoBigInt converts to signed big integer, returning false on failure.
@@ -917,11 +857,6 @@ func (c CBOR) TryIntoFloat16() (Float16, error) {
 	default:
 		return 0, ErrWrongType
 	}
-}
-
-// TryFloat16 is an alias for TryIntoFloat16.
-func (c CBOR) TryFloat16() (Float16, error) {
-	return c.TryIntoFloat16()
 }
 
 // IntoFloat16 converts to Float16, returning false on failure.
@@ -998,11 +933,6 @@ func (c CBOR) TryIntoFloat32() (float32, error) {
 	}
 }
 
-// TryFloat32 is an alias for TryIntoFloat32.
-func (c CBOR) TryFloat32() (float32, error) {
-	return c.TryIntoFloat32()
-}
-
 // IntoFloat32 converts to float32, returning false on failure.
 func (c CBOR) IntoFloat32() (float32, bool) {
 	value, err := c.TryIntoFloat32()
@@ -1010,11 +940,6 @@ func (c CBOR) IntoFloat32() (float32, bool) {
 		return 0, false
 	}
 	return value, true
-}
-
-// TryFloat64 is an alias for TryIntoFloat64.
-func (c CBOR) TryFloat64() (float64, error) {
-	return c.TryIntoFloat64()
 }
 
 // IntoFloat64 converts to float64, returning false on failure.
@@ -1102,11 +1027,6 @@ func (c CBOR) IntoByteString() ([]byte, bool) {
 	return value, true
 }
 
-// TryByteString is an alias for TryIntoByteString.
-func (c CBOR) TryByteString() ([]byte, error) {
-	return c.TryIntoByteString()
-}
-
 // IsTaggedValue reports whether the value is tagged.
 func (c CBOR) IsTaggedValue() bool {
 	return c.kind == CBORKindTagged
@@ -1121,11 +1041,6 @@ func (c CBOR) TryIntoTaggedValue() (Tag, CBOR, error) {
 	return tag, value, nil
 }
 
-// TryTaggedValue is an alias for TryIntoTaggedValue.
-func (c CBOR) TryTaggedValue() (Tag, CBOR, error) {
-	return c.TryIntoTaggedValue()
-}
-
 // TryIntoExpectedTaggedValue converts tagged value and validates expected tag.
 func (c CBOR) TryIntoExpectedTaggedValue(expected Tag) (CBOR, error) {
 	tag, value, err := c.TryIntoTaggedValue()
@@ -1138,19 +1053,9 @@ func (c CBOR) TryIntoExpectedTaggedValue(expected Tag) (CBOR, error) {
 	return value, nil
 }
 
-// TryExpectedTaggedValue is an alias for TryIntoExpectedTaggedValue.
-func (c CBOR) TryExpectedTaggedValue(expected Tag) (CBOR, error) {
-	return c.TryIntoExpectedTaggedValue(expected)
-}
-
 // TryIntoDate strictly converts a tagged date value.
 func (c CBOR) TryIntoDate() (Date, error) {
 	return DateFromTaggedCBOR(c)
-}
-
-// TryDate is an alias for TryIntoDate.
-func (c CBOR) TryDate() (Date, error) {
-	return c.TryIntoDate()
 }
 
 // IntoDate converts to Date, returning false on failure.
@@ -1175,11 +1080,6 @@ func (c CBOR) IsText() bool {
 	return c.kind == CBORKindText
 }
 
-// TryText is an alias for TryIntoText.
-func (c CBOR) TryText() (string, error) {
-	return c.TryIntoText()
-}
-
 // IntoText converts to text, returning false on failure.
 func (c CBOR) IntoText() (string, bool) {
 	value, err := c.TryIntoText()
@@ -1202,11 +1102,6 @@ func (c CBOR) IsArray() bool {
 	return c.kind == CBORKindArray
 }
 
-// TryArray is an alias for TryIntoArray.
-func (c CBOR) TryArray() ([]CBOR, error) {
-	return c.TryIntoArray()
-}
-
 // IntoArray converts to array, returning false on failure.
 func (c CBOR) IntoArray() ([]CBOR, bool) {
 	value, err := c.TryIntoArray()
@@ -1223,11 +1118,6 @@ func (c CBOR) TryIntoSet() (Set, error) {
 		return Set{}, err
 	}
 	return TrySetFromVec(items)
-}
-
-// TrySet is an alias for TryIntoSet.
-func (c CBOR) TrySet() (Set, error) {
-	return c.TryIntoSet()
 }
 
 // IntoSet converts to Set, returning false on failure.
@@ -1252,11 +1142,6 @@ func (c CBOR) IsMap() bool {
 	return c.kind == CBORKindMap
 }
 
-// TryMap is an alias for TryIntoMap.
-func (c CBOR) TryMap() (Map, error) {
-	return c.TryIntoMap()
-}
-
 // IntoMap converts to map, returning false on failure.
 func (c CBOR) IntoMap() (Map, bool) {
 	value, err := c.TryIntoMap()
@@ -1272,11 +1157,6 @@ func (c CBOR) TryIntoSimpleValue() (Simple, error) {
 		return value, nil
 	}
 	return Simple{}, ErrWrongType
-}
-
-// TrySimpleValue is an alias for TryIntoSimpleValue.
-func (c CBOR) TrySimpleValue() (Simple, error) {
-	return c.TryIntoSimpleValue()
 }
 
 // IntoSimpleValue converts to simple payload, returning false on failure.
@@ -1319,11 +1199,6 @@ func (c CBOR) TryIntoBool() (bool, error) {
 		return value, nil
 	}
 	return false, ErrWrongType
-}
-
-// TryBool is an alias for TryIntoBool.
-func (c CBOR) TryBool() (bool, error) {
-	return c.TryIntoBool()
 }
 
 // IsTrue reports whether the value is simple true.

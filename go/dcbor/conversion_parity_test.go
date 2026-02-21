@@ -445,8 +445,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := int8Value.TryIntoInt8(); err != nil || got != -21 {
 		t.Fatalf("TryIntoInt8 mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := int8Value.TryInt8(); err != nil || got != -21 {
-		t.Fatalf("TryInt8 mismatch: got=%d err=%v", got, err)
+	if got, err := int8Value.TryIntoInt8(); err != nil || got != -21 {
+		t.Fatalf("TryIntoInt8 mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := int8Value.IntoInt8(); !ok || got != -21 {
 		t.Fatalf("IntoInt8 mismatch: got=%d ok=%v", got, ok)
@@ -456,8 +456,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := int16Value.TryIntoInt16(); err != nil || got != -21 {
 		t.Fatalf("TryIntoInt16 mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := int16Value.TryInt16(); err != nil || got != -21 {
-		t.Fatalf("TryInt16 mismatch: got=%d err=%v", got, err)
+	if got, err := int16Value.TryIntoInt16(); err != nil || got != -21 {
+		t.Fatalf("TryIntoInt16 mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := int16Value.IntoInt16(); !ok || got != -21 {
 		t.Fatalf("IntoInt16 mismatch: got=%d ok=%v", got, ok)
@@ -467,8 +467,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := int32Value.TryIntoInt32(); err != nil || got != 2147483647 {
 		t.Fatalf("TryIntoInt32 mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := int32Value.TryInt32(); err != nil || got != 2147483647 {
-		t.Fatalf("TryInt32 mismatch: got=%d err=%v", got, err)
+	if got, err := int32Value.TryIntoInt32(); err != nil || got != 2147483647 {
+		t.Fatalf("TryIntoInt32 mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := int32Value.IntoInt32(); !ok || got != 2147483647 {
 		t.Fatalf("IntoInt32 mismatch: got=%d ok=%v", got, ok)
@@ -478,8 +478,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := intValue.TryIntoInt(); err != nil || got != -42 {
 		t.Fatalf("TryIntoInt mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := intValue.TryInt(); err != nil || got != -42 {
-		t.Fatalf("TryInt mismatch: got=%d err=%v", got, err)
+	if got, err := intValue.TryIntoInt(); err != nil || got != -42 {
+		t.Fatalf("TryIntoInt mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := intValue.IntoInt(); !ok || got != -42 {
 		t.Fatalf("IntoInt mismatch: got=%d ok=%v", got, ok)
@@ -489,8 +489,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := uint8Value.TryIntoUInt8(); err != nil || got != 255 {
 		t.Fatalf("TryIntoUInt8 mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := uint8Value.TryUInt8(); err != nil || got != 255 {
-		t.Fatalf("TryUInt8 mismatch: got=%d err=%v", got, err)
+	if got, err := uint8Value.TryIntoUInt8(); err != nil || got != 255 {
+		t.Fatalf("TryIntoUInt8 mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := uint8Value.IntoUInt8(); !ok || got != 255 {
 		t.Fatalf("IntoUInt8 mismatch: got=%d ok=%v", got, ok)
@@ -500,8 +500,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := uint16Value.TryIntoUInt16(); err != nil || got != 65535 {
 		t.Fatalf("TryIntoUInt16 mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := uint16Value.TryUInt16(); err != nil || got != 65535 {
-		t.Fatalf("TryUInt16 mismatch: got=%d err=%v", got, err)
+	if got, err := uint16Value.TryIntoUInt16(); err != nil || got != 65535 {
+		t.Fatalf("TryIntoUInt16 mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := uint16Value.IntoUInt16(); !ok || got != 65535 {
 		t.Fatalf("IntoUInt16 mismatch: got=%d ok=%v", got, ok)
@@ -511,8 +511,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := uint32Value.TryIntoUInt32(); err != nil || got != 4294967295 {
 		t.Fatalf("TryIntoUInt32 mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := uint32Value.TryUInt32(); err != nil || got != 4294967295 {
-		t.Fatalf("TryUInt32 mismatch: got=%d err=%v", got, err)
+	if got, err := uint32Value.TryIntoUInt32(); err != nil || got != 4294967295 {
+		t.Fatalf("TryIntoUInt32 mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := uint32Value.IntoUInt32(); !ok || got != 4294967295 {
 		t.Fatalf("IntoUInt32 mismatch: got=%d ok=%v", got, ok)
@@ -522,8 +522,8 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, err := uintValue.TryIntoUInt(); err != nil || got != 42 {
 		t.Fatalf("TryIntoUInt mismatch: got=%d err=%v", got, err)
 	}
-	if got, err := uintValue.TryUInt(); err != nil || got != 42 {
-		t.Fatalf("TryUInt mismatch: got=%d err=%v", got, err)
+	if got, err := uintValue.TryIntoUInt(); err != nil || got != 42 {
+		t.Fatalf("TryIntoUInt mismatch: got=%d err=%v", got, err)
 	}
 	if got, ok := uintValue.IntoUInt(); !ok || got != 42 {
 		t.Fatalf("IntoUInt mismatch: got=%d ok=%v", got, ok)
@@ -956,8 +956,8 @@ func TestFloat32ConversionParity(t *testing.T) {
 	if got, ok := MustFromAny(21.5).IntoFloat32(); !ok || got != float32(21.5) {
 		t.Fatalf("IntoFloat32 mismatch: got=%v ok=%v", got, ok)
 	}
-	if got, err := MustFromAny(21.5).TryFloat32(); err != nil || got != float32(21.5) {
-		t.Fatalf("TryFloat32 mismatch: got=%v err=%v", got, err)
+	if got, err := MustFromAny(21.5).TryIntoFloat32(); err != nil || got != float32(21.5) {
+		t.Fatalf("TryIntoFloat32 mismatch: got=%v err=%v", got, err)
 	}
 	if _, ok := MustFromAny("x").IntoFloat32(); ok {
 		t.Fatalf("expected IntoFloat32 to fail for non-number")
@@ -990,8 +990,8 @@ func TestBigIntConversionParity(t *testing.T) {
 		t.Fatalf("DecodeBigInt mismatch: got=%v err=%v", got, err)
 	}
 
-	if got, err := unsigned.TryBigInt(); err != nil || got.String() != "18446744073709551615" {
-		t.Fatalf("TryBigInt mismatch: got=%v err=%v", got, err)
+	if got, err := unsigned.TryIntoBigInt(); err != nil || got.String() != "18446744073709551615" {
+		t.Fatalf("TryIntoBigInt mismatch: got=%v err=%v", got, err)
 	}
 	if got, ok := unsigned.IntoBigInt(); !ok || got.String() != "18446744073709551615" {
 		t.Fatalf("IntoBigInt mismatch: got=%v ok=%v", got, ok)
@@ -1010,8 +1010,8 @@ func TestBigUintConversionParity(t *testing.T) {
 	if got, err := DecodeBigUint(unsigned); err != nil || got.String() != "18446744073709551615" {
 		t.Fatalf("DecodeBigUint mismatch: got=%v err=%v", got, err)
 	}
-	if got, err := unsigned.TryBigUint(); err != nil || got.String() != "18446744073709551615" {
-		t.Fatalf("TryBigUint mismatch: got=%v err=%v", got, err)
+	if got, err := unsigned.TryIntoBigUint(); err != nil || got.String() != "18446744073709551615" {
+		t.Fatalf("TryIntoBigUint mismatch: got=%v err=%v", got, err)
 	}
 	if got, ok := unsigned.IntoBigUint(); !ok || got.String() != "18446744073709551615" {
 		t.Fatalf("IntoBigUint mismatch: got=%v ok=%v", got, ok)
@@ -1170,8 +1170,8 @@ func TestFloat16ConversionParity(t *testing.T) {
 	if got, err := DecodeFloat16(MustFromAny(21.5)); err != nil || got.Float64() != 21.5 {
 		t.Fatalf("DecodeFloat16 mismatch: got=%v err=%v", got.Float64(), err)
 	}
-	if got, err := MustFromAny(21.5).TryFloat16(); err != nil || got.Float64() != 21.5 {
-		t.Fatalf("TryFloat16 mismatch: got=%v err=%v", got.Float64(), err)
+	if got, err := MustFromAny(21.5).TryIntoFloat16(); err != nil || got.Float64() != 21.5 {
+		t.Fatalf("TryIntoFloat16 mismatch: got=%v err=%v", got.Float64(), err)
 	}
 	if got, ok := MustFromAny(21.5).IntoFloat16(); !ok || got.Float64() != 21.5 {
 		t.Fatalf("IntoFloat16 mismatch: got=%v ok=%v", got.Float64(), ok)

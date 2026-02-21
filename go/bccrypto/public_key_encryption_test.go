@@ -7,7 +7,7 @@ import (
 )
 
 func TestX25519Keys(t *testing.T) {
-	rng := bcrand.MakeFakeRandomNumberGenerator()
+	rng := bcrand.NewFakeRandomNumberGenerator()
 	privateKey := X25519NewPrivateKeyUsing(rng)
 	if privateKey != must32("7eb559bbbf6cce2632cf9f194aeb50943de7e1cbad54dcfab27a42759f5e2fed") {
 		t.Fatalf("privateKey = %x", privateKey)
@@ -30,7 +30,7 @@ func TestX25519Keys(t *testing.T) {
 }
 
 func TestKeyAgreement(t *testing.T) {
-	rng := bcrand.MakeFakeRandomNumberGenerator()
+	rng := bcrand.NewFakeRandomNumberGenerator()
 
 	alicePrivate := X25519NewPrivateKeyUsing(rng)
 	alicePublic := X25519PublicKeyFromPrivateKey(alicePrivate)

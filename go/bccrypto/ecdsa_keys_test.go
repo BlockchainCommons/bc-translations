@@ -8,7 +8,7 @@ import (
 )
 
 func TestECDSAKeys(t *testing.T) {
-	rng := bcrand.MakeFakeRandomNumberGenerator()
+	rng := bcrand.NewFakeRandomNumberGenerator()
 	privateKey := ECDSANewPrivateKeyUsing(rng)
 	if privateKey != must32("7eb559bbbf6cce2632cf9f194aeb50943de7e1cbad54dcfab27a42759f5e2fed") {
 		t.Fatalf("privateKey = %x", privateKey)

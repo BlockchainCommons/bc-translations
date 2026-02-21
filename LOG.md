@@ -51,4 +51,13 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-lifehash | 0.1.0   | Python     | bc-lifehash  | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-lifehash | 0.1.0   | TypeScript | @bc/lifehash | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-rand     | 0.5.0   | C#         | BCRand       | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-rand     | 0.5.0   | Go         | bcrand       | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-rand     | 0.5.0   | Kotlin     | bc-rand      | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-rand     | 0.5.0   | Go         | bcrand       | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | dcbor       | 0.25.1  | Go         | dcbor        | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-lifehash | 0.1.0   | Kotlin     | bc-lifehash  | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-rand     | 0.5.0   | Kotlin     | bc-rand      | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-crypto   | 0.14.0  | Kotlin     | bc-crypto    | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-shamir   | 0.13.0  | Kotlin     | bc-shamir    | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | dcbor       | 0.25.1  | Kotlin     | dcbor        | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 📖 GPT 5.3 Codex   | Fluency     |

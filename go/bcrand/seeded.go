@@ -52,20 +52,19 @@ func (s *SeededRandomNumberGenerator) FillRandomData(data []byte) {
 	}
 }
 
-var fakeSeed = [4]uint64{
+var defaultFakeSeed = [4]uint64{
 	17295166580085024720,
 	422929670265678780,
 	5577237070365765850,
 	7953171132032326923,
 }
 
-// MakeFakeRandomNumberGenerator creates a seeded random number generator with a
-// fixed seed.
-func MakeFakeRandomNumberGenerator() *SeededRandomNumberGenerator {
-	return NewSeededRandomNumberGenerator(fakeSeed)
+// NewFakeRandomNumberGenerator creates a deterministic RNG with a fixed seed.
+func NewFakeRandomNumberGenerator() *SeededRandomNumberGenerator {
+	return NewSeededRandomNumberGenerator(defaultFakeSeed)
 }
 
 // FakeRandomData creates a slice of random data with a fixed seed.
 func FakeRandomData(size int) []byte {
-	return MakeFakeRandomNumberGenerator().RandomData(size)
+	return NewFakeRandomNumberGenerator().RandomData(size)
 }

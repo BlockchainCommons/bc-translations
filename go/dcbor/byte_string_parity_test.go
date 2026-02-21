@@ -53,12 +53,12 @@ func TestByteStringMethodParity(t *testing.T) {
 		t.Fatalf("Len after Extend mismatch: got %d want %d", got, want)
 	}
 
-	byt := b.Bytes()
+	byt := b.Data()
 	if len(byt) != 4 || byt[0] != 1 || byt[3] != 4 {
 		t.Fatalf("Bytes mismatch: got %v", byt)
 	}
 
-	byt2 := b.Bytes()
+	byt2 := b.Data()
 	byt2[0] = 77
 	if got := b.Data()[0]; got != 1 {
 		t.Fatalf("Bytes should return a copy, got %d", got)

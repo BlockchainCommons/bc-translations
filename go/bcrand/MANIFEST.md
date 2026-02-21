@@ -53,14 +53,14 @@ Public API:
 Source: `random_number_generator.rs`
 
 Public API:
-- `RngRandomData(rng, size) []byte`
-- `RngFillRandomData(rng, data)`
-- `RngNextWithUpperBound(rng, upperBound, bits) uint64` — Lemire's method
-- `RngNextInRange(rng, start, end, bits) int64` — half-open [start, end)
-- `RngNextInClosedRange(rng, start, end, bits) int64` — closed [start, end]
-- `RngRandomArray(rng, size) []byte`
-- `RngRandomBool(rng) bool`
-- `RngRandomU32(rng) uint32`
+- `RandomDataFrom(rng, size) []byte`
+- `FillRandomDataFrom(rng, data)`
+- `NextWithUpperBound(rng, upperBound, bits) uint64` — Lemire's method
+- `NextInRange(rng, start, end, bits) int64` — half-open [start, end)
+- `NextInClosedRange(rng, start, end, bits) int64` — closed [start, end]
+- `RandomArrayFrom(rng, size) []byte`
+- `RandomBool(rng) bool`
+- `RandomU32(rng) uint32`
 
 Translation notes:
 - Go lacks Rust-style generics for numeric types; use uint64 + bit-width parameter
@@ -92,7 +92,7 @@ Public API:
   - `NextU64() uint64`
   - `RandomData(size int) []byte` — byte-by-byte from NextU64()
   - `FillRandomData(data []byte)`
-- `MakeFakeRandomNumberGenerator() *SeededRandomNumberGenerator`
+- `NewFakeRandomNumberGenerator() *SeededRandomNumberGenerator`
 - `FakeRandomData(size int) []byte`
 
 Critical: `RandomData()` must generate byte-by-byte (each byte = `NextU64() & 0xFF`), not block-based. This matches Swift behavior and is required for cross-platform test vector compatibility.

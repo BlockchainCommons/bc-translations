@@ -172,7 +172,7 @@
 - X25519 shared key output is HKDF-HMAC-SHA256-derived with salt `"agreement"`.
 - Domain separation salts (`"agreement"`, `"signing"`) are consensus-relevant vectors.
 - Rust fixed-size arrays require exact length checks at Go API boundaries.
-- Keep deterministic vector paths wired to `bcrand.MakeFakeRandomNumberGenerator()`.
+- Keep deterministic vector paths wired to `bcrand.NewFakeRandomNumberGenerator()`.
 - Rust metadata tests are crate-specific; replace with Go-equivalent package/export sanity tests.
 
 ## Completion Targets

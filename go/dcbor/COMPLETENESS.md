@@ -25,23 +25,23 @@
 - ✅ Walk traversal with edge semantics and stop behavior is implemented
 - ✅ Date tag-1 encode/decode helpers are implemented
 - ✅ Date arithmetic helpers added (`AddSeconds`, `SubSeconds`, `AddDuration`, `SubDuration`, `DiffSeconds`) for closer `date.rs` parity
-- ✅ Added date conversion helpers on `CBOR` (`TryIntoDate`, `TryDate`, `IntoDate`) and decode helper (`DecodeDate`)
+- ✅ Added date conversion helpers on `CBOR` (`TryIntoDate`, `IntoDate`) and decode helper (`DecodeDate`)
 - ✅ Added date tagged/untagged CBOR-data helpers (`TaggedCBORData`, `UntaggedCBORData`, `DateFromTaggedCBORData`, `DateFromUntaggedCBORData`) and `Date.ToCBOR` for `CBOREncodable` parity
-- ✅ Added set conversion helpers on `CBOR` (`TryIntoSet`, `TrySet`, `IntoSet`) for closer Rust set conversion ergonomics
+- ✅ Added set conversion helpers on `CBOR` (`TryIntoSet`, `IntoSet`) for closer Rust set conversion ergonomics
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ `TryIntoFloat64` now follows Rust cast-back exactness semantics for integer CBOR (including large integer edge cases)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
 - ✅ Added map value extraction helpers with typed decode flow (`DecodeMapValue`, `ExtractMapValue`, `MustExtractMapValue`) to mirror Rust-style typed `Map` access ergonomics
 - ✅ Added set typed extraction helper (`DecodeSetSlice`) for ordered typed set conversion parity
 - ✅ Added panic-style byte-string hex convenience parity (`MustToByteStringFromHex`) matching Rust `to_byte_string_from_hex` ergonomics
-- ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `TrySimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
+- ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
 - ✅ Added decode helpers for simple/tagged extraction parity (`DecodeSimpleValue`, `DecodeTaggedValue`, `DecodeExpectedTaggedValue`)
-- ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
-- ✅ Added additional typed integer extractors for narrow/native widths (`TryIntoInt8/UInt8/Int/UInt` plus alias/Into forms) and decode helpers (`DecodeInt8/UInt8/Int/UInt`)
-- ✅ Added `float32` conversion helpers (`TryIntoFloat32`, `TryFloat32`, `IntoFloat32`, `DecodeFloat32`) with parity tests
+- ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus `Into*` forms) to close part of the Rust `TryFrom` conversion matrix gap
+- ✅ Added additional typed integer extractors for narrow/native widths (`TryIntoInt8/UInt8/Int/UInt` plus `Into*` forms) and decode helpers (`DecodeInt8/UInt8/Int/UInt`)
+- ✅ Added `float32` conversion helpers (`TryIntoFloat32`, `IntoFloat32`, `DecodeFloat32`) with parity tests
 - ✅ Added big-integer conversion helpers (`TryIntoBigInt`/`TryIntoBigUint` + decode helpers), including tagged bignum tag-2/tag-3 decode and canonical byte-string validation
 - ✅ Added `FromAny` support for `big.Int`/`*big.Int` to encode large signed values as tagged bignums (tags 2/3) with RFC-style semantics
-- ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
+- ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ✅ Added global tag-store helper APIs (`WithTags`, `WithTagsMut`) as macro-style equivalents for Rust tag-store access patterns
 - ✅ Added trait-style decode helper wrappers (`TryFromCBOR`, `TryFromCBORData`, `DecodeTaggedFor`, `DecodeTaggedDataFor`) for closer `CBORDecodable`/`CBORTaggedDecodable` ergonomics
@@ -73,7 +73,7 @@
   - tagged bignum (tags 2/3) decode parity vectors including RFC-aligned large values and non-canonical bignum rejection cases
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
   - expanded map API parity checks for typed decode/extract helper behavior
-  - set conversion helper parity checks (`TryIntoSet`/`TrySet`/`IntoSet`) including misordered/duplicate rejection
+  - set conversion helper parity checks (`TryIntoSet`/`IntoSet`) including misordered/duplicate rejection
   - set typed extraction helper parity checks (`DecodeSetSlice`)
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
@@ -87,14 +87,14 @@
   - date constructor/parsing/timestamp/error-path parity checks
   - date arithmetic parity checks
   - supplemental `DateNow`/`DateWithDurationFromNow` bounded-behavior checks
-  - date conversion helper parity checks (`TryIntoDate`/`TryDate`/`IntoDate`/`DecodeDate`)
+  - date conversion helper parity checks (`TryIntoDate`/`IntoDate`/`DecodeDate`)
   - date tagged/untagged CBOR-data helper parity checks (`TaggedCBORData`, `UntaggedCBORData`, `DateFromTaggedCBORData`, `DateFromUntaggedCBORData`)
   - date named-tag display behavior after tag registration
   - annotated hex smoke test
   - translated `walk.rs` traversal parity checks (counts, stop semantics, edge types, key-value semantics, depth limits, primitive/empty structure behavior, text extraction, realistic document traversal)
   - supplemental walk helper/edge-label parity checks (`WalkElement` accessors and full edge-label matrix)
   - translated `byte_string.rs` fixed-length conversion parity behavior
-  - supplemental byte-string method parity checks (`Len`, `IsEmpty`, `Data`, `Extend`, `ToVec`, `Iter`, `AsRef`)
+  - supplemental byte-string method parity checks (`Len`, `IsEmpty`, `Data`, `Extend`, `Equal`, `String`)
   - supplemental convenience helper parity checks (byte/text/array/map/tagged helpers, bool/null/nan helpers, sort/normalize utility behavior)
   - panic-style byte-string hex convenience parity checks (`MustToByteStringFromHex`)
   - trait-helper parity checks for default-style helper behavior (`ToCBORData`, tagged encode/decode helpers, tagged/untagged data decode helpers, `TryFromCBOR*` wrappers, tagged-provider wrappers)

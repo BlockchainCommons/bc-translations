@@ -105,10 +105,10 @@ func TestFakeRandomData(t *testing.T) {
 
 func TestNextWithUpperBound(t *testing.T) {
 	rng := newTestRNG()
-	got := RngNextWithUpperBound(rng, 10000, 32)
+	got := NextWithUpperBound(rng, 10000, 32)
 	want := uint64(745)
 	if got != want {
-		t.Errorf("RngNextWithUpperBound(rng, 10000, 32) = %d, want %d", got, want)
+		t.Errorf("NextWithUpperBound(rng, 10000, 32) = %d, want %d", got, want)
 	}
 }
 
@@ -123,9 +123,9 @@ func TestInRange(t *testing.T) {
 		38, 91, 95, 33, 25, 4, 30, 66, 51, 5, 91, 62, 27, 92, 39,
 	}
 	for i, want := range expected {
-		got := RngNextInRange(rng, 0, 100, 32)
+		got := NextInRange(rng, 0, 100, 32)
 		if got != want {
-			t.Errorf("RngNextInRange #%d = %d, want %d", i, got, want)
+			t.Errorf("NextInRange #%d = %d, want %d", i, got, want)
 		}
 	}
 }
@@ -144,7 +144,7 @@ func TestFillRandomData(t *testing.T) {
 }
 
 func TestFakeNumbers(t *testing.T) {
-	rng := MakeFakeRandomNumberGenerator()
+	rng := NewFakeRandomNumberGenerator()
 	expected := []int64{
 		-43, -6, 43, -34, -34, 17, -9, 24, 17, -29, -32, -44, 12, -15, -46,
 		20, 50, -31, -50, 36, -28, -23, 6, -27, -31, -45, -27, 26, 31, -23,
@@ -155,9 +155,9 @@ func TestFakeNumbers(t *testing.T) {
 		-19, 16, 2, -45, 41, 12, -22, 43, -11,
 	}
 	for i, want := range expected {
-		got := RngNextInClosedRange(rng, -50, 50, 32)
+		got := NextInClosedRange(rng, -50, 50, 32)
 		if got != want {
-			t.Errorf("RngNextInClosedRange #%d = %d, want %d", i, got, want)
+			t.Errorf("NextInClosedRange #%d = %d, want %d", i, got, want)
 		}
 	}
 }

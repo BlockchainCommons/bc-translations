@@ -142,9 +142,9 @@ func TestSimpleValueConvenienceParity(t *testing.T) {
 		t.Fatalf("unexpected simple kind: got %v want %v", simple.Kind(), SimpleFalse)
 	}
 
-	simpleAlias, err := True().TrySimpleValue()
+	simpleAlias, err := True().TryIntoSimpleValue()
 	if err != nil {
-		t.Fatalf("TrySimpleValue failed: %v", err)
+		t.Fatalf("TryIntoSimpleValue failed: %v", err)
 	}
 	if simpleAlias.Kind() != SimpleTrue {
 		t.Fatalf("unexpected simple alias kind: got %v want %v", simpleAlias.Kind(), SimpleTrue)
