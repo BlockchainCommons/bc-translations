@@ -578,6 +578,58 @@ func (c CBOR) IntoUInt16() (uint16, bool) {
 	return value, true
 }
 
+func (c CBOR) TryIntoBigUint() (*big.Int, error) {
+	switch c.kind {
+	case CBORKindUnsigned:
+		u := c.value.(uint64)
+		return new(big.Int).SetUint64(u), nil
+	case CBORKindNegative:
+		return nil, ErrOutOfRange
+	default:
+		return nil, ErrWrongType
+	}
+}
+
+func (c CBOR) TryBigUint() (*big.Int, error) {
+	return c.TryIntoBigUint()
+}
+
+func (c CBOR) IntoBigUint() (*big.Int, bool) {
+	value, err := c.TryIntoBigUint()
+	if err != nil {
+		return nil, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoBigInt() (*big.Int, error) {
+	switch c.kind {
+	case CBORKindUnsigned:
+		u := c.value.(uint64)
+		return new(big.Int).SetUint64(u), nil
+	case CBORKindNegative:
+		u := c.value.(uint64)
+		magnitude := new(big.Int).SetUint64(u)
+		magnitude.Add(magnitude, big.NewInt(1))
+		magnitude.Neg(magnitude)
+		return magnitude, nil
+	default:
+		return nil, ErrWrongType
+	}
+}
+
+func (c CBOR) TryBigInt() (*big.Int, error) {
+	return c.TryIntoBigInt()
+}
+
+func (c CBOR) IntoBigInt() (*big.Int, bool) {
+	value, err := c.TryIntoBigInt()
+	if err != nil {
+		return nil, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryIntoFloat64() (float64, error) {
 	switch c.kind {
 	case CBORKindUnsigned:

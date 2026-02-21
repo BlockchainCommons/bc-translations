@@ -722,6 +722,35 @@ COMPLETED
 - Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (helper-surface confidence improved; baseline parity still incomplete)
 
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing extended-width conversion parity work to bridge Rust `i128`/`u128` behavior in Go
+- Implementing big-integer extraction helpers on CBOR values
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added big-integer conversion APIs:
+  - `TryIntoBigInt`, `TryBigInt`, `IntoBigInt`
+  - `TryIntoBigUint`, `TryBigUint`, `IntoBigUint`
+  - `DecodeBigInt`, `DecodeBigUint`
+- Added parity coverage in `conversion_parity_test.go`:
+  - `TestBigIntConversionParity`
+  - `TestBigUintConversionParity`
+  - `TestBigIntRoundTripWithinCBORRange`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (92 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after big-integer conversion parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with big-integer parity coverage and refreshed metrics
+- API coverage improved from 65/83 to 67/83 key manifest targets
+- Baseline translated-test coverage improved from 83/86 to 85/86 applicable Rust behavior tests
+- Remaining uncovered baseline group is `exact.rs` `f16`-specific behavior
+- VERDICT: INCOMPLETE (near-complete baseline parity; residual f16/format/fluency work remains)
+
 ## 2026-02-21 -- Stage 3: Check
 STARTED
 - Re-evaluating baseline test coverage accounting after accumulating additional `exact.rs` parity groups

@@ -1,5 +1,7 @@
 package dcbor
 
+import "math/big"
+
 // CBORDecodeFunc decodes a CBOR value into a concrete Go type.
 type CBORDecodeFunc[T any] func(CBOR) (T, error)
 
@@ -45,6 +47,14 @@ func DecodeFloat64(c CBOR) (float64, error) {
 
 func DecodeFloat32(c CBOR) (float32, error) {
 	return c.TryIntoFloat32()
+}
+
+func DecodeBigInt(c CBOR) (*big.Int, error) {
+	return c.TryIntoBigInt()
+}
+
+func DecodeBigUint(c CBOR) (*big.Int, error) {
+	return c.TryIntoBigUint()
 }
 
 func DecodeArray[T any](c CBOR, decodeItem CBORDecodeFunc[T]) ([]T, error) {

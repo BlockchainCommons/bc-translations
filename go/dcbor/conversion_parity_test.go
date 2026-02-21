@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"errors"
 	"math"
+	"math/big"
 	"testing"
 )
 
@@ -772,5 +773,95 @@ func TestFloat32ConversionParity(t *testing.T) {
 	}
 	if _, ok := MustFromAny("x").IntoFloat32(); ok {
 		t.Fatalf("expected IntoFloat32 to fail for non-number")
+	}
+}
+
+func TestBigIntConversionParity(t *testing.T) {
+	unsigned := MustFromAny(uint64(math.MaxUint64))
+	bigUnsigned, err := unsigned.TryIntoBigInt()
+	if err != nil {
+		t.Fatalf("TryIntoBigInt unsigned failed: %v", err)
+	}
+	if got, want := bigUnsigned.String(), "18446744073709551615"; got != want {
+		t.Fatalf("unsigned big.Int mismatch: got %q want %q", got, want)
+	}
+
+	negative, err := TryFromHex("3bfffffffffffffffe") // -18446744073709551615
+	if err != nil {
+		t.Fatalf("TryFromHex failed: %v", err)
+	}
+	bigNegative, err := negative.TryIntoBigInt()
+	if err != nil {
+		t.Fatalf("TryIntoBigInt negative failed: %v", err)
+	}
+	if got, want := bigNegative.String(), "-18446744073709551615"; got != want {
+		t.Fatalf("negative big.Int mismatch: got %q want %q", got, want)
+	}
+
+	if got, err := DecodeBigInt(negative); err != nil || got.String() != "-18446744073709551615" {
+		t.Fatalf("DecodeBigInt mismatch: got=%v err=%v", got, err)
+	}
+
+	if got, err := unsigned.TryBigInt(); err != nil || got.String() != "18446744073709551615" {
+		t.Fatalf("TryBigInt mismatch: got=%v err=%v", got, err)
+	}
+	if got, ok := unsigned.IntoBigInt(); !ok || got.String() != "18446744073709551615" {
+		t.Fatalf("IntoBigInt mismatch: got=%v ok=%v", got, ok)
+	}
+}
+
+func TestBigUintConversionParity(t *testing.T) {
+	unsigned := MustFromAny(uint64(math.MaxUint64))
+	bigUnsigned, err := unsigned.TryIntoBigUint()
+	if err != nil {
+		t.Fatalf("TryIntoBigUint unsigned failed: %v", err)
+	}
+	if got, want := bigUnsigned.String(), "18446744073709551615"; got != want {
+		t.Fatalf("big uint mismatch: got %q want %q", got, want)
+	}
+	if got, err := DecodeBigUint(unsigned); err != nil || got.String() != "18446744073709551615" {
+		t.Fatalf("DecodeBigUint mismatch: got=%v err=%v", got, err)
+	}
+	if got, err := unsigned.TryBigUint(); err != nil || got.String() != "18446744073709551615" {
+		t.Fatalf("TryBigUint mismatch: got=%v err=%v", got, err)
+	}
+	if got, ok := unsigned.IntoBigUint(); !ok || got.String() != "18446744073709551615" {
+		t.Fatalf("IntoBigUint mismatch: got=%v ok=%v", got, ok)
+	}
+
+	negative := MustFromAny(-1)
+	if _, err := negative.TryIntoBigUint(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for negative->big uint, got %v", err)
+	}
+	if _, ok := negative.IntoBigUint(); ok {
+		t.Fatalf("expected IntoBigUint to fail for negative input")
+	}
+	if _, err := MustFromAny("x").TryIntoBigUint(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for text->big uint, got %v", err)
+	}
+}
+
+func TestBigIntRoundTripWithinCBORRange(t *testing.T) {
+	values := []*big.Int{
+		big.NewInt(0),
+		new(big.Int).SetUint64(math.MaxUint64),
+		new(big.Int).Neg(new(big.Int).SetUint64(math.MaxUint64)),
+	}
+	for _, value := range values {
+		var c CBOR
+		if value.Sign() >= 0 {
+			c = MustFromAny(value.Uint64())
+		} else {
+			neg := new(big.Int).Neg(value)
+			neg.Sub(neg, big.NewInt(1))
+			c = NewCBORNegative(neg.Uint64())
+		}
+		decoded, err := c.TryIntoBigInt()
+		if err != nil {
+			t.Fatalf("TryIntoBigInt failed for %s: %v", value.String(), err)
+		}
+		if decoded.Cmp(value) != 0 {
+			t.Fatalf("big.Int round-trip mismatch: got %s want %s", decoded.String(), value.String())
+		}
 	}
 }
