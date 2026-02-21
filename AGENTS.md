@@ -1,6 +1,6 @@
 # Blockchains Common Cross-Language Translations
 
-The goal of this project is to provide a set of native translations of the reference Rust implementations of the Blockchains Common libraries. Each of the target languages has its own directory. The goal of each translation is to be as close as possible to the reference Rust implementation, including at *least* as much test coverage, while still being idiomatic in the target language.
+The goal of this project is to provide a set of native translations of the reference Rust implementations of the Blockchains Common libraries. Each of the target languages has its own directory. The goal of each translation is to provide 100% of the functionality of the reference Rust implementation, including at *least* 100% test coverage, while still being completely idiomatic in the target language.
 
 ## Status Markers
 
@@ -25,7 +25,7 @@ The following model markers indicate which AI model was used for each translatio
 | ✅ bc-rand         | 0.5.0   | ✅🎻 BCRand       | ✅🎻 bcrand       | ✅🎻 bc-rand       | ✅🎻 bc-rand       | ✅🎻 BCRand       | ✅🎻 @bc/rand          |
 | ✅ bc-crypto       | 0.14.0  | ✅🎻 BCCrypto     | ✅📖 bccrypto     | ✅🎻 bc-crypto     | ✅🎻 bc-crypto     | ✅📖 BCCrypto     | ✅📖 @bc/crypto        |
 | 🚧 bc-shamir      | 0.13.0  | ✅📖 BCShamir     | ✅🎻 bcshamir     | ✅📖 bc-shamir     | ✅📖 bc-shamir     | ⏳ BCShamir       | ⏳ @bc/shamir          |
-| 🚧 dcbor           | 0.25.1  | ✅🎻 DCbor          | 🚧 dcbor          | ⏳ dcbor           | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bc/dcbor           |
+| 🚧 dcbor          | 0.25.1  | ✅🎻 DCbor        | 🚧📖 dcbor       | ✅🎻 dcbor        | ⏳ dcbor           | ⏳ DCBOR          | ⏳ @bc/dcbor           |
 | ⏳ bc-tags         | 0.12.0  | ⏳ BCTags         | ⏳ bctags         | ⏳ bc-tags         | ⏳ bc-tags         | ⏳ BCTags         | ⏳ @bc/tags            |
 | ⏳ bc-ur           | 0.19.0  | ⏳ BCUR           | ⏳ bcur           | ⏳ bc-ur           | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bc/ur              |
 | ⏳ sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bc/sskr            |

@@ -28,3 +28,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-20 | bc-shamir   | 0.13.0  | Go         | bcshamir     | 🎻 Claude Opus 4.6 | Translation                                  |
 | 2026-02-20 | dcbor       | 0.25.1  | Go         | dcbor        | 📖 GPT 5.3 Codex   | Kickoff (foundation translation, incomplete) |
 | 2026-02-20 | dcbor       | 0.25.1  | C#         | DCbor        | 🎻 Claude Opus 4.6 | Translation                                  |
+| 2026-02-20 | dcbor       | 0.25.1  | Kotlin     | dcbor        | 🎻 Claude Opus 4.6 | Translation                                  |
