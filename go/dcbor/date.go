@@ -66,6 +66,26 @@ func (d Date) Timestamp() float64 {
 	return float64(sec) + float64(nsec)/1_000_000_000.0
 }
 
+func (d Date) AddSeconds(seconds float64) Date {
+	return DateFromTimestamp(d.Timestamp() + seconds)
+}
+
+func (d Date) SubSeconds(seconds float64) Date {
+	return DateFromTimestamp(d.Timestamp() - seconds)
+}
+
+func (d Date) AddDuration(duration time.Duration) Date {
+	return DateFromDatetime(d.time.Add(duration))
+}
+
+func (d Date) SubDuration(duration time.Duration) Date {
+	return DateFromDatetime(d.time.Add(-duration))
+}
+
+func (d Date) DiffSeconds(other Date) float64 {
+	return d.Timestamp() - other.Timestamp()
+}
+
 func (d Date) String() string {
 	if d.time.Hour() == 0 && d.time.Minute() == 0 && d.time.Second() == 0 {
 		return d.time.Format("2006-01-02")

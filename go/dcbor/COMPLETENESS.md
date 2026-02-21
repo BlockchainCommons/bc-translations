@@ -23,6 +23,7 @@
 - ✅ Map/set deterministic ordering and duplicate/misorder rejection are implemented
 - ✅ Walk traversal with edge semantics and stop behavior is implemented
 - ✅ Date tag-1 encode/decode helpers are implemented
+- ✅ Date arithmetic helpers added (`AddSeconds`, `SubSeconds`, `AddDuration`, `SubDuration`, `DiffSeconds`) for closer `date.rs` parity
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ `TryIntoFloat64` now follows Rust cast-back exactness semantics for integer CBOR (including large integer edge cases)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
@@ -43,7 +44,7 @@
 
 ### Implemented in Go
 
-- 82 tests total across:
+- 83 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -61,6 +62,7 @@
   - expected-text-output-rubric-style whole-text diagnostic assertion
   - date tag round-trip
   - date constructor/parsing/timestamp/error-path parity checks
+  - date arithmetic parity checks
   - date named-tag display behavior after tag registration
   - annotated hex smoke test
   - translated `walk.rs` traversal parity checks (counts, stop semantics, edge types, key-value semantics, depth limits, primitive/empty structure behavior, text extraction, realistic document traversal)
@@ -95,7 +97,7 @@ Current translated tests: 73/86 (84.9%)
 
 ## Completeness Summary
 
-- API Coverage: 64/83 key manifest items (77.1%)
+- API Coverage: 65/83 key manifest items (78.3%)
 - Test Coverage: 73/86 applicable behavior tests (84.9%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

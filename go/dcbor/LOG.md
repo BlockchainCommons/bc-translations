@@ -608,3 +608,28 @@ COMPLETED
 - API coverage improved from 63/83 to 64/83 key manifest targets
 - Baseline translated-test coverage improved from 72/86 to 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (conversion surface is broader; remaining baseline parity and formatting fidelity work persists)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing date API parity beyond basic construction/parse/decode
+- Implementing arithmetic helpers corresponding to Rust date add/sub operations
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added date arithmetic methods in `date.go`:
+  - `AddSeconds`, `SubSeconds`
+  - `AddDuration`, `SubDuration`
+  - `DiffSeconds`
+- Added `TestDateArithmeticParity` in `date_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (83 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after date arithmetic parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with date arithmetic coverage and refreshed totals
+- API coverage improved from 64/83 to 65/83 key manifest targets
+- Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (date surface improved; baseline parity and format-fidelity gaps remain)

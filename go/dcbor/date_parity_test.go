@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math"
 	"testing"
+	"time"
 )
 
 func TestDateConstructorsAndParsingParity(t *testing.T) {
@@ -71,5 +72,28 @@ func TestDateTaggedDecodeErrorParity(t *testing.T) {
 	_, err = DateFromUntaggedCBOR(NewCBORMap(NewMap()))
 	if !errors.Is(err, ErrWrongType) {
 		t.Fatalf("expected ErrWrongType for invalid untagged date payload, got %v", err)
+	}
+}
+
+func TestDateArithmeticParity(t *testing.T) {
+	base := DateFromTimestamp(1000.25)
+
+	if got, want := base.AddSeconds(10.5).Timestamp(), 1010.75; math.Abs(got-want) > 1e-9 {
+		t.Fatalf("AddSeconds mismatch: got %.12f want %.12f", got, want)
+	}
+	if got, want := base.SubSeconds(0.25).Timestamp(), 1000.0; math.Abs(got-want) > 1e-9 {
+		t.Fatalf("SubSeconds mismatch: got %.12f want %.12f", got, want)
+	}
+
+	if got, want := base.AddDuration(1500*time.Millisecond).Timestamp(), 1001.75; math.Abs(got-want) > 1e-9 {
+		t.Fatalf("AddDuration mismatch: got %.12f want %.12f", got, want)
+	}
+	if got, want := base.SubDuration(250*time.Millisecond).Timestamp(), 1000.0; math.Abs(got-want) > 1e-9 {
+		t.Fatalf("SubDuration mismatch: got %.12f want %.12f", got, want)
+	}
+
+	later := DateFromTimestamp(1005.5)
+	if got, want := later.DiffSeconds(base), 5.25; math.Abs(got-want) > 1e-9 {
+		t.Fatalf("DiffSeconds mismatch: got %.12f want %.12f", got, want)
 	}
 }
