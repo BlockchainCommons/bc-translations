@@ -105,6 +105,7 @@ func (d Date) DiffSeconds(other Date) float64 {
 	return d.Timestamp() - other.Timestamp()
 }
 
+// String returns RFC3339 text, or date-only text for midnight UTC values.
 func (d Date) String() string {
 	if d.time.Hour() == 0 && d.time.Minute() == 0 && d.time.Second() == 0 {
 		return d.time.Format("2006-01-02")

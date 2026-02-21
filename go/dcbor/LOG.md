@@ -1309,3 +1309,28 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (documentation parity improved further; residual signature/derive/doc breadth remains)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing docs parity on remaining foundational exports
+- Adding concise comments for core `CBOR` constructors/conveniences, tag-store APIs, and float16 helper APIs
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added exported comments in:
+  - `cbor.go` (core constructors, convenience constructors, `MustFromAny`, decode entrypoints, and equality helper)
+  - `tags_store.go` (context-option helpers, store constructor/methods, default registration helpers, and global store variable)
+  - `half.go` (`Float16` constructor/accessors/predicate helpers)
+  - `date.go` (`Date.String`)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after foundational exported API documentation expansion
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` documentation and remaining-work notes after additional constructor/tag-store/float16 comment coverage
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (docs parity improved again; broad conversion/format docs and signature parity work remain)

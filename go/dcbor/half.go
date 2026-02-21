@@ -5,26 +5,32 @@ import "math"
 // Float16 is an IEEE 754 binary16 value.
 type Float16 uint16
 
+// Float16FromBits constructs a Float16 from raw binary16 bits.
 func Float16FromBits(bits uint16) Float16 {
 	return Float16(bits)
 }
 
+// Bits returns the raw binary16 bit pattern.
 func (h Float16) Bits() uint16 {
 	return uint16(h)
 }
 
+// Float32 returns the nearest float32 representation.
 func (h Float16) Float32() float32 {
 	return halfBitsToFloat32(uint16(h))
 }
 
+// Float64 returns the nearest float64 representation.
 func (h Float16) Float64() float64 {
 	return float64(h.Float32())
 }
 
+// IsNaN reports whether the value is NaN.
 func (h Float16) IsNaN() bool {
 	return math.IsNaN(h.Float64())
 }
 
+// IsInf reports whether the value is an infinity of the requested sign.
 func (h Float16) IsInf(sign int) bool {
 	return math.IsInf(h.Float64(), sign)
 }

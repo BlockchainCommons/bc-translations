@@ -61,22 +61,27 @@ type CBOR struct {
 	value any
 }
 
+// NewCBORUnsigned constructs an unsigned-integer CBOR value.
 func NewCBORUnsigned(value uint64) CBOR {
 	return CBOR{kind: CBORKindUnsigned, value: value}
 }
 
+// NewCBORNegative constructs a negative-integer CBOR value from encoded magnitude.
 func NewCBORNegative(encodedMagnitude uint64) CBOR {
 	return CBOR{kind: CBORKindNegative, value: encodedMagnitude}
 }
 
+// NewCBORByteString constructs a CBOR byte-string value.
 func NewCBORByteString(value ByteString) CBOR {
 	return CBOR{kind: CBORKindByteString, value: value}
 }
 
+// NewCBORText constructs a normalized-text CBOR value.
 func NewCBORText(value string) CBOR {
 	return CBOR{kind: CBORKindText, value: norm.NFC.String(value)}
 }
 
+// NewCBORArray constructs a CBOR array with cloned elements.
 func NewCBORArray(value []CBOR) CBOR {
 	copied := make([]CBOR, len(value))
 	for i, v := range value {
@@ -85,38 +90,47 @@ func NewCBORArray(value []CBOR) CBOR {
 	return CBOR{kind: CBORKindArray, value: copied}
 }
 
+// NewCBORMap constructs a CBOR map with cloned entries.
 func NewCBORMap(value Map) CBOR {
 	return CBOR{kind: CBORKindMap, value: value.Clone()}
 }
 
+// NewCBORTagged constructs a tagged CBOR value.
 func NewCBORTagged(tag Tag, value CBOR) CBOR {
 	return CBOR{kind: CBORKindTagged, value: TaggedValue{Tag: tag.clone(), Value: value.Clone()}}
 }
 
+// NewCBORSimple constructs a CBOR simple value.
 func NewCBORSimple(simple Simple) CBOR {
 	return CBOR{kind: CBORKindSimple, value: simple}
 }
 
+// False returns the canonical CBOR false value.
 func False() CBOR {
 	return NewCBORSimple(SimpleFalseValue())
 }
 
+// True returns the canonical CBOR true value.
 func True() CBOR {
 	return NewCBORSimple(SimpleTrueValue())
 }
 
+// Null returns the canonical CBOR null value.
 func Null() CBOR {
 	return NewCBORSimple(SimpleNullValue())
 }
 
+// NaN returns the canonical CBOR NaN simple value.
 func NaN() CBOR {
 	return NewCBORSimple(SimpleFloatValue(math.NaN()))
 }
 
+// ToByteString wraps bytes as a CBOR byte-string value.
 func ToByteString(data []byte) CBOR {
 	return NewCBORByteString(NewByteString(data))
 }
 
+// ToByteStringFromHex decodes a hex string into a CBOR byte-string value.
 func ToByteStringFromHex(value string) (CBOR, error) {
 	bytesValue, err := hex.DecodeString(value)
 	if err != nil {
@@ -134,6 +148,7 @@ func MustToByteStringFromHex(value string) CBOR {
 	return cbor
 }
 
+// ToTaggedValue wraps a CBOR value with the given tag.
 func ToTaggedValue(tag Tag, value CBOR) CBOR {
 	return NewCBORTagged(tag, value)
 }
@@ -221,6 +236,7 @@ func FromAny(value any) (CBOR, error) {
 	}
 }
 
+// MustFromAny converts a Go value to CBOR and panics on conversion failure.
 func MustFromAny(value any) CBOR {
 	cbor, err := FromAny(value)
 	if err != nil {
@@ -1468,10 +1484,12 @@ func isIntegralFloat(v float64) bool {
 	return frac == 0
 }
 
+// Equal reports deterministic equality via canonical encoded bytes.
 func (c CBOR) Equal(other CBOR) bool {
 	return bytes.Equal(c.ToCBORData(), other.ToCBORData())
 }
 
+// TryFromData decodes a full CBOR byte slice into a CBOR value.
 func TryFromData(data []byte) (CBOR, error) {
 	value, n, err := decodeCBORInternal(data)
 	if err != nil {
@@ -1483,6 +1501,7 @@ func TryFromData(data []byte) (CBOR, error) {
 	return value, nil
 }
 
+// TryFromHex decodes a hex-encoded CBOR payload into a CBOR value.
 func TryFromHex(value string) (CBOR, error) {
 	data, err := hex.DecodeString(value)
 	if err != nil {
