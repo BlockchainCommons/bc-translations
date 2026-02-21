@@ -30,6 +30,7 @@
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ `TryIntoFloat64` now follows Rust cast-back exactness semantics for integer CBOR (including large integer edge cases)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
+- ✅ Added map value extraction helpers with typed decode flow (`DecodeMapValue`, `ExtractMapValue`, `MustExtractMapValue`) to mirror Rust-style typed `Map` access ergonomics
 - ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `TrySimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
 - ✅ Added decode helpers for simple/tagged extraction parity (`DecodeSimpleValue`, `DecodeTaggedValue`, `DecodeExpectedTaggedValue`)
 - ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
@@ -67,6 +68,7 @@
   - big-integer conversion parity vectors covering extended-width integer extraction semantics
   - tagged bignum (tags 2/3) decode parity vectors including RFC-aligned large values and non-canonical bignum rejection cases
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
+  - expanded map API parity checks for typed decode/extract helper behavior
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
   - canonical NaN/Infinity encode+decode behavior
@@ -118,7 +120,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 78/83 key manifest items (94.0%)
+- API Coverage: 79/83 key manifest items (95.2%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

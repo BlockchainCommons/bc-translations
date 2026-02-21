@@ -996,3 +996,28 @@ COMPLETED
 - API coverage improved from 77/83 to 78/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (date trait-surface parity improved; residual API/trait/docs gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing map conversion-surface parity by adding typed decode/extract helper APIs
+- Extending map parity tests to cover typed extraction success/missing/decode-error paths
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added map helper APIs in `map.go`:
+  - `DecodeMapValue`
+  - `ExtractMapValue`
+  - `MustExtractMapValue`
+- Expanded `TestMapAPIParity` in `collections_parity_test.go` to validate typed helper behavior
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (104 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after map typed extraction helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to include map typed extraction helper coverage
+- API coverage improved from 78/83 to 79/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (map conversion parity improved; residual API/trait/docs gaps remain)

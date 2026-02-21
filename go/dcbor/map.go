@@ -123,6 +123,40 @@ func (m Map) ExtractAny(key any) (CBOR, error) {
 	return m.Extract(keyCBOR)
 }
 
+func DecodeMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) (T, bool, error) {
+	var zero T
+	value, ok := m.GetAny(key)
+	if !ok {
+		return zero, false, nil
+	}
+	decoded, err := decode(value)
+	if err != nil {
+		return zero, true, err
+	}
+	return decoded, true, nil
+}
+
+func ExtractMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) (T, error) {
+	var zero T
+	value, err := m.ExtractAny(key)
+	if err != nil {
+		return zero, err
+	}
+	decoded, err := decode(value)
+	if err != nil {
+		return zero, err
+	}
+	return decoded, nil
+}
+
+func MustExtractMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) T {
+	value, err := ExtractMapValue(m, key, decode)
+	if err != nil {
+		panic(err)
+	}
+	return value
+}
+
 func (m Map) keyDataHexes() []string {
 	keys := make([]string, 0, len(m.entries))
 	for _, entry := range m.entries {

@@ -1,6 +1,9 @@
 package dcbor
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 func TestMapAPIParity(t *testing.T) {
 	m := NewMap()
@@ -24,6 +27,24 @@ func TestMapAPIParity(t *testing.T) {
 	}
 	if got, err := m.ExtractAny(10); err != nil || !got.Equal(MustFromAny(3)) {
 		t.Fatalf("ExtractAny mismatch for key 10: value=%v err=%v", got, err)
+	}
+	if got, ok, err := DecodeMapValue(m, "a", DecodeInt64); err != nil || !ok || got != 1 {
+		t.Fatalf("GetDecoded mismatch for key 'a': value=%d ok=%v err=%v", got, ok, err)
+	}
+	if _, ok, err := DecodeMapValue(m, "missing", DecodeInt64); err != nil || ok {
+		t.Fatalf("GetDecoded expected missing key: ok=%v err=%v", ok, err)
+	}
+	if _, ok, err := DecodeMapValue(m, "a", DecodeText); !ok || !errors.Is(err, ErrWrongType) {
+		t.Fatalf("GetDecoded expected decode error on key 'a': ok=%v err=%v", ok, err)
+	}
+	if got, err := ExtractMapValue(m, 10, DecodeInt64); err != nil || got != 3 {
+		t.Fatalf("ExtractDecoded mismatch for key 10: value=%d err=%v", got, err)
+	}
+	if _, err := ExtractMapValue(m, "missing", DecodeInt64); !errors.Is(err, ErrMissingMapKey) {
+		t.Fatalf("ExtractDecoded expected ErrMissingMapKey, got %v", err)
+	}
+	if got := MustExtractMapValue(m, 10, DecodeInt64); got != 3 {
+		t.Fatalf("MustExtractDecoded mismatch for key 10: got %d", got)
 	}
 
 	iter := m.Iter()
