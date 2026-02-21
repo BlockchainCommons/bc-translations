@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DCbor/DCbor.csproj" />
+  <Project Path="DCbor.Tests/DCbor.Tests.csproj" />
+</Solution>
