@@ -47,7 +47,7 @@ Examples:
 Once a target is selected, run the entire pipeline to completion without pausing to ask whether the next stage should begin. Move directly from Plan → Code → Check → Critique → Status → Lessons → Next. Only stop to ask the user if you hit a serious technical blocker (e.g., build failures that resist multiple fix attempts, missing upstream dependencies, ambiguous requirements that cannot be resolved from the manifest or existing translations).
 
 ### Step 0: Mark In Progress
-Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧. This signals to other agents that work is underway on this pair.
+Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧 **and** append the model marker emoji (see the Model Markers section of CLAUDE.md). For example, change `⏳ DCbor` to `🚧🎻 DCbor` for a Claude Opus translation. This signals to other agents that work is underway on this pair and which model is doing the work.
 
 Initialize (or verify) the target's `<lang>/<package>/LOG.md`. The file must begin with a level-one header and a model identification line:
 
