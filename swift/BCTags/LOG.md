@@ -53,3 +53,18 @@ COMPLETED
 - 4 issues noted but intentionally left as-is (free function pattern, `_insert` naming, `@MainActor`/`@unchecked Sendable` pattern, tag constant doc comments) -- all match external BCSwiftTags conventions
 - All 18 tests passing
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Cross-model fluency review for Swift BCTags (GPT Codex)
+- Re-checking internal naming/encapsulation choices and Swift API style
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 3 issues found, 3 fixed
+- Renamed internal helper from `_insert` to `insertUnchecked` and made it `private static`
+- Added explicit precondition failure message for unnamed tags
+- Made iterator storage immutable (`let`) where mutation is unnecessary
+- Confirmed no translated Swift downstream dependents for `bc-tags`, so no fallout repairs were required
+- All 18 tests passing
+- VERDICT: IDIOMATIC

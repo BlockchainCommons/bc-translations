@@ -34,7 +34,7 @@ public final class TagsStore: TagsStoreProtocol, @unchecked Sendable {
         tagsByValue = [:]
         tagsByName = [:]
         for tag in tags {
-            Self._insert(tag, tagsByValue: &tagsByValue, tagsByName: &tagsByName)
+            Self.insertUnchecked(tag, tagsByValue: &tagsByValue, tagsByName: &tagsByName)
         }
     }
 
@@ -48,7 +48,7 @@ public final class TagsStore: TagsStoreProtocol, @unchecked Sendable {
     /// The tag must have at least one name (i.e., `tag.names` must not be empty).
     @MainActor
     public func insert(_ tag: Tag) {
-        Self._insert(tag, tagsByValue: &tagsByValue, tagsByName: &tagsByName)
+        Self.insertUnchecked(tag, tagsByValue: &tagsByValue, tagsByName: &tagsByName)
     }
 
     /// Inserts all tags from the given sequence.
@@ -57,7 +57,7 @@ public final class TagsStore: TagsStoreProtocol, @unchecked Sendable {
     @MainActor
     public func insertAll<T>(_ tags: T) where T: Sequence, T.Element == Tag {
         for tag in tags {
-            Self._insert(tag, tagsByValue: &tagsByValue, tagsByName: &tagsByName)
+            Self.insertUnchecked(tag, tagsByValue: &tagsByValue, tagsByName: &tagsByName)
         }
     }
 
@@ -77,8 +77,12 @@ public final class TagsStore: TagsStoreProtocol, @unchecked Sendable {
         tagsByValue[value]
     }
 
-    static func _insert(_ tag: Tag, tagsByValue: inout [UInt64: Tag], tagsByName: inout [String: Tag]) {
-        precondition(!tag.names.isEmpty)
+    private static func insertUnchecked(
+        _ tag: Tag,
+        tagsByValue: inout [UInt64: Tag],
+        tagsByName: inout [String: Tag]
+    ) {
+        precondition(!tag.names.isEmpty, "tag must have at least one name")
         tagsByValue[tag.value] = tag
         for name in tag.names {
             tagsByName[name] = tag
@@ -94,7 +98,7 @@ extension TagsStore: Sequence {
 
 /// An iterator that yields tags in ascending numeric order.
 public struct TagsIterator: IteratorProtocol {
-    private var sortedTags: [Tag]
+    private let sortedTags: [Tag]
     private var currentIndex = 0
 
     init(tagsByValue: [UInt64: Tag]) {
