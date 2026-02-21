@@ -20,15 +20,8 @@ private class FakeRandomNumberGenerator : RandomNumberGenerator() {
     }
 }
 
-private fun hex(hex: String): ByteArray {
-    require((hex.length and 1) == 0)
-    val bytes = ByteArray(hex.length / 2)
-    for (i in bytes.indices) {
-        val n = hex.substring(i * 2, i * 2 + 2).toInt(16)
-        bytes[i] = n.toByte()
-    }
-    return bytes
-}
+@OptIn(ExperimentalStdlibApi::class)
+private fun hex(s: String): ByteArray = s.hexToByteArray()
 
 class ShamirTest {
     @Test

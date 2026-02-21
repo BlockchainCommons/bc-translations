@@ -39,6 +39,17 @@ private fun hazmatLagrangeBasis(values: ByteArray, n: Int, xc: ByteArray, x: UBy
     xx.copyInto(values, endIndex = n)
 }
 
+/**
+ * Evaluates the Lagrange interpolation polynomial at the given x-coordinate
+ * over GF(256) using bitsliced arithmetic.
+ *
+ * @param n Number of data points (shares).
+ * @param xi x-coordinates of the data points.
+ * @param yl Length of each y-value (the secret/share length in bytes).
+ * @param yij y-values (share data) corresponding to each x-coordinate.
+ * @param x The x-coordinate at which to evaluate the polynomial.
+ * @return The interpolated y-value at [x].
+ */
 internal fun interpolate(n: Int, xi: ByteArray, yl: Int, yij: List<ByteArray>, x: UByte): ByteArray {
     val y = MutableList(n) { ByteArray(MAX_SECRET_LEN) }
     val values = ByteArray(MAX_SECRET_LEN)

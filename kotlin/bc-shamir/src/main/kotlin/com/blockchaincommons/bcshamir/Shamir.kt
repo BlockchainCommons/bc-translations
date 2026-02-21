@@ -1,8 +1,18 @@
 /**
- * Shamir's Secret Sharing (SSS) for Kotlin.
+ * # Shamir's Secret Sharing (SSS) for Kotlin
  *
- * This package translates the reference Rust implementation and preserves
- * deterministic vector behavior used by Blockchain Commons test suites.
+ * This package implements Shamir's Secret Sharing scheme compatible with the
+ * Blockchain Commons deterministic test suite. It provides functions to split
+ * a secret into multiple shares and recover the secret from a threshold number
+ * of those shares.
+ *
+ * ## Usage
+ *
+ * ```kotlin
+ * val secret = "my secret belongs to me.".encodeToByteArray()
+ * val shares = splitSecret(threshold = 2, shareCount = 3, secret, SecureRandomNumberGenerator())
+ * val recovered = recoverSecret(listOf(0, 2), listOf(shares[0], shares[2]))
+ * ```
  */
 package com.blockchaincommons.bcshamir
 
@@ -11,10 +21,10 @@ import com.blockchaincommons.bccrypto.memzero
 import com.blockchaincommons.bccrypto.memzeroAll
 import com.blockchaincommons.bcrand.RandomNumberGenerator
 
-/** The minimum length of a secret. */
+/** The minimum length of a secret in bytes. */
 const val MIN_SECRET_LEN = 16
 
-/** The maximum length of a secret. */
+/** The maximum length of a secret in bytes. */
 const val MAX_SECRET_LEN = 32
 
 /** The maximum number of shares that can be generated from a secret. */
@@ -28,31 +38,34 @@ private fun createDigest(randomData: ByteArray, sharedSecret: ByteArray): ByteAr
 
 private fun validateParameters(threshold: Int, shareCount: Int, secretLength: Int) {
     if (shareCount > MAX_SHARE_COUNT) {
-        throw Error.TooManyShares()
-    } else if (threshold < 1 || threshold > shareCount) {
-        throw Error.InvalidThreshold()
-    } else if (secretLength > MAX_SECRET_LEN) {
-        throw Error.SecretTooLong()
-    } else if (secretLength < MIN_SECRET_LEN) {
-        throw Error.SecretTooShort()
-    } else if ((secretLength and 1) != 0) {
-        throw Error.SecretNotEvenLen()
+        throw ShamirException.TooManyShares()
+    }
+    if (threshold < 1 || threshold > shareCount) {
+        throw ShamirException.InvalidThreshold()
+    }
+    if (secretLength > MAX_SECRET_LEN) {
+        throw ShamirException.SecretTooLong()
+    }
+    if (secretLength < MIN_SECRET_LEN) {
+        throw ShamirException.SecretTooShort()
+    }
+    if (secretLength % 2 != 0) {
+        throw ShamirException.SecretNotEvenLength()
     }
 }
 
 /**
- * Splits a secret into shares using the Shamir secret sharing algorithm.
+ * Splits a secret into shares using Shamir's Secret Sharing algorithm.
  *
  * @param threshold The minimum number of shares required to reconstruct the
- * secret. Must be greater than or equal to 1 and less than or equal to
- * `shareCount`.
+ *   secret. Must be at least 1 and at most [shareCount].
  * @param shareCount The total number of shares to generate. Must be at least
- * `threshold` and less than or equal to `MAX_SHARE_COUNT`.
- * @param secret A byte array containing the secret to be split. Must be at
- * least `MIN_SECRET_LEN` bytes long and at most `MAX_SECRET_LEN` bytes long.
- * The length must be an even number.
- * @param randomGenerator Random number generator used to generate random data.
- * @return A list of byte arrays representing secret shares.
+ *   [threshold] and at most [MAX_SHARE_COUNT].
+ * @param secret The secret to split. Must be [MIN_SECRET_LEN]..[MAX_SECRET_LEN]
+ *   bytes long with an even length.
+ * @param randomGenerator Random number generator used for share generation.
+ * @return A list of [shareCount] byte arrays, each the same length as [secret].
+ * @throws ShamirException if any parameter constraint is violated.
  */
 fun splitSecret(
     threshold: Int,
@@ -63,11 +76,7 @@ fun splitSecret(
     validateParameters(threshold, shareCount, secret.size)
 
     if (threshold == 1) {
-        val result = MutableList(shareCount) { ByteArray(secret.size) }
-        for (share in result) {
-            secret.copyInto(share)
-        }
-        return result
+        return List(shareCount) { secret.copyOf() }
     }
 
     val x = ByteArray(shareCount)
@@ -110,24 +119,26 @@ fun splitSecret(
 }
 
 /**
- * Recovers a secret from the given shares using the Shamir secret sharing
+ * Recovers a secret from the given shares using Shamir's Secret Sharing
  * algorithm.
  *
- * @param indexes Indexes of shares to use for recovery.
- * @param shares Shares corresponding to [indexes].
- * @return The recovered secret bytes.
+ * @param indexes The share indexes (0-based) used during splitting.
+ * @param shares The share byte arrays corresponding to each index.
+ * @return The recovered secret.
+ * @throws ShamirException if the shares are invalid, have mismatched lengths,
+ *   or the digest checksum verification fails.
  */
 fun recoverSecret(indexes: List<Int>, shares: List<ByteArray>): ByteArray {
     val threshold = shares.size
     if (threshold == 0 || indexes.size != threshold) {
-        throw Error.InvalidThreshold()
+        throw ShamirException.InvalidThreshold()
     }
 
     val shareLength = shares[0].size
     validateParameters(threshold, threshold, shareLength)
 
     if (!shares.all { it.size == shareLength }) {
-        throw Error.SharesUnequalLength()
+        throw ShamirException.SharesUnequalLength()
     }
 
     if (threshold == 1) {
@@ -148,7 +159,7 @@ fun recoverSecret(indexes: List<Int>, shares: List<ByteArray>): ByteArray {
     memzero(verify)
 
     if (!valid) {
-        throw Error.ChecksumFailure()
+        throw ShamirException.ChecksumFailure()
     }
 
     return secret
