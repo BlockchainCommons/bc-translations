@@ -1,6 +1,9 @@
 package dcbor
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func runFormatCheck(
 	t *testing.T,
@@ -447,6 +450,19 @@ func TestFormatComplexStructuresParity(t *testing.T) {
 		structureHex,
 		"",
 	)
+	structureHexAnnotated := structure.HexAnnotated()
+	for _, fragment := range []string{
+		"d8 31",
+		"# tag(49)",
+		"58 29",
+		`"Some mysteries aren't meant to be solved."`,
+		"d9 02 c3",
+		"# bytes(64)",
+	} {
+		if !strings.Contains(structureHexAnnotated, fragment) {
+			t.Fatalf("format_structure hex_annotated missing fragment %q", fragment)
+		}
+	}
 
 	structure2Hex := "d9012ca4015059f2293a5bce7d4de59e71b4207ac5d202c11a6035970003754461726b20507572706c652041717561204c6f766504787b4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e73656374657475722061646970697363696e6720656c69742c2073656420646f20656975736d6f642074656d706f7220696e6369646964756e74207574206c61626f726520657420646f6c6f7265206d61676e6120616c697175612e"
 	structure2, err := TryFromHex(structure2Hex)
@@ -483,4 +499,17 @@ func TestFormatComplexStructuresParity(t *testing.T) {
 		structure2Hex,
 		"",
 	)
+	structure2HexAnnotated := structure2.HexAnnotated()
+	for _, fragment := range []string{
+		"d9 01 2c",
+		"# tag(300)",
+		"c1",
+		"# tag(1) date",
+		"# text(123)",
+		`"Dark Purple Aqua Love"`,
+	} {
+		if !strings.Contains(structure2HexAnnotated, fragment) {
+			t.Fatalf("format_structure_2 hex_annotated missing fragment %q", fragment)
+		}
+	}
 }

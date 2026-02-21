@@ -32,6 +32,7 @@
 - ✅ Added `float32` conversion helpers (`TryIntoFloat32`, `TryFloat32`, `IntoFloat32`, `DecodeFloat32`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
+- ⚠️ Complex structure `hex_annotated` checks now validate critical fragments, but exact full-text layout/comment alignment still differs from Rust
 - ⚠️ Trait/protocol equivalence is skeletal (marker-style Go interfaces, not full Rust trait parity)
 - ⚠️ Some conversion APIs and formatting edge cases remain below full Rust-equivalent parity
 

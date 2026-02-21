@@ -655,3 +655,24 @@ COMPLETED
 - API coverage unchanged: 65/83 key manifest targets
 - Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (supplemental coverage improved; baseline parity still incomplete)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Tightening complex formatting parity checks without overfitting to unstable spacing
+- Adding fragment-level assertions for large `hex_annotated` structures
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Extended `TestFormatComplexStructuresParity` in `format_parity_test.go` with required-fragment checks on `HexAnnotated()` output for both large structure vectors
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (84 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after complex `hex_annotated` assertion strengthening
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect stronger complex-format checks with remaining full-layout gap
+- API coverage unchanged: 65/83 key manifest targets
+- Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (format robustness improved; exact full-text parity still open)
