@@ -1,4 +1,4 @@
-"""Deterministic vector tests translated from Rust `lib.rs`."""
+"""Deterministic vector tests for Shamir secret sharing."""
 
 from bc_shamir import recover_secret, split_secret
 

@@ -1,4 +1,4 @@
-"""Example-based tests translated from Rust `shamir.rs`."""
+"""Example-based tests for Shamir secret sharing."""
 
 from bc_shamir import recover_secret, split_secret
 
@@ -16,62 +16,8 @@ def test_example_split(secure_rng) -> None:
 def test_example_recover() -> None:
     indexes = [0, 2]
     shares = [
-        bytes(
-            [
-                47,
-                165,
-                102,
-                232,
-                218,
-                99,
-                6,
-                94,
-                39,
-                6,
-                253,
-                215,
-                12,
-                88,
-                64,
-                32,
-                105,
-                40,
-                222,
-                146,
-                93,
-                197,
-                48,
-                129,
-            ]
-        ),
-        bytes(
-            [
-                221,
-                174,
-                116,
-                201,
-                90,
-                99,
-                136,
-                33,
-                64,
-                215,
-                60,
-                84,
-                207,
-                28,
-                74,
-                10,
-                111,
-                243,
-                43,
-                224,
-                48,
-                64,
-                199,
-                172,
-            ]
-        ),
+        bytes.fromhex("2fa566e8da63065e2706fdd70c5840206928de925dc53081"),
+        bytes.fromhex("ddae74c95a63882140d73c54cf1c4a0a6ff32be03040c7ac"),
     ]
 
     secret = recover_secret(indexes, shares)

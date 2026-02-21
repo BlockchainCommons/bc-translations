@@ -1,4 +1,4 @@
-"""Shared fixtures for bc-shamir tests."""
+"""Shared fixtures for Shamir secret sharing tests."""
 
 import pytest
 
@@ -6,7 +6,7 @@ from bc_rand import RandomNumberGenerator, SecureRandomNumberGenerator
 
 
 class FakeRandomNumberGenerator(RandomNumberGenerator):
-    """Deterministic test RNG matching Rust test behavior."""
+    """Deterministic test RNG that produces a repeating byte sequence."""
 
     def next_u32(self) -> int:  # pragma: no cover - intentionally unimplemented
         raise NotImplementedError

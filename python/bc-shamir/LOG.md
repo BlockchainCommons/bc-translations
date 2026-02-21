@@ -54,3 +54,21 @@ COMPLETED
 - Fixes applied: removed `Result` alias from public API and normalized defensive comments.
 - Verified tests after fixes: 6/6 passing (`bc-crypto/.venv/bin/pytest -q tests`).
 - Verdict: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing naming conventions, error handling, API design, documentation, and structure.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- Renamed error hierarchy to follow Python `Error` suffix convention: `Error` -> `ShamirError`, `SecretTooLong` -> `SecretTooLongError`, `TooManyShares` -> `TooManySharesError`, `InterpolationFailure` -> `InterpolationError`, `ChecksumFailure` -> `ChecksumError`, `SecretTooShort` -> `SecretTooShortError`, `SecretNotEvenLen` -> `SecretNotEvenLengthError`, `InvalidThreshold` -> `InvalidThresholdError`, `SharesUnequalLength` -> `SharesUnequalLengthError`.
+- Made internal constants `SECRET_INDEX`/`DIGEST_INDEX` private (`_SECRET_INDEX`/`_DIGEST_INDEX`).
+- Replaced `assert` preconditions in `hazmat.py` with `ValueError` (asserts stripped under `-O`).
+- Removed misleading `__all__` from `hazmat.py` (internal module).
+- Added comprehensive docstrings to `split_secret` and `recover_secret` (Args, Returns, Raises).
+- Cleaned up Rust-referencing module and class docstrings across all files.
+- Converted verbose per-byte array literals to `bytes.fromhex()` in test_shamir_examples.py.
+- No downstream dependents (sskr not yet translated for Python).
+- Key metrics: 14 findings (3 MUST FIX, 6 SHOULD FIX, 5 NICE TO HAVE), all applied; tests 6/6 passing.
+- Verdict: IDIOMATIC.

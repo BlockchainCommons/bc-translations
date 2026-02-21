@@ -1,4 +1,4 @@
-"""Package-level checks analogous to Rust `lib.rs` metadata tests."""
+"""Package-level metadata tests for bc-shamir."""
 
 from importlib.metadata import version
 

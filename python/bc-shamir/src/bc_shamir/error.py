@@ -1,60 +1,60 @@
-"""Error types for bc-shamir."""
+"""Error types for Shamir secret sharing."""
 
 
-class Error(Exception):
-    """Base error for bc-shamir operations."""
+class ShamirError(Exception):
+    """Base error for Shamir secret sharing operations."""
 
 
-class SecretTooLong(Error):
+class SecretTooLongError(ShamirError):
     """Raised when a secret exceeds the maximum supported length."""
 
     def __init__(self) -> None:
         super().__init__("secret is too long")
 
 
-class TooManyShares(Error):
+class TooManySharesError(ShamirError):
     """Raised when the requested share count exceeds the maximum."""
 
     def __init__(self) -> None:
         super().__init__("too many shares")
 
 
-class InterpolationFailure(Error):
+class InterpolationError(ShamirError):
     """Raised when interpolation fails unexpectedly."""
 
     def __init__(self) -> None:
         super().__init__("interpolation failed")
 
 
-class ChecksumFailure(Error):
+class ChecksumError(ShamirError):
     """Raised when share digest verification fails during recovery."""
 
     def __init__(self) -> None:
         super().__init__("checksum failure")
 
 
-class SecretTooShort(Error):
+class SecretTooShortError(ShamirError):
     """Raised when a secret is shorter than the minimum supported length."""
 
     def __init__(self) -> None:
         super().__init__("secret is too short")
 
 
-class SecretNotEvenLen(Error):
+class SecretNotEvenLengthError(ShamirError):
     """Raised when a secret length is odd."""
 
     def __init__(self) -> None:
         super().__init__("secret is not of even length")
 
 
-class InvalidThreshold(Error):
+class InvalidThresholdError(ShamirError):
     """Raised when threshold/share parameters are invalid."""
 
     def __init__(self) -> None:
         super().__init__("invalid threshold")
 
 
-class SharesUnequalLength(Error):
+class SharesUnequalLengthError(ShamirError):
     """Raised when provided shares do not have equal length."""
 
     def __init__(self) -> None:
@@ -62,13 +62,13 @@ class SharesUnequalLength(Error):
 
 
 __all__ = [
-    "ChecksumFailure",
-    "Error",
-    "InterpolationFailure",
-    "InvalidThreshold",
-    "SecretNotEvenLen",
-    "SecretTooLong",
-    "SecretTooShort",
-    "SharesUnequalLength",
-    "TooManyShares",
+    "ChecksumError",
+    "InterpolationError",
+    "InvalidThresholdError",
+    "SecretNotEvenLengthError",
+    "SecretTooLongError",
+    "SecretTooShortError",
+    "ShamirError",
+    "SharesUnequalLengthError",
+    "TooManySharesError",
 ]

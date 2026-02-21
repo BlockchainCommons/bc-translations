@@ -1,4 +1,7 @@
-"""Bitsliced GF(2^8) primitives used by Shamir interpolation."""
+"""Bitsliced GF(2^8) primitives used by Shamir interpolation.
+
+These are internal implementation details and should not be used directly.
+"""
 
 from __future__ import annotations
 
@@ -14,7 +17,8 @@ def _u32(v: int) -> int:
 
 
 def bitslice(r: MutableSequence[int], x: bytes | bytearray | Sequence[int]) -> None:
-    assert len(x) >= 32
+    if len(x) < 32:
+        raise ValueError("bitslice input must be at least 32 bytes")
     memzero(r)
     for arr_idx, cur in enumerate(x[:32]):
         cur_u32 = int(cur)
@@ -26,7 +30,8 @@ def bitslice(r: MutableSequence[int], x: bytes | bytearray | Sequence[int]) -> N
 
 
 def unbitslice(r: MutableSequence[int], x: Sequence[int]) -> None:
-    assert len(r) >= 32
+    if len(r) < 32:
+        raise ValueError("unbitslice output must be at least 32 elements")
     memzero(r)
     for bit_idx, cur in enumerate(x):
         for arr_idx in range(32):
@@ -42,7 +47,7 @@ def bitslice_setall(r: MutableSequence[int], x: int) -> None:
 
 
 def gf256_add(r: MutableSequence[int], x: Sequence[int]) -> None:
-    """Add (XOR) `r` with `x` and store the result in `r`."""
+    """Add (XOR) ``r`` with ``x`` and store the result in ``r``."""
     for idx in range(8):
         r[idx] = _u32(int(r[idx]) ^ int(x[idx]))
 
@@ -209,14 +214,3 @@ def gf256_inv(r: MutableSequence[int], x: MutableSequence[int]) -> None:
     gf256_mul(r, r2, z)
     r2 = [int(v) & _MASK32 for v in r]
     gf256_mul(r, r2, y)
-
-
-__all__ = [
-    "bitslice",
-    "bitslice_setall",
-    "gf256_add",
-    "gf256_inv",
-    "gf256_mul",
-    "gf256_square",
-    "unbitslice",
-]
