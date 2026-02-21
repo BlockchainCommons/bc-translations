@@ -871,3 +871,26 @@ COMPLETED
 - API coverage improved from 70/83 to 73/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (bignum parity improved; format-fidelity and remaining API/trait gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing macro-surface parity by adding helper equivalents for Rust global tag-store access macros
+- Introducing locked `WithTags`/`WithTagsMut` helpers and validating behavior in tests
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `WithTags` and `WithTagsMut` helpers in `tags_store.go` using locked global tag-store access
+- Updated `RegisterTags` and `TagsForValues` to use the new helper flow
+- Added `TestWithTagsHelperParity` in `tags_store_parity_test.go` for read/write helper behavior
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (101 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after macro-style tag-store helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` signature/macro notes to reflect `WithTags`/`WithTagsMut` equivalents
+- API coverage improved from 73/83 to 74/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (macro/trait surface improved; format fidelity and remaining API gaps remain)

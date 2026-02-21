@@ -36,6 +36,7 @@
 - ✅ Added `FromAny` support for `big.Int`/`*big.Int` to encode large signed values as tagged bignums (tags 2/3) with RFC-style semantics
 - ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
+- ✅ Added global tag-store helper APIs (`WithTags`, `WithTagsMut`) as macro-style equivalents for Rust tag-store access patterns
 - ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
 - ⚠️ Complex structure `hex_annotated` checks now validate critical fragments, but exact full-text layout/comment alignment still differs from Rust
 - ⚠️ Trait/protocol equivalence is partial: helper defaults now cover tagged encode/decode data paths and `ToCBORData`, but full Rust trait-level parity is still incomplete
@@ -44,13 +45,15 @@
 ## Signature Compatibility Notes
 
 - Rust generic conversions (`TryFrom<CBOR>`, broad `Into<CBOR>` impl matrix) are represented as explicit Go helpers and typed accessors, not full one-to-one signature parity.
-- Rust macro exports (`with_tags!`, `with_tags_mut!`, `const_cbor_tag!`, `cbor_tag!`) are represented as ordinary Go APIs/constants where feasible; macro-level equivalence is not applicable.
+- Rust macro exports are represented as ordinary Go APIs/constants where feasible:
+  - `with_tags!` / `with_tags_mut!` -> `WithTags` / `WithTagsMut`
+  - `const_cbor_tag!` / `cbor_tag!` -> explicit constants and tag constructors
 
 ## Test Coverage
 
 ### Implemented in Go
 
-- 100 tests total across:
+- 101 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -110,7 +113,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 73/83 key manifest items (88.0%)
+- API Coverage: 74/83 key manifest items (89.2%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

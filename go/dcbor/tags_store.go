@@ -141,18 +141,41 @@ type LazyTagsStore struct {
 	data *TagsStore
 }
 
-func (l *LazyTagsStore) Get() *TagsStore {
+func (l *LazyTagsStore) init() {
 	l.once.Do(func() {
 		l.mu.Lock()
 		defer l.mu.Unlock()
-		l.data = NewTagsStore(nil)
+		if l.data == nil {
+			l.data = NewTagsStore(nil)
+		}
 	})
+}
+
+func (l *LazyTagsStore) Get() *TagsStore {
+	l.init()
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	return l.data
 }
 
 var GLOBAL_TAGS = &LazyTagsStore{}
+
+func withLockedGlobalTags[T any](action func(*TagsStore) T) T {
+	GLOBAL_TAGS.init()
+	GLOBAL_TAGS.mu.Lock()
+	defer GLOBAL_TAGS.mu.Unlock()
+	return action(GLOBAL_TAGS.data)
+}
+
+// WithTags provides read-style access to the global tags store under lock.
+func WithTags[T any](action func(*TagsStore) T) T {
+	return withLockedGlobalTags(action)
+}
+
+// WithTagsMut provides write-style access to the global tags store under lock.
+func WithTagsMut[T any](action func(*TagsStore) T) T {
+	return withLockedGlobalTags(action)
+}
 
 const (
 	TAG_DATE                 uint64 = 1
@@ -193,19 +216,22 @@ func RegisterTagsIn(tagsStore *TagsStore) {
 }
 
 func RegisterTags() {
-	tagsStore := GLOBAL_TAGS.Get()
-	RegisterTagsIn(tagsStore)
+	WithTagsMut(func(tagsStore *TagsStore) struct{} {
+		RegisterTagsIn(tagsStore)
+		return struct{}{}
+	})
 }
 
 func TagsForValues(values []TagValue) []Tag {
-	tagsStore := GLOBAL_TAGS.Get()
-	result := make([]Tag, 0, len(values))
-	for _, value := range values {
-		if tag, ok := tagsStore.TagForValue(value); ok {
-			result = append(result, tag)
-		} else {
-			result = append(result, TagWithValue(value))
+	return WithTags(func(tagsStore *TagsStore) []Tag {
+		result := make([]Tag, 0, len(values))
+		for _, value := range values {
+			if tag, ok := tagsStore.TagForValue(value); ok {
+				result = append(result, tag)
+			} else {
+				result = append(result, TagWithValue(value))
+			}
 		}
-	}
-	return result
+		return result
+	})
 }

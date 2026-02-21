@@ -128,3 +128,35 @@ func TestTagsStoreOptHelpersParity(t *testing.T) {
 		t.Fatalf("TagsCustom mismatch: mode=%v store=%v", custom.Mode, custom.Store)
 	}
 }
+
+func TestWithTagsHelperParity(t *testing.T) {
+	const testTagValue TagValue = 90001
+	const testTagName = "with-tags-parity"
+
+	WithTagsMut(func(store *TagsStore) struct{} {
+		store.Insert(NewTag(testTagValue, testTagName))
+		return struct{}{}
+	})
+
+	gotName := WithTags(func(store *TagsStore) string {
+		return store.NameForValue(testTagValue)
+	})
+	if gotName != testTagName {
+		t.Fatalf("WithTags name mismatch: got %q want %q", gotName, testTagName)
+	}
+
+	type tagLookup struct {
+		tag Tag
+		ok  bool
+	}
+	lookup := WithTags(func(store *TagsStore) tagLookup {
+		tag, ok := store.TagForName(testTagName)
+		return tagLookup{tag: tag, ok: ok}
+	})
+	if !lookup.ok {
+		t.Fatalf("WithTags TagForName lookup failed")
+	}
+	if lookup.tag.Value() != testTagValue {
+		t.Fatalf("WithTags tag value mismatch: got %d want %d", lookup.tag.Value(), testTagValue)
+	}
+}
