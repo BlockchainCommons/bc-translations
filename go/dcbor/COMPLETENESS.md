@@ -41,7 +41,7 @@
 
 ### Implemented in Go
 
-- 73 tests total across:
+- 75 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)
@@ -60,6 +60,7 @@
   - date named-tag display behavior after tag registration
   - annotated hex smoke test
   - translated `walk.rs` traversal parity checks (counts, stop semantics, edge types, key-value semantics, depth limits, primitive/empty structure behavior, text extraction, realistic document traversal)
+  - supplemental walk helper/edge-label parity checks (`WalkElement` accessors and full edge-label matrix)
   - translated `byte_string.rs` fixed-length conversion parity behavior
 
 ### Rust Baseline (default-feature applicable)

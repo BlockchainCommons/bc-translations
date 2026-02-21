@@ -452,3 +452,26 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage improved from 63/86 to 67/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (baseline coverage approaching 78%; remaining exact/format/API gaps still pending)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing walk-surface parity hardening
+- Adding explicit tests for `WalkElement` accessor behavior and full edge-label mapping
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `walk_element_parity_test.go` with:
+  - `TestWalkElementHelpersParity`
+  - `TestEdgeLabelParityMatrix`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (75 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after walk helper/label parity tests
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with supplemental walk helper/label parity coverage
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage unchanged: 67/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (supplemental walk confidence improved; baseline parity gaps remain)
