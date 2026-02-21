@@ -119,3 +119,23 @@ func DecodeUntaggedData[T any](data []byte, decode CBORDecodeFunc[T]) (T, error)
 	}
 	return decode(cbor)
 }
+
+// TryFromCBOR decodes a value from an existing CBOR instance.
+func TryFromCBOR[T any](cbor CBOR, decode CBORDecodeFunc[T]) (T, error) {
+	return decode(cbor.Clone())
+}
+
+// TryFromCBORData decodes a value from CBOR bytes.
+func TryFromCBORData[T any](data []byte, decode CBORDecodeFunc[T]) (T, error) {
+	return DecodeUntaggedData(data, decode)
+}
+
+// DecodeTaggedFor decodes tagged CBOR using tag values supplied by a CBORTagged provider.
+func DecodeTaggedFor[T any](cbor CBOR, tagged CBORTagged, decodeUntagged CBORDecodeFunc[T]) (T, error) {
+	return DecodeTagged(cbor, tagged.CBORTags(), decodeUntagged)
+}
+
+// DecodeTaggedDataFor decodes tagged CBOR bytes using tags supplied by a CBORTagged provider.
+func DecodeTaggedDataFor[T any](data []byte, tagged CBORTagged, decodeUntagged CBORDecodeFunc[T]) (T, error) {
+	return DecodeTaggedData(data, tagged.CBORTags(), decodeUntagged)
+}

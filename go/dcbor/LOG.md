@@ -1068,3 +1068,31 @@ COMPLETED
 - API coverage improved from 80/83 to 81/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (set conversion parity improved; residual API/trait/docs gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing trait/protocol parity with explicit decodable wrapper helpers
+- Adding `CBORDecodable`/`CBORTaggedDecodable`-style helper wrappers and tests
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added trait-style helper wrappers in `traits.go`:
+  - `TryFromCBOR`
+  - `TryFromCBORData`
+  - `DecodeTaggedFor`
+  - `DecodeTaggedDataFor`
+- Added trait parity tests in `traits_parity_test.go`:
+  - `TestTraitHelperDecodableWrappersParity`
+  - `TestTraitHelperTaggedProviderWrappersParity`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after trait-style decodable wrapper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with trait-style decode wrapper coverage
+- API coverage improved from 81/83 to 82/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (trait parity improved further; residual docs/derive/signature edge gaps remain)

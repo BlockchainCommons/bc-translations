@@ -136,3 +136,51 @@ func TestTraitHelperTaggedAndUntaggedDataDecodingParity(t *testing.T) {
 		t.Fatalf("DecodeUntaggedData text mismatch: got %q want %q", decodedText, "dcbor")
 	}
 }
+
+func TestTraitHelperDecodableWrappersParity(t *testing.T) {
+	text := MustFromAny("wrapper")
+	decodedText, err := TryFromCBOR(text, DecodeText)
+	if err != nil {
+		t.Fatalf("TryFromCBOR failed: %v", err)
+	}
+	if decodedText != "wrapper" {
+		t.Fatalf("TryFromCBOR mismatch: got %q want %q", decodedText, "wrapper")
+	}
+
+	textData := text.ToCBORData()
+	decodedTextFromData, err := TryFromCBORData(textData, DecodeText)
+	if err != nil {
+		t.Fatalf("TryFromCBORData failed: %v", err)
+	}
+	if decodedTextFromData != "wrapper" {
+		t.Fatalf("TryFromCBORData mismatch: got %q want %q", decodedTextFromData, "wrapper")
+	}
+}
+
+func TestTraitHelperTaggedProviderWrappersParity(t *testing.T) {
+	value := parityTaggedValue{value: 314}
+	tagged, err := TaggedCBOR(value)
+	if err != nil {
+		t.Fatalf("TaggedCBOR failed: %v", err)
+	}
+
+	decoded, err := DecodeTaggedFor(tagged, value, decodeParityTagged)
+	if err != nil {
+		t.Fatalf("DecodeTaggedFor failed: %v", err)
+	}
+	if decoded.value != 314 {
+		t.Fatalf("DecodeTaggedFor mismatch: got %d want %d", decoded.value, 314)
+	}
+
+	taggedData, err := TaggedCBORData(value)
+	if err != nil {
+		t.Fatalf("TaggedCBORData failed: %v", err)
+	}
+	decodedFromData, err := DecodeTaggedDataFor(taggedData, value, decodeParityTagged)
+	if err != nil {
+		t.Fatalf("DecodeTaggedDataFor failed: %v", err)
+	}
+	if decodedFromData.value != 314 {
+		t.Fatalf("DecodeTaggedDataFor mismatch: got %d want %d", decodedFromData.value, 314)
+	}
+}

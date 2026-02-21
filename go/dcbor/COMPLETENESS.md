@@ -43,6 +43,7 @@
 - ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ✅ Added global tag-store helper APIs (`WithTags`, `WithTagsMut`) as macro-style equivalents for Rust tag-store access patterns
+- ✅ Added trait-style decode helper wrappers (`TryFromCBOR`, `TryFromCBORData`, `DecodeTaggedFor`, `DecodeTaggedDataFor`) for closer `CBORDecodable`/`CBORTaggedDecodable` ergonomics
 - ✅ `hex_annotated` rendering now follows Rust-like grouping/alignment rules, with exact whole-text parity assertions for the two translated large-structure vectors
 - ⚠️ Trait/protocol equivalence is partial: helper defaults now cover tagged encode/decode data paths and `ToCBORData`, but full Rust trait-level parity is still incomplete
 - ⚠️ Some conversion APIs and formatting edge cases remain below full Rust-equivalent parity
@@ -58,7 +59,7 @@
 
 ### Implemented in Go
 
-- 105 tests total across:
+- 107 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -94,7 +95,7 @@
   - translated `byte_string.rs` fixed-length conversion parity behavior
   - supplemental byte-string method parity checks (`Len`, `IsEmpty`, `Data`, `Extend`, `ToVec`, `Iter`, `AsRef`)
   - supplemental convenience helper parity checks (byte/text/array/map/tagged helpers, bool/null/nan helpers, sort/normalize utility behavior)
-  - trait-helper parity checks for default-style helper behavior (`ToCBORData`, tagged encode/decode helpers, tagged/untagged data decode helpers)
+  - trait-helper parity checks for default-style helper behavior (`ToCBORData`, tagged encode/decode helpers, tagged/untagged data decode helpers, `TryFromCBOR*` wrappers, tagged-provider wrappers)
 
 ### Rust Baseline (default-feature applicable)
 
@@ -124,7 +125,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 81/83 key manifest items (97.6%)
+- API Coverage: 82/83 key manifest items (98.8%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
