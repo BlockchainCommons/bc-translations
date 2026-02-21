@@ -74,3 +74,16 @@ STARTED
 COMPLETED
 - Added C# memory lesson on macro-generated constant surface translation.
 - Added cross-language lesson on validating generated constant registries against source counts.
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing all extant C# targets for legacy/compatibility API surface.
+- Verifying whether BCTags exposes compatibility-only symbols that should be removed for de novo APIs.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Found and removed 9 compatibility-only public symbols (`*V1` tag/value constant pairs) from `BCTags`.
+- Removed matching compatibility registrations from the tag registry list.
+- Updated parity tests to reflect the de novo API surface.
+- Validation sweep across all extant C# targets: BCLifeHash (2/2), BCRand (14/14), BCCrypto (42/42), BCShamir (4/4), DCbor (63/63), BCTags (3/3).
+- VERDICT: LEGACY SURFACE REMOVED

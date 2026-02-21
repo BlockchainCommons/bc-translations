@@ -558,96 +558,6 @@ public static class BcTags
     public const string TagNameProvenanceMark = "provenance";
 
     /// <summary>
-    /// Numeric CBOR tag value for seed v1 (crypto-seed).
-    /// </summary>
-    public const ulong TagSeedV1 = 300ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for seed v1.
-    /// </summary>
-    public const string TagNameSeedV1 = "crypto-seed";
-
-    /// <summary>
-    /// Numeric CBOR tag value for ec key v1 (crypto-eckey).
-    /// </summary>
-    public const ulong TagEcKeyV1 = 306ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for ec key v1.
-    /// </summary>
-    public const string TagNameEcKeyV1 = "crypto-eckey";
-
-    /// <summary>
-    /// Numeric CBOR tag value for sskr share v1 (crypto-sskr).
-    /// </summary>
-    public const ulong TagSskrShareV1 = 309ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for sskr share v1.
-    /// </summary>
-    public const string TagNameSskrShareV1 = "crypto-sskr";
-
-    /// <summary>
-    /// Numeric CBOR tag value for hdkey v1 (crypto-hdkey).
-    /// </summary>
-    public const ulong TagHdkeyV1 = 303ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for hdkey v1.
-    /// </summary>
-    public const string TagNameHdkeyV1 = "crypto-hdkey";
-
-    /// <summary>
-    /// Numeric CBOR tag value for derivation path v1 (crypto-keypath).
-    /// </summary>
-    public const ulong TagDerivationPathV1 = 304ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for derivation path v1.
-    /// </summary>
-    public const string TagNameDerivationPathV1 = "crypto-keypath";
-
-    /// <summary>
-    /// Numeric CBOR tag value for use info v1 (crypto-coin-info).
-    /// </summary>
-    public const ulong TagUseInfoV1 = 305ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for use info v1.
-    /// </summary>
-    public const string TagNameUseInfoV1 = "crypto-coin-info";
-
-    /// <summary>
-    /// Numeric CBOR tag value for output descriptor v1 (crypto-output).
-    /// </summary>
-    public const ulong TagOutputDescriptorV1 = 307ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output descriptor v1.
-    /// </summary>
-    public const string TagNameOutputDescriptorV1 = "crypto-output";
-
-    /// <summary>
-    /// Numeric CBOR tag value for psbt v1 (crypto-psbt).
-    /// </summary>
-    public const ulong TagPsbtV1 = 310ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for psbt v1.
-    /// </summary>
-    public const string TagNamePsbtV1 = "crypto-psbt";
-
-    /// <summary>
-    /// Numeric CBOR tag value for account v1 (crypto-account).
-    /// </summary>
-    public const ulong TagAccountV1 = 311ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for account v1.
-    /// </summary>
-    public const string TagNameAccountV1 = "crypto-account";
-
-    /// <summary>
     /// Numeric CBOR tag value for output script hash (output-script-hash).
     /// </summary>
     public const ulong TagOutputScriptHash = 400ul;
@@ -814,15 +724,6 @@ public static class BcTags
         new(TagSshTextSignature, TagNameSshTextSignature),
         new(TagSshTextCertificate, TagNameSshTextCertificate),
         new(TagProvenanceMark, TagNameProvenanceMark),
-        new(TagSeedV1, TagNameSeedV1),
-        new(TagEcKeyV1, TagNameEcKeyV1),
-        new(TagSskrShareV1, TagNameSskrShareV1),
-        new(TagHdkeyV1, TagNameHdkeyV1),
-        new(TagDerivationPathV1, TagNameDerivationPathV1),
-        new(TagUseInfoV1, TagNameUseInfoV1),
-        new(TagOutputDescriptorV1, TagNameOutputDescriptorV1),
-        new(TagPsbtV1, TagNamePsbtV1),
-        new(TagAccountV1, TagNameAccountV1),
         new(TagOutputScriptHash, TagNameOutputScriptHash),
         new(TagOutputWitnessScriptHash, TagNameOutputWitnessScriptHash),
         new(TagOutputPublicKey, TagNameOutputPublicKey),
