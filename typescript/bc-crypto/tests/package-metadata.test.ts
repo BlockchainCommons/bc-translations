@@ -8,7 +8,7 @@ import {
 } from '../src/index.js';
 
 describe('packageMetadata', () => {
-    test('testPackageMetadata', () => {
+    test('package name and version', () => {
         const packageJson = JSON.parse(
             readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
         ) as { name: string; version: string };
@@ -17,7 +17,7 @@ describe('packageMetadata', () => {
         expect(packageJson.version).toBe('0.14.0');
     });
 
-    test('testExpectedExportsPresent', () => {
+    test('expected exports present', () => {
         expect(typeof sha256).toBe('function');
         expect(typeof aeadChaCha20Poly1305Encrypt).toBe('function');
         expect(typeof ecdsaSign).toBe('function');

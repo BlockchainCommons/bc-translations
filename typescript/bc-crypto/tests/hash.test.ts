@@ -2,8 +2,8 @@ import { describe, expect, test } from 'vitest';
 
 import {
     crc32,
+    crc32Bytes,
     crc32Data,
-    crc32DataOpt,
     hkdfHmacSha256,
     hmacSha256,
     hmacSha512,
@@ -14,14 +14,14 @@ import {
 import { expectBytes, hexToBytes } from './test-helpers.js';
 
 describe('hash', () => {
-    test('testCrc32', () => {
+    test('crc32 checksum', () => {
         const input = new TextEncoder().encode('Hello, world!');
         expect(crc32(input)).toBe(0xebe6c6e6);
         expectBytes(crc32Data(input), 'ebe6c6e6');
-        expectBytes(crc32DataOpt(input, true), 'e6c6e6eb');
+        expectBytes(crc32Bytes(input, true), 'e6c6e6eb');
     });
 
-    test('testSha256', () => {
+    test('sha256 digest', () => {
         const input = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
         expectBytes(
             sha256(input),
@@ -29,7 +29,7 @@ describe('hash', () => {
         );
     });
 
-    test('testSha512', () => {
+    test('sha512 digest', () => {
         const input = 'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq';
         expectBytes(
             sha512(input),
@@ -37,7 +37,7 @@ describe('hash', () => {
         );
     });
 
-    test('testHmacSha', () => {
+    test('hmac-sha256 and hmac-sha512', () => {
         const key = hexToBytes('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b');
         const message = 'Hi There';
 
@@ -51,14 +51,14 @@ describe('hash', () => {
         );
     });
 
-    test('testPbkdf2HmacSha256', () => {
+    test('pbkdf2-hmac-sha256', () => {
         expectBytes(
             pbkdf2HmacSha256('password', 'salt', 1, 32),
             '120fb6cffcf8b32c43e7225256c4f837a86548c92ccc35480805987cb70be17b',
         );
     });
 
-    test('testHkdfHmacSha256', () => {
+    test('hkdf-hmac-sha256', () => {
         const keyMaterial = new TextEncoder().encode('hello');
         const salt = hexToBytes('8e94ef805b93e683ff18');
         expectBytes(

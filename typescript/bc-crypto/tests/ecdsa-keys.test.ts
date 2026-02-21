@@ -12,7 +12,7 @@ import {
 import { expectBytes } from './test-helpers.js';
 
 describe('ecdsaKeys', () => {
-    test('testEcdsaKeys', () => {
+    test('ECDSA key generation and derivation', () => {
         const rng = createFakeRandomNumberGenerator();
         const privateKey = ecdsaNewPrivateKeyUsing(rng);
         expectBytes(

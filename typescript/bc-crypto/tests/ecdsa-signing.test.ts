@@ -13,7 +13,7 @@ const MESSAGE =
     "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.";
 
 describe('ecdsaSigning', () => {
-    test('testEcdsaSigning', () => {
+    test('ECDSA sign and verify', () => {
         const rng = createFakeRandomNumberGenerator();
         const privateKey = ecdsaNewPrivateKeyUsing(rng);
         const publicKey = ecdsaPublicKeyFromPrivateKey(privateKey);

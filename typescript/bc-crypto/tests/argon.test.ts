@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { argon2id } from '../src/index.js';
 
 describe('argon', () => {
-    test('testArgon2idBasic', () => {
+    test('deterministic output', () => {
         const pass = 'password';
         const salt = 'example salt';
         const output = argon2id(pass, salt, 32);
@@ -13,7 +13,7 @@ describe('argon', () => {
         expect(output2).toEqual(output);
     });
 
-    test('testArgon2idDifferentSalt', () => {
+    test('different salt produces different output', () => {
         const pass = 'password';
         const out1 = argon2id(pass, 'example salt', 32);
         const out2 = argon2id(pass, 'example salt2', 32);

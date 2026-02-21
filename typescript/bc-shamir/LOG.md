@@ -65,3 +65,13 @@ COMPLETED
 - No legacy/compatibility symbols detected in `@bc/shamir` public API
 - Verification: `npm run build` and `npm test` pass (4/4 tests)
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique (Dependency Fallout Repair)
+STARTED
+- Repairing bc-shamir after upstream @bc/crypto API changes from cross-model fluency review
+
+## 2026-02-21 — Stage 4: Critique (Dependency Fallout Repair)
+COMPLETED
+- Updated `memzeroVecVecU8` references to `memzeroAll` in interpolate.ts and shamir.ts
+- Build and all 4/4 tests pass
+- VERDICT: IDIOMATIC

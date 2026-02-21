@@ -13,8 +13,3 @@ export class AeadError extends BCryptoError {
         this.name = 'AeadError';
     }
 }
-
-export { BCryptoError as Error };
-
-/** Rust-style Result alias; errors are represented as thrown exceptions in TS. */
-export type Result<T> = T;

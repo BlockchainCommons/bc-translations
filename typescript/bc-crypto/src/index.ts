@@ -5,7 +5,8 @@
  * @packageDocumentation
  */
 
-export { Error, type Result, BCryptoError, AeadError } from './error.js';
+export { BCryptoError, AeadError } from './error.js';
+export type { BytesLike } from './bytes.js';
 
 export {
     CRC32_SIZE,
@@ -13,7 +14,7 @@ export {
     SHA512_SIZE,
     crc32,
     crc32Data,
-    crc32DataOpt,
+    crc32Bytes,
     sha256,
     doubleSha256,
     sha512,
@@ -25,7 +26,7 @@ export {
     hkdfHmacSha512,
 } from './hash.js';
 
-export { memzero, memzeroVecVecU8 } from './memzero.js';
+export { memzero, memzeroAll } from './memzero.js';
 
 export {
     SYMMETRIC_KEY_SIZE,
@@ -84,6 +85,6 @@ export {
     ed25519Verify,
 } from './ed25519-signing.js';
 
-export { scrypt, scryptOpt } from './scrypt.js';
+export { scrypt, scryptWithParams } from './scrypt.js';
 
 export { argon2id } from './argon.js';

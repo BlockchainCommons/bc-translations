@@ -7,30 +7,18 @@ import {
     toBytes,
 } from './bytes.js';
 import {
-    ECDSA_PRIVATE_KEY_SIZE,
     ECDSA_PUBLIC_KEY_SIZE,
     ECDSA_SIGNATURE_SIZE,
+    requireEcdsaPrivateKey,
 } from './ecdsa-keys.js';
 import { doubleSha256 } from './hash.js';
-
-function requirePrivateKey(privateKey: BytesLike): Uint8Array {
-    const key = requireLength(
-        privateKey,
-        ECDSA_PRIVATE_KEY_SIZE,
-        '32 bytes, within curve order',
-    );
-    if (!secp256k1.utils.isValidSecretKey(key)) {
-        throw new RangeError('32 bytes, within curve order');
-    }
-    return key;
-}
 
 /** ECDSA signs the given message using the given private key. */
 export function ecdsaSign(
     privateKey: BytesLike,
     message: BytesLike,
 ): Uint8Array {
-    const key = requirePrivateKey(privateKey);
+    const key = requireEcdsaPrivateKey(privateKey);
     const hash = doubleSha256(message);
     return secp256k1.sign(hash, key, {
         format: 'compact',

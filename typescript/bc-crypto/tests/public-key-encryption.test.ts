@@ -11,7 +11,7 @@ import {
 import { expectBytes } from './test-helpers.js';
 
 describe('publicKeyEncryption', () => {
-    test('testX25519Keys', () => {
+    test('X25519 key derivation', () => {
         const rng = createFakeRandomNumberGenerator();
         const privateKey = x25519NewPrivateKeyUsing(rng);
         expectBytes(
@@ -38,7 +38,7 @@ describe('publicKeyEncryption', () => {
         );
     });
 
-    test('testKeyAgreement', () => {
+    test('key agreement', () => {
         const rng = createFakeRandomNumberGenerator();
         const alicePrivateKey = x25519NewPrivateKeyUsing(rng);
         const alicePublicKey = x25519PublicKeyFromPrivateKey(alicePrivateKey);

@@ -11,7 +11,8 @@ export const ECDSA_MESSAGE_HASH_SIZE = 32;
 export const ECDSA_SIGNATURE_SIZE = 64;
 export const SCHNORR_PUBLIC_KEY_SIZE = 32;
 
-function requireEcdsaPrivateKey(privateKey: BytesLike): Uint8Array {
+/** @internal Validates and returns a secp256k1 private key. */
+export function requireEcdsaPrivateKey(privateKey: BytesLike): Uint8Array {
     const key = requireLength(
         privateKey,
         ECDSA_PRIVATE_KEY_SIZE,

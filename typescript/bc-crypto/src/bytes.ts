@@ -1,7 +1,9 @@
+/** Accepted input types for functions that operate on binary data. */
 export type BytesLike = Uint8Array | ArrayLike<number> | string;
 
 const encoder = new TextEncoder();
 
+/** Converts a {@link BytesLike} value to a `Uint8Array`. */
 export function toBytes(value: BytesLike): Uint8Array {
     if (value instanceof Uint8Array) {
         return value;
@@ -12,6 +14,12 @@ export function toBytes(value: BytesLike): Uint8Array {
     return Uint8Array.from(value);
 }
 
+/**
+ * Converts a {@link BytesLike} value to a `Uint8Array` and asserts that its
+ * length matches the expected size.
+ *
+ * @throws {RangeError} If the converted byte length does not equal `length`.
+ */
 export function requireLength(
     value: BytesLike,
     length: number,
@@ -24,6 +32,7 @@ export function requireLength(
     return bytes;
 }
 
+/** Encodes a `Uint8Array` as a lowercase hexadecimal string. */
 export function bytesToHex(bytes: Uint8Array): string {
     let out = '';
     for (const byte of bytes) {

@@ -24,7 +24,7 @@ function encrypted(): [Uint8Array, Uint8Array] {
 }
 
 describe('symmetricEncryption', () => {
-    test('testRfcTestVector', () => {
+    test('RFC test vector', () => {
         const [ciphertext, auth] = encrypted();
         expectBytes(ciphertext, CIPHERTEXT);
         expectBytes(auth, AUTH);
@@ -39,7 +39,7 @@ describe('symmetricEncryption', () => {
         expect(decrypted).toEqual(PLAINTEXT);
     });
 
-    test('testRandomKeyAndNonce', () => {
+    test('random key and nonce', () => {
         const key = secureRandomData(32);
         const nonce = secureRandomData(12);
         const [ciphertext, auth] = aeadChaCha20Poly1305EncryptWithAad(
@@ -58,7 +58,7 @@ describe('symmetricEncryption', () => {
         expect(decrypted).toEqual(PLAINTEXT);
     });
 
-    test('testEmptyData', () => {
+    test('empty data', () => {
         const key = secureRandomData(32);
         const nonce = secureRandomData(12);
         const [ciphertext, auth] = aeadChaCha20Poly1305EncryptWithAad(

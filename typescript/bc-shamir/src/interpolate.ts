@@ -1,4 +1,4 @@
-import { memzero, memzeroVecVecU8 } from '@bc/crypto';
+import { memzero, memzeroAll } from '@bc/crypto';
 
 import { MAX_SECRET_LEN } from './index.js';
 import {
@@ -109,7 +109,7 @@ export function interpolate(
     memzero(ySlice);
     memzero(resultSlice);
     memzero(temp);
-    memzeroVecVecU8(y);
+    memzeroAll(y);
     memzero(values);
 
     return result;

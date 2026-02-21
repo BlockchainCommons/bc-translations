@@ -43,7 +43,7 @@ function runTestVector(vector: TestVector): void {
 }
 
 describe('schnorrSigning', () => {
-    test('testSchnorrSign', () => {
+    test('Schnorr sign and verify', () => {
         const rng = createFakeRandomNumberGenerator();
         const privateKey = ecdsaNewPrivateKeyUsing(rng);
         expectBytes(
@@ -254,7 +254,7 @@ describe('schnorrSigning', () => {
         });
     }
 
-    test('testInvalidPublicKeyVector5Panics', () => {
+    test('invalid public key vector 5 throws', () => {
         const vector: TestVector = {
             publicKey:
                 'EEFDEA4CDB677750A420FEE807EACF21EB9898AE79B9768766E4FAA04A2D4A34',
@@ -268,7 +268,7 @@ describe('schnorrSigning', () => {
         expect(() => runTestVector(vector)).toThrow();
     });
 
-    test('testInvalidPublicKeyVector14Panics', () => {
+    test('invalid public key vector 14 throws', () => {
         const vector: TestVector = {
             publicKey:
                 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC30',
@@ -282,7 +282,7 @@ describe('schnorrSigning', () => {
         expect(() => runTestVector(vector)).toThrow();
     });
 
-    test('testVerifyTweaked', () => {
+    test('verify tweaked key', () => {
         const message = new TextEncoder().encode('message');
         const publicKey =
             'b1ca6327b48b3f2f11c80b460aeff6934cbf1705083792108be9545b53818472';

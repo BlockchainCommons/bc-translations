@@ -40,10 +40,14 @@ export function aeadChaCha20Poly1305EncryptWithAad(
         cipher.setAAD(aadBytes, { plaintextLength: plain.length });
     }
 
-    const ciphertext = Buffer.concat([cipher.update(plain), cipher.final()]);
-    const auth = cipher.getAuthTag();
+    const encrypted = cipher.update(plain);
+    const final = cipher.final();
+    const ciphertext = new Uint8Array(encrypted.byteLength + final.byteLength);
+    ciphertext.set(encrypted, 0);
+    ciphertext.set(final, encrypted.byteLength);
+    const auth = new Uint8Array(cipher.getAuthTag());
 
-    return [new Uint8Array(ciphertext), new Uint8Array(auth)];
+    return [ciphertext, auth];
 }
 
 /**
@@ -101,11 +105,12 @@ export function aeadChaCha20Poly1305DecryptWithAad(
     decipher.setAuthTag(tag);
 
     try {
-        const plaintext = Buffer.concat([
-            decipher.update(cipher),
-            decipher.final(),
-        ]);
-        return new Uint8Array(plaintext);
+        const decrypted = decipher.update(cipher);
+        const final = decipher.final();
+        const plaintext = new Uint8Array(decrypted.byteLength + final.byteLength);
+        plaintext.set(decrypted, 0);
+        plaintext.set(final, decrypted.byteLength);
+        return plaintext;
     } catch {
         throw new AeadError();
     }

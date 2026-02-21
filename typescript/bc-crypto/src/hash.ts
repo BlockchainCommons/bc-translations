@@ -30,8 +30,8 @@ export function crc32(data: BytesLike): number {
     return (c ^ 0xffffffff) >>> 0;
 }
 
-/** Computes the CRC-32 checksum bytes in big-endian or little-endian. */
-export function crc32DataOpt(
+/** Computes the CRC-32 checksum as 4 bytes in big-endian or little-endian order. */
+export function crc32Bytes(
     data: BytesLike,
     littleEndian: boolean,
 ): Uint8Array {
@@ -42,9 +42,9 @@ export function crc32DataOpt(
     return out;
 }
 
-/** Computes the CRC-32 checksum bytes in big-endian format. */
+/** Computes the CRC-32 checksum as 4 bytes in big-endian order. */
 export function crc32Data(data: BytesLike): Uint8Array {
-    return crc32DataOpt(data, false);
+    return crc32Bytes(data, false);
 }
 
 /** Computes the SHA-256 digest of the input buffer. */

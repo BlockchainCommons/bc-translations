@@ -1,4 +1,4 @@
-import { hmacSha256, memzero, memzeroVecVecU8 } from '@bc/crypto';
+import { hmacSha256, memzero, memzeroAll } from '@bc/crypto';
 import type { RandomNumberGenerator } from '@bc/rand';
 
 import {
@@ -103,7 +103,7 @@ export function splitSecret(
     // clean up stack
     memzero(digest);
     memzero(x);
-    memzeroVecVecU8(y);
+    memzeroAll(y);
 
     return result;
 }

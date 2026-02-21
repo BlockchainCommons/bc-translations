@@ -6,13 +6,11 @@ Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-02-21
 - Targets translated: 33
-- Targets with cross-model fluency complete: 22
-- Targets still needing cross-model fluency: 11
+- Targets with cross-model fluency complete: 24
+- Targets still needing cross-model fluency: 9
 
 | Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
 |-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
-| bc-crypto | 0.14.0 | TypeScript | @bc/crypto | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
-| bc-lifehash | 0.1.0 | Kotlin | bc-lifehash | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
 | bc-lifehash | 0.1.0 | Swift | BCLifeHash | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
 | bc-shamir | 0.13.0 | C# | BCShamir | 📖 GPT 5.3 Codex | 🎻 Claude Opus | No fluency pass logged |
 | bc-shamir | 0.13.0 | Kotlin | bc-shamir | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |

@@ -20,7 +20,7 @@ type TestVector = {
 };
 
 describe('ed25519Signing', () => {
-    test('testEd25519Signing', () => {
+    test('Ed25519 sign and verify', () => {
         const privateKey = fakeRandomData(ED25519_PRIVATE_KEY_SIZE);
         expectBytes(
             privateKey,
@@ -41,7 +41,7 @@ describe('ed25519Signing', () => {
         expect(ed25519Verify(publicKey, MESSAGE, signature)).toBe(true);
     });
 
-    test('testEd25519Vectors', () => {
+    test('Ed25519 RFC vectors', () => {
         const vectors: TestVector[] = [
             {
                 secretKey:
