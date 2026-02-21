@@ -93,3 +93,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags      | 🎻 Claude Opus 4.6 | Fluency     |
+| 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 🎻 Claude Opus 4.6 | Fluency     |

@@ -86,17 +86,17 @@ public struct Map: Sendable {
         let value: CBOR
     }
 
-    struct MapKey: Comparable, Sendable {
+    struct MapKey: Comparable, Hashable, Sendable {
         let keyData: Data
-        
+
         init(_ keyData: Data) {
             self.keyData = keyData
         }
-        
+
         init<T>(_ k: T) where T: CBOREncodable {
             self.init(k.cborData)
         }
-        
+
         static func < (lhs: MapKey, rhs: MapKey) -> Bool {
             lhs.keyData.lexicographicallyPrecedes(rhs.keyData)
         }

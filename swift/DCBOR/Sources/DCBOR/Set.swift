@@ -1,6 +1,6 @@
 import Foundation
 
-/// A deterministic CBOR set represented as a map of value->value.
+/// A deterministic CBOR set represented as a map of value-to-value.
 ///
 /// Values are ordered by their encoded CBOR bytes to preserve deterministic
 /// behavior across platforms.
@@ -9,6 +9,27 @@ public struct Set: Sendable, Equatable {
 
     public init() {
         self.map = Map()
+    }
+
+    /// Creates a set from arbitrary values (duplicates collapse naturally).
+    public init<T>(_ values: [T]) where T: CBOREncodable {
+        var map = Map()
+        for value in values {
+            map.insert(value, value)
+        }
+        self.map = map
+    }
+
+    /// Creates a set from values that are already in canonical CBOR order.
+    ///
+    /// - Throws: ``CBORError/duplicateMapKey`` or ``CBORError/misorderedMapKey``
+    ///   if the input contains duplicates or is not in canonical order.
+    public init<T>(orderedValues values: [T]) throws where T: CBOREncodable {
+        var result = Set()
+        for value in values {
+            try result.insertNext(value.cbor)
+        }
+        self = result
     }
 
     /// Number of unique values in the set.
@@ -34,25 +55,6 @@ public struct Set: Sendable, Equatable {
     /// Returns the deterministic CBOR-ordered values.
     public func asArray() -> [CBOR] {
         map.map { _, value in value }
-    }
-
-    /// Builds a set from arbitrary values (duplicates collapse naturally).
-    public static func fromArray<T>(_ values: [T]) -> Set where T: CBOREncodable {
-        var result = Set()
-        for value in values {
-            result.insert(value)
-        }
-        return result
-    }
-
-    /// Builds a set from values that are already in canonical CBOR order.
-    /// Throws for duplicate or misordered input.
-    public static func tryFromArray<T>(_ values: [T]) throws -> Set where T: CBOREncodable {
-        var result = Set()
-        for value in values {
-            try result.insertNext(value.cbor)
-        }
-        return result
     }
 
     mutating func insertNext(_ value: CBOR) throws {
@@ -89,7 +91,7 @@ extension Set: CBORCodable {
 
     public init(cbor: CBOR) throws {
         let array = try [CBOR](cbor: cbor)
-        self = try Set.tryFromArray(array)
+        self = try Set(orderedValues: array)
     }
 }
 

@@ -30,10 +30,6 @@ public extension CBOR {
         return lines.joined(separator: "\n")
     }
 
-    /// Compatibility helper mirroring the Rust-style naming.
-    func hexOpt(annotate: Bool = false, tags: TagsStoreProtocol? = nil) -> String {
-        hex(annotate: annotate, tags: tags)
-    }
 }
 
 struct DumpItem {

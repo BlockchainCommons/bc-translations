@@ -1,30 +1,14 @@
 import Foundation
 
-func toHex(byte: UInt8) -> String {
-    String(format: "%02x", byte)
-}
-
-func toHex(data: Data) -> String {
-    data.reduce(into: "") {
-        $0 += toHex(byte: $1)
-    }
-}
-
-func toUTF8(data: Data) -> String? {
-    String(data: data, encoding: .utf8)
-}
-
 extension Data {
     var hex: String {
-        toHex(data: self)
+        reduce(into: "") { $0 += String(format: "%02x", $1) }
     }
 
     var utf8: String? {
-        toUTF8(data: self)
+        String(data: self, encoding: .utf8)
     }
-}
 
-extension Data {
     init<A>(of a: A) {
         let d = Swift.withUnsafeBytes(of: a) {
             Data($0)
@@ -62,12 +46,8 @@ extension StringProtocol {
     }
 }
 
-func toData(utf8: String) -> Data {
-    utf8.data(using: .utf8)!
-}
-
 extension String {
     var utf8Data: Data {
-        toData(utf8: self)
+        data(using: .utf8)!
     }
 }

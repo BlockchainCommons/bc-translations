@@ -1,7 +1,7 @@
 import Foundation
 
 /// An element presented to a CBOR walk visitor.
-public enum WalkElement: Sendable {
+public enum WalkElement: Sendable, Equatable {
     case single(CBOR)
     case keyValue(key: CBOR, value: CBOR)
 

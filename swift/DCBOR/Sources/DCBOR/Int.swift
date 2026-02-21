@@ -194,7 +194,7 @@ extension Int64: CBORCodable {
                 return a.encodeVarInt(.negative)
             }
         } else {
-            let a = UInt32(self)
+            let a = UInt64(self)
             return a.encodeVarInt(.unsigned)
         }
     }

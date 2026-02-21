@@ -288,7 +288,7 @@ struct WalkTests {
 
 struct SetTests {
     @Test func testSetInsertContainsAndRoundTrip() throws {
-        let set = DCBOR.Set.fromArray([3, 1, 2, 2])
+        let set = DCBOR.Set([3, 1, 2, 2])
         #expect(set.count == 3)
         #expect(set.contains(1))
         #expect(set.contains(2))
@@ -301,18 +301,18 @@ struct SetTests {
         #expect(roundTrip == set)
     }
 
-    @Test func testSetTryFromArrayRejectsDuplicate() {
+    @Test func testSetOrderedValuesRejectsDuplicate() {
         #expect {
-            _ = try DCBOR.Set.tryFromArray([CBOR(1), CBOR(1)])
+            _ = try DCBOR.Set(orderedValues: [CBOR(1), CBOR(1)])
         } throws: { error in
             try #require(error as? CBORError == CBORError.duplicateMapKey)
             return true
         }
     }
 
-    @Test func testSetTryFromArrayRejectsMisorder() {
+    @Test func testSetOrderedValuesRejectsMisorder() {
         #expect {
-            _ = try DCBOR.Set.tryFromArray([CBOR("z"), CBOR("a")])
+            _ = try DCBOR.Set(orderedValues: [CBOR("z"), CBOR("a")])
         } throws: { error in
             try #require(error as? CBORError == CBORError.misorderedMapKey)
             return true

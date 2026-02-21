@@ -93,3 +93,24 @@ COMPLETED
   - removed `BCSwiftFloat16`/`BCFloat16` package dependency and export.
 - Verification: `swift test` passed for DCBOR (53 tests, 0 failures); cross-target verification also passed for BCLifeHash, BCRand, BCCrypto, and BCShamir.
 - VERDICT: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency pass by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing all source files for Swift idiomaticness, naming, error handling, API design.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- Fixed `Int64.cborData` bug: positive path truncated to `UInt32` instead of `UInt64`.
+- Removed Rust-leaking API names: `tryFromData`, `tryFromHex` (replaced with `init(hex:)`), `toCBORData`, `hexOpt`.
+- Removed all commented-out dead code from `Simple.swift` and `Decode.swift`.
+- Added `errorDescription` to `CBORError` for proper `LocalizedError` conformance.
+- Added `Equatable` conformance to `WalkElement`.
+- Added `Hashable` conformance to `Map.MapKey`.
+- Renamed `Set.fromArray` to `Set.init(_:)` and `Set.tryFromArray` to `Set.init(orderedValues:)`.
+- Fixed typo: "Overrdiable" to "Overridable" in `CBORTaggedEncodable.swift`.
+- Fixed inconsistent indentation in `Decode.swift`.
+- Removed redundant free functions from `Utils.swift` (kept only extensions).
+- No downstream Swift dependents required repair (bc-tags/bc-ur not yet translated for Swift).
+- Verification: `swift test -Xswiftc -warnings-as-errors` passed (53 tests, 0 failures).
+- VERDICT: IDIOMATIC.

@@ -142,19 +142,15 @@ public extension CBOR {
         self = try decodeCBOR(data)
     }
 
-    static func tryFromData(_ data: Data) throws -> CBOR {
-        try CBOR(data)
-    }
-
-    static func tryFromHex(_ hex: String) throws -> CBOR {
+    /// Creates a CBOR value from its hexadecimal encoded representation.
+    ///
+    /// - Throws: ``CBORError/invalidFormat`` if the hex string is invalid,
+    ///   or a decoding error if the data is not well-formed deterministic CBOR.
+    init(hex: String) throws {
         guard let data = Data(hexString: hex) else {
             throw CBORError.invalidFormat
         }
-        return try CBOR(data)
-    }
-
-    var toCBORData: Data {
-        cborData
+        self = try CBOR(data)
     }
 }
 

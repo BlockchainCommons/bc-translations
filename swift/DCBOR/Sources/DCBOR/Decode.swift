@@ -40,7 +40,7 @@ func parseHeader(_ header: UInt8) -> (MajorType, UInt8) {
         majorType = .map
     case 6:
         majorType = .tagged
-   case 7:
+    case 7:
         majorType = .simple
     default:
         preconditionFailure()
@@ -207,7 +207,6 @@ func decodeCBORInternal(_ data: ArraySlice<UInt8>) throws -> (cbor: CBOR, len: I
                 return (CBOR.null, headerVarIntLen)
             default:
                 throw CBORError.invalidSimple
-                //return (Simple.value(value).cbor, headerVarIntLen)
             }
         }
     }

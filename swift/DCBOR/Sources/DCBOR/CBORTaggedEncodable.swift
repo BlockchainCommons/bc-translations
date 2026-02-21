@@ -9,7 +9,7 @@ public protocol CBORTaggedEncodable: CBOREncodable {
     var untaggedCBOR: CBOR { get }
     var taggedCBOR: CBOR { get }
     
-    // Overrdiable from CBOREncodable
+    // Overridable from CBOREncodable
     var cbor: CBOR { get }
     var cborData: Data { get }
 }

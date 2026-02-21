@@ -6,12 +6,11 @@ Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-02-21
 - Targets translated: 33
-- Targets with cross-model fluency complete: 31
-- Targets still needing cross-model fluency: 2
+- Targets with cross-model fluency complete: 32
+- Targets still needing cross-model fluency: 1
 
 | Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
 |-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
-| dcbor | 0.25.1 | Swift | DCBOR | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
 | dcbor | 0.25.1 | TypeScript | @bc/dcbor | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
 
 ## Update Rule
