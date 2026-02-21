@@ -5,11 +5,13 @@ Running queue of translated targets that still need at least one fluency pass by
 Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-02-21
-- Targets translated: 33
+- Targets translated: 34
 - Targets with cross-model fluency complete: 33
-- Targets still needing cross-model fluency: 0
+- Targets still needing cross-model fluency: 1
 
-All translated targets have a cross-model fluency pass.
+| Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
+|-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
+| bc-tags | 0.12.0 | Go | bctags | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
 
 ## Update Rule
 
