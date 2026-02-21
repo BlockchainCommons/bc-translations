@@ -26,6 +26,7 @@
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
 - ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `TrySimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
+- ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
 - ⚠️ Trait/protocol equivalence is skeletal (marker-style Go interfaces, not full Rust trait parity)
@@ -40,9 +41,10 @@
 
 ### Implemented in Go
 
-- 61 tests total across:
+- 63 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
+  - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)
   - exact numeric-conversion boundary parity vectors (`exact.rs`-aligned float-to-int exactness cases via Go CBOR reduction behavior)
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
@@ -73,7 +75,7 @@
 
 Applicable Rust behavior tests for parity target (excluding Rust metadata checks): 86
 
-Current translated tests: 61/86 (70.9%)
+Current translated tests: 63/86 (73.3%)
 
 ## Derive/Protocol Coverage
 
@@ -87,8 +89,8 @@ Current translated tests: 61/86 (70.9%)
 
 ## Completeness Summary
 
-- API Coverage: 61/83 key manifest items (73.5%)
-- Test Coverage: 61/86 applicable behavior tests (70.9%)
+- API Coverage: 63/83 key manifest items (75.9%)
+- Test Coverage: 63/86 applicable behavior tests (73.3%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
 - Docs parity: partial
@@ -99,5 +101,5 @@ Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Expand translated tests from 61 to near-complete default-feature parity.
+3. Expand translated tests from 63 to near-complete default-feature parity.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.

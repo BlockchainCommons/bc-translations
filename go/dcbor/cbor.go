@@ -486,6 +486,98 @@ func (c CBOR) IntoInt64() (int64, bool) {
 	return value, true
 }
 
+func (c CBOR) TryIntoInt32() (int32, error) {
+	value, err := c.TryIntoInt64()
+	if err != nil {
+		return 0, err
+	}
+	if value < math.MinInt32 || value > math.MaxInt32 {
+		return 0, ErrOutOfRange
+	}
+	return int32(value), nil
+}
+
+func (c CBOR) TryInt32() (int32, error) {
+	return c.TryIntoInt32()
+}
+
+func (c CBOR) IntoInt32() (int32, bool) {
+	value, err := c.TryIntoInt32()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoInt16() (int16, error) {
+	value, err := c.TryIntoInt64()
+	if err != nil {
+		return 0, err
+	}
+	if value < math.MinInt16 || value > math.MaxInt16 {
+		return 0, ErrOutOfRange
+	}
+	return int16(value), nil
+}
+
+func (c CBOR) TryInt16() (int16, error) {
+	return c.TryIntoInt16()
+}
+
+func (c CBOR) IntoInt16() (int16, bool) {
+	value, err := c.TryIntoInt16()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoUInt32() (uint32, error) {
+	value, err := c.TryIntoUInt64()
+	if err != nil {
+		return 0, err
+	}
+	if value > math.MaxUint32 {
+		return 0, ErrOutOfRange
+	}
+	return uint32(value), nil
+}
+
+func (c CBOR) TryUInt32() (uint32, error) {
+	return c.TryIntoUInt32()
+}
+
+func (c CBOR) IntoUInt32() (uint32, bool) {
+	value, err := c.TryIntoUInt32()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoUInt16() (uint16, error) {
+	value, err := c.TryIntoUInt64()
+	if err != nil {
+		return 0, err
+	}
+	if value > math.MaxUint16 {
+		return 0, ErrOutOfRange
+	}
+	return uint16(value), nil
+}
+
+func (c CBOR) TryUInt16() (uint16, error) {
+	return c.TryIntoUInt16()
+}
+
+func (c CBOR) IntoUInt16() (uint16, bool) {
+	value, err := c.TryIntoUInt16()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryIntoFloat64() (float64, error) {
 	switch c.kind {
 	case CBORKindUnsigned:

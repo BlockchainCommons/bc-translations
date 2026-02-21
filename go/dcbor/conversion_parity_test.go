@@ -338,3 +338,89 @@ func TestExactI64FromF64ParityVectors(t *testing.T) {
 		}
 	}
 }
+
+func TestTypedIntegerConversionParity(t *testing.T) {
+	int16Value := MustFromAny(-21)
+	if got, err := int16Value.TryIntoInt16(); err != nil || got != -21 {
+		t.Fatalf("TryIntoInt16 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := int16Value.TryInt16(); err != nil || got != -21 {
+		t.Fatalf("TryInt16 mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := int16Value.IntoInt16(); !ok || got != -21 {
+		t.Fatalf("IntoInt16 mismatch: got=%d ok=%v", got, ok)
+	}
+
+	int32Value := MustFromAny(2147483647)
+	if got, err := int32Value.TryIntoInt32(); err != nil || got != 2147483647 {
+		t.Fatalf("TryIntoInt32 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := int32Value.TryInt32(); err != nil || got != 2147483647 {
+		t.Fatalf("TryInt32 mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := int32Value.IntoInt32(); !ok || got != 2147483647 {
+		t.Fatalf("IntoInt32 mismatch: got=%d ok=%v", got, ok)
+	}
+
+	uint16Value := MustFromAny(65535)
+	if got, err := uint16Value.TryIntoUInt16(); err != nil || got != 65535 {
+		t.Fatalf("TryIntoUInt16 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := uint16Value.TryUInt16(); err != nil || got != 65535 {
+		t.Fatalf("TryUInt16 mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := uint16Value.IntoUInt16(); !ok || got != 65535 {
+		t.Fatalf("IntoUInt16 mismatch: got=%d ok=%v", got, ok)
+	}
+
+	uint32Value := MustFromAny(uint64(4294967295))
+	if got, err := uint32Value.TryIntoUInt32(); err != nil || got != 4294967295 {
+		t.Fatalf("TryIntoUInt32 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := uint32Value.TryUInt32(); err != nil || got != 4294967295 {
+		t.Fatalf("TryUInt32 mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := uint32Value.IntoUInt32(); !ok || got != 4294967295 {
+		t.Fatalf("IntoUInt32 mismatch: got=%d ok=%v", got, ok)
+	}
+}
+
+func TestTypedIntegerConversionErrorsParity(t *testing.T) {
+	if _, err := MustFromAny(32768).TryIntoInt16(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for int16 overflow, got %v", err)
+	}
+	if _, err := MustFromAny(-32769).TryIntoInt16(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for int16 underflow, got %v", err)
+	}
+	if _, err := MustFromAny(uint64(2147483648)).TryIntoInt32(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for int32 overflow, got %v", err)
+	}
+	if _, err := MustFromAny(-2147483649).TryIntoInt32(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for int32 underflow, got %v", err)
+	}
+	if _, err := MustFromAny(65536).TryIntoUInt16(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for uint16 overflow, got %v", err)
+	}
+	if _, err := MustFromAny(uint64(4294967296)).TryIntoUInt32(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for uint32 overflow, got %v", err)
+	}
+	if _, err := MustFromAny(-1).TryIntoUInt16(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for negative->uint16, got %v", err)
+	}
+	if _, err := MustFromAny(-1).TryIntoUInt32(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for negative->uint32, got %v", err)
+	}
+	if _, err := MustFromAny(42.5).TryIntoInt32(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for non-integral float->int32, got %v", err)
+	}
+	if _, err := MustFromAny("42").TryIntoUInt16(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for text->uint16, got %v", err)
+	}
+
+	if _, ok := MustFromAny(42.5).IntoInt16(); ok {
+		t.Fatalf("expected IntoInt16 to fail for non-integral float")
+	}
+	if _, ok := MustFromAny(-1).IntoUInt32(); ok {
+		t.Fatalf("expected IntoUInt32 to fail for negative value")
+	}
+}

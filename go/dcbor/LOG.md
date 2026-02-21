@@ -379,3 +379,29 @@ COMPLETED
 - API coverage unchanged: 61/83 key manifest targets
 - Test coverage improved from 58/86 to 61/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (test parity now >70%; notable API and behavior gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion-matrix parity work after date coverage
+- Implementing typed integer extraction helpers to better match Rust `TryFrom<CBOR>` surface
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added typed numeric conversion APIs in `cbor.go`:
+  - `TryIntoInt16`, `TryInt16`, `IntoInt16`
+  - `TryIntoInt32`, `TryInt32`, `IntoInt32`
+  - `TryIntoUInt16`, `TryUInt16`, `IntoUInt16`
+  - `TryIntoUInt32`, `TryUInt32`, `IntoUInt32`
+- Added `conversion_parity_test.go` coverage for success and range/type error paths
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (63 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after typed integer conversion additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with typed conversion parity notes and refreshed metrics
+- API coverage improved from 61/83 to 63/83 key manifest targets
+- Test coverage improved from 61/86 to 63/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (conversion matrix improved; major remaining parity still pending)
