@@ -130,6 +130,122 @@ func TestFormatUnsignedAndNegativeParity(t *testing.T) {
 	)
 }
 
+func TestFormatUnsignedAdditionalParity(t *testing.T) {
+	runFormatCheck(
+		t,
+		"unsigned_0",
+		MustFromAny(0),
+		"0",
+		"unsigned(0)",
+		"0",
+		"0",
+		"0",
+		"0",
+		"00",
+		"00  # unsigned(0)",
+	)
+	runFormatCheck(
+		t,
+		"unsigned_23",
+		MustFromAny(23),
+		"23",
+		"unsigned(23)",
+		"23",
+		"23",
+		"23",
+		"23",
+		"17",
+		"17  # unsigned(23)",
+	)
+	runFormatCheck(
+		t,
+		"unsigned_1000000000",
+		MustFromAny(1000000000),
+		"1000000000",
+		"unsigned(1000000000)",
+		"1000000000",
+		"1000000000",
+		"1000000000",
+		"1000000000",
+		"1a3b9aca00",
+		"1a 3b 9a ca 00  # unsigned(1000000000)",
+	)
+}
+
+func TestFormatNegativeAdditionalParity(t *testing.T) {
+	runFormatCheck(
+		t,
+		"negative_1",
+		MustFromAny(-1),
+		"-1",
+		"negative(-1)",
+		"-1",
+		"-1",
+		"-1",
+		"-1",
+		"20",
+		"20  # negative(-1)",
+	)
+	runFormatCheck(
+		t,
+		"negative_1000",
+		MustFromAny(-1000),
+		"-1000",
+		"negative(-1000)",
+		"-1000",
+		"-1000",
+		"-1000",
+		"-1000",
+		"3903e7",
+		"39 03 e7  # negative(-1000)",
+	)
+}
+
+func TestFormatSimpleArrayParity(t *testing.T) {
+	runFormatCheck(
+		t,
+		"simple_array",
+		arrayFromAny(1, 2, 3),
+		"[1, 2, 3]",
+		"array([unsigned(1), unsigned(2), unsigned(3)])",
+		"[1, 2, 3]",
+		"[1, 2, 3]",
+		"[1, 2, 3]",
+		"[1, 2, 3]",
+		"83010203",
+		`83  # array(3)
+    01  # unsigned(1)
+    02  # unsigned(2)
+    03  # unsigned(3)`,
+	)
+}
+
+func TestFormatSimpleMapParity(t *testing.T) {
+	m := NewMap()
+	m.MustInsertAny(1, "A")
+	m.MustInsertAny(2, "B")
+
+	runFormatCheck(
+		t,
+		"simple_map",
+		NewCBORMap(m),
+		`{1: "A", 2: "B"}`,
+		`map({0x01: (unsigned(1), text("A")), 0x02: (unsigned(2), text("B"))})`,
+		`{1: "A", 2: "B"}`,
+		`{1: "A", 2: "B"}`,
+		`{1: "A", 2: "B"}`,
+		`{1: "A", 2: "B"}`,
+		"a2016141026142",
+		`a2  # map(2)
+    01  # unsigned(1)
+    61  # text(1)
+        41  # "A"
+    02  # unsigned(2)
+    61  # text(1)
+        42  # "B"`,
+	)
+}
+
 func TestFormatStringAndNestedArrayParity(t *testing.T) {
 	runFormatCheck(
 		t,

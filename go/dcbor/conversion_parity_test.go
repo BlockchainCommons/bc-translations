@@ -14,6 +14,32 @@ func decodeInt(c CBOR) (int, error) {
 	return int(v), nil
 }
 
+func exactU64FromF64ViaCBOR(n float64) (uint64, bool) {
+	c := MustFromAny(n)
+	v, err := c.TryIntoUInt64()
+	if err != nil {
+		return 0, false
+	}
+	if c.Kind() != CBORKindUnsigned {
+		return 0, false
+	}
+	return v, true
+}
+
+func exactI64FromF64ViaCBOR(n float64) (int64, bool) {
+	c := MustFromAny(n)
+	v, err := c.TryIntoInt64()
+	if err != nil {
+		return 0, false
+	}
+	switch c.Kind() {
+	case CBORKindUnsigned, CBORKindNegative:
+		return v, true
+	default:
+		return 0, false
+	}
+}
+
 func TestConversionRoundTripPrimitiveParity(t *testing.T) {
 	values := []any{
 		10,
@@ -228,5 +254,87 @@ func TestSetFromVecDeterminismAndValidation(t *testing.T) {
 	_, err = TrySetFromVec([]CBOR{MustFromAny(1), MustFromAny(1)})
 	if !errors.Is(err, ErrDuplicateMapKey) {
 		t.Fatalf("expected ErrDuplicateMapKey from TrySetFromVec, got %v", err)
+	}
+}
+
+func TestExactU64FromF64ParityVectors(t *testing.T) {
+	cases := []struct {
+		name  string
+		value float64
+		want  uint64
+		ok    bool
+	}{
+		{name: "integer", value: 1234.0, want: 1234, ok: true},
+		{name: "negative_integer", value: -1234.0, ok: false},
+		{name: "large_exact", value: 18446744073709550000.0, want: 18446744073709549568, ok: true},
+		{name: "large_inexact", value: 18446744073709552000.0, ok: false},
+		{name: "zero", value: 0.0, want: 0, ok: true},
+		{name: "negative_zero", value: math.Copysign(0.0, -1.0), want: 0, ok: true},
+		{name: "half", value: 0.5, ok: false},
+		{name: "negative_half", value: -0.5, ok: false},
+		{name: "nan", value: math.NaN(), ok: false},
+		{name: "inf", value: math.Inf(1), ok: false},
+		{name: "neg_inf", value: math.Inf(-1), ok: false},
+		{name: "max_exact_int_f64", value: 9007199254740991.0, want: 9007199254740991, ok: true},
+		{name: "one", value: 1.0, want: 1, ok: true},
+		{name: "subnormal", value: 5e-324, ok: false},
+		{name: "u64_max_as_f64", value: float64(^uint64(0)), ok: false},
+		{name: "u64_max_minus_1_as_f64", value: float64(^uint64(0) - 1), ok: false},
+		{name: "u64_max_minus_2_as_f64", value: float64(^uint64(0) - 2), ok: false},
+		{name: "smallest_increment", value: 1.0000000000000002, ok: false},
+		{name: "non_integer_precision", value: 4503599627370495.5, ok: false},
+		{name: "min_positive", value: math.SmallestNonzeroFloat64, ok: false},
+		{name: "max_float", value: math.MaxFloat64, ok: false},
+	}
+
+	for _, tc := range cases {
+		got, ok := exactU64FromF64ViaCBOR(tc.value)
+		if ok != tc.ok {
+			t.Fatalf("%s ok mismatch: got %v want %v (value=%v)", tc.name, ok, tc.ok, tc.value)
+		}
+		if tc.ok && got != tc.want {
+			t.Fatalf("%s value mismatch: got %d want %d", tc.name, got, tc.want)
+		}
+	}
+}
+
+func TestExactI64FromF64ParityVectors(t *testing.T) {
+	cases := []struct {
+		name  string
+		value float64
+		want  int64
+		ok    bool
+	}{
+		{name: "zero", value: 0.0, want: 0, ok: true},
+		{name: "negative_zero", value: math.Copysign(0.0, -1.0), want: 0, ok: true},
+		{name: "half", value: 0.5, ok: false},
+		{name: "negative_half", value: -0.5, ok: false},
+		{name: "integer", value: 1234.0, want: 1234, ok: true},
+		{name: "negative_integer", value: -1234.0, want: -1234, ok: true},
+		{name: "nan", value: math.NaN(), ok: false},
+		{name: "inf", value: math.Inf(1), ok: false},
+		{name: "neg_inf", value: math.Inf(-1), ok: false},
+		{name: "i64_max_as_f64", value: float64(math.MaxInt64), ok: false},
+		{name: "i64_min_as_f64", value: float64(math.MinInt64), want: math.MinInt64, ok: true},
+		{name: "subnormal_pos", value: 1e-308, ok: false},
+		{name: "subnormal_neg", value: -1e-308, ok: false},
+		{name: "i64_max_plus_1", value: float64(math.MaxInt64) + 1.0, ok: false},
+		{name: "power_two", value: 1024.0, want: 1024, ok: true},
+		{name: "power_two_neg", value: -1024.0, want: -1024, ok: true},
+		{name: "fractional", value: 1234.56, ok: false},
+		{name: "fractional_neg", value: -1234.56, ok: false},
+		{name: "largest_exact_f64_integer", value: 9007199254740991.0, want: 9007199254740991, ok: true},
+		{name: "largest_exact_f64_integer_neg", value: -9007199254740991.0, want: -9007199254740991, ok: true},
+		{name: "most_negative_double_to_i64", value: -9223372036854774784.0, want: -9223372036854774784, ok: true},
+	}
+
+	for _, tc := range cases {
+		got, ok := exactI64FromF64ViaCBOR(tc.value)
+		if ok != tc.ok {
+			t.Fatalf("%s ok mismatch: got %v want %v (value=%v)", tc.name, ok, tc.ok, tc.value)
+		}
+		if tc.ok && got != tc.want {
+			t.Fatalf("%s value mismatch: got %d want %d", tc.name, got, tc.want)
+		}
 	}
 }

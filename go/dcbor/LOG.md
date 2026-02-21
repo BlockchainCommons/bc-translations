@@ -289,3 +289,47 @@ COMPLETED
 - API coverage unchanged: 60/83 key manifest targets
 - Test coverage improved from 49/86 to 50/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (continued progress; annotated-hex exact parity and broad API/test gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity translation for remaining `format.rs` vectors
+- Filling in missing unsigned/negative/simple-array/simple-map format expectations
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TestFormatUnsignedAdditionalParity`, `TestFormatNegativeAdditionalParity`, `TestFormatSimpleArrayParity`, and `TestFormatSimpleMapParity` in `format_parity_test.go`
+- These cover the remaining basic `format.rs` vectors that were not yet translated into Go parity assertions
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (54 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after the additional format parity vectors
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect the expanded format-vector coverage
+- API coverage unchanged: 60/83 key manifest targets
+- Test coverage improved from 50/86 to 54/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (format parity improved; remaining gaps are API breadth and residual behavior coverage)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity translation against inline Rust module tests
+- Bringing in `exact.rs` boundary vectors and `byte_string.rs` conversion behavior
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TestExactU64FromF64ParityVectors` and `TestExactI64FromF64ParityVectors` in `conversion_parity_test.go`
+- Added `byte_string_parity_test.go` with fixed-length conversion success/failure parity behavior from `byte_string.rs`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (57 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after adding exact and byte-string parity vectors
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with inline-test parity notes and refreshed metrics
+- API coverage unchanged: 60/83 key manifest targets
+- Test coverage improved from 54/86 to 57/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (coverage now >66%; significant API and remaining behavior parity still pending)
