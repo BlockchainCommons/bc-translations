@@ -38,3 +38,5 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | dcbor       | 0.25.1  | Python     | dcbor        | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 rerun + traversal/api ergonomics) |
 | 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor   | 📖 GPT 5.3 Codex   | Translation |
 | 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor   | 📖 GPT 5.3 Codex   | Fluency critique |
+| 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Fluency critique |
