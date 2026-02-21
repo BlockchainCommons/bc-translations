@@ -37,7 +37,7 @@
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
 - ⚠️ Complex structure `hex_annotated` checks now validate critical fragments, but exact full-text layout/comment alignment still differs from Rust
-- ⚠️ Trait/protocol equivalence is skeletal (marker-style Go interfaces, not full Rust trait parity)
+- ⚠️ Trait/protocol equivalence is partial: helper defaults now cover tagged encode/decode data paths and `ToCBORData`, but full Rust trait-level parity is still incomplete
 - ⚠️ Some conversion APIs and formatting edge cases remain below full Rust-equivalent parity
 
 ## Signature Compatibility Notes
@@ -78,6 +78,7 @@
   - translated `byte_string.rs` fixed-length conversion parity behavior
   - supplemental byte-string method parity checks (`Len`, `IsEmpty`, `Data`, `Extend`, `ToVec`, `Iter`, `AsRef`)
   - supplemental convenience helper parity checks (byte/text/array/map/tagged helpers, bool/null/nan helpers, sort/normalize utility behavior)
+  - trait-helper parity checks for default-style helper behavior (`ToCBORData`, tagged encode/decode helpers, tagged/untagged data decode helpers)
 
 ### Rust Baseline (default-feature applicable)
 
@@ -107,7 +108,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 69/83 key manifest items (83.1%)
+- API Coverage: 70/83 key manifest items (84.3%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

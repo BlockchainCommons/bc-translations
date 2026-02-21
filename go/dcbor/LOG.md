@@ -813,3 +813,32 @@ COMPLETED
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - API/trait/docs/format fidelity work remains open
 - VERDICT: INCOMPLETE (conversion parity improved; remaining API-surface and format-fidelity gaps persist)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing trait/protocol parity work to reduce marker-only interface gaps
+- Adding Rust-style default helper equivalents for tagged encode/decode and direct CBOR-data conversion
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added helper APIs in `traits.go`:
+  - `ToCBORData(CBOREncodable)`
+  - `TaggedCBOR(CBORTaggedEncodable)`, `TaggedCBORData(CBORTaggedEncodable)`
+  - `DecodeTagged`, `DecodeTaggedData`, `DecodeUntaggedData`
+- Added `traits_parity_test.go` coverage for:
+  - preferred/legacy tag decode acceptance
+  - wrong-tag error semantics
+  - empty-tag configuration failures
+  - tagged/untagged binary decode helper behavior
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (98 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after trait-helper parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect partial trait/protocol parity improvements via helper defaults
+- API coverage improved from 69/83 to 70/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (trait parity improved; remaining API/format/docs work persists)

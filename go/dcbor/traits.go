@@ -58,3 +58,64 @@ func SortArrayByCBOREncoding(values []CBOR) []CBOR {
 type CBORSortable interface {
 	SortByCBOREncoding() []CBOR
 }
+
+// ToCBORData converts an encodable value directly to deterministic CBOR bytes.
+func ToCBORData(value CBOREncodable) []byte {
+	return value.ToCBOR().ToCBORData()
+}
+
+// TaggedCBOR builds a tagged CBOR value using the first preferred tag.
+func TaggedCBOR(value CBORTaggedEncodable) (CBOR, error) {
+	tags := value.CBORTags()
+	if len(tags) == 0 {
+		return CBOR{}, Errorf("no tags are available for tagged encoding")
+	}
+	return NewCBORTagged(tags[0], value.UntaggedCBOR()), nil
+}
+
+// TaggedCBORData returns deterministic CBOR bytes for tagged encoding.
+func TaggedCBORData(value CBORTaggedEncodable) ([]byte, error) {
+	cbor, err := TaggedCBOR(value)
+	if err != nil {
+		return nil, err
+	}
+	return cbor.ToCBORData(), nil
+}
+
+// DecodeTagged decodes a tagged CBOR value using accepted tags and an untagged decoder.
+func DecodeTagged[T any](cbor CBOR, tags []Tag, decodeUntagged CBORDecodeFunc[T]) (T, error) {
+	var zero T
+	tag, value, err := cbor.TryIntoTaggedValue()
+	if err != nil {
+		return zero, err
+	}
+	if len(tags) == 0 {
+		return zero, Errorf("no tags are available for tagged decoding")
+	}
+	for _, expected := range tags {
+		if tag.Equal(expected) {
+			return decodeUntagged(value)
+		}
+	}
+	return zero, WrongTagError{Expected: tags[0], Actual: tag}
+}
+
+// DecodeTaggedData decodes binary tagged CBOR using accepted tags and an untagged decoder.
+func DecodeTaggedData[T any](data []byte, tags []Tag, decodeUntagged CBORDecodeFunc[T]) (T, error) {
+	var zero T
+	cbor, err := TryFromData(data)
+	if err != nil {
+		return zero, err
+	}
+	return DecodeTagged(cbor, tags, decodeUntagged)
+}
+
+// DecodeUntaggedData decodes binary CBOR and then applies the provided decoder.
+func DecodeUntaggedData[T any](data []byte, decode CBORDecodeFunc[T]) (T, error) {
+	var zero T
+	cbor, err := TryFromData(data)
+	if err != nil {
+		return zero, err
+	}
+	return decode(cbor)
+}
