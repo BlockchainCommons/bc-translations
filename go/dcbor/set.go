@@ -11,17 +11,17 @@ func NewSet() Set {
 }
 
 // Len returns the number of set elements.
-func (s *Set) Len() int {
+func (s Set) Len() int {
 	return s.m.Len()
 }
 
 // IsEmpty reports whether the set has no elements.
-func (s *Set) IsEmpty() bool {
+func (s Set) IsEmpty() bool {
 	return s.m.IsEmpty()
 }
 
 // Iter returns an iterator over values in deterministic encoded order.
-func (s *Set) Iter() SetIter {
+func (s Set) Iter() SetIter {
 	return SetIter{inner: s.m.Iter()}
 }
 
@@ -35,12 +35,12 @@ func (s *Set) insertNext(value CBOR) error {
 }
 
 // Contains reports whether a value exists in the set.
-func (s *Set) Contains(value CBOR) bool {
+func (s Set) Contains(value CBOR) bool {
 	return s.m.ContainsKey(value)
 }
 
 // AsVec returns set values in deterministic encoded order.
-func (s *Set) AsVec() []CBOR {
+func (s Set) AsVec() []CBOR {
 	items := make([]CBOR, 0, s.m.Len())
 	iter := s.m.Iter()
 	for {
@@ -74,14 +74,14 @@ func TrySetFromVec(items []CBOR) (Set, error) {
 }
 
 // CBORData returns deterministic binary encoding for set-as-array representation.
-func (s *Set) CBORData() []byte {
+func (s Set) CBORData() []byte {
 	items := s.AsVec()
 	array := NewCBORArray(items)
 	return array.ToCBORData()
 }
 
 // Clone returns an independent copy of the set.
-func (s *Set) Clone() Set {
+func (s Set) Clone() Set {
 	return Set{m: s.m.Clone()}
 }
 

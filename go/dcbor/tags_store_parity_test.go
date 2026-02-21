@@ -53,15 +53,15 @@ func TestTagRegistrationAndSummarizerParity(t *testing.T) {
 	store := NewTagsStore(nil)
 	RegisterTagsIn(store)
 
-	tag, ok := store.TagForValue(TAG_DATE)
+	tag, ok := store.TagForValue(TagDate)
 	if !ok {
-		t.Fatalf("expected TAG_DATE registration")
+		t.Fatalf("expected TagDate registration")
 	}
-	if got, want := tag.String(), TAG_NAME_DATE; got != want {
+	if got, want := tag.String(), TagNameDate; got != want {
 		t.Fatalf("registered tag name mismatch: got %q want %q", got, want)
 	}
 
-	summarizer, ok := store.Summarizer(TAG_DATE)
+	summarizer, ok := store.Summarizer(TagDate)
 	if !ok {
 		t.Fatalf("expected date summarizer registration")
 	}
@@ -73,23 +73,23 @@ func TestTagRegistrationAndSummarizerParity(t *testing.T) {
 		t.Fatalf("date summarizer output mismatch: got %q want %q", got, want)
 	}
 
-	positiveBigNumTag, ok := store.TagForValue(TAG_POSITIVE_BIGNUM)
+	positiveBigNumTag, ok := store.TagForValue(TagPositiveBignum)
 	if !ok {
-		t.Fatalf("expected TAG_POSITIVE_BIGNUM registration")
+		t.Fatalf("expected TagPositiveBignum registration")
 	}
-	if got, want := positiveBigNumTag.String(), TAG_NAME_POSITIVE_BIGNUM; got != want {
+	if got, want := positiveBigNumTag.String(), TagNamePositiveBignum; got != want {
 		t.Fatalf("positive bignum tag name mismatch: got %q want %q", got, want)
 	}
 
-	negativeBigNumTag, ok := store.TagForValue(TAG_NEGATIVE_BIGNUM)
+	negativeBigNumTag, ok := store.TagForValue(TagNegativeBignum)
 	if !ok {
-		t.Fatalf("expected TAG_NEGATIVE_BIGNUM registration")
+		t.Fatalf("expected TagNegativeBignum registration")
 	}
-	if got, want := negativeBigNumTag.String(), TAG_NAME_NEGATIVE_BIGNUM; got != want {
+	if got, want := negativeBigNumTag.String(), TagNameNegativeBignum; got != want {
 		t.Fatalf("negative bignum tag name mismatch: got %q want %q", got, want)
 	}
 
-	positiveSummarizer, ok := store.Summarizer(TAG_POSITIVE_BIGNUM)
+	positiveSummarizer, ok := store.Summarizer(TagPositiveBignum)
 	if !ok {
 		t.Fatalf("expected positive bignum summarizer registration")
 	}
@@ -101,7 +101,7 @@ func TestTagRegistrationAndSummarizerParity(t *testing.T) {
 		t.Fatalf("positive bignum summarizer output mismatch: got %q want %q", got, want)
 	}
 
-	negativeSummarizer, ok := store.Summarizer(TAG_NEGATIVE_BIGNUM)
+	negativeSummarizer, ok := store.Summarizer(TagNegativeBignum)
 	if !ok {
 		t.Fatalf("expected negative bignum summarizer registration")
 	}
@@ -133,7 +133,7 @@ func TestWithTagsHelperParity(t *testing.T) {
 	const testTagValue TagValue = 90001
 	const testTagName = "with-tags-parity"
 
-	WithTagsMut(func(store *TagsStore) struct{} {
+	WithTags(func(store *TagsStore) struct{} {
 		store.Insert(NewTag(testTagValue, testTagName))
 		return struct{}{}
 	})

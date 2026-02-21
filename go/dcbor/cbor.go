@@ -97,7 +97,7 @@ func NewCBORMap(value Map) CBOR {
 
 // NewCBORTagged constructs a tagged CBOR value.
 func NewCBORTagged(tag Tag, value CBOR) CBOR {
-	return CBOR{kind: CBORKindTagged, value: TaggedValue{Tag: tag.clone(), Value: value.Clone()}}
+	return CBOR{kind: CBORKindTagged, value: TaggedValue{Tag: tag.Clone(), Value: value.Clone()}}
 }
 
 // NewCBORSimple constructs a CBOR simple value.
@@ -317,7 +317,7 @@ func fromReflectValue(v reflect.Value) (CBOR, error) {
 		}
 		return NewCBORMap(m), nil
 	default:
-		return CBOR{}, Errorf("unsupported conversion to CBOR: %T", v.Interface())
+		return CBOR{}, NewErrorf("unsupported conversion to CBOR: %T", v.Interface())
 	}
 }
 
@@ -330,7 +330,7 @@ func fromBigSigned(value int64) (CBOR, error) {
 
 func cborFromBigInt(value *big.Int) CBOR {
 	if value.Sign() >= 0 {
-		return NewCBORTagged(TagWithValue(TAG_POSITIVE_BIGNUM), ToByteString(value.Bytes()))
+		return NewCBORTagged(TagWithValue(TagPositiveBignum), ToByteString(value.Bytes()))
 	}
 
 	magnitude := new(big.Int).Neg(value)
@@ -339,7 +339,7 @@ func cborFromBigInt(value *big.Int) CBOR {
 	if len(bytes) == 0 {
 		bytes = []byte{0}
 	}
-	return NewCBORTagged(TagWithValue(TAG_NEGATIVE_BIGNUM), ToByteString(bytes))
+	return NewCBORTagged(TagWithValue(TagNegativeBignum), ToByteString(bytes))
 }
 
 func fromSignedInt(v int64) CBOR {
@@ -411,7 +411,7 @@ func (c CBOR) Clone() CBOR {
 		return NewCBORMap(c.value.(Map).Clone())
 	case CBORKindTagged:
 		tagged := c.value.(TaggedValue)
-		return NewCBORTagged(tagged.Tag.clone(), tagged.Value.Clone())
+		return NewCBORTagged(tagged.Tag.Clone(), tagged.Value.Clone())
 	case CBORKindSimple:
 		return NewCBORSimple(c.value.(Simple))
 	default:
@@ -422,11 +422,6 @@ func (c CBOR) Clone() CBOR {
 // AsCase returns a copyable tagged-union view of the CBOR value.
 func (c CBOR) AsCase() CBORCase {
 	return CBORCase{Kind: c.kind, Value: c.caseValueCopy()}
-}
-
-// IntoCase is an alias for AsCase.
-func (c CBOR) IntoCase() CBORCase {
-	return c.AsCase()
 }
 
 func (c CBOR) caseValueCopy() any {
@@ -442,7 +437,7 @@ func (c CBOR) caseValueCopy() any {
 		return c.value.(Map).Clone()
 	case CBORKindTagged:
 		tv := c.value.(TaggedValue)
-		return TaggedValue{Tag: tv.Tag.clone(), Value: tv.Value.Clone()}
+		return TaggedValue{Tag: tv.Tag.Clone(), Value: tv.Value.Clone()}
 	case CBORKindByteString:
 		return c.value.(ByteString)
 	default:
@@ -817,9 +812,9 @@ func (c CBOR) TryIntoBigUint() (*big.Int, error) {
 	case CBORKindTagged:
 		tagged := c.value.(TaggedValue)
 		switch tagged.Tag.Value() {
-		case TAG_POSITIVE_BIGNUM:
+		case TagPositiveBignum:
 			return decodePositiveBigNumUntagged(tagged.Value)
-		case TAG_NEGATIVE_BIGNUM:
+		case TagNegativeBignum:
 			return nil, ErrOutOfRange
 		default:
 			return nil, ErrWrongType
@@ -858,9 +853,9 @@ func (c CBOR) TryIntoBigInt() (*big.Int, error) {
 	case CBORKindTagged:
 		tagged := c.value.(TaggedValue)
 		switch tagged.Tag.Value() {
-		case TAG_POSITIVE_BIGNUM:
+		case TagPositiveBignum:
 			return decodePositiveBigNumUntagged(tagged.Value)
-		case TAG_NEGATIVE_BIGNUM:
+		case TagNegativeBignum:
 			return decodeNegativeBigNumUntagged(tagged.Value)
 		default:
 			return nil, ErrWrongType
@@ -1074,7 +1069,7 @@ func (c CBOR) AsTaggedValue() (Tag, CBOR, bool) {
 		return Tag{}, CBOR{}, false
 	}
 	tagged := c.value.(TaggedValue)
-	return tagged.Tag.clone(), tagged.Value.Clone(), true
+	return tagged.Tag.Clone(), tagged.Value.Clone(), true
 }
 
 // AsSimpleValue returns simple payload when kind is simple.
@@ -1382,7 +1377,7 @@ func (c CBOR) displayFlat() string {
 	case CBORKindNegative:
 		return formatNegativeDisplay(c.value.(uint64))
 	case CBORKindByteString:
-		return fmt.Sprintf("h'%x'", c.value.(ByteString).AsRef())
+		return fmt.Sprintf("h'%x'", c.value.(ByteString).Data())
 	case CBORKindText:
 		return fmt.Sprintf("%q", c.value.(string))
 	case CBORKindArray:
@@ -1417,7 +1412,7 @@ func (c CBOR) DebugString() string {
 	case CBORKindNegative:
 		return fmt.Sprintf("negative(%s)", formatNegativeDisplay(c.value.(uint64)))
 	case CBORKindByteString:
-		return fmt.Sprintf("bytes(%s)", hex.EncodeToString(c.value.(ByteString).AsRef()))
+		return fmt.Sprintf("bytes(%s)", hex.EncodeToString(c.value.(ByteString).Data()))
 	case CBORKindText:
 		return fmt.Sprintf("text(%q)", c.value.(string))
 	case CBORKindArray:
@@ -1499,7 +1494,7 @@ func (c CBOR) toCBORDataNoPanic() ([]byte, error) {
 	case CBORKindNegative:
 		return encodeHead(majorNegative, c.value.(uint64)), nil
 	case CBORKindByteString:
-		bytesValue := c.value.(ByteString).AsRef()
+		bytesValue := c.value.(ByteString).Data()
 		buf := encodeHead(majorBytes, uint64(len(bytesValue)))
 		buf = append(buf, bytesValue...)
 		return buf, nil
@@ -1534,7 +1529,7 @@ func (c CBOR) toCBORDataNoPanic() ([]byte, error) {
 		simple := c.value.(Simple)
 		return encodeSimple(simple)
 	default:
-		return nil, Errorf("unsupported CBOR kind: %d", c.kind)
+		return nil, NewErrorf("unsupported CBOR kind: %d", c.kind)
 	}
 }
 
@@ -1603,7 +1598,7 @@ func TryFromData(data []byte) (CBOR, error) {
 		return CBOR{}, err
 	}
 	if n != len(data) {
-		return CBOR{}, Errorf("the decoded CBOR had %d extra bytes at the end", len(data)-n)
+		return CBOR{}, NewErrorf("the decoded CBOR had %d extra bytes at the end", len(data)-n)
 	}
 	return value, nil
 }

@@ -1,13 +1,19 @@
 package dcbor
 
-import "bytes"
+import (
+	"bytes"
+	"slices"
+)
 
 // CBOREncodable is implemented by values that can convert themselves to CBOR.
 type CBOREncodable interface {
 	ToCBOR() CBOR
 }
 
-// CBORDecodable is a marker interface for values decodable from CBOR.
+// CBORDecodable is a marker interface for documentation purposes.
+// Types that embed this interface signal their intent to be decodable from CBOR.
+// Note: In Go, decoding is typically handled via CBORDecodeFunc rather than
+// an interface method, so this provides no compile-time enforcement.
 type CBORDecodable interface{}
 
 // CBORCodable is a marker for values that are both encodable and decodable.
@@ -44,13 +50,9 @@ func SortArrayByCBOREncoding(values []CBOR) []CBOR {
 	for i, value := range values {
 		copied[i] = value.Clone()
 	}
-	for i := 0; i < len(copied); i++ {
-		for j := i + 1; j < len(copied); j++ {
-			if bytes.Compare(copied[i].ToCBORData(), copied[j].ToCBORData()) > 0 {
-				copied[i], copied[j] = copied[j], copied[i]
-			}
-		}
-	}
+	slices.SortFunc(copied, func(a, b CBOR) int {
+		return bytes.Compare(a.ToCBORData(), b.ToCBORData())
+	})
 	return copied
 }
 
@@ -68,7 +70,7 @@ func ToCBORData(value CBOREncodable) []byte {
 func TaggedCBOR(value CBORTaggedEncodable) (CBOR, error) {
 	tags := value.CBORTags()
 	if len(tags) == 0 {
-		return CBOR{}, Errorf("no tags are available for tagged encoding")
+		return CBOR{}, NewErrorf("no tags are available for tagged encoding")
 	}
 	return NewCBORTagged(tags[0], value.UntaggedCBOR()), nil
 }
@@ -90,7 +92,7 @@ func DecodeTagged[T any](cbor CBOR, tags []Tag, decodeUntagged CBORDecodeFunc[T]
 		return zero, err
 	}
 	if len(tags) == 0 {
-		return zero, Errorf("no tags are available for tagged decoding")
+		return zero, NewErrorf("no tags are available for tagged decoding")
 	}
 	for _, expected := range tags {
 		if tag.Equal(expected) {

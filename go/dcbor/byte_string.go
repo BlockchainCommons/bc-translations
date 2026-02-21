@@ -36,18 +36,9 @@ func (b *ByteString) Extend(other []byte) {
 	b.data = append(b.data, other...)
 }
 
-// ToVec returns a copy of the underlying bytes.
-func (b ByteString) ToVec() []byte {
-	return b.Data()
-}
-
-// Iter returns a copy of the underlying bytes for iteration-style usage.
-func (b ByteString) Iter() []byte {
-	return b.Data()
-}
-
-// AsRef returns a copy of the underlying bytes.
-func (b ByteString) AsRef() []byte {
+// Bytes returns a copy of the underlying bytes.
+// This is an alias for Data provided for idiomatic Go naming.
+func (b ByteString) Bytes() []byte {
 	return b.Data()
 }
 

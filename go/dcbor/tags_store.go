@@ -8,8 +8,8 @@ import (
 // CBORSummarizer summarizes tagged CBOR content for diagnostic/summary output.
 type CBORSummarizer func(cbor CBOR, flat bool) (string, error)
 
-// TagsStoreTrait defines tag/name/summarizer lookup operations.
-type TagsStoreTrait interface {
+// TagsResolver defines the interface for tag, name, and summarizer lookups.
+type TagsResolver interface {
 	AssignedNameForTag(tag Tag) (string, bool)
 	NameForTag(tag Tag) string
 	TagForValue(value TagValue) (Tag, bool)
@@ -30,7 +30,7 @@ const (
 // TagsStoreOpt configures which tag source to use when formatting.
 type TagsStoreOpt struct {
 	Mode  TagsStoreMode
-	Store TagsStoreTrait
+	Store TagsResolver
 }
 
 // TagsNone selects no tag store context.
@@ -44,7 +44,7 @@ func TagsGlobal() TagsStoreOpt {
 }
 
 // TagsCustom selects a caller-provided tag store context.
-func TagsCustom(store TagsStoreTrait) TagsStoreOpt {
+func TagsCustom(store TagsResolver) TagsStoreOpt {
 	return TagsStoreOpt{Mode: TagsStoreModeCustom, Store: store}
 }
 
@@ -75,9 +75,9 @@ func (t *TagsStore) Insert(tag Tag) {
 			panic(fmt.Sprintf("tag %d already has name %q", tag.Value(), en))
 		}
 	}
-	t.tagsByValue[tag.Value()] = tag.clone()
+	t.tagsByValue[tag.Value()] = tag.Clone()
 	if name, ok := tag.Name(); ok {
-		t.tagsByName[name] = tag.clone()
+		t.tagsByName[name] = tag.Clone()
 	}
 }
 
@@ -116,7 +116,7 @@ func (t *TagsStore) TagForValue(value TagValue) (Tag, bool) {
 	if !ok {
 		return Tag{}, false
 	}
-	return tag.clone(), true
+	return tag.Clone(), true
 }
 
 // TagForName looks up a tag definition by assigned name.
@@ -125,7 +125,7 @@ func (t *TagsStore) TagForName(name string) (Tag, bool) {
 	if !ok {
 		return Tag{}, false
 	}
-	return tag.clone(), true
+	return tag.Clone(), true
 }
 
 // NameForValue returns the assigned name for a value, or numeric fallback text.
@@ -172,14 +172,14 @@ func (l *LazyTagsStore) Get() *TagsStore {
 	return l.data
 }
 
-// GLOBAL_TAGS is the process-wide lazily initialized tag registry.
-var GLOBAL_TAGS = &LazyTagsStore{}
+// GlobalTags is the process-wide lazily initialized tag registry.
+var GlobalTags = &LazyTagsStore{}
 
 func withLockedGlobalTags[T any](action func(*TagsStore) T) T {
-	GLOBAL_TAGS.init()
-	GLOBAL_TAGS.mu.Lock()
-	defer GLOBAL_TAGS.mu.Unlock()
-	return action(GLOBAL_TAGS.data)
+	GlobalTags.init()
+	GlobalTags.mu.Lock()
+	defer GlobalTags.mu.Unlock()
+	return action(GlobalTags.data)
 }
 
 // WithTags provides read-style access to the global tags store under lock.
@@ -187,42 +187,37 @@ func WithTags[T any](action func(*TagsStore) T) T {
 	return withLockedGlobalTags(action)
 }
 
-// WithTagsMut provides write-style access to the global tags store under lock.
-func WithTagsMut[T any](action func(*TagsStore) T) T {
-	return withLockedGlobalTags(action)
-}
-
 const (
-	TAG_DATE                 uint64 = 1
-	TAG_NAME_DATE                   = "date"
-	TAG_POSITIVE_BIGNUM      uint64 = 2
-	TAG_NAME_POSITIVE_BIGNUM        = "positive-bignum"
-	TAG_NEGATIVE_BIGNUM      uint64 = 3
-	TAG_NAME_NEGATIVE_BIGNUM        = "negative-bignum"
+	TagDate               uint64 = 1
+	TagNameDate                  = "date"
+	TagPositiveBignum     uint64 = 2
+	TagNamePositiveBignum        = "positive-bignum"
+	TagNegativeBignum     uint64 = 3
+	TagNameNegativeBignum        = "negative-bignum"
 )
 
 // RegisterTagsIn populates a tag store with the default dCBOR tag set and summarizers.
 func RegisterTagsIn(tagsStore *TagsStore) {
 	tagsStore.InsertAll([]Tag{
-		NewTag(TAG_DATE, TAG_NAME_DATE),
-		NewTag(TAG_POSITIVE_BIGNUM, TAG_NAME_POSITIVE_BIGNUM),
-		NewTag(TAG_NEGATIVE_BIGNUM, TAG_NAME_NEGATIVE_BIGNUM),
+		NewTag(TagDate, TagNameDate),
+		NewTag(TagPositiveBignum, TagNamePositiveBignum),
+		NewTag(TagNegativeBignum, TagNameNegativeBignum),
 	})
-	tagsStore.SetSummarizer(TAG_DATE, func(untagged CBOR, _ bool) (string, error) {
+	tagsStore.SetSummarizer(TagDate, func(untagged CBOR, _ bool) (string, error) {
 		date, err := DateFromUntaggedCBOR(untagged)
 		if err != nil {
 			return "", err
 		}
 		return date.String(), nil
 	})
-	tagsStore.SetSummarizer(TAG_POSITIVE_BIGNUM, func(untagged CBOR, _ bool) (string, error) {
+	tagsStore.SetSummarizer(TagPositiveBignum, func(untagged CBOR, _ bool) (string, error) {
 		value, err := decodePositiveBigNumUntagged(untagged)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("bignum(%s)", value.String()), nil
 	})
-	tagsStore.SetSummarizer(TAG_NEGATIVE_BIGNUM, func(untagged CBOR, _ bool) (string, error) {
+	tagsStore.SetSummarizer(TagNegativeBignum, func(untagged CBOR, _ bool) (string, error) {
 		value, err := decodeNegativeBigNumUntagged(untagged)
 		if err != nil {
 			return "", err
@@ -233,7 +228,7 @@ func RegisterTagsIn(tagsStore *TagsStore) {
 
 // RegisterTags registers the default dCBOR tags in the global tag store.
 func RegisterTags() {
-	WithTagsMut(func(tagsStore *TagsStore) struct{} {
+	WithTags(func(tagsStore *TagsStore) struct{} {
 		RegisterTagsIn(tagsStore)
 		return struct{}{}
 	})

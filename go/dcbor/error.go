@@ -50,7 +50,7 @@ func (e CustomError) Error() string {
 	return e.Message
 }
 
-// Errorf returns a CustomError with formatted text.
-func Errorf(format string, args ...any) error {
+// NewErrorf returns a CustomError with formatted text.
+func NewErrorf(format string, args ...any) error {
 	return CustomError{Message: fmt.Sprintf(format, args...)}
 }

@@ -53,20 +53,15 @@ func TestByteStringMethodParity(t *testing.T) {
 		t.Fatalf("Len after Extend mismatch: got %d want %d", got, want)
 	}
 
-	vec := b.ToVec()
-	if len(vec) != 4 || vec[0] != 1 || vec[3] != 4 {
-		t.Fatalf("ToVec mismatch: got %v", vec)
+	byt := b.Bytes()
+	if len(byt) != 4 || byt[0] != 1 || byt[3] != 4 {
+		t.Fatalf("Bytes mismatch: got %v", byt)
 	}
 
-	iter := b.Iter()
-	if len(iter) != 4 || iter[1] != 2 {
-		t.Fatalf("Iter mismatch: got %v", iter)
-	}
-
-	ref := b.AsRef()
-	ref[0] = 77
+	byt2 := b.Bytes()
+	byt2[0] = 77
 	if got := b.Data()[0]; got != 1 {
-		t.Fatalf("AsRef should return a copy, got %d", got)
+		t.Fatalf("Bytes should return a copy, got %d", got)
 	}
 
 	empty := NewByteString(nil)

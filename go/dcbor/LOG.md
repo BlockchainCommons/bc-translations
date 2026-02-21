@@ -1395,3 +1395,26 @@ COMPLETED
 - No blocking idiomaticness issues found in final pass
 - Public API naming and helper structure are consistent with Go conventions
 - Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
+
+## 2026-02-20 -- Stage 4: Fluency Critique (deep review)
+STARTED
+- Performing comprehensive idiomatic Go review against full fluency checklist
+- Evaluating naming, error handling, types, API design, structure, tests, and documentation
+
+## 2026-02-20 -- Stage 4: Fluency Critique (deep review)
+COMPLETED
+- 10 issues found and fixed across naming, API design, structure, and documentation:
+  1. [naming] Renamed SCREAMING_SNAKE_CASE constants to Go MixedCaps (GLOBAL_TAGS -> GlobalTags, TAG_DATE -> TagDate, etc.)
+  2. [naming] Exported Tag.clone() as Tag.Clone() for consistency with other types
+  3. [naming] Renamed TagsStoreTrait interface to TagsResolver (removed Rust "Trait" terminology)
+  4. [naming] Renamed Errorf to NewErrorf to avoid shadowing fmt.Errorf
+  5. [api] Removed Rust-ism methods: ByteString.ToVec, ByteString.Iter, ByteString.AsRef (replaced with Bytes alias)
+  6. [api] Removed IntoCase alias for AsCase (Rust ownership semantics have no Go equivalent)
+  7. [api] Removed WithTagsMut (identical to WithTags; Rust shared/mutable distinction doesn't apply in Go)
+  8. [structure] Fixed Set receiver inconsistency: changed read-only methods from *Set to Set value receivers
+  9. [structure] Replaced O(n^2) bubble sort in SortArrayByCBOREncoding with slices.SortFunc
+  10. [docs] Rewrote doc.go package documentation to describe Go package without referencing Rust source language
+- Also improved CBORDecodable empty interface documentation to explain its marker purpose
+- Re-ran gofmt on all files
+- All 97 tests passing after fixes: `go test ./... -count=1`
+- VERDICT: IDIOMATIC

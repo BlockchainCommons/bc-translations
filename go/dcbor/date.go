@@ -115,7 +115,7 @@ func (d Date) String() string {
 
 // CBORTags returns accepted CBOR tags for date values.
 func (d Date) CBORTags() []Tag {
-	return TagsForValues([]TagValue{TAG_DATE})
+	return TagsForValues([]TagValue{TagDate})
 }
 
 // ToCBOR returns the tagged CBOR representation.
@@ -138,7 +138,7 @@ func (d Date) UntaggedCBORData() []byte {
 func (d Date) TaggedCBOR() CBOR {
 	tags := d.CBORTags()
 	if len(tags) == 0 {
-		return NewCBORTagged(TagWithValue(TAG_DATE), d.UntaggedCBOR())
+		return NewCBORTagged(TagWithValue(TagDate), d.UntaggedCBOR())
 	}
 	return NewCBORTagged(tags[0], d.UntaggedCBOR())
 }
@@ -171,8 +171,8 @@ func DateFromTaggedCBOR(cbor CBOR) (Date, error) {
 	if !ok {
 		return Date{}, ErrWrongType
 	}
-	if tag.Value() != TAG_DATE {
-		return Date{}, WrongTagError{Expected: TagWithValue(TAG_DATE), Actual: tag}
+	if tag.Value() != TagDate {
+		return Date{}, WrongTagError{Expected: TagWithValue(TagDate), Actual: tag}
 	}
 	return DateFromUntaggedCBOR(value)
 }

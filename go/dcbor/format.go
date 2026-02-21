@@ -73,7 +73,7 @@ func (c CBOR) diagnosticAtLevel(level int, opts DiagFormatOpts) string {
 	case CBORKindNegative:
 		return formatNegativeDisplay(c.value.(uint64))
 	case CBORKindByteString:
-		return fmt.Sprintf("h'%x'", c.value.(ByteString).AsRef())
+		return fmt.Sprintf("h'%x'", c.value.(ByteString).Data())
 	case CBORKindText:
 		return fmt.Sprintf("%q", c.value.(string))
 	case CBORKindSimple:
@@ -159,7 +159,7 @@ func lookupSummarizer(opt TagsStoreOpt, value TagValue) (CBORSummarizer, bool) {
 		}
 		return opt.Store.Summarizer(value)
 	case TagsStoreModeGlobal:
-		store := GLOBAL_TAGS.Get()
+		store := GlobalTags.Get()
 		return store.Summarizer(value)
 	default:
 		return nil, false
@@ -174,7 +174,7 @@ func lookupTagName(opt TagsStoreOpt, tag Tag) (string, bool) {
 		}
 		return opt.Store.AssignedNameForTag(tag)
 	case TagsStoreModeGlobal:
-		store := GLOBAL_TAGS.Get()
+		store := GlobalTags.Get()
 		return store.AssignedNameForTag(tag)
 	default:
 		return "", false
@@ -241,7 +241,7 @@ func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLin
 			comment: fmt.Sprintf("negative(%s)", formatNegativeDisplay(encodedMagnitude)),
 		}}
 	case CBORKindByteString:
-		payload := c.value.(ByteString).AsRef()
+		payload := c.value.(ByteString).Data()
 		lines := []annotatedHexLine{{
 			indent:  level,
 			hexText: hex.EncodeToString(encodeHead(majorBytes, uint64(len(payload)))),

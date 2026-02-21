@@ -53,7 +53,8 @@ func (t Tag) String() string {
 	return *t.name
 }
 
-func (t Tag) clone() Tag {
+// Clone returns a deep copy of the tag.
+func (t Tag) Clone() Tag {
 	if t.name == nil {
 		return Tag{value: t.value}
 	}
