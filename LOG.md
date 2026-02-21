@@ -4,6 +4,7 @@ Chronological record of all translation activity in this repository.
 
 | Date       | Crate       | Version | Language   | Package      | Model              | Task        |
 |------------|-------------|---------|------------|--------------|--------------------|-------------|
+| 2026-02-20 | bc-shamir   | 0.13.0  | Python     | bc-shamir    | 📖 GPT 5.3 Codex   | Translation |
 | 2026-02-20 | bc-rand     | 0.5.0   | Python     | bc-rand      | 🎻 Claude Opus 4.6 | Translation |
 | 2026-02-20 | bc-rand     | 0.5.0   | Kotlin     | bc-rand      | 🎻 Claude Opus 4.6 | Translation |
 | 2026-02-20 | bc-rand     | 0.5.0   | Go         | bcrand       | 🎻 Claude Opus 4.6 | Translation |
@@ -23,3 +24,5 @@ Chronological record of all translation activity in this repository.
 | 2026-02-20 | bc-crypto   | 0.14.0  | TypeScript | @bc/crypto   | 📖 GPT 5.3 Codex   | Translation |
 | 2026-02-20 | bc-crypto   | 0.14.0  | Kotlin     | bc-crypto    | 🎻 Claude Opus 4.6 | Translation |
 | 2026-02-20 | bc-shamir   | 0.13.0  | C#         | BCShamir     | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-20 | bc-shamir   | 0.13.0  | Kotlin     | bc-shamir    | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-20 | bc-shamir   | 0.13.0  | Go         | bcshamir     | 🎻 Claude Opus 4.6 | Translation |
