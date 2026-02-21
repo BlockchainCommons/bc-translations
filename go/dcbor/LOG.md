@@ -154,3 +154,47 @@ COMPLETED
 - API coverage improved to 60/83 key manifest targets
 - Test coverage improved from 38/86 to 42/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (steady progress; significant default-feature parity still pending)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity work on formatting fidelity
+- Improving annotated-hex rendering shape toward Rust `format.rs` behavior
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Reworked `HexOpt(Annotate=true)` in `format.go` to emit structured multi-line annotated output for arrays, maps, tags, text, bytes, and scalar values
+- Updated `format_parity_test.go` expected outputs to use full expected-text assertions for the new annotated format
+- Re-ran test suite successfully after formatter changes
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (42 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after annotated-format rendering improvements
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Kept coverage metrics unchanged (API 60/83, tests 42/86) while updating formatting-fidelity status notes
+- VERDICT: INCOMPLETE (format fidelity improved, but exact Rust output parity still pending for complex cases)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing formatting-parity corrections after initial annotated-hex rollout
+- Aligning display vs diagnostic semantics for tagged values and nested map formatting behavior
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added dedicated display formatting path in `cbor.go` (tag names preserved in display output)
+- Adjusted diagnostic formatting in `format.go` so tagged diagnostics use numeric tag values by default, matching Rust behavior
+- Expanded nested-structure detection in diagnostic map/array formatting to include tagged and key-side nested values
+- Updated `format_parity_test.go` expectations to the new Rust-aligned display/diagnostic semantics
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (42 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after display/diagnostic parity adjustments
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` behavior notes to include improved display/diagnostic separation
+- Coverage metrics unchanged (API 60/83, tests 42/86)
+- VERDICT: INCOMPLETE (behavioral fidelity improved; full default-feature parity still pending)

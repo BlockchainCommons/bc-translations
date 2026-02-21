@@ -1,8 +1,10 @@
 package dcbor
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 // DiagFormatOpts controls diagnostic formatting behavior.
@@ -73,12 +75,11 @@ func (c CBOR) diagnosticAtLevel(level int, opts DiagFormatOpts) string {
 		return c.value.(Simple).Name()
 	case CBORKindTagged:
 		tagged := c.value.(TaggedValue)
-		tagPrefix := tagged.Tag.String()
+		tagPrefix := fmt.Sprintf("%d", tagged.Tag.Value())
 		if opts.annotate {
 			if name, ok := lookupTagName(opts.tags, tagged.Tag); ok {
 				return fmt.Sprintf("%d(%s)   / %s /", tagged.Tag.Value(), tagged.Value.diagnosticAtLevel(level+1, opts), name)
 			}
-			tagPrefix = fmt.Sprintf("%d", tagged.Tag.Value())
 		}
 		return fmt.Sprintf("%s(%s)", tagPrefix, tagged.Value.diagnosticAtLevel(level+1, opts))
 	case CBORKindArray:
@@ -125,7 +126,7 @@ func (c CBOR) diagnosticAtLevel(level int, opts DiagFormatOpts) string {
 
 func containsNestedCollection(items []CBOR) bool {
 	for _, item := range items {
-		if item.kind == CBORKindArray || item.kind == CBORKindMap {
+		if isNestedDiagnosticItem(item) {
 			return true
 		}
 	}
@@ -134,11 +135,15 @@ func containsNestedCollection(items []CBOR) bool {
 
 func mapContainsNestedCollection(entries []MapEntry) bool {
 	for _, entry := range entries {
-		if entry.Value.kind == CBORKindArray || entry.Value.kind == CBORKindMap {
+		if isNestedDiagnosticItem(entry.Key) || isNestedDiagnosticItem(entry.Value) {
 			return true
 		}
 	}
 	return false
+}
+
+func isNestedDiagnosticItem(cbor CBOR) bool {
+	return cbor.kind == CBORKindArray || cbor.kind == CBORKindMap || cbor.kind == CBORKindTagged
 }
 
 func lookupSummarizer(opt TagsStoreOpt, value TagValue) (CBORSummarizer, bool) {
@@ -202,5 +207,181 @@ func (c CBOR) HexOpt(opts HexFormatOpts) string {
 	if !opts.annotate {
 		return hexOnly
 	}
-	return fmt.Sprintf("%s  # %s", hexOnly, c.DiagnosticFlat())
+	lines := c.annotatedHexLines(0, opts)
+	return renderAnnotatedHex(lines)
+}
+
+type annotatedHexLine struct {
+	indent  int
+	hexText string
+	comment string
+}
+
+func (c CBOR) annotatedHexLines(level int, opts HexFormatOpts) []annotatedHexLine {
+	switch c.kind {
+	case CBORKindUnsigned:
+		return []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorUnsigned, c.value.(uint64))),
+			comment: fmt.Sprintf("unsigned(%d)", c.value.(uint64)),
+		}}
+	case CBORKindNegative:
+		encodedMagnitude := c.value.(uint64)
+		return []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorNegative, encodedMagnitude)),
+			comment: fmt.Sprintf("negative(%s)", formatNegativeDisplay(encodedMagnitude)),
+		}}
+	case CBORKindByteString:
+		payload := c.value.(ByteString).AsRef()
+		lines := []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorBytes, uint64(len(payload)))),
+			comment: fmt.Sprintf("bytes(%d)", len(payload)),
+		}}
+		if len(payload) > 0 {
+			payloadComment := ""
+			if utf8.Valid(payload) {
+				payloadComment = fmt.Sprintf("%q", string(payload))
+			}
+			lines = append(lines, annotatedHexLine{
+				indent:  level + 1,
+				hexText: hex.EncodeToString(payload),
+				comment: payloadComment,
+			})
+		}
+		return lines
+	case CBORKindText:
+		text := c.value.(string)
+		payload := []byte(text)
+		lines := []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorText, uint64(len(payload)))),
+			comment: fmt.Sprintf("text(%d)", len(payload)),
+		}}
+		if len(payload) > 0 {
+			lines = append(lines, annotatedHexLine{
+				indent:  level + 1,
+				hexText: hex.EncodeToString(payload),
+				comment: fmt.Sprintf("%q", text),
+			})
+		}
+		return lines
+	case CBORKindArray:
+		items := c.value.([]CBOR)
+		lines := []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorArray, uint64(len(items)))),
+			comment: fmt.Sprintf("array(%d)", len(items)),
+		}}
+		for _, item := range items {
+			lines = append(lines, item.annotatedHexLines(level+1, opts)...)
+		}
+		return lines
+	case CBORKindMap:
+		m := c.value.(Map)
+		entries := m.AsEntries()
+		lines := []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorMap, uint64(len(entries)))),
+			comment: fmt.Sprintf("map(%d)", len(entries)),
+		}}
+		for _, entry := range entries {
+			lines = append(lines, entry.Key.annotatedHexLines(level+1, opts)...)
+			lines = append(lines, entry.Value.annotatedHexLines(level+1, opts)...)
+		}
+		return lines
+	case CBORKindTagged:
+		tagged := c.value.(TaggedValue)
+		tagComment := fmt.Sprintf("tag(%d)", tagged.Tag.Value())
+		if name, ok := lookupTagName(opts.tags, tagged.Tag); ok {
+			tagComment = fmt.Sprintf("tag(%d) %s", tagged.Tag.Value(), name)
+		}
+		lines := []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(encodeHead(majorTagged, tagged.Tag.Value())),
+			comment: tagComment,
+		}}
+		lines = append(lines, tagged.Value.annotatedHexLines(level+1, opts)...)
+		return lines
+	case CBORKindSimple:
+		s := c.value.(Simple)
+		simpleData, err := encodeSimple(s)
+		if err != nil {
+			return []annotatedHexLine{{
+				indent:  level,
+				hexText: "<invalid>",
+				comment: err.Error(),
+			}}
+		}
+		return []annotatedHexLine{{
+			indent:  level,
+			hexText: hexWithSpaces(simpleData),
+			comment: simpleHexComment(s),
+		}}
+	default:
+		return []annotatedHexLine{{
+			indent:  level,
+			hexText: "<unknown>",
+			comment: "unsupported CBOR kind",
+		}}
+	}
+}
+
+func simpleHexComment(simple Simple) string {
+	switch simple.Kind() {
+	case SimpleFalse:
+		return "false"
+	case SimpleTrue:
+		return "true"
+	case SimpleNull:
+		return "null"
+	default:
+		value, _ := simple.Float64()
+		return formatFloatDiagnostic(value)
+	}
+}
+
+func hexWithSpaces(data []byte) string {
+	if len(data) == 0 {
+		return ""
+	}
+	parts := make([]string, len(data))
+	for i, b := range data {
+		parts[i] = fmt.Sprintf("%02x", b)
+	}
+	return strings.Join(parts, " ")
+}
+
+func renderAnnotatedHex(lines []annotatedHexLine) string {
+	if len(lines) == 0 {
+		return ""
+	}
+
+	maxHexLen := 0
+	for _, line := range lines {
+		if len(line.hexText) > maxHexLen {
+			maxHexLen = len(line.hexText)
+		}
+	}
+
+	var out strings.Builder
+	for i, line := range lines {
+		if i > 0 {
+			out.WriteByte('\n')
+		}
+		out.WriteString(strings.Repeat("    ", line.indent))
+		out.WriteString(line.hexText)
+		if line.comment != "" {
+			padding := maxHexLen - len(line.hexText) + 2
+			if padding < 2 {
+				padding = 2
+			}
+			out.WriteString(strings.Repeat(" ", padding))
+			out.WriteString("# ")
+			out.WriteString(line.comment)
+		}
+	}
+
+	return out.String()
 }

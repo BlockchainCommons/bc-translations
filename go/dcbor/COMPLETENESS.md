@@ -25,7 +25,8 @@
 - ✅ Date tag-1 encode/decode helpers are implemented
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
-- ⚠️ Diagnostics/hex formatting are present but simplified versus Rust's full annotated formatting model
+- ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
+- ⚠️ Diagnostics/hex formatting now includes structured annotated output, but still differs from Rust in exact layout/comment fidelity for complex structures
 - ⚠️ Trait/protocol equivalence is skeletal (marker-style Go interfaces, not full Rust trait parity)
 - ⚠️ Some conversion APIs and formatting edge cases remain below full Rust-equivalent parity
 

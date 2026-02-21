@@ -770,7 +770,41 @@ func (c CBOR) IsNaN() bool {
 }
 
 func (c CBOR) String() string {
-	return c.DiagnosticFlat()
+	return c.displayFlat()
+}
+
+func (c CBOR) displayFlat() string {
+	switch c.kind {
+	case CBORKindUnsigned:
+		return fmt.Sprintf("%d", c.value.(uint64))
+	case CBORKindNegative:
+		return formatNegativeDisplay(c.value.(uint64))
+	case CBORKindByteString:
+		return fmt.Sprintf("h'%x'", c.value.(ByteString).AsRef())
+	case CBORKindText:
+		return fmt.Sprintf("%q", c.value.(string))
+	case CBORKindArray:
+		items := c.value.([]CBOR)
+		parts := make([]string, 0, len(items))
+		for _, item := range items {
+			parts = append(parts, item.displayFlat())
+		}
+		return fmt.Sprintf("[%s]", strings.Join(parts, ", "))
+	case CBORKindMap:
+		m := c.value.(Map)
+		parts := make([]string, 0, len(m.entries))
+		for _, entry := range m.entries {
+			parts = append(parts, fmt.Sprintf("%s: %s", entry.key.displayFlat(), entry.value.displayFlat()))
+		}
+		return fmt.Sprintf("{%s}", strings.Join(parts, ", "))
+	case CBORKindTagged:
+		tagged := c.value.(TaggedValue)
+		return fmt.Sprintf("%s(%s)", tagged.Tag.String(), tagged.Value.displayFlat())
+	case CBORKindSimple:
+		return c.value.(Simple).Name()
+	default:
+		return "<unknown>"
+	}
 }
 
 func (c CBOR) DebugString() string {
