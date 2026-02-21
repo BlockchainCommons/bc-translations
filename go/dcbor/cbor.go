@@ -582,22 +582,18 @@ func (c CBOR) TryIntoFloat64() (float64, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
 		u := c.value.(uint64)
-		integer := new(big.Int).SetUint64(u)
-		f, acc := new(big.Float).SetInt(integer).Float64()
-		if acc != big.Exact {
+		f := float64(u)
+		if uint64(f) != u {
 			return 0, ErrOutOfRange
 		}
 		return f, nil
 	case CBORKindNegative:
 		u := c.value.(uint64)
-		integer := new(big.Int).SetUint64(u)
-		integer.Add(integer, big.NewInt(1))
-		integer.Neg(integer)
-		f, acc := new(big.Float).SetInt(integer).Float64()
-		if acc != big.Exact {
+		f := float64(u)
+		if uint64(f) != u {
 			return 0, ErrOutOfRange
 		}
-		return f, nil
+		return -1.0 - f, nil
 	case CBORKindSimple:
 		s := c.value.(Simple)
 		if s.Kind() != SimpleFloat {

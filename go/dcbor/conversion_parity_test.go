@@ -198,8 +198,12 @@ func TestNumericOutOfRangeConversions(t *testing.T) {
 	if _, err := tooLargeUnsigned.TryIntoInt64(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for uint64->int64, got %v", err)
 	}
-	if _, err := tooLargeUnsigned.TryIntoFloat64(); !errors.Is(err, ErrOutOfRange) {
-		t.Fatalf("expected ErrOutOfRange for uint64->float64, got %v", err)
+	floatValue, err := tooLargeUnsigned.TryIntoFloat64()
+	if err != nil {
+		t.Fatalf("expected uint64->float64 conversion success, got %v", err)
+	}
+	if got, want := floatValue, 18446744073709551616.0; got != want {
+		t.Fatalf("uint64->float64 mismatch: got %.0f want %.0f", got, want)
 	}
 
 	tooLargeNegative, err := TryFromHex("3b8000000000000000") // -9223372036854775809
@@ -208,6 +212,13 @@ func TestNumericOutOfRangeConversions(t *testing.T) {
 	}
 	if _, err := tooLargeNegative.TryIntoInt64(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for large negative->int64, got %v", err)
+	}
+	tooLargeNegativeFloat, err := tooLargeNegative.TryIntoFloat64()
+	if err != nil {
+		t.Fatalf("expected large negative->float64 conversion success, got %v", err)
+	}
+	if got, want := tooLargeNegativeFloat, -9223372036854775808.0; got != want {
+		t.Fatalf("large negative->float64 mismatch: got %.0f want %.0f", got, want)
 	}
 }
 

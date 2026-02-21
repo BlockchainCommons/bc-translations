@@ -497,3 +497,25 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage improved from 67/86 to 69/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (baseline parity now above 80%; remaining exact/format/API fidelity work still open)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity alignment for numeric conversion semantics
+- Reconciling `TryIntoFloat64` with Rust `TryFrom<CBOR> for f64` cast-back behavior on large integers
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Updated `TryIntoFloat64` in `cbor.go` to match Rust cast-back exactness behavior for integer CBOR conversions
+- Adjusted conversion parity tests to assert Rust-aligned large integer float conversion outcomes
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (77 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after float-conversion semantics alignment
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` behavior notes for Rust-aligned `TryIntoFloat64` semantics
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage unchanged: 69/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (conversion semantics improved; substantial baseline parity work remains)
