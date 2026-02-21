@@ -9,6 +9,10 @@ func DecodeBool(c CBOR) (bool, error) {
 	return c.TryIntoBool()
 }
 
+func DecodeSimpleValue(c CBOR) (Simple, error) {
+	return c.TryIntoSimpleValue()
+}
+
 func DecodeText(c CBOR) (string, error) {
 	return c.TryIntoText()
 }
@@ -75,6 +79,14 @@ func DecodeBigInt(c CBOR) (*big.Int, error) {
 
 func DecodeBigUint(c CBOR) (*big.Int, error) {
 	return c.TryIntoBigUint()
+}
+
+func DecodeTaggedValue(c CBOR) (Tag, CBOR, error) {
+	return c.TryIntoTaggedValue()
+}
+
+func DecodeExpectedTaggedValue(c CBOR, expected Tag) (CBOR, error) {
+	return c.TryIntoExpectedTaggedValue(expected)
 }
 
 func DecodeDate(c CBOR) (Date, error) {

@@ -790,6 +790,52 @@ func TestTypedDecodeHelperParity(t *testing.T) {
 	}
 }
 
+func TestDecodeTaggedAndSimpleHelperParity(t *testing.T) {
+	simple, err := DecodeSimpleValue(True())
+	if err != nil {
+		t.Fatalf("DecodeSimpleValue(true) failed: %v", err)
+	}
+	if got, want := simple.Kind(), SimpleTrue; got != want {
+		t.Fatalf("DecodeSimpleValue kind mismatch: got %v want %v", got, want)
+	}
+	if _, err := DecodeSimpleValue(MustFromAny(1)); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for DecodeSimpleValue(number), got %v", err)
+	}
+
+	tagged := ToTaggedValue(TagWithValue(100), MustFromAny("Hello"))
+	tag, value, err := DecodeTaggedValue(tagged)
+	if err != nil {
+		t.Fatalf("DecodeTaggedValue failed: %v", err)
+	}
+	if got, want := tag.Value(), TagValue(100); got != want {
+		t.Fatalf("DecodeTaggedValue tag mismatch: got %d want %d", got, want)
+	}
+	if got, want := value.DiagnosticFlat(), `"Hello"`; got != want {
+		t.Fatalf("DecodeTaggedValue value mismatch: got %q want %q", got, want)
+	}
+
+	expectedValue, err := DecodeExpectedTaggedValue(tagged, TagWithValue(100))
+	if err != nil {
+		t.Fatalf("DecodeExpectedTaggedValue failed: %v", err)
+	}
+	if got, want := expectedValue.DiagnosticFlat(), `"Hello"`; got != want {
+		t.Fatalf("DecodeExpectedTaggedValue value mismatch: got %q want %q", got, want)
+	}
+
+	if _, err := DecodeExpectedTaggedValue(tagged, TagWithValue(101)); err == nil {
+		t.Fatalf("expected wrong-tag failure for DecodeExpectedTaggedValue")
+	} else {
+		var wrongTag WrongTagError
+		if !errors.As(err, &wrongTag) {
+			t.Fatalf("expected WrongTagError for DecodeExpectedTaggedValue, got %T", err)
+		}
+	}
+
+	if _, _, err := DecodeTaggedValue(MustFromAny(1)); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for DecodeTaggedValue(number), got %v", err)
+	}
+}
+
 func TestExactFloat64ConversionParity(t *testing.T) {
 	assertFloat64OK := func(name string, value any, want float64) {
 		t.Helper()

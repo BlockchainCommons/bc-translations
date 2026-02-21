@@ -944,3 +944,28 @@ COMPLETED
 - API coverage improved from 75/83 to 76/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (date conversion surface improved; residual API/trait/docs gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion-helper parity with explicit simple/tagged decode helper coverage
+- Adding decode helpers to mirror existing `TryInto*` convenience surface for simple/tagged values
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added decode helpers in `conversion.go`:
+  - `DecodeSimpleValue`
+  - `DecodeTaggedValue`
+  - `DecodeExpectedTaggedValue`
+- Added `TestDecodeTaggedAndSimpleHelperParity` in `conversion_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (103 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after simple/tagged decode helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with decode-helper parity coverage and refreshed metrics
+- API coverage improved from 76/83 to 77/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (conversion helper parity improved; residual API/trait/docs gaps remain)
