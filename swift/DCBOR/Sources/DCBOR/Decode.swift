@@ -186,7 +186,7 @@ func decodeCBORInternal(_ data: ArraySlice<UInt8>) throws -> (cbor: CBOR, len: I
     case .simple:
         switch headerVarIntLen {
         case 3:
-            let f = CBORFloat16(bitPattern: UInt16(value))
+            let f = Float16(bitPattern: UInt16(value))
             try f.validateCanonical()
             return (f.cbor, headerVarIntLen)
         case 5:

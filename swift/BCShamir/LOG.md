@@ -61,3 +61,13 @@ COMPLETED
 - Build: clean, zero warnings
 - Tests: 4/4 pass (all test vectors still match byte-for-byte)
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-reviewing public API for legacy or compatibility symbols/wrappers as a monorepo fluency rerun.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Legacy/compatibility symbol audit complete; no deprecated aliases, shims, or transitional APIs found in BCShamir.
+- Verification: `swift test` passed (4 tests, 0 failures).
+- VERDICT: IDIOMATIC.

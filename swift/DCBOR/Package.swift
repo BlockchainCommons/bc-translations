@@ -17,7 +17,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/wolfmcnally/SwiftSortedCollections", from: "0.1.0"),
         .package(url: "https://github.com/wolfmcnally/WolfBase", from: "7.0.0"),
-        .package(url: "https://github.com/blockchaincommons/BCSwiftFloat16", from: "2.0.0"),
         .package(url: "https://github.com/BlockchainCommons/BCSwiftTags", from: "0.2.3"),
         .package(url: "https://github.com/objecthub/swift-numberkit.git", .upToNextMajor(from: "2.6.0")),
     ],
@@ -25,7 +24,6 @@ let package = Package(
         .target(
             name: "DCBOR",
             dependencies: [
-                .product(name: "BCFloat16", package: "BCSwiftFloat16"),
                 .product(name: "SortedCollections", package: "SwiftSortedCollections"),
                 .product(name: "BCTags", package: "BCSwiftTags"),
                 .product(name: "NumberKit", package: "swift-numberkit"),

@@ -80,3 +80,16 @@ STARTED
 COMPLETED
 - Created `memory/swift.md` with Swift-specific translation lessons.
 - Appended cross-language lessons to `memory/translation-lessons.md`.
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-reviewing public API for legacy or compatibility symbols/wrappers as a monorepo fluency rerun.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Removed legacy float16 compatibility path:
+  - deleted architecture-specific `CBORFloat16` alias shim file.
+  - switched float16 encode/decode/canonicalization paths to native `Float16`.
+  - removed `BCSwiftFloat16`/`BCFloat16` package dependency and export.
+- Verification: `swift test` passed for DCBOR (53 tests, 0 failures); cross-target verification also passed for BCLifeHash, BCRand, BCCrypto, and BCShamir.
+- VERDICT: IDIOMATIC.

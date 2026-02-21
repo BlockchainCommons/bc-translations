@@ -66,3 +66,8 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-crypto   | 0.14.0  | TypeScript | @bc/crypto   | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-shamir   | 0.13.0  | TypeScript | @bc/shamir   | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor    | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-lifehash | 0.1.0   | Swift      | BCLifeHash   | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-rand     | 0.5.0   | Swift      | BCRand       | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-crypto   | 0.14.0  | Swift      | BCCrypto     | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-shamir   | 0.13.0  | Swift      | BCShamir     | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Fluency     |

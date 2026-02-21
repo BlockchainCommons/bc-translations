@@ -45,3 +45,13 @@ COMPLETED
 - Issues found: 0 (no changes required beyond Stage 2 implementation to satisfy Swift idioms while preserving parity).
 - Verification: `swift test` passed (2 tests executed, 1 skipped, 0 failures).
 - VERDICT: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-reviewing public API for legacy or compatibility symbols/wrappers as a monorepo fluency rerun.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Legacy/compatibility symbol audit complete; no deprecated aliases, shims, or transitional APIs found in BCLifeHash.
+- Verification: `swift test` passed (2 tests, 0 failures).
+- VERDICT: IDIOMATIC.

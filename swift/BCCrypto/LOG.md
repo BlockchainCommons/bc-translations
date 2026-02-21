@@ -42,3 +42,13 @@ COMPLETED
 - Reviewed Swift code for idiomatic naming, API shape, error handling patterns, and XCTest organization for this package context.
 - Key metrics: issues found 0; issues fixed 0; verification `swift test` passed (24 passed, 0 failed).
 - Verdict: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-reviewing public API for legacy or compatibility symbols/wrappers as a monorepo fluency rerun.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Legacy/compatibility symbol audit complete; no deprecated aliases, shims, or transitional APIs found in BCCrypto.
+- Verification: `swift test` passed (24 tests, 0 failures).
+- VERDICT: IDIOMATIC.

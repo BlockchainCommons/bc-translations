@@ -384,7 +384,7 @@ struct CodingTests {
         #expect(nonstandardFloatNaN.isNaN)
         #expect(nonstandardFloatNaN.cborData == canonicalNaNData)
         
-        let nonstandardFloat16NaN = CBORFloat16(bitPattern: 0x7e01)
+        let nonstandardFloat16NaN = Float16(bitPattern: 0x7e01)
         #expect(nonstandardFloat16NaN.isNaN)
         #expect(nonstandardFloat16NaN.cborData == canonicalNaNData)
     }
@@ -401,10 +401,10 @@ struct CodingTests {
     @Test func testEncodeInfinity() throws {
         #expect(Double.infinity.cborData == canonicalInfinityData)
         #expect(Float.infinity.cborData == canonicalInfinityData)
-        #expect(CBORFloat16.infinity.cborData == canonicalInfinityData)
+        #expect(Float16.infinity.cborData == canonicalInfinityData)
         #expect((-Double.infinity).cborData == canonicalNegativeInfinityData)
         #expect((-Float.infinity).cborData == canonicalNegativeInfinityData)
-        #expect((-CBORFloat16.infinity).cborData == canonicalNegativeInfinityData)
+        #expect((-Float16.infinity).cborData == canonicalNegativeInfinityData)
     }
     
     @Test func testDecodeInfinity() throws {
