@@ -10,3 +10,5 @@
 - For Go targets, lock `GOTOOLCHAIN=local` during `go mod tidy` and tests when the repo baseline is Go 1.21; otherwise dependency resolution can silently bump the module `go` directive.
 - For dCBOR translations, remember map-key deterministic ordering is by encoded CBOR bytes (including major-type/length header), which can differ from lexical source-key order and should be asserted explicitly in tests.
 - For any Stage 4 fluency review pass (including reruns on completed targets), always append a root `LOG.md` table row with task text starting `Fluency critique`, not just the per-target `<lang>/<package>/LOG.md` entries.
+- When importing a mature upstream translation into this monorepo, immediately replace workspace-specific build config (`extends`, workspace deps) with local package settings, then run both build and tests before starting completeness sign-off.
+- If TypeScript module typings fail for package subpaths, prefer a package-local `.d.ts` shim near source instead of relying on external DefinitelyTyped coverage.

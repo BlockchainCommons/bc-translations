@@ -1,0 +1,31 @@
+{
+  "name": "@bc/dcbor",
+  "version": "0.25.1",
+  "description": "Blockchain Commons Deterministic CBOR (dCBOR) for TypeScript.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "byte-data": "^19.0.1",
+    "collections": "^5.1.13"
+  },
+  "devDependencies": {
+    "@types/collections": "^5.1.5",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
