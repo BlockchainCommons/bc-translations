@@ -10,8 +10,8 @@ final class FracGrid {
         let height = grid.height
         for y in 0..<height {
             for x in 0..<width {
-                if cellGrid.grid.getValue(x, y) {
-                    grid.setValue(frac, x, y)
+                if cellGrid.grid[x, y] {
+                    grid[x, y] = frac
                 }
             }
         }

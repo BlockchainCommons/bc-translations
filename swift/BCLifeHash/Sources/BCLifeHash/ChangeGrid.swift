@@ -6,14 +6,8 @@ final class ChangeGrid {
     }
 
     func setChanged(_ px: Int, _ py: Int) {
-        let width = grid.width
-        let height = grid.height
-        for oy in -1...1 {
-            for ox in -1...1 {
-                let nx = (((ox + px) % width) + width) % width
-                let ny = (((oy + py) % height) + height) % height
-                grid.setValue(true, nx, ny)
-            }
+        grid.forNeighborhood(px, py) { _, _, nx, ny in
+            grid[nx, ny] = true
         }
     }
 }

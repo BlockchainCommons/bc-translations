@@ -1,7 +1,9 @@
 import CryptoKit
 import Foundation
 
-public enum Version {
+/// The LifeHash version, which controls grid resolution, generation count,
+/// and gradient/pattern selection.
+public enum Version: Sendable {
     case version1
     case version2
     case detailed
@@ -9,9 +11,18 @@ public enum Version {
     case grayscaleFiducial
 }
 
-public struct Image {
+/// A raster image produced by the LifeHash algorithm.
+///
+/// Pixel data is stored as a flat array of component bytes in row-major order
+/// (RGB or RGBA, depending on whether the image was generated with alpha).
+public struct Image: Sendable {
+    /// The width of the image in pixels.
     public let width: Int
+
+    /// The height of the image in pixels.
     public let height: Int
+
+    /// The raw pixel data as component bytes (RGB or RGBA, row-major).
     public let colors: [UInt8]
 
     public init(width: Int, height: Int, colors: [UInt8]) {
@@ -42,7 +53,6 @@ private func makeImage(
 
     var resultColors = Array(repeating: UInt8(0), count: scaledCapacity)
 
-    // Match C++ loop order from Rust.
     for targetY in 0..<scaledWidth {
         for targetX in 0..<scaledHeight {
             let sourceX = targetX / moduleSize
@@ -64,137 +74,179 @@ private func makeImage(
     return Image(width: scaledWidth, height: scaledHeight, colors: resultColors)
 }
 
-public func makeFromUTF8(_ s: String, version: Version, moduleSize: Int, hasAlpha: Bool) -> Image {
-    makeFromData(Array(s.utf8), version: version, moduleSize: moduleSize, hasAlpha: hasAlpha)
-}
-
-public func makeFromData(_ data: [UInt8], version: Version, moduleSize: Int, hasAlpha: Bool) -> Image {
-    let digest = sha256(data)
-    return makeFromDigest(digest, version: version, moduleSize: moduleSize, hasAlpha: hasAlpha)
-}
-
-public func makeFromDigest(_ digest: [UInt8], version: Version, moduleSize: Int, hasAlpha: Bool) -> Image {
-    precondition(digest.count == 32, "Digest must be 32 bytes")
-
-    let length: Int
-    let maxGenerations: Int
-
-    switch version {
-    case .version1, .version2:
-        length = 16
-        maxGenerations = 150
-    case .detailed, .fiducial, .grayscaleFiducial:
-        length = 32
-        maxGenerations = 300
+extension Image {
+    /// Creates a LifeHash image from a UTF-8 string.
+    ///
+    /// The string is converted to bytes and hashed before generation.
+    ///
+    /// - Parameters:
+    ///   - utf8: The input string.
+    ///   - version: The LifeHash version to use.
+    ///   - moduleSize: Scale factor for each cell (1 = no scaling).
+    ///   - hasAlpha: Whether to include an alpha channel in the output.
+    public static func fromUTF8(
+        _ utf8: String,
+        version: Version,
+        moduleSize: Int,
+        hasAlpha: Bool
+    ) -> Image {
+        fromData(Array(utf8.utf8), version: version, moduleSize: moduleSize, hasAlpha: hasAlpha)
     }
 
-    var currentCellGrid = CellGrid(width: length, height: length)
-    var nextCellGrid = CellGrid(width: length, height: length)
-    var currentChangeGrid = ChangeGrid(width: length, height: length)
-    var nextChangeGrid = ChangeGrid(width: length, height: length)
+    /// Creates a LifeHash image from raw byte data.
+    ///
+    /// The data is hashed before generation.
+    ///
+    /// - Parameters:
+    ///   - data: The input bytes.
+    ///   - version: The LifeHash version to use.
+    ///   - moduleSize: Scale factor for each cell (1 = no scaling).
+    ///   - hasAlpha: Whether to include an alpha channel in the output.
+    public static func fromData(
+        _ data: [UInt8],
+        version: Version,
+        moduleSize: Int,
+        hasAlpha: Bool
+    ) -> Image {
+        let digest = sha256(data)
+        return fromDigest(digest, version: version, moduleSize: moduleSize, hasAlpha: hasAlpha)
+    }
 
-    switch version {
-    case .version1:
-        nextCellGrid.setData(digest)
-    case .version2:
-        let hashed = sha256(digest)
-        nextCellGrid.setData(hashed)
-    case .detailed, .fiducial, .grayscaleFiducial:
-        var digest1 = digest
-        if version == .grayscaleFiducial {
-            digest1 = sha256(digest1)
+    /// Creates a LifeHash image from a 32-byte SHA-256 digest.
+    ///
+    /// - Parameters:
+    ///   - digest: A 32-byte SHA-256 digest.
+    ///   - version: The LifeHash version to use.
+    ///   - moduleSize: Scale factor for each cell (1 = no scaling).
+    ///   - hasAlpha: Whether to include an alpha channel in the output.
+    public static func fromDigest(
+        _ digest: [UInt8],
+        version: Version,
+        moduleSize: Int,
+        hasAlpha: Bool
+    ) -> Image {
+        precondition(digest.count == 32, "Digest must be 32 bytes")
+
+        let length: Int
+        let maxGenerations: Int
+
+        switch version {
+        case .version1, .version2:
+            length = 16
+            maxGenerations = 150
+        case .detailed, .fiducial, .grayscaleFiducial:
+            length = 32
+            maxGenerations = 300
         }
-        let digest2 = sha256(digest1)
-        let digest3 = sha256(digest2)
-        let digest4 = sha256(digest3)
 
-        var digestFinal = digest1
-        digestFinal.append(contentsOf: digest2)
-        digestFinal.append(contentsOf: digest3)
-        digestFinal.append(contentsOf: digest4)
+        var currentCellGrid = CellGrid(width: length, height: length)
+        var nextCellGrid = CellGrid(width: length, height: length)
+        var currentChangeGrid = ChangeGrid(width: length, height: length)
+        var nextChangeGrid = ChangeGrid(width: length, height: length)
 
-        nextCellGrid.setData(digestFinal)
-    }
+        switch version {
+        case .version1:
+            nextCellGrid.setData(digest)
+        case .version2:
+            let hashed = sha256(digest)
+            nextCellGrid.setData(hashed)
+        case .detailed, .fiducial, .grayscaleFiducial:
+            var digest1 = digest
+            if version == .grayscaleFiducial {
+                digest1 = sha256(digest1)
+            }
+            let digest2 = sha256(digest1)
+            let digest3 = sha256(digest2)
+            let digest4 = sha256(digest3)
 
-    nextChangeGrid.grid.setAll(true)
+            var digestFinal = digest1
+            digestFinal.append(contentsOf: digest2)
+            digestFinal.append(contentsOf: digest3)
+            digestFinal.append(contentsOf: digest4)
 
-    var historySet: Set<Data> = []
-    var history: [[UInt8]] = []
+            nextCellGrid.setData(digestFinal)
+        }
 
-    while history.count < maxGenerations {
-        swap(&currentCellGrid, &nextCellGrid)
-        swap(&currentChangeGrid, &nextChangeGrid)
+        nextChangeGrid.grid.setAll(true)
 
-        let data = currentCellGrid.data()
-        let hash = sha256(data)
-        let hashData = Data(hash)
-        if historySet.contains(hashData) {
+        var historySet: Set<Data> = []
+        var history: [[UInt8]] = []
+
+        while history.count < maxGenerations {
+            swap(&currentCellGrid, &nextCellGrid)
+            swap(&currentChangeGrid, &nextChangeGrid)
+
+            let data = currentCellGrid.data()
+            let hash = sha256(data)
+            let hashData = Data(hash)
+            if historySet.contains(hashData) {
+                break
+            }
+
+            historySet.insert(hashData)
+            history.append(data)
+
+            currentCellGrid.nextGeneration(
+                currentChangeGrid: currentChangeGrid,
+                nextCellGrid: nextCellGrid,
+                nextChangeGrid: nextChangeGrid
+            )
+        }
+
+        let fracGrid = FracGrid(width: length, height: length)
+        for (index, snapshot) in history.enumerated() {
+            currentCellGrid.setData(snapshot)
+            let frac = clamped(lerpFrom(0.0, Double(history.count), Double(index + 1)))
+            fracGrid.overlay(currentCellGrid, frac)
+        }
+
+        if version != .version1 {
+            var minValue = Double.infinity
+            var maxValue = -Double.infinity
+
+            fracGrid.grid.forEachCell { x, y in
+                let value = fracGrid.grid[x, y]
+                if value < minValue {
+                    minValue = value
+                }
+                if value > maxValue {
+                    maxValue = value
+                }
+            }
+
+            let width = fracGrid.grid.width
+            let height = fracGrid.grid.height
+
+            for y in 0..<height {
+                for x in 0..<width {
+                    let value = fracGrid.grid[x, y]
+                    let normalized = lerpFrom(minValue, maxValue, value)
+                    fracGrid.grid[x, y] = normalized
+                }
+            }
+        }
+
+        let entropy = BitEnumerator(data: digest)
+
+        switch version {
+        case .detailed:
+            _ = entropy.next()
+        case .version2:
+            _ = entropy.nextUInt2()
+        case .version1, .fiducial, .grayscaleFiducial:
             break
         }
 
-        historySet.insert(hashData)
-        history.append(data)
+        let gradient = selectGradient(entropy, version)
+        let pattern = selectPattern(entropy, version)
+        let colorGrid = ColorGrid(fracGrid: fracGrid, gradient: gradient, pattern: pattern)
 
-        currentCellGrid.nextGeneration(
-            currentChangeGrid: currentChangeGrid,
-            nextCellGrid: nextCellGrid,
-            nextChangeGrid: nextChangeGrid
+        return makeImage(
+            width: colorGrid.grid.width,
+            height: colorGrid.grid.height,
+            floatColors: colorGrid.colors(),
+            moduleSize: moduleSize,
+            hasAlpha: hasAlpha
         )
     }
-
-    let fracGrid = FracGrid(width: length, height: length)
-    for (index, snapshot) in history.enumerated() {
-        currentCellGrid.setData(snapshot)
-        let frac = clamped(lerpFrom(0.0, Double(history.count), Double(index + 1)))
-        fracGrid.overlay(currentCellGrid, frac)
-    }
-
-    if version != .version1 {
-        var minValue = Double.infinity
-        var maxValue = -Double.infinity
-
-        fracGrid.grid.forAll { x, y in
-            let value = fracGrid.grid.getValue(x, y)
-            if value < minValue {
-                minValue = value
-            }
-            if value > maxValue {
-                maxValue = value
-            }
-        }
-
-        let width = fracGrid.grid.width
-        let height = fracGrid.grid.height
-
-        for y in 0..<height {
-            for x in 0..<width {
-                let value = fracGrid.grid.getValue(x, y)
-                let normalized = lerpFrom(minValue, maxValue, value)
-                fracGrid.grid.setValue(normalized, x, y)
-            }
-        }
-    }
-
-    let entropy = BitEnumerator(data: digest)
-
-    switch version {
-    case .detailed:
-        _ = entropy.next()
-    case .version2:
-        _ = entropy.nextUInt2()
-    case .version1, .fiducial, .grayscaleFiducial:
-        break
-    }
-
-    let gradient = selectGradient(entropy, version)
-    let pattern = selectPattern(entropy, version)
-    let colorGrid = ColorGrid(fracGrid: fracGrid, gradient: gradient, pattern: pattern)
-
-    return makeImage(
-        width: colorGrid.grid.width,
-        height: colorGrid.grid.height,
-        floatColors: colorGrid.colors(),
-        moduleSize: moduleSize,
-        hasAlpha: hasAlpha
-    )
 }

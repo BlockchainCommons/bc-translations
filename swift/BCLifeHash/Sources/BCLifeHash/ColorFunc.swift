@@ -1,7 +1,9 @@
+/// A function that maps a normalized value in `[0, 1]` to a color,
+/// used to define gradients for LifeHash rendering.
 typealias ColorFunc = (Double) -> Color
 
-func reverse(_ c: @escaping ColorFunc) -> ColorFunc {
-    { t in c(1.0 - t) }
+func reverse(_ colorFunc: @escaping ColorFunc) -> ColorFunc {
+    { t in colorFunc(1.0 - t) }
 }
 
 func blend2(_ color1: Color, _ color2: Color) -> ColorFunc {

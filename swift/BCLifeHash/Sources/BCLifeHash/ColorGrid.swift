@@ -42,7 +42,7 @@ final class ColorGrid {
         let fracHeight = fracGrid.grid.height
         for y in 0..<fracHeight {
             for x in 0..<fracWidth {
-                let value = fracGrid.grid.getValue(x, y)
+                let value = fracGrid.grid[x, y]
                 let color = gradient(value)
                 for t in transforms {
                     var px = x
@@ -56,7 +56,7 @@ final class ColorGrid {
                     if t.reflectY {
                         py = maxY - py
                     }
-                    grid.setValue(color, px, py)
+                    grid[px, py] = color
                 }
             }
         }

@@ -18,7 +18,7 @@ final class CellGrid {
             if ox == 0 && oy == 0 {
                 return
             }
-            if grid.getValue(nx, ny) {
+            if grid[nx, ny] {
                 total += 1
             }
         }
@@ -27,21 +27,21 @@ final class CellGrid {
 
     func data() -> [UInt8] {
         let aggregator = BitAggregator()
-        grid.forAll { x, y in
-            aggregator.append(grid.getValue(x, y))
+        grid.forEachCell { x, y in
+            aggregator.append(grid[x, y])
         }
         return aggregator.valueData()
     }
 
     func setData(_ data: [UInt8]) {
-        assert(grid.width * grid.height == data.count * 8)
+        precondition(grid.width * grid.height == data.count * 8)
         let enumerator = BitEnumerator(data: data)
         var i = 0
         enumerator.forAll { bit in
             grid.storage[i] = bit
             i += 1
         }
-        assert(i == grid.storage.count)
+        precondition(i == grid.storage.count)
     }
 
     func nextGeneration(
@@ -57,18 +57,18 @@ final class CellGrid {
 
         for y in 0..<height {
             for x in 0..<width {
-                let currentAlive = grid.getValue(x, y)
-                if currentChangeGrid.grid.getValue(x, y) {
+                let currentAlive = grid[x, y]
+                if currentChangeGrid.grid[x, y] {
                     let neighborsCount = countNeighbors(x, y)
                     let nextAlive = Self.isAliveInNextGeneration(currentAlive, neighborsCount)
                     if nextAlive {
-                        nextCellGrid.grid.setValue(true, x, y)
+                        nextCellGrid.grid[x, y] = true
                     }
                     if currentAlive != nextAlive {
                         nextChangeGrid.setChanged(x, y)
                     }
                 } else {
-                    nextCellGrid.grid.setValue(currentAlive, x, y)
+                    nextCellGrid.grid[x, y] = currentAlive
                 }
             }
         }

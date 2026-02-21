@@ -5,6 +5,10 @@ func clamped(_ n: Double) -> Double {
     min(max(n, 0.0), 1.0)
 }
 
+/// Computes `dividend mod divisor` with correct wrapping for negative values.
+///
+/// Arithmetic is performed in single precision (`Float`) to match the
+/// reference implementation's f32 intermediate results.
 @inline(__always)
 func modulo(_ dividend: Double, _ divisor: Double) -> Double {
     let a = Float(dividend).truncatingRemainder(dividingBy: Float(divisor))
@@ -74,6 +78,10 @@ struct Color {
         )
     }
 
+    /// Computes perceived luminance using weighted RGB components.
+    ///
+    /// Intermediate calculations use single precision (`Float`) to match
+    /// the reference implementation's f32 behavior.
     func luminance() -> Double {
         let r = Float(0.299 * self.r)
         let g = Float(0.587 * self.g)

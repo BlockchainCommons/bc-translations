@@ -55,3 +55,28 @@ COMPLETED
 - Legacy/compatibility symbol audit complete; no deprecated aliases, shims, or transitional APIs found in BCLifeHash.
 - Verification: `swift test` passed (2 tests, 0 failures).
 - VERDICT: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing naming, API design, documentation, test framework, structure, and Swift idioms.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model)
+COMPLETED
+- Issues found: 13 (7 must-fix, 4 should-fix, 2 nice-to-have). All applied.
+- Converted free functions `makeFromUTF8`/`makeFromData`/`makeFromDigest` to `Image.fromUTF8`/`Image.fromData`/`Image.fromDigest` static methods.
+- Added `Sendable` conformance to `Version` and `Image`.
+- Added documentation comments on all public types and factory methods.
+- Converted tests from XCTest to Swift Testing (`@Test`, `#expect`, `Issue.record`).
+- Disabled PNG generation test by default with `.disabled()` trait.
+- Replaced `assert` with `precondition` in `CellGrid.setData`.
+- Added subscript `[x, y]` to `Grid`, replacing `getValue`/`setValue`.
+- Renamed `Grid.forAll` to `Grid.forEachCell` for Swift idiomaticness.
+- Refactored `ChangeGrid.setChanged` to use `Grid.forNeighborhood` instead of duplicated circular index logic.
+- Added f32 precision comments to `modulo` and `luminance`.
+- Removed source-language reference comments.
+- Removed unnecessary `import Foundation` from `ColorFunc.swift`.
+- Added doc comment to `ColorFunc` typealias.
+- Verification: `swift test` passed (2 tests, 1 skipped, 0 failures). All 35 test vectors byte-identical.
+- No downstream Swift dependents required repair (bc-lifehash is standalone).
+- VERDICT: IDIOMATIC.
