@@ -40,3 +40,9 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor   | 📖 GPT 5.3 Codex   | Fluency critique |
 | 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Translation |
 | 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Fluency critique |
+| 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 docs + API pass) |
+| 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 📖 GPT 5.3 Codex   | Fluency critique |
+| 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags     | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags     | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 pass) |
