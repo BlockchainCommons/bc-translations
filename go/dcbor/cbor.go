@@ -125,6 +125,7 @@ func ToByteStringFromHex(value string) (CBOR, error) {
 	return ToByteString(bytesValue), nil
 }
 
+// MustToByteStringFromHex converts a hex string to a CBOR byte string and panics on invalid input.
 func MustToByteStringFromHex(value string) CBOR {
 	cbor, err := ToByteStringFromHex(value)
 	if err != nil {

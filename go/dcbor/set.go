@@ -74,6 +74,7 @@ func (s *Set) Clone() Set {
 	return Set{m: s.m.Clone()}
 }
 
+// Equal reports deterministic set equality by encoded item ordering/content.
 func (s Set) Equal(other Set) bool {
 	return s.m.Equal(other.m)
 }

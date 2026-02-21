@@ -123,6 +123,8 @@ func (m Map) ExtractAny(key any) (CBOR, error) {
 	return m.Extract(keyCBOR)
 }
 
+// DecodeMapValue looks up a key and decodes the mapped CBOR value into a typed value.
+// The boolean return indicates whether the key exists.
 func DecodeMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) (T, bool, error) {
 	var zero T
 	value, ok := m.GetAny(key)
@@ -136,6 +138,7 @@ func DecodeMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) (T, bool, e
 	return decoded, true, nil
 }
 
+// ExtractMapValue extracts and decodes a required map value.
 func ExtractMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) (T, error) {
 	var zero T
 	value, err := m.ExtractAny(key)
@@ -149,6 +152,7 @@ func ExtractMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) (T, error)
 	return decoded, nil
 }
 
+// MustExtractMapValue extracts and decodes a required map value and panics on failure.
 func MustExtractMapValue[T any](m Map, key any, decode CBORDecodeFunc[T]) T {
 	value, err := ExtractMapValue(m, key, decode)
 	if err != nil {
@@ -196,6 +200,7 @@ func (m Map) Clone() Map {
 	return Map{entries: cloned}
 }
 
+// Equal reports deterministic equality by key encoding and value content.
 func (m Map) Equal(other Map) bool {
 	if len(m.entries) != len(other.entries) {
 		return false

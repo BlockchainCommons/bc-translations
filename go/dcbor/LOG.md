@@ -1141,3 +1141,28 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (API surface complete; docs/derive/signature parity still partial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing documentation parity by adding concise comments for newly exported helper APIs
+- Improving discoverability of conversion/equality helpers without behavioral changes
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added exported API comments for:
+  - `MustToByteStringFromHex`
+  - `DecodeMapValue`, `ExtractMapValue`, `MustExtractMapValue`, `Map.Equal`
+  - `Set.Equal`
+  - `DecodeSetSlice`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after incremental public API documentation updates
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated documentation coverage note in `COMPLETENESS.md` to reflect improved helper-level API comments
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (API surface complete; broader docs/derive/signature parity still partial)

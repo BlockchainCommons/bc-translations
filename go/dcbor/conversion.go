@@ -152,6 +152,7 @@ func DecodeSet[T comparable](c CBOR, decodeItem CBORDecodeFunc[T]) (map[T]struct
 	return out, nil
 }
 
+// DecodeSetSlice decodes a CBOR set into an ordered typed slice.
 func DecodeSetSlice[T any](c CBOR, decodeItem CBORDecodeFunc[T]) ([]T, error) {
 	set, err := c.TryIntoSet()
 	if err != nil {
