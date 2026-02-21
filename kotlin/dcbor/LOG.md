@@ -62,3 +62,18 @@ COMPLETED
 - Skipped: "try" prefix rename (cross-language API consistency), CborCase prefix names (acceptable),
   ByteArrayOutputStream (premature optimization)
 - All 73 tests passing after fixes
+
+## 2026-02-21 — Stage 4: Fluency Review (Rerun)
+STARTED
+- Re-reviewing Kotlin dCBOR for remaining idiomatic Kotlin issues
+- Focusing on error handling, API guardrails, and formatting edge cases
+
+## 2026-02-21 — Stage 4: Fluency Review (Rerun)
+COMPLETED
+- 4 issues found, 4 fixed, 0 skipped
+- Fixed strict UTF-8 decoding in text decode path (reject malformed byte sequences)
+- Fixed `Cbor.tryFloat()` negative integer conversion to preserve sign
+- Added defensive preconditions for empty tag lists in tagged encode/decode helpers
+- Fixed negative integer formatting for values beyond `Long` range in diagnostic and hex-annotated output
+- Added 2 regression tests (`testTryFloatNegativeInteger`, `testInvalidUtf8String`)
+- All 75 tests passing after fixes

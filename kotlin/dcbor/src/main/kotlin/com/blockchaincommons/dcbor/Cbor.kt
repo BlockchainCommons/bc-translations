@@ -1,5 +1,7 @@
 package com.blockchaincommons.dcbor
 
+import java.math.BigInteger
+
 /**
  * Central type representing any CBOR data item.
  *
@@ -298,8 +300,10 @@ class Cbor(private val case: CborCase) {
     fun tryFloat(): Float = when (case) {
         is CborCase.Unsigned ->
             Exact.floatFromULong(case.value) ?: throw CborException.OutOfRange()
-        is CborCase.Negative ->
-            Exact.floatFromULong(case.value) ?: throw CborException.OutOfRange()
+        is CborCase.Negative -> {
+            val f = Exact.floatFromULong(case.value) ?: throw CborException.OutOfRange()
+            -1.0f - f
+        }
         is CborCase.CborSimple -> when (val simple = case.value) {
             is Simple.Float ->
                 Exact.floatFromDouble(simple.value) ?: throw CborException.OutOfRange()
@@ -323,7 +327,7 @@ class Cbor(private val case: CborCase) {
 
     val debugDescription: String get() = when (case) {
         is CborCase.Unsigned -> "unsigned(${case.value})"
-        is CborCase.Negative -> "negative(${-1L - case.value.toLong()})"
+        is CborCase.Negative -> "negative(${negativeValueToString(case.value)})"
         is CborCase.CborByteString -> "bytes(${case.value.toHexString()})"
         is CborCase.Text -> "text(\"${case.value}\")"
         is CborCase.Array -> "array(${case.value.map { it.debugDescription }})"
@@ -361,7 +365,7 @@ class Cbor(private val case: CborCase) {
 
     val diagnosticFlat: String get() = when (case) {
         is CborCase.Unsigned -> "${case.value}"
-        is CborCase.Negative -> "${-1L - case.value.toLong()}"
+        is CborCase.Negative -> negativeValueToString(case.value)
         is CborCase.CborByteString -> "h'${case.value.toHexString()}'"
         is CborCase.Text -> formatString(case.value)
         is CborCase.Array -> "[${case.value.joinToString(", ") { it.diagnosticFlat }}]"
@@ -391,6 +395,13 @@ fun Boolean.toCbor(): Cbor = Cbor.fromBoolean(this)
 fun ByteArray.toCbor(): Cbor = Cbor.fromByteString(this)
 
 fun List<Cbor>.toCbor(): Cbor = Cbor.fromArray(this)
+
+internal fun negativeValueToString(value: ULong): String {
+    if (value <= Long.MAX_VALUE.toULong()) {
+        return (-1L - value.toLong()).toString()
+    }
+    return BigInteger(value.toString()).add(BigInteger.ONE).negate().toString()
+}
 
 /**
  * Returns a new list with elements sorted by their CBOR-encoded byte representation.

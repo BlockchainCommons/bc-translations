@@ -1,5 +1,9 @@
 package com.blockchaincommons.dcbor
 
+import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CodingErrorAction
+
 /**
  * CBOR decoder implementing dCBOR deterministic encoding validation.
  */
@@ -100,11 +104,7 @@ internal object Decode {
                 val dataLen = value.toInt()
                 if (pos + dataLen > data.size) throw CborException.Underrun()
                 val bytes = data.copyOfRange(pos, pos + dataLen)
-                val string = try {
-                    String(bytes, Charsets.UTF_8)
-                } catch (e: Exception) {
-                    throw CborException.InvalidString(e.message ?: "UTF-8 error")
-                }
+                val string = decodeUtf8Strict(bytes)
                 if (!StringUtil.isNfc(string)) throw CborException.NonCanonicalString()
                 Cbor(CborCase.Text(string)) to (pos + dataLen)
             }
@@ -162,6 +162,17 @@ internal object Decode {
                     else -> throw CborException.InvalidSimpleValue()
                 }
             }
+        }
+    }
+
+    private fun decodeUtf8Strict(bytes: ByteArray): String {
+        val decoder = Charsets.UTF_8.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPORT)
+            .onUnmappableCharacter(CodingErrorAction.REPORT)
+        return try {
+            decoder.decode(ByteBuffer.wrap(bytes)).toString()
+        } catch (e: CharacterCodingException) {
+            throw CborException.InvalidString(e.message ?: "UTF-8 error")
         }
     }
 }

@@ -29,7 +29,7 @@ private fun Cbor.dumpItems(level: Int, opts: HexFormatOpts): List<DumpItem> {
             DumpItem(level, listOf(toCborData()), "unsigned(${case.value})")
         )
         is CborCase.Negative -> listOf(
-            DumpItem(level, listOf(toCborData()), "negative(${-1L - case.value.toLong()})")
+            DumpItem(level, listOf(toCborData()), "negative(${negativeValueToString(case.value)})")
         )
         is CborCase.CborByteString -> {
             val data = case.value.toByteArray()

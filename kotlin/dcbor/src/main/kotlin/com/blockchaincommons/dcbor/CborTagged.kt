@@ -20,7 +20,9 @@ interface CborTaggedEncodable : CborTagged {
 
     /** Returns the CBOR encoding of this instance with its preferred tag. */
     fun taggedCbor(): Cbor {
-        return Cbor(CborCase.Tagged(cborTags()[0], untaggedCbor()))
+        val tags = cborTags()
+        require(tags.isNotEmpty()) { "cborTags() must return at least one tag" }
+        return Cbor(CborCase.Tagged(tags.first(), untaggedCbor()))
     }
 
     /** Returns the tagged CBOR encoding as binary data. */
@@ -53,11 +55,12 @@ object CborTaggedUtils {
      * Decode a tagged CBOR value, verifying the tag matches one of the expected tags.
      */
     fun <T> fromTaggedCbor(cbor: Cbor, tags: List<Tag>, decoder: (Cbor) -> T): T {
+        require(tags.isNotEmpty()) { "Expected at least one tag" }
         val (tag, item) = cbor.tryTagged()
-        if (tags.contains(tag)) {
+        if (tag in tags) {
             return decoder(item)
         }
-        throw CborException.WrongTag(tags[0], tag)
+        throw CborException.WrongTag(tags.first(), tag)
     }
 
     /**

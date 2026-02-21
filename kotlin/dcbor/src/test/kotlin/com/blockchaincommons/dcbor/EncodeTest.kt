@@ -121,6 +121,12 @@ class EncodeTest {
     @Test
     fun testNegInfinity() = testCbor(Double.NEGATIVE_INFINITY.toCbor(), "-Infinity", "f9fc00")
 
+    @Test
+    fun testTryFloatNegativeInteger() {
+        assertEquals(-1.0f, (-1).toCbor().tryFloat())
+        assertEquals(-100.0f, (-100).toCbor().tryFloat())
+    }
+
     // ---- Strings ----
 
     @Test
@@ -232,6 +238,14 @@ class EncodeTest {
         // Map with keys out of order: {2: 2, 1: 1}
         assertFailsWith<CborException.MisorderedMapKey> {
             Cbor.tryFromHex("a202020101")
+        }
+    }
+
+    @Test
+    fun testInvalidUtf8String() {
+        // Invalid two-byte UTF-8 sequence for text: C3 28
+        assertFailsWith<CborException.InvalidString> {
+            Cbor.tryFromHex("62c328")
         }
     }
 
