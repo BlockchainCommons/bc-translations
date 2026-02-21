@@ -77,3 +77,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-crypto   | 0.14.0  | Python     | bc-crypto    | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-shamir   | 0.13.0  | Python     | bc-shamir    | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags      | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-crypto   | 0.14.0  | C#         | BCCrypto     | 📖 GPT 5.3 Codex   | Fluency     |

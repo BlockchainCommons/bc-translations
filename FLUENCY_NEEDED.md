@@ -6,12 +6,11 @@ Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-02-21
 - Targets translated: 33
-- Targets with cross-model fluency complete: 18
-- Targets still needing cross-model fluency: 15
+- Targets with cross-model fluency complete: 19
+- Targets still needing cross-model fluency: 14
 
 | Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
 |-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
-| bc-crypto | 0.14.0 | C# | BCCrypto | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
 | bc-crypto | 0.14.0 | Go | bccrypto | 📖 GPT 5.3 Codex | 🎻 Claude Opus | No fluency pass logged |
 | bc-crypto | 0.14.0 | Swift | BCCrypto | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
 | bc-crypto | 0.14.0 | TypeScript | @bc/crypto | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
