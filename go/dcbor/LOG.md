@@ -697,3 +697,27 @@ COMPLETED
 - API coverage unchanged: 65/83 key manifest targets
 - Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (date helper coverage improved; baseline parity remains incomplete)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity on convenience helper surface in `cbor.go`
+- Adding tests for currently-uncovered helper methods and utility functions
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `convenience_parity_test.go` covering:
+  - byte/text/array/map/tagged convenience helpers
+  - bool/null/nan helper behavior
+  - `SortArrayByCBOREncoding`, `NormalizeViaFxamacker`, and `MustEqual` panic semantics
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (89 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after convenience helper parity expansion
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with supplemental convenience helper coverage
+- API coverage unchanged: 65/83 key manifest targets
+- Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (helper-surface confidence improved; baseline parity still incomplete)
