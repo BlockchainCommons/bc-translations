@@ -7,7 +7,7 @@ class RandomNumberGeneratorTest {
 
     @Test
     fun testFakeNumbers() {
-        val rng = makeFakeRandomNumberGenerator()
+        val rng = fakeRandomNumberGenerator()
         val array = List(100) { rng.nextInClosedRange(-50, 50, bits = 32) }
         val expected = listOf<Long>(
             -43, -6, 43, -34, -34, 17, -9, 24, 17, -29, -32, -44, 12, -15, -46,

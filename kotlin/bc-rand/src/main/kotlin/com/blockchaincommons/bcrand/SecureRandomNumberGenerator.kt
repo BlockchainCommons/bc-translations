@@ -44,9 +44,3 @@ class SecureRandomNumberGenerator : RandomNumberGenerator() {
 
 fun secureRandomNumberGenerator(): SecureRandomNumberGenerator =
     SecureRandomNumberGenerator()
-
-@Deprecated(
-    message = "Use secureRandomNumberGenerator() for Kotlin-style naming.",
-    replaceWith = ReplaceWith("secureRandomNumberGenerator()"),
-)
-fun threadRng(): SecureRandomNumberGenerator = secureRandomNumberGenerator()

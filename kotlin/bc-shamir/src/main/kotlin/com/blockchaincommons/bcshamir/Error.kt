@@ -17,5 +17,3 @@ sealed class Error(message: String) : Exception(message) {
 
     class SharesUnequalLength : Error("shares have unequal length")
 }
-
-typealias Result<T> = kotlin.Result<T>

@@ -74,3 +74,14 @@ STARTED
 COMPLETED
 - Added Kotlin lesson file `memory/kotlin.md` with error-model and workspace-coordination guidance.
 - Appended cross-language lesson to `memory/translation-lessons.md`.
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+STARTED
+- Auditing Kotlin bc-shamir for legacy/compatibility symbols in public API surface.
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+COMPLETED
+- Issues found: 1 (unused compatibility alias `typealias Result<T> = kotlin.Result<T>`).
+- Fixed: 1
+- Verification: `gradle test` passed for `kotlin/bc-shamir`.
+- Verdict: IDIOMATIC

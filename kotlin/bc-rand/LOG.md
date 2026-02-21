@@ -46,3 +46,15 @@ COMPLETED
 - Fixed: 4/4 in `SeededRandomNumberGenerator`, `RngFunctions`, and `SecureRandomNumberGenerator`; preserved existing public APIs while adding idiomatic aliases.
 - Verification: `gradle test` passed for `kotlin/bc-rand`, `kotlin/bc-crypto`, and `kotlin/bc-shamir`.
 - Verdict: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+STARTED
+- Auditing Kotlin bc-rand for legacy/compatibility symbols in public API surface.
+- Removing compatibility exports and fixing dependent Kotlin targets as needed.
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+COMPLETED
+- Issues found: 3 (deprecated `threadRng()` shim, redundant `rng*` compatibility API exports, legacy fake RNG helper naming).
+- Fixed: 3
+- Verification: `gradle test` passed for `kotlin/bc-rand`, `kotlin/bc-crypto`, and `kotlin/bc-shamir`.
+- Verdict: IDIOMATIC

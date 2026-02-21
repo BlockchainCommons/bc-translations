@@ -15,9 +15,6 @@ package com.blockchaincommons.bcrand
  * values. For the output distribution to look random, the seed should not
  * have any obvious patterns, like all zeroes or all ones.
  *
- * This is not cryptographically secure, and should only be used for
- * testing purposes.
- *
  * @param seed An array of exactly 4 [ULong] values used to seed the generator.
  */
 class SeededRandomNumberGenerator(seed: ULongArray) : RandomNumberGenerator() {
@@ -54,7 +51,7 @@ private val FAKE_SEED = ulongArrayOf(
  *
  * @return A [SeededRandomNumberGenerator] initialized with the standard test seed.
  */
-fun makeFakeRandomNumberGenerator(): SeededRandomNumberGenerator =
+fun fakeRandomNumberGenerator(): SeededRandomNumberGenerator =
     SeededRandomNumberGenerator(FAKE_SEED)
 
 /**
@@ -63,5 +60,5 @@ fun makeFakeRandomNumberGenerator(): SeededRandomNumberGenerator =
  * @param size The number of random bytes to generate.
  * @return A new [ByteArray] containing [size] bytes of deterministic random data.
  */
-fun fakeRandomData(size: Int): ByteArray =
-    makeFakeRandomNumberGenerator().randomData(size)
+fun fakeRandomBytes(size: Int): ByteArray =
+    fakeRandomNumberGenerator().randomData(size)

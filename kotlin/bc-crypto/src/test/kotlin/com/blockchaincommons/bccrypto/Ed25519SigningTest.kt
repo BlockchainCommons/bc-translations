@@ -1,6 +1,6 @@
 package com.blockchaincommons.bccrypto
 
-import com.blockchaincommons.bcrand.fakeRandomData
+import com.blockchaincommons.bcrand.fakeRandomBytes
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertTrue
@@ -11,7 +11,7 @@ class Ed25519SigningTest {
     fun testEd25519Signing() {
         val message = "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.".toByteArray()
 
-        val privateKey = fakeRandomData(ED25519_PRIVATE_KEY_SIZE)
+        val privateKey = fakeRandomBytes(ED25519_PRIVATE_KEY_SIZE)
         assertContentEquals(
             "7eb559bbbf6cce2632cf9f194aeb50943de7e1cbad54dcfab27a42759f5e2fed".hexToByteArray(),
             privateKey,

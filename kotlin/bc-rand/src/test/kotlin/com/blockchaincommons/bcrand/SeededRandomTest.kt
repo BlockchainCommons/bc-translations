@@ -88,7 +88,7 @@ class SeededRandomTest {
             "2daee0c5bb5023f50cd8e71ec14901ac746c576c481b893be6656b80622b3a56" +
             "4e59b4e2"
         ).hexToByteArray()
-        assertContentEquals(expected, fakeRandomData(100))
+        assertContentEquals(expected, fakeRandomBytes(100))
     }
 
     @Test

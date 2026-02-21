@@ -46,3 +46,14 @@ COMPLETED
 - Fixes: added file-level KDoc in `LifeHash.kt` to preserve crate-level Rust documentation intent.
 - Verification: `gradle test` remains passing.
 - Verdict: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+STARTED
+- Auditing Kotlin bc-lifehash for legacy/compatibility symbols in public API surface.
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+COMPLETED
+- Issues found: 0
+- Fixed: 0
+- Verification: `gradle test` passed for `kotlin/bc-lifehash`.
+- Verdict: IDIOMATIC (no compatibility shims found)

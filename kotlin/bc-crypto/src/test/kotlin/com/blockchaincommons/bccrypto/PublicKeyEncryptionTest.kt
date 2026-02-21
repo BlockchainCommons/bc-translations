@@ -1,6 +1,6 @@
 package com.blockchaincommons.bccrypto
 
-import com.blockchaincommons.bcrand.makeFakeRandomNumberGenerator
+import com.blockchaincommons.bcrand.fakeRandomNumberGenerator
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
@@ -8,7 +8,7 @@ class PublicKeyEncryptionTest {
 
     @Test
     fun testX25519Keys() {
-        val rng = makeFakeRandomNumberGenerator()
+        val rng = fakeRandomNumberGenerator()
         val privateKey = x25519NewPrivateKeyUsing(rng)
         assertContentEquals(
             "7eb559bbbf6cce2632cf9f194aeb50943de7e1cbad54dcfab27a42759f5e2fed".hexToByteArray(),
@@ -35,7 +35,7 @@ class PublicKeyEncryptionTest {
 
     @Test
     fun testKeyAgreement() {
-        val rng = makeFakeRandomNumberGenerator()
+        val rng = fakeRandomNumberGenerator()
         val alicePrivateKey = x25519NewPrivateKeyUsing(rng)
         val alicePublicKey = x25519PublicKeyFromPrivateKey(alicePrivateKey)
         val bobPrivateKey = x25519NewPrivateKeyUsing(rng)

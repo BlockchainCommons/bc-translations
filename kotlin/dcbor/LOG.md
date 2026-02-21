@@ -77,3 +77,14 @@ COMPLETED
 - Fixed negative integer formatting for values beyond `Long` range in diagnostic and hex-annotated output
 - Added 2 regression tests (`testTryFloatNegativeInteger`, `testInvalidUtf8String`)
 - All 75 tests passing after fixes
+
+## 2026-02-21 — Stage 4: Fluency Review (Rerun)
+STARTED
+- Auditing Kotlin dcbor for legacy/compatibility symbols in public API surface.
+
+## 2026-02-21 — Stage 4: Fluency Review (Rerun)
+COMPLETED
+- Issues found: 0
+- Fixed: 0
+- Verification: `gradle test` passed for `kotlin/dcbor`.
+- Verdict: IDIOMATIC (no compatibility shims found)

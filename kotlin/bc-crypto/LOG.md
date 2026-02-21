@@ -33,3 +33,14 @@ COMPLETED
 - Added missing `assertTrue()` assertion in `testVerifyTweaked`
 - 42/42 tests passing after fixes
 - Verdict: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+STARTED
+- Auditing Kotlin bc-crypto for legacy/compatibility symbols in public API surface.
+
+## 2026-02-21 — Stage 4: Critique (Rerun)
+COMPLETED
+- Issues found: 0
+- Fixed: 0
+- Verification: `gradle test` passed for `kotlin/bc-crypto`.
+- Verdict: IDIOMATIC (no compatibility shims found)

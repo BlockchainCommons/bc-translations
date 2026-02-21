@@ -90,8 +90,8 @@ Public API:
   - `nextU64(): ULong`
   - `randomData(size: Int): ByteArray` — byte-by-byte from `nextU64()`
   - `fillRandomData(data: ByteArray)`
-- `makeFakeRandomNumberGenerator(): SeededRandomNumberGenerator`
-- `fakeRandomData(size: Int): ByteArray`
+- `fakeRandomNumberGenerator(): SeededRandomNumberGenerator`
+- `fakeRandomBytes(size: Int): ByteArray`
 
 Critical: `randomData()` must generate byte-by-byte (each byte = `nextU64() and 0xFF`), not block-based. This matches Swift behavior and is required for cross-platform test vector compatibility.
 

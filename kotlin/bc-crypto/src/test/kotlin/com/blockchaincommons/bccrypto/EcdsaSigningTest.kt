@@ -1,6 +1,6 @@
 package com.blockchaincommons.bccrypto
 
-import com.blockchaincommons.bcrand.makeFakeRandomNumberGenerator
+import com.blockchaincommons.bcrand.fakeRandomNumberGenerator
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertTrue
@@ -11,7 +11,7 @@ class EcdsaSigningTest {
 
     @Test
     fun testEcdsaSigning() {
-        val rng = makeFakeRandomNumberGenerator()
+        val rng = fakeRandomNumberGenerator()
         val privateKey = ecdsaNewPrivateKeyUsing(rng)
         val publicKey = ecdsaPublicKeyFromPrivateKey(privateKey)
         val signature = ecdsaSign(privateKey, message)

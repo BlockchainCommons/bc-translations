@@ -81,3 +81,14 @@ COMPLETED
 ## 2026-02-21 — Stage 7: Next
 COMPLETED
 - Suggested next eligible target: `kotlin bc-ur` (Phase 2 dependency satisfied by completed Kotlin `dcbor`).
+
+## 2026-02-21 — Stage 4: Fluency Review (Rerun)
+STARTED
+- Auditing Kotlin bc-tags for legacy/compatibility symbols in public API surface.
+
+## 2026-02-21 — Stage 4: Fluency Review (Rerun)
+COMPLETED
+- Issues found: 0
+- Fixed: 0
+- Verification: `gradle test` passed for `kotlin/bc-tags`.
+- Verdict: IDIOMATIC (no compatibility shims found)
