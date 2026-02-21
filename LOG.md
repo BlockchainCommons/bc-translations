@@ -101,3 +101,5 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-tags     | 0.12.0  | Go         | bctags       | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | Swift      | BCTags       | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | TypeScript | @bc/tags     | 🎻 Claude Opus 4.6 | Translation |
+| 2026-02-21 | bc-tags     | 0.12.0  | TypeScript | @bc/tags     | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-ur       | 0.19.0  | C#         | BCUR         | 🎻 Claude Opus 4.6 | Translation |

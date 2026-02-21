@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BCUR.Tests/BCUR.Tests.csproj" />
+  <Project Path="BCUR/BCUR.csproj" />
+</Solution>
