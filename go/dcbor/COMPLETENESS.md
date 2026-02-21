@@ -27,6 +27,7 @@
 - ✅ Date arithmetic helpers added (`AddSeconds`, `SubSeconds`, `AddDuration`, `SubDuration`, `DiffSeconds`) for closer `date.rs` parity
 - ✅ Added date conversion helpers on `CBOR` (`TryIntoDate`, `TryDate`, `IntoDate`) and decode helper (`DecodeDate`)
 - ✅ Added date tagged/untagged CBOR-data helpers (`TaggedCBORData`, `UntaggedCBORData`, `DateFromTaggedCBORData`, `DateFromUntaggedCBORData`) and `Date.ToCBOR` for `CBOREncodable` parity
+- ✅ Added set conversion helpers on `CBOR` (`TryIntoSet`, `TrySet`, `IntoSet`) for closer Rust set conversion ergonomics
 - ✅ String normalization and float numeric-reduction semantics now match Rust behavior for core paths (including large negative ranges)
 - ✅ `TryIntoFloat64` now follows Rust cast-back exactness semantics for integer CBOR (including large integer edge cases)
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
@@ -56,7 +57,7 @@
 
 ### Implemented in Go
 
-- 104 tests total across:
+- 105 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -69,6 +70,7 @@
   - tagged bignum (tags 2/3) decode parity vectors including RFC-aligned large values and non-canonical bignum rejection cases
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
   - expanded map API parity checks for typed decode/extract helper behavior
+  - set conversion helper parity checks (`TryIntoSet`/`TrySet`/`IntoSet`) including misordered/duplicate rejection
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
   - canonical NaN/Infinity encode+decode behavior
@@ -120,7 +122,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 79/83 key manifest items (95.2%)
+- API Coverage: 80/83 key manifest items (96.4%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present

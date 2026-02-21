@@ -110,3 +110,37 @@ func TestSetAPIParity(t *testing.T) {
 		t.Fatalf("set clone/original independence mismatch: clone=%d original=%d", clone.Len(), s.Len())
 	}
 }
+
+func TestSetConversionHelperParity(t *testing.T) {
+	orderedArray := arrayFromAny(1, 2, 3)
+	set, err := orderedArray.TryIntoSet()
+	if err != nil {
+		t.Fatalf("TryIntoSet ordered array failed: %v", err)
+	}
+	if got, want := NewCBORArray(set.AsVec()).DiagnosticFlat(), "[1, 2, 3]"; got != want {
+		t.Fatalf("TryIntoSet ordering mismatch: got %q want %q", got, want)
+	}
+	if got, err := orderedArray.TrySet(); err != nil || got.Len() != 3 {
+		t.Fatalf("TrySet mismatch: len=%d err=%v", got.Len(), err)
+	}
+	if got, ok := orderedArray.IntoSet(); !ok || got.Len() != 3 {
+		t.Fatalf("IntoSet mismatch: len=%d ok=%v", got.Len(), ok)
+	}
+
+	misorderedArray := arrayFromAny(2, 1)
+	if _, err := misorderedArray.TryIntoSet(); !errors.Is(err, ErrMisorderedMapKey) {
+		t.Fatalf("expected ErrMisorderedMapKey for misordered set conversion, got %v", err)
+	}
+
+	duplicateArray := arrayFromAny(1, 1)
+	if _, err := duplicateArray.TryIntoSet(); !errors.Is(err, ErrDuplicateMapKey) {
+		t.Fatalf("expected ErrDuplicateMapKey for duplicate set conversion, got %v", err)
+	}
+
+	if _, err := MustFromAny("x").TryIntoSet(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for non-array TryIntoSet, got %v", err)
+	}
+	if _, ok := MustFromAny("x").IntoSet(); ok {
+		t.Fatalf("expected IntoSet to fail for non-array input")
+	}
+}

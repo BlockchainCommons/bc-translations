@@ -1021,3 +1021,28 @@ COMPLETED
 - API coverage improved from 78/83 to 79/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (map conversion parity improved; residual API/trait/docs gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing set conversion parity by adding explicit `CBOR`->`Set` helper methods
+- Expanding tests for canonical set-conversion validation (ordering/duplicates)
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added set conversion helpers in `cbor.go`:
+  - `TryIntoSet`
+  - `TrySet`
+  - `IntoSet`
+- Added `TestSetConversionHelperParity` in `collections_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (105 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after set conversion helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with set conversion helper coverage and refreshed metrics
+- API coverage improved from 79/83 to 80/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (set conversion surface improved; residual API/trait/docs gaps remain)

@@ -1112,6 +1112,26 @@ func (c CBOR) IntoArray() ([]CBOR, bool) {
 	return value, true
 }
 
+func (c CBOR) TryIntoSet() (Set, error) {
+	items, err := c.TryIntoArray()
+	if err != nil {
+		return Set{}, err
+	}
+	return TrySetFromVec(items)
+}
+
+func (c CBOR) TrySet() (Set, error) {
+	return c.TryIntoSet()
+}
+
+func (c CBOR) IntoSet() (Set, bool) {
+	value, err := c.TryIntoSet()
+	if err != nil {
+		return Set{}, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryIntoMap() (Map, error) {
 	if value, ok := c.AsMap(); ok {
 		return value, nil
