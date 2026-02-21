@@ -67,10 +67,14 @@ func (d Date) Timestamp() float64 {
 }
 
 func (d Date) String() string {
-	if d.time.Nanosecond() == 0 {
-		return d.time.Format(time.RFC3339)
+	if d.time.Hour() == 0 && d.time.Minute() == 0 && d.time.Second() == 0 {
+		return d.time.Format("2006-01-02")
 	}
-	return d.time.Format(time.RFC3339Nano)
+	return d.time.Format(time.RFC3339)
+}
+
+func (d Date) CBORTags() []Tag {
+	return TagsForValues([]TagValue{TAG_DATE})
 }
 
 func (d Date) UntaggedCBOR() CBOR {
@@ -79,7 +83,11 @@ func (d Date) UntaggedCBOR() CBOR {
 }
 
 func (d Date) TaggedCBOR() CBOR {
-	return NewCBORTagged(TagWithValue(TAG_DATE), d.UntaggedCBOR())
+	tags := d.CBORTags()
+	if len(tags) == 0 {
+		return NewCBORTagged(TagWithValue(TAG_DATE), d.UntaggedCBOR())
+	}
+	return NewCBORTagged(tags[0], d.UntaggedCBOR())
 }
 
 func DateFromUntaggedCBOR(cbor CBOR) (Date, error) {

@@ -48,6 +48,25 @@ func (m *Map) Insert(key CBOR, value CBOR) {
 	m.entries[insertAt] = entry
 }
 
+func (m *Map) InsertAny(key any, value any) error {
+	keyCBOR, err := FromAny(key)
+	if err != nil {
+		return err
+	}
+	valueCBOR, err := FromAny(value)
+	if err != nil {
+		return err
+	}
+	m.Insert(keyCBOR, valueCBOR)
+	return nil
+}
+
+func (m *Map) MustInsertAny(key any, value any) {
+	if err := m.InsertAny(key, value); err != nil {
+		panic(err)
+	}
+}
+
 func (m *Map) insertNext(key CBOR, value CBOR) error {
 	keyData := key.ToCBORData()
 	if len(m.entries) == 0 {
@@ -75,6 +94,14 @@ func (m Map) Get(key CBOR) (CBOR, bool) {
 	return m.entries[idx].value.Clone(), true
 }
 
+func (m Map) GetAny(key any) (CBOR, bool) {
+	keyCBOR, err := FromAny(key)
+	if err != nil {
+		return CBOR{}, false
+	}
+	return m.Get(keyCBOR)
+}
+
 func (m Map) ContainsKey(key CBOR) bool {
 	_, ok := m.Get(key)
 	return ok
@@ -86,6 +113,14 @@ func (m Map) Extract(key CBOR) (CBOR, error) {
 		return CBOR{}, ErrMissingMapKey
 	}
 	return value, nil
+}
+
+func (m Map) ExtractAny(key any) (CBOR, error) {
+	keyCBOR, err := FromAny(key)
+	if err != nil {
+		return CBOR{}, err
+	}
+	return m.Extract(keyCBOR)
 }
 
 func (m Map) keyDataHexes() []string {

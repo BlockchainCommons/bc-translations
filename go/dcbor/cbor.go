@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -72,7 +73,7 @@ func NewCBORByteString(value ByteString) CBOR {
 }
 
 func NewCBORText(value string) CBOR {
-	return CBOR{kind: CBORKindText, value: value}
+	return CBOR{kind: CBORKindText, value: norm.NFC.String(value)}
 }
 
 func NewCBORArray(value []CBOR) CBOR {
@@ -145,9 +146,6 @@ func FromAny(value any) (CBOR, error) {
 	case nil:
 		return Null(), nil
 	case string:
-		if !norm.NFC.IsNormalString(v) {
-			return CBOR{}, ErrNonCanonicalString
-		}
 		return NewCBORText(v), nil
 	case []byte:
 		return NewCBORByteString(NewByteString(v)), nil
@@ -189,12 +187,20 @@ func FromAny(value any) (CBOR, error) {
 	case int:
 		return fromSignedInt(int64(v)), nil
 	case float32:
-		return NewCBORSimple(SimpleFloatValue(float64(v))), nil
+		return newCBORFromFloat(float64(v)), nil
 	case float64:
-		return NewCBORSimple(SimpleFloatValue(v)), nil
+		return newCBORFromFloat(v), nil
 	default:
 		return CBOR{}, Errorf("unsupported conversion to CBOR: %T", value)
 	}
+}
+
+func MustFromAny(value any) CBOR {
+	cbor, err := FromAny(value)
+	if err != nil {
+		panic(err)
+	}
+	return cbor
 }
 
 func fromSignedInt(v int64) CBOR {
@@ -202,6 +208,38 @@ func fromSignedInt(v int64) CBOR {
 		return NewCBORUnsigned(uint64(v))
 	}
 	return NewCBORNegative(uint64(-1 - v))
+}
+
+func newCBORFromFloat(value float64) CBOR {
+	if reduced, ok := reduceFloatToIntegerCBOR(value); ok {
+		return reduced
+	}
+	return NewCBORSimple(SimpleFloatValue(value))
+}
+
+func reduceFloatToIntegerCBOR(value float64) (CBOR, bool) {
+	if !isIntegralFloat(value) {
+		return CBOR{}, false
+	}
+
+	asInteger, accuracy := big.NewFloat(value).Int(nil)
+	if accuracy != big.Exact {
+		return CBOR{}, false
+	}
+
+	if asInteger.Sign() >= 0 {
+		if asInteger.BitLen() > 64 {
+			return CBOR{}, false
+		}
+		return NewCBORUnsigned(asInteger.Uint64()), true
+	}
+
+	encodedMagnitude := new(big.Int).Neg(asInteger)
+	encodedMagnitude.Sub(encodedMagnitude, big.NewInt(1))
+	if encodedMagnitude.Sign() < 0 || encodedMagnitude.BitLen() > 64 {
+		return CBOR{}, false
+	}
+	return NewCBORNegative(encodedMagnitude.Uint64()), true
 }
 
 func (c CBOR) Kind() CBORKind {
@@ -552,7 +590,7 @@ func (c CBOR) IsNaN() bool {
 }
 
 func (c CBOR) String() string {
-	return c.Diagnostic()
+	return c.DiagnosticFlat()
 }
 
 func (c CBOR) DebugString() string {
@@ -573,19 +611,15 @@ func (c CBOR) DebugString() string {
 		}
 		return fmt.Sprintf("array([%s])", strings.Join(parts, ", "))
 	case CBORKindMap:
-		iter := c.value.(Map).Iter()
-		parts := make([]string, 0)
-		for {
-			k, v, ok := iter.Next()
-			if !ok {
-				break
-			}
-			parts = append(parts, fmt.Sprintf("%s: %s", k.DebugString(), v.DebugString()))
+		m := c.value.(Map)
+		parts := make([]string, 0, len(m.entries))
+		for _, entry := range m.entries {
+			parts = append(parts, fmt.Sprintf("0x%s: (%s, %s)", hex.EncodeToString(entry.keyData), entry.key.DebugString(), entry.value.DebugString()))
 		}
 		return fmt.Sprintf("map({%s})", strings.Join(parts, ", "))
 	case CBORKindTagged:
 		t := c.value.(TaggedValue)
-		return fmt.Sprintf("tagged(%d, %s)", t.Tag.Value(), t.Value.DebugString())
+		return fmt.Sprintf("tagged(%s, %s)", t.Tag.String(), t.Value.DebugString())
 	case CBORKindSimple:
 		s := c.value.(Simple)
 		return fmt.Sprintf("simple(%s)", s.Name())
@@ -647,9 +681,7 @@ func (c CBOR) toCBORDataNoPanic() ([]byte, error) {
 		return buf, nil
 	case CBORKindText:
 		s := c.value.(string)
-		if !norm.NFC.IsNormalString(s) {
-			return nil, ErrNonCanonicalString
-		}
+		s = norm.NFC.String(s)
 		buf := encodeHead(majorText, uint64(len([]byte(s))))
 		buf = append(buf, []byte(s)...)
 		return buf, nil
@@ -703,14 +735,8 @@ func encodeCanonicalFloat(value float64) ([]byte, error) {
 		return []byte{0xf9, 0x7e, 0x00}, nil
 	}
 
-	if isIntegralFloat(value) {
-		if value >= 0 && value <= float64(^uint64(0)) {
-			return encodeHead(majorUnsigned, uint64(value)), nil
-		}
-		if value >= -math.Pow(2, 63) && value < 0 {
-			i := int64(value)
-			return encodeHead(majorNegative, uint64(-1-i)), nil
-		}
+	if reduced, ok := reduceFloatToIntegerCBOR(value); ok {
+		return reduced.toCBORDataNoPanic()
 	}
 
 	f32 := float32(value)
@@ -893,7 +919,7 @@ func decodeSimple(ai byte, data []byte) (Simple, int, error) {
 			}
 		}
 		value := float64(halfBitsToFloat32(bits))
-		if isIntegralFloat(value) && value >= -math.Pow(2, 63) && value <= float64(^uint64(0)) {
+		if _, ok := reduceFloatToIntegerCBOR(value); ok {
 			return Simple{}, 0, ErrNonCanonicalNumeric
 		}
 		return SimpleFloatValue(value), 2, nil
@@ -910,7 +936,7 @@ func decodeSimple(ai byte, data []byte) (Simple, int, error) {
 			return Simple{}, 0, ErrNonCanonicalNumeric
 		}
 		value := float64(value32)
-		if isIntegralFloat(value) && value >= -math.Pow(2, 63) && value <= float64(^uint64(0)) {
+		if _, ok := reduceFloatToIntegerCBOR(value); ok {
 			return Simple{}, 0, ErrNonCanonicalNumeric
 		}
 		return SimpleFloatValue(value), 4, nil
@@ -926,7 +952,7 @@ func decodeSimple(ai byte, data []byte) (Simple, int, error) {
 		if float64(float32(value)) == value {
 			return Simple{}, 0, ErrNonCanonicalNumeric
 		}
-		if isIntegralFloat(value) && value >= -math.Pow(2, 63) && value <= float64(^uint64(0)) {
+		if _, ok := reduceFloatToIntegerCBOR(value); ok {
 			return Simple{}, 0, ErrNonCanonicalNumeric
 		}
 		return SimpleFloatValue(value), 8, nil
@@ -1001,11 +1027,10 @@ func encodeHead(major majorType, value uint64) []byte {
 }
 
 func formatNegativeDisplay(encodedMagnitude uint64) string {
-	if encodedMagnitude <= math.MaxInt64 {
-		return strconv.FormatInt(-1-int64(encodedMagnitude), 10)
-	}
-	// Minimal fallback for values outside signed 64-bit range.
-	return fmt.Sprintf("-(1+%d)", encodedMagnitude)
+	n := new(big.Int).SetUint64(encodedMagnitude)
+	n.Add(n, big.NewInt(1))
+	n.Neg(n)
+	return n.String()
 }
 
 func formatFloatDiagnostic(v float64) string {
@@ -1018,7 +1043,14 @@ func formatFloatDiagnostic(v float64) string {
 	if math.IsInf(v, -1) {
 		return "-Infinity"
 	}
-	return strconv.FormatFloat(v, 'g', -1, 64)
+	text := strconv.FormatFloat(v, 'g', -1, 64)
+	if strings.ContainsAny(text, "eE") {
+		abs := math.Abs(v)
+		if abs >= 1e-4 && abs < 1e15 {
+			text = strconv.FormatFloat(v, 'f', -1, 64)
+		}
+	}
+	return strings.ReplaceAll(text, "e+", "e")
 }
 
 // ToNative returns a generic representation suitable for JSON-like handling.

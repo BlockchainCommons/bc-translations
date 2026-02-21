@@ -52,3 +52,31 @@ COMPLETED
 - Hardened `DateFromTimestamp` nanosecond normalization for rounding edge cases
 - Re-ran `gofmt` and `go test ./...` after fixes (all tests still passing)
 - VERDICT: NEEDS REVISION for full crate parity, IDIOMATIC for current implemented subset
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Resuming translation to close parity gaps from COMPLETENESS.md
+- Implementing canonicalization/debug fixes and translating additional Rust encode test vectors
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Updated core semantics in `cbor.go`, `date.go`, and `map.go`:
+  - NFC normalize-on-encode behavior for text
+  - float-to-integer numeric reduction during conversion (including large negative ranges)
+  - exact large-negative display formatting and improved float text formatting parity
+  - named date tag usage when tags are registered
+  - map convenience conversion helpers for broader test translation
+- Added `encode_test.go` with translated Rust encode vectors and canonicalization checks
+- Build and tests pass: `GOTOOLCHAIN=local go test ./...` (21 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-running completeness review after resumed Stage 2 parity work
+- Updating API/test coverage metrics and remaining-gap summary
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with current parity status after new vectors and semantic fixes
+- API coverage remains partial (52/83 key manifest targets)
+- Test coverage improved from 9/86 to 21/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (substantial progress; remaining gaps are mostly conversion-surface and full formatting fidelity)

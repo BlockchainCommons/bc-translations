@@ -73,12 +73,12 @@ func (c CBOR) diagnosticAtLevel(level int, opts DiagFormatOpts) string {
 		return c.value.(Simple).Name()
 	case CBORKindTagged:
 		tagged := c.value.(TaggedValue)
-		tagPrefix := fmt.Sprintf("%d", tagged.Tag.Value())
+		tagPrefix := tagged.Tag.String()
 		if opts.annotate {
 			if name, ok := lookupTagName(opts.tags, tagged.Tag); ok {
-				tagPrefix = fmt.Sprintf("%d(%s)", tagged.Tag.Value(), name)
-				return fmt.Sprintf("%s(%s)", tagPrefix, tagged.Value.diagnosticAtLevel(level+1, opts))
+				return fmt.Sprintf("%d(%s)   / %s /", tagged.Tag.Value(), tagged.Value.diagnosticAtLevel(level+1, opts), name)
 			}
+			tagPrefix = fmt.Sprintf("%d", tagged.Tag.Value())
 		}
 		return fmt.Sprintf("%s(%s)", tagPrefix, tagged.Value.diagnosticAtLevel(level+1, opts))
 	case CBORKindArray:
