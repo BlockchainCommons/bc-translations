@@ -113,3 +113,37 @@ func TestDateNowAndDurationFromNowParity(t *testing.T) {
 		t.Fatalf("DateWithDurationFromNow out of expected range: got %s", diff)
 	}
 }
+
+func TestDateConversionHelpersParity(t *testing.T) {
+	tagged := DateFromTimestamp(1647887071.0).TaggedCBOR()
+
+	if got, err := tagged.TryIntoDate(); err != nil || got.String() != "2022-03-21T18:24:31Z" {
+		t.Fatalf("TryIntoDate mismatch: got=%v err=%v", got, err)
+	}
+	if got, err := tagged.TryDate(); err != nil || got.String() != "2022-03-21T18:24:31Z" {
+		t.Fatalf("TryDate mismatch: got=%v err=%v", got, err)
+	}
+	if got, ok := tagged.IntoDate(); !ok || got.String() != "2022-03-21T18:24:31Z" {
+		t.Fatalf("IntoDate mismatch: got=%v ok=%v", got, ok)
+	}
+	if got, err := DecodeDate(tagged); err != nil || got.String() != "2022-03-21T18:24:31Z" {
+		t.Fatalf("DecodeDate mismatch: got=%v err=%v", got, err)
+	}
+
+	if _, err := MustFromAny("not-a-date").TryIntoDate(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for text->date, got %v", err)
+	}
+	if _, ok := MustFromAny("not-a-date").IntoDate(); ok {
+		t.Fatalf("expected IntoDate to fail for non-tagged input")
+	}
+
+	wrongTagged := ToTaggedValue(TagWithValue(2), MustFromAny(0))
+	_, err := wrongTagged.TryIntoDate()
+	if err == nil {
+		t.Fatalf("expected wrong-tag failure for TryIntoDate")
+	}
+	var wrongTag WrongTagError
+	if !errors.As(err, &wrongTag) {
+		t.Fatalf("expected WrongTagError for TryIntoDate wrong tag, got %T", err)
+	}
+}

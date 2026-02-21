@@ -920,3 +920,27 @@ COMPLETED
 - API coverage improved from 74/83 to 75/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (major format-fidelity gap closed; remaining API/trait/docs edge gaps persist)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion-surface parity with explicit date conversion helpers on `CBOR`
+- Adding `DecodeDate` and parity tests for success/wrong-type/wrong-tag behavior
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added date conversion helpers to `cbor.go`:
+  - `TryIntoDate`, `TryDate`, `IntoDate`
+- Added `DecodeDate` in `conversion.go`
+- Added `TestDateConversionHelpersParity` in `date_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (102 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after date conversion helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with date conversion helper coverage and refreshed counts
+- API coverage improved from 75/83 to 76/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (date conversion surface improved; residual API/trait/docs gaps remain)

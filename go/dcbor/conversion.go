@@ -77,6 +77,10 @@ func DecodeBigUint(c CBOR) (*big.Int, error) {
 	return c.TryIntoBigUint()
 }
 
+func DecodeDate(c CBOR) (Date, error) {
+	return c.TryIntoDate()
+}
+
 func DecodeArray[T any](c CBOR, decodeItem CBORDecodeFunc[T]) ([]T, error) {
 	items, err := c.TryIntoArray()
 	if err != nil {

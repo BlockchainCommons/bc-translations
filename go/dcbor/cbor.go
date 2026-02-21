@@ -1050,6 +1050,22 @@ func (c CBOR) TryExpectedTaggedValue(expected Tag) (CBOR, error) {
 	return c.TryIntoExpectedTaggedValue(expected)
 }
 
+func (c CBOR) TryIntoDate() (Date, error) {
+	return DateFromTaggedCBOR(c)
+}
+
+func (c CBOR) TryDate() (Date, error) {
+	return c.TryIntoDate()
+}
+
+func (c CBOR) IntoDate() (Date, bool) {
+	value, err := c.TryIntoDate()
+	if err != nil {
+		return Date{}, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryIntoText() (string, error) {
 	if value, ok := c.AsText(); ok {
 		return value, nil
