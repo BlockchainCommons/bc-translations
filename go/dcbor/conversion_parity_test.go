@@ -540,3 +540,56 @@ func TestExactUInt32ConversionParity(t *testing.T) {
 	assertUInt32Err("i64_min", int64(math.MinInt64))
 	assertUInt32Err("i64_neg4294967296", int64(-4294967296))
 }
+
+func TestExactInt64ConversionParity(t *testing.T) {
+	assertInt64OK := func(name string, v any, want int64) {
+		t.Helper()
+		got, err := MustFromAny(v).TryIntoInt64()
+		if err != nil || got != want {
+			t.Fatalf("%s: TryIntoInt64 got=%d err=%v want=%d", name, got, err, want)
+		}
+	}
+	assertInt64Err := func(name string, v any) {
+		t.Helper()
+		if _, err := MustFromAny(v).TryIntoInt64(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertInt64OK("f64_21", 21.0, 21)
+	assertInt64OK("i64_neg21", int64(-21), -21)
+	assertInt64OK("i64_max", int64(math.MaxInt64), int64(math.MaxInt64))
+	assertInt64OK("i64_min", int64(math.MinInt64), int64(math.MinInt64))
+	assertInt64Err("f64_fractional", 21.5)
+	assertInt64Err("f64_nan", math.NaN())
+	assertInt64Err("f64_inf", math.Inf(1))
+	assertInt64Err("f64_neg_inf", math.Inf(-1))
+	assertInt64Err("u64_max", uint64(math.MaxUint64))
+	assertInt64Err("u64_9223372036854775809", uint64(9223372036854775809))
+}
+
+func TestExactUInt64ConversionParity(t *testing.T) {
+	assertUInt64OK := func(name string, v any, want uint64) {
+		t.Helper()
+		got, err := MustFromAny(v).TryIntoUInt64()
+		if err != nil || got != want {
+			t.Fatalf("%s: TryIntoUInt64 got=%d err=%v want=%d", name, got, err, want)
+		}
+	}
+	assertUInt64Err := func(name string, v any) {
+		t.Helper()
+		if _, err := MustFromAny(v).TryIntoUInt64(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertUInt64OK("f64_21", 21.0, 21)
+	assertUInt64OK("u64_21", uint64(21), 21)
+	assertUInt64OK("u64_max", uint64(math.MaxUint64), uint64(math.MaxUint64))
+	assertUInt64Err("f64_fractional", 21.5)
+	assertUInt64Err("f64_nan", math.NaN())
+	assertUInt64Err("f64_inf", math.Inf(1))
+	assertUInt64Err("f64_neg_inf", math.Inf(-1))
+	assertUInt64Err("i64_neg21", int64(-21))
+	assertUInt64Err("i64_min", int64(math.MinInt64))
+}

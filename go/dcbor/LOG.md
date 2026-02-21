@@ -475,3 +475,25 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage unchanged: 67/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (supplemental walk confidence improved; baseline parity gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing `exact.rs` conversion matrix translation with `int64` and `uint64` parity vectors
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `conversion_parity_test.go` coverage:
+  - `TestExactInt64ConversionParity`
+  - `TestExactUInt64ConversionParity`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (77 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after int64/uint64 exact conversion parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with refreshed baseline parity metrics
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage improved from 67/86 to 69/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (baseline parity now above 80%; remaining exact/format/API fidelity work still open)

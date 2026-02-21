@@ -41,7 +41,7 @@
 
 ### Implemented in Go
 
-- 75 tests total across:
+- 77 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)
@@ -77,7 +77,7 @@
 
 Applicable Rust behavior tests for parity target (excluding Rust metadata checks): 86
 
-Current translated tests: 67/86 (77.9%)
+Current translated tests: 69/86 (80.2%)
 
 ## Derive/Protocol Coverage
 
@@ -92,7 +92,7 @@ Current translated tests: 67/86 (77.9%)
 ## Completeness Summary
 
 - API Coverage: 63/83 key manifest items (75.9%)
-- Test Coverage: 67/86 applicable behavior tests (77.9%)
+- Test Coverage: 69/86 applicable behavior tests (80.2%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
 - Docs parity: partial
@@ -103,5 +103,5 @@ Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Expand translated tests from 67 to near-complete default-feature parity.
+3. Expand translated tests from 69 to near-complete default-feature parity.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.
