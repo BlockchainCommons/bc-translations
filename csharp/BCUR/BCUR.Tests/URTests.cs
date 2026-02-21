@@ -142,4 +142,23 @@ public class URTests
 
         Assert.Equal(cborData, decoder.Message());
     }
+
+    [Fact]
+    public void MultipartDecoderAcceptsUppercaseQrParts()
+    {
+        var message = TestHelpers.MakeMessage("Wolf", 1024);
+        var cbor = Cbor.ToByteString(message);
+        var ur = UR.Create("bytes", cbor);
+
+        var encoder = new MultipartEncoder(ur, 100);
+        var decoder = new MultipartDecoder();
+
+        for (int i = 0; i < 5000 && !decoder.IsComplete; i++)
+        {
+            decoder.Receive(encoder.NextPart().ToUpperInvariant());
+        }
+
+        Assert.True(decoder.IsComplete);
+        Assert.Equal(ur, decoder.Message());
+    }
 }

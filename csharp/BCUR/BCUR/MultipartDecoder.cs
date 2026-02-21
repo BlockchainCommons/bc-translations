@@ -15,7 +15,10 @@ public sealed class MultipartDecoder
     /// </summary>
     public void Receive(string value)
     {
-        var decodedType = DecodeType(value);
+        // UR strings are case-insensitive and QR payloads are commonly uppercase.
+        // Normalize once here so multipart behavior matches UR.FromUrString.
+        var normalized = value.ToLowerInvariant();
+        var decodedType = DecodeType(normalized);
 
         if (_urType is not null)
         {
@@ -30,7 +33,7 @@ public sealed class MultipartDecoder
         }
 
         // Decode the UR string to get the fountain part CBOR
-        var (kind, data) = UREncoding.Decode(value);
+        var (kind, data) = UREncoding.Decode(normalized);
         if (kind != URKind.MultiPart)
             throw new URDecoderException("Can't decode single-part UR as multi-part");
 

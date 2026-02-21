@@ -56,3 +56,16 @@ COMPLETED
 - SHOULD FIX: Replaced List pop-from-end with Stack in WeightedSampler
 - NICE TO HAVE: Replaced List pop-from-end with Stack in FountainDecoder._queue
 - All 36 tests pass after fixes
+
+## 2026-02-21 — Stage 4: Fluency
+STARTED
+- Cross-model (GPT Codex) fluency review of BCUR C# translation
+- Validating API behavior consistency and C# idiomatic usage without Rust-source reference
+
+## 2026-02-21 — Stage 4: Fluency
+COMPLETED
+- Cross-model fluency pass complete (GPT Codex)
+- MUST FIX: MultipartDecoder now normalizes uppercase UR/QR parts before type parsing and bytewords decode, matching single-part behavior
+- Added regression test `MultipartDecoderAcceptsUppercaseQrParts` to lock behavior
+- All tests pass after changes: 37/37
+- Verdict: IDIOMATIC (1 issue found, 1 fixed)
