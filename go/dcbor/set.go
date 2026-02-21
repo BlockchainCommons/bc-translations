@@ -74,6 +74,10 @@ func (s *Set) Clone() Set {
 	return Set{m: s.m.Clone()}
 }
 
+func (s Set) Equal(other Set) bool {
+	return s.m.Equal(other.m)
+}
+
 // SetIter iterates set elements.
 type SetIter struct {
 	inner MapIter

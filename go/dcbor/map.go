@@ -196,6 +196,23 @@ func (m Map) Clone() Map {
 	return Map{entries: cloned}
 }
 
+func (m Map) Equal(other Map) bool {
+	if len(m.entries) != len(other.entries) {
+		return false
+	}
+	for i := range m.entries {
+		left := m.entries[i]
+		right := other.entries[i]
+		if !bytes.Equal(left.keyData, right.keyData) {
+			return false
+		}
+		if !left.value.Equal(right.value) {
+			return false
+		}
+	}
+	return true
+}
+
 func (m Map) firstGreaterIndex(keyData []byte) int {
 	for i, entry := range m.entries {
 		if bytes.Compare(entry.keyData, keyData) > 0 {

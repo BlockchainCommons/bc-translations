@@ -66,6 +66,18 @@ func TestMapAPIParity(t *testing.T) {
 	if len(entries) != 3 {
 		t.Fatalf("AsEntries size mismatch: got %d want 3", len(entries))
 	}
+
+	equalMap := NewMap()
+	equalMap.MustInsertAny(10, 3)
+	equalMap.MustInsertAny("a", 1)
+	equalMap.MustInsertAny("b", 2)
+	if !clone.Equal(equalMap) {
+		t.Fatalf("Map.Equal expected equality for equivalent deterministic maps")
+	}
+	equalMap.MustInsertAny("z", 9)
+	if clone.Equal(equalMap) {
+		t.Fatalf("Map.Equal expected inequality after map mutation")
+	}
 }
 
 func TestSetAPIParity(t *testing.T) {
@@ -108,6 +120,15 @@ func TestSetAPIParity(t *testing.T) {
 	s.Insert(MustFromAny(3))
 	if clone.Len() != 2 || s.Len() != 3 {
 		t.Fatalf("set clone/original independence mismatch: clone=%d original=%d", clone.Len(), s.Len())
+	}
+
+	equalSet := SetFromVec([]CBOR{MustFromAny(1), MustFromAny(2)})
+	if !clone.Equal(equalSet) {
+		t.Fatalf("Set.Equal expected equality for equivalent sets")
+	}
+	equalSet.Insert(MustFromAny(4))
+	if clone.Equal(equalSet) {
+		t.Fatalf("Set.Equal expected inequality after set mutation")
 	}
 }
 

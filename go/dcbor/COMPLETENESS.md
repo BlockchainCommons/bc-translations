@@ -119,6 +119,7 @@ Current translated tests: 86/86 (100.0%)
 
 - ⚠️ Rust derive-level parity (full Eq/Hash/Display/Debug conversions on all equivalent Go types) is partial.
 - ✅ Core equality semantics based on deterministic CBOR bytes are implemented for `CBOR.Equal`.
+- ✅ Deterministic collection equality helpers are implemented for `Map.Equal` and `Set.Equal`.
 
 ## Documentation Coverage
 

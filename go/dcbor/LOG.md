@@ -1118,3 +1118,26 @@ COMPLETED
 - API coverage improved from 82/83 to 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (API target surface now complete; derive/docs/signature parity work remains)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing derive/protocol parity work with explicit deterministic equality helpers for collection types
+- Adding `Map.Equal`/`Set.Equal` semantics and coverage tests
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `Map.Equal` in `map.go` for deterministic entry/value equality semantics
+- Added `Set.Equal` in `set.go` (delegating to deterministic map equality)
+- Expanded `collections_parity_test.go` with equality parity assertions for equivalent and divergent maps/sets
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after collection equality helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` derive/protocol notes with `Map.Equal`/`Set.Equal` coverage
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (API surface complete; docs/derive/signature parity still partial)
