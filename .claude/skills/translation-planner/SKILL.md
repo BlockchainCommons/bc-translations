@@ -110,6 +110,23 @@ Catalog every `#[test]` and `#[cfg(test)]` block:
 - Whether it uses test vectors (hardcoded expected byte values) — these are critical for cross-language validation
 - Whether it depends on deterministic RNG (`fake_random_data` / `SeededRandomNumberGenerator`)
 
+### 6b. Evaluate Expected Text Output Rubric Applicability
+
+Evaluate whether the source crate should use the `expected-text-output-rubric` in target-language tests:
+- Search for explicit `expected-text-output-rubric` comments in source tests.
+- Identify tests that validate complex rendered text (diagnostic format, pretty dumps, tree output, CLI text, multiline structure formatting).
+- Decide if those tests should be translated as whole-text comparisons (`actual` vs `expected`) rather than many fragment assertions.
+
+Record this decision in the manifest as:
+
+```
+EXPECTED TEXT OUTPUT RUBRIC:
+- Applicable: yes | no
+- Source signals: [...]
+- Target tests to apply (if yes): [...]
+- Reason (if no): [...]
+```
+
 ### 7. Determine Translation Unit Order
 
 Within the crate, order translation units by reverse call graph (leaves first):

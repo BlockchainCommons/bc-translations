@@ -4,6 +4,7 @@ Chronological record of all translation activity in this repository.
 
 | Date       | Crate       | Version | Language   | Package      | Model              | Task        |
 |------------|-------------|---------|------------|--------------|--------------------|-------------|
+| 2026-02-21 | dcbor       | 0.25.1  | Go         | dcbor        | 📖 GPT 5.3 Codex   | Kickoff (foundation translation, incomplete) |
 | 2026-02-20 | bc-shamir   | 0.13.0  | Python     | bc-shamir    | 📖 GPT 5.3 Codex   | Translation |
 | 2026-02-20 | bc-rand     | 0.5.0   | Python     | bc-rand      | 🎻 Claude Opus 4.6 | Translation |
 | 2026-02-20 | bc-rand     | 0.5.0   | Kotlin     | bc-rand      | 🎻 Claude Opus 4.6 | Translation |

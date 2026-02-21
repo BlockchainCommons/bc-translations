@@ -69,6 +69,10 @@ The `(<package-name>)` suffix is included when the package name differs from the
 ### Step 1: Plan
 Run the **translation-planner** workflow on the Rust crate (if no manifest exists yet). Save the manifest to `<lang>/<package>/MANIFEST.md`.
 
+Also load the **expected-text-output-rubric** skill and evaluate the Rust source repo tests for whether this rubric should be applied in the target translation. The planner output must include an explicit `EXPECTED TEXT OUTPUT RUBRIC` section in `MANIFEST.md`:
+- `Applicable: yes` with source signals and target test areas, or
+- `Applicable: no` with a short reason.
+
 ### Step 2: Code
 Run the **translation-coder** workflow. The relevant `rust-to-<lang>` skill provides language-specific guidance. Translate all source files and tests. Build and test.
 

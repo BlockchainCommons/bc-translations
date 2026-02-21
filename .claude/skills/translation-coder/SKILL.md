@@ -51,6 +51,7 @@ For every test in the manifest's test catalog:
 - Translate the test, preserving test vectors exactly
 - Use the target language's test framework conventions
 - Ensure deterministic RNG tests use the same seed and produce the same outputs
+- If the manifest includes `EXPECTED TEXT OUTPUT RUBRIC: Applicable: yes`, use whole-text expected-output assertions for those test groups (with helper output showing both actual and expected on mismatch)
 
 Test vectors (hardcoded expected byte sequences) are the primary cross-language validation signal. Preserve them byte-for-byte.
 
