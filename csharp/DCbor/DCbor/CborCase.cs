@@ -2,7 +2,7 @@ namespace BlockchainCommons.DCbor;
 
 /// <summary>
 /// Discriminated union representing all possible CBOR data types (major types 0-7).
-/// This is the core type that <see cref="Cbor"/> wraps with reference-counted sharing.
+/// This is the core variant type wrapped by <see cref="Cbor"/>.
 /// </summary>
 public abstract class CborCase : IEquatable<CborCase>
 {

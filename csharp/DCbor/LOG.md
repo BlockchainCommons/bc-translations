@@ -86,3 +86,18 @@ COMPLETED
 - 63/63 tests passing, 0 warnings, 0 errors
 - API coverage: all 15 core types, 9 interfaces, tag registry, walk module
 - Deferred: num-bigint feature (58 tests) for future pass
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-running fluency review for csharp/dcbor on request
+- Auditing naming, API conventions, docs, and test idiomaticness before/after full test run
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Found 3 issues total (all docs/fluency consistency): 1 misleading memory-model reference, 2 stale API doc comments
+- Fixed all 3 issues:
+  - [docs] Updated `CborCase` summary to remove inaccurate reference-counting wording
+  - [docs] Corrected `CborMap.GetValue` and `CborMap.Extract` XML comments to match actual C# behavior
+  - [docs] Simplified `ICborDecodable` XML docs to C#-idiomatic guidance
+- Re-ran tests after fixes: 63 passed, 0 failed, 0 skipped
+- VERDICT: IDIOMATIC

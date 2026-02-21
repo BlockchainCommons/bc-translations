@@ -31,3 +31,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-20 | dcbor       | 0.25.1  | Kotlin     | dcbor        | 🎻 Claude Opus 4.6 | Translation                                  |
 | 2026-02-20 | bc-shamir   | 0.13.0  | Swift      | BCShamir     | 🎻 Claude Opus 4.6 | Translation                                  |
 | 2026-02-20 | bc-shamir   | 0.13.0  | TypeScript | @bc/shamir   | 🎻 Claude Opus 4.6 | Translation                                  |
+| 2026-02-21 | dcbor       | 0.25.1  | C#         | DCbor        | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 rerun + doc fixes) |

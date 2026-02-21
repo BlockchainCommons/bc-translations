@@ -46,8 +46,8 @@ public sealed class CborMap : IEquatable<CborMap>, IEnumerable<(Cbor Key, Cbor V
     }
 
     /// <summary>
-    /// Gets a value from the map given a key, converting both key and value types.
-    /// Returns null/default if key not found or value conversion fails.
+    /// Gets the value for a key, or <c>null</c> if the key is not present.
+    /// Key lookup uses the canonical CBOR-encoded key bytes.
     /// </summary>
     public Cbor? GetValue(Cbor key)
     {
@@ -62,10 +62,8 @@ public sealed class CborMap : IEquatable<CborMap>, IEnumerable<(Cbor Key, Cbor V
     }
 
     /// <summary>
-    /// Extracts a typed value from the map using a typed key.
-    /// The key is converted to CBOR for lookup, and the value is converted
-    /// from CBOR using the provided extraction function.
-    /// Throws <see cref="CborWrongTypeException"/> if the key is not found.
+    /// Gets the value for a key, or throws <see cref="CborWrongTypeException"/>
+    /// when the key is not present.
     /// </summary>
     public Cbor Extract(Cbor key)
     {
