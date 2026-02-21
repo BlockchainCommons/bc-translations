@@ -355,3 +355,27 @@ COMPLETED
 - API coverage improved from 60/83 to 61/83 key manifest targets
 - Test coverage improved from 57/86 to 58/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (steady progress; remaining API breadth and behavior parity still substantial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity expansion on date API behavior
+- Adding constructor, parsing, timestamp round-trip, and decode error-path tests
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `date_parity_test.go` with:
+  - `TestDateConstructorsAndParsingParity`
+  - `TestDateTimestampRoundTripParity`
+  - `TestDateTaggedDecodeErrorParity`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (61 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after date parity test additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with date parity coverage and refreshed test metrics
+- API coverage unchanged: 61/83 key manifest targets
+- Test coverage improved from 58/86 to 61/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (test parity now >70%; notable API and behavior gaps remain)
