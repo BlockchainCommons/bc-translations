@@ -24,7 +24,7 @@ Select and begin the next translation target. Optionally specify a language and/
 
 1. Read the status table in CLAUDE.md
 2. Find all ⏳ (not started) entries **and** any 🚧 (in progress) entries
-3. For 🚧 entries, check `<lang>/<package>/LOG.md` for interrupted stages (STARTED without COMPLETED) — these take priority as resume candidates
+3. For 🚧 entries, check `<lang>/<package>/LOG.md` for interrupted stages (STARTED without COMPLETED) and `<lang>/<package>/COMPLETENESS.md` for unchecked items — these take priority as resume candidates
 4. For ⏳ entries, filter to those whose internal dependencies are ✅ (completed) for the same language
 5. From the eligible set:
    - If a language was specified, filter to that language
@@ -66,6 +66,44 @@ Model: Claude Opus 4.6
 
 The `(<package-name>)` suffix is included when the package name differs from the crate name (e.g., `BCRand`, `bcrand`, `@bc/rand`). This is mandatory — every LOG.md must start with these lines before any stage entries are appended.
 
+#### COMPLETENESS.md — Progress Checklist
+
+Initialize (or verify) the target's `<lang>/<package>/COMPLETENESS.md`. This file tracks progress on the translation using Markdown checklists. It is separate from `LOG.md` (which is a chronological event log) and from `MANIFEST.md` (which is a static analysis of what needs to be translated). `COMPLETENESS.md` is the living record of what has and hasn't been done.
+
+The file must begin with a level-one header:
+
+```
+# Completeness: <rust-crate> → <Language> (<package-name>)
+```
+
+Below the header, organize checklists by category. Use nested checkboxes for subtasks. Mark items as they are completed during the Code and Check stages. Example structure:
+
+```markdown
+# Completeness: dcbor → Go (dcbor)
+
+## Source Files
+- [x] cbor.go — core CBOR type and encode/decode
+- [x] byte_string.go — ByteString wrapper
+- [ ] map.go — deterministic Map type
+  - [x] basic Map operations
+  - [ ] duplicate key rejection
+  - [ ] mis-order rejection
+- [ ] tagged.go — Tag type and tag store
+
+## Tests
+- [x] encode_test.go — scalar encode/decode vectors
+- [ ] format_test.go — diagnostic formatting
+  - [x] basic diagnostic output
+  - [ ] annotated hex formatting
+- [ ] walk_test.go — tree traversal
+
+## Build & Config
+- [x] go.mod
+- [x] .gitignore
+```
+
+When resuming interrupted work, check `COMPLETENESS.md` first to see what remains. The completeness checker (Step 3) should update this file with its findings, converting any newly discovered gaps into unchecked items.
+
 ### Step 1: Plan
 Run the **translation-planner** workflow on the Rust crate (if no manifest exists yet). Save the manifest to `<lang>/<package>/MANIFEST.md`.
 
@@ -74,10 +112,10 @@ Also load the **expected-text-output-rubric** skill and evaluate the Rust source
 - `Applicable: no` with a short reason.
 
 ### Step 2: Code
-Run the **translation-coder** workflow. The relevant `rust-to-<lang>` skill provides language-specific guidance. Translate all source files and tests. Build and test.
+Run the **translation-coder** workflow. The relevant `rust-to-<lang>` skill provides language-specific guidance. Translate all source files and tests. Build and test. As translation units are completed, check off the corresponding items in `COMPLETENESS.md`.
 
 ### Step 3: Check Completeness
-Run the **completeness-checker** workflow. If gaps are found, return to Step 2 to fill them.
+Run the **completeness-checker** workflow. Update `COMPLETENESS.md` with the checker's findings — check off confirmed items and add any newly discovered gaps as unchecked items. If gaps remain, return to Step 2 to fill them.
 
 ### Step 4: Review Fluency
 Run the **fluency-critic** workflow. Apply fixes. Re-run tests.

@@ -119,6 +119,17 @@ VERDICT: COMPLETE | INCOMPLETE (list gaps)
 
 If incomplete, list specific items the coder needs to add or fix.
 
+### Update COMPLETENESS.md
+
+After producing the summary, update `<lang>/<package>/COMPLETENESS.md` to reflect the checker's findings:
+
+- **Check off** items that are confirmed present and correct.
+- **Add unchecked items** for any newly discovered gaps (missing API items, missing tests, signature mismatches, missing docs).
+- **Use nested checkboxes** for subtasks within a category (e.g., individual test vectors under a test file).
+- **Preserve existing structure** — don't reorganize categories the coder already set up. Add new sections only for gap categories not yet tracked.
+
+This ensures `COMPLETENESS.md` remains the single source of truth for what remains to be done. When the verdict is INCOMPLETE and control returns to the coder (Step 2), the coder should work from `COMPLETENESS.md` rather than re-reading the full checker output.
+
 ### Log
 
 Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include the summary metrics (API coverage %, test coverage %, mismatches, verdict). See the Orchestration section of CLAUDE.md for the log format.

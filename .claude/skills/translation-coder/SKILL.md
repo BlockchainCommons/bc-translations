@@ -66,7 +66,11 @@ After completing the translation:
 
 Maximum 5 compile-fix iterations. If stuck, document the issue and stop.
 
-### 6. Log
+### 6. Update COMPLETENESS.md
+
+As translation units and tests are completed, check off the corresponding items in `<lang>/<package>/COMPLETENESS.md`. If the file doesn't exist yet, create it with a checklist derived from the manifest's translation units and test catalog (see the kickoff skill for the format). When resuming interrupted work, read `COMPLETENESS.md` first to see what remains rather than re-translating already-completed units.
+
+### 7. Log
 
 Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include: number of files translated, number of tests translated, build result, test result. See the Orchestration section of CLAUDE.md for the log format. If a LOG.md already exists with a STARTED entry for this stage but no COMPLETED, this is a resumed session — pick up where it left off rather than redoing work.
 
