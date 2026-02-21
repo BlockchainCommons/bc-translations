@@ -94,13 +94,13 @@ class SeededRandomTest {
     @Test
     fun testNextWithUpperBound() {
         val rng = SeededRandomNumberGenerator(testSeed)
-        assertEquals(745uL, rngNextWithUpperBound(rng, 10000uL, bits = 32))
+        assertEquals(745uL, rng.nextWithUpperBound(10000uL, bits = 32))
     }
 
     @Test
     fun testInRange() {
         val rng = SeededRandomNumberGenerator(testSeed)
-        val v = List(100) { rngNextInRange(rng, 0, 100, bits = 32) }
+        val v = List(100) { rng.nextInRange(0, 100, bits = 32) }
         val expected = listOf<Long>(
             7, 44, 92, 16, 16, 67, 41, 74, 66, 20, 18, 6, 62, 34, 4, 69, 99,
             19, 0, 85, 22, 27, 56, 23, 19, 5, 23, 76, 80, 27, 74, 69, 17, 92,

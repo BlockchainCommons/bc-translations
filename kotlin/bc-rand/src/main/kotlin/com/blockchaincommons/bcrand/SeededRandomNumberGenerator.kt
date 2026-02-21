@@ -8,11 +8,8 @@ package com.blockchaincommons.bcrand
  * generate each byte individually from `nextU64() and 0xFF` to ensure
  * cross-platform test-vector compatibility.
  *
- * This is not cryptographically secure, and should only be used for testing purposes.
- */
-class SeededRandomNumberGenerator
-/**
- * Creates a new seeded random number generator.
+ * This is not cryptographically secure, and should only be used for
+ * testing purposes.
  *
  * The seed should be a 256-bit value, represented as an array of 4 [ULong]
  * values. For the output distribution to look random, the seed should not
@@ -23,7 +20,7 @@ class SeededRandomNumberGenerator
  *
  * @param seed An array of exactly 4 [ULong] values used to seed the generator.
  */
-(seed: ULongArray) : RandomNumberGenerator() {
+class SeededRandomNumberGenerator(seed: ULongArray) : RandomNumberGenerator() {
 
     init {
         require(seed.size == 4) { "Seed must have exactly 4 ULong values" }
