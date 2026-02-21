@@ -1,6 +1,7 @@
 package dcbor
 
 import (
+	"container/list"
 	"errors"
 	"math"
 	"testing"
@@ -101,6 +102,26 @@ func TestConversionMapAndArrayParity(t *testing.T) {
 	}
 }
 
+func TestConversionOrderedMapParity(t *testing.T) {
+	h := map[int]string{
+		1:  "A",
+		50: "B",
+		25: "C",
+	}
+	cborMap := MustFromAny(h)
+	if got, want := cborMap.DiagnosticFlat(), `{1: "A", 25: "C", 50: "B"}`; got != want {
+		t.Fatalf("ordered map diagnostic mismatch: got %q want %q", got, want)
+	}
+
+	decodedMap, err := DecodeMap(cborMap, decodeInt, DecodeText)
+	if err != nil {
+		t.Fatalf("DecodeMap failed: %v", err)
+	}
+	if len(decodedMap) != len(h) || decodedMap[1] != "A" || decodedMap[25] != "C" || decodedMap[50] != "B" {
+		t.Fatalf("decoded ordered map mismatch: got %#v", decodedMap)
+	}
+}
+
 func TestConversionSetParity(t *testing.T) {
 	set := NewSet()
 	set.Insert(MustFromAny(1))
@@ -152,6 +173,36 @@ func TestUsageVectorsParity(t *testing.T) {
 	}
 	if len(decodedArray) != 3 || decodedArray[0] != 1000 || decodedArray[1] != 2000 || decodedArray[2] != 3000 {
 		t.Fatalf("decoded usage array mismatch: %#v", decodedArray)
+	}
+}
+
+func TestConversionDequeParity(t *testing.T) {
+	deque := list.New()
+	deque.PushBack(1)
+	deque.PushBack(50)
+	deque.PushBack(25)
+
+	values := make([]int, 0, deque.Len())
+	for element := deque.Front(); element != nil; element = element.Next() {
+		values = append(values, element.Value.(int))
+	}
+
+	cbor := MustFromAny(values)
+	if got, want := cbor.DiagnosticFlat(), "[1, 50, 25]"; got != want {
+		t.Fatalf("deque diagnostic mismatch: got %q want %q", got, want)
+	}
+
+	decoded, err := DecodeArray(cbor, decodeInt)
+	if err != nil {
+		t.Fatalf("DecodeArray failed: %v", err)
+	}
+	if len(decoded) != len(values) {
+		t.Fatalf("decoded deque length mismatch: got %d want %d", len(decoded), len(values))
+	}
+	for i := range values {
+		if decoded[i] != values[i] {
+			t.Fatalf("decoded deque value mismatch at index %d: got %d want %d", i, decoded[i], values[i])
+		}
 	}
 }
 

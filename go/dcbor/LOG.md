@@ -564,3 +564,24 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage improved from 69/86 to 70/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (baseline parity improved; substantial remaining work still open)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing `encode.rs` conversion test parity for remaining container variants
+- Translating `convert_btree_map` and `convert_vecdeque` behaviors to Go equivalents
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TestConversionOrderedMapParity` and `TestConversionDequeParity` in `conversion_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (81 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after additional conversion container parity tests
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with refreshed baseline parity metrics
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage improved from 70/86 to 72/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (baseline parity now above 83%; remaining gaps still include format fidelity and residual API/tests)
