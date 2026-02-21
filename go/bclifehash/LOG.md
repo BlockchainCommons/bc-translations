@@ -54,3 +54,27 @@ COMPLETED
   - [NICE TO HAVE] Added Version.String() method for debugging
 - All 35 test vectors still pass after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-running fluency review for idiomatic Go API, internals, tests, and docs
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 3 issues found, 3 fixed:
+  - [MUST FIX] Gated PNG generation test behind `BCLIFEHASH_GENERATE_PNGS=1` so default `go test` runs are side-effect free
+  - [SHOULD FIX] Corrected `makeImage` scaling loops to use height for Y and width for X bounds
+  - [NICE TO HAVE] Reused `circularIndex` in `changeGrid.setChanged` for consistent wrapping logic
+- Verification: `go test ./...` passes (35 vectors + 1 manual test skipped by default)
+- VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Re-running fluency pass to restore default PNG generation behavior per project preference
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 1 issue found, 1 fixed:
+  - [MUST FIX] Removed env-var gating so `TestGeneratePNGs` runs by default again
+- Verification: `go test ./...` passes with PNG generation active by default
+- VERDICT: IDIOMATIC

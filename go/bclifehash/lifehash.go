@@ -78,9 +78,8 @@ func makeImage(width, height int, floatColors []float64, moduleSize int, hasAlph
 
 	resultColors := make([]byte, scaledCapacity)
 
-	// Match C++ loop order
-	for targetY := 0; targetY < scaledWidth; targetY++ {
-		for targetX := 0; targetX < scaledHeight; targetX++ {
+	for targetY := 0; targetY < scaledHeight; targetY++ {
+		for targetX := 0; targetX < scaledWidth; targetX++ {
 			sourceX := targetX / moduleSize
 			sourceY := targetY / moduleSize
 			sourceOffset := (sourceY*width + sourceX) * 3

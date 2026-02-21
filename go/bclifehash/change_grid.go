@@ -14,8 +14,8 @@ func (cg *changeGrid) setChanged(px, py int) {
 	height := cg.grid.height
 	for oy := -1; oy <= 1; oy++ {
 		for ox := -1; ox <= 1; ox++ {
-			nx := ((ox+px)%width + width) % width
-			ny := ((oy+py)%height + height) % height
+			nx := circularIndex(ox+px, width)
+			ny := circularIndex(oy+py, height)
 			cg.grid.setValue(true, nx, ny)
 		}
 	}
