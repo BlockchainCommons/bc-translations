@@ -163,6 +163,22 @@ func TestFormatStringAndNestedArrayParity(t *testing.T) {
         61  # text(1)
             43  # "C"`,
 	)
+
+	runFormatCheck(
+		t,
+		"tagged_100",
+		ToTaggedValue(TagWithValue(100), MustFromAny("Hello")),
+		`100("Hello")`,
+		`tagged(100, text("Hello"))`,
+		`100("Hello")`,
+		`100("Hello")`,
+		`100("Hello")`,
+		`100("Hello")`,
+		"d8646548656c6c6f",
+		`d8 64       # tag(100)
+    65          # text(5)
+        48656c6c6f  # "Hello"`,
+	)
 }
 
 func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
@@ -236,6 +252,20 @@ func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
 		"c13863",
 		`c1     # tag(1) date
     38 63  # negative(-100)`,
+	)
+	runFormatCheck(
+		t,
+		"date_positive",
+		DateFromTimestamp(1647887071.0).TaggedCBOR(),
+		"date(1647887071)",
+		"tagged(date, unsigned(1647887071))",
+		"1(1647887071)",
+		"1(1647887071)   / date /",
+		"1(1647887071)",
+		"2022-03-21T18:24:31Z",
+		"c11a6238c2df",
+		`c1              # tag(1) date
+    1a 62 38 c2 df  # unsigned(1647887071)`,
 	)
 	runFormatCheck(
 		t,

@@ -198,3 +198,49 @@ COMPLETED
 - Updated `COMPLETENESS.md` behavior notes to include improved display/diagnostic separation
 - Coverage metrics unchanged (API 60/83, tests 42/86)
 - VERDICT: INCOMPLETE (behavioral fidelity improved; full default-feature parity still pending)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity growth after recent formatter alignment
+- Translating additional `walk.rs` extraction/document scenarios and extra `format.rs` vectors
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `walk_parity_test.go` coverage for:
+  - text extraction from nested map/array structures
+  - real-world document traversal and string indexing
+- Extended `format_parity_test.go` vectors for tagged value formatting and positive date formatting
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (44 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after added walk extraction and format vectors
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect increased test parity coverage
+- API coverage unchanged: 60/83 key manifest targets
+- Test coverage improved from 42/86 to 44/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (test parity crossed 50%; substantial surface still pending)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing encode parity with additional floating-point boundary vectors
+- Tightening exponent formatting output to match Rust text expectations
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TestEncodeAdditionalFloatBoundaryVectors` in `encode_test.go` covering subnormal/normal boundaries and large-range float canonicalization vectors
+- Adjusted float text rendering in `cbor.go` (`formatFloatDiagnostic`) to normalize exponent formatting (e.g. `e-08` -> `e-8`)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (45 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after additional float boundary parity tests
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with new float-boundary parity coverage
+- API coverage unchanged: 60/83 key manifest targets
+- Test coverage improved from 44/86 to 45/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (steady progress; remaining default-feature parity is still substantial)

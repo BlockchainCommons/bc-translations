@@ -256,6 +256,86 @@ func TestEncodeFloatVectors(t *testing.T) {
 	)
 }
 
+func TestEncodeAdditionalFloatBoundaryVectors(t *testing.T) {
+	assertEncodedFromAny(
+		t,
+		5.960464477539063e-8,
+		"simple(5.960464477539063e-8)",
+		"5.960464477539063e-8",
+		"f90001",
+	)
+	assertEncodedFromAny(
+		t,
+		1.401298464324817e-45,
+		"simple(1.401298464324817e-45)",
+		"1.401298464324817e-45",
+		"fa00000001",
+	)
+	assertEncodedFromAny(
+		t,
+		5e-324,
+		"simple(5e-324)",
+		"5e-324",
+		"fb0000000000000001",
+	)
+	assertEncodedFromAny(
+		t,
+		2.2250738585072014e-308,
+		"simple(2.2250738585072014e-308)",
+		"2.2250738585072014e-308",
+		"fb0010000000000000",
+	)
+	assertEncodedFromAny(
+		t,
+		6.103515625e-5,
+		"simple(6.103515625e-5)",
+		"6.103515625e-5",
+		"f90400",
+	)
+	assertEncodedFromAny(
+		t,
+		65504.0,
+		"unsigned(65504)",
+		"65504",
+		"19ffe0",
+	)
+	assertEncodedFromAny(
+		t,
+		33554430.0,
+		"unsigned(33554430)",
+		"33554430",
+		"1a01fffffe",
+	)
+	assertEncodedFromAny(
+		t,
+		-9223372036854774784.0,
+		"negative(-9223372036854774784)",
+		"-9223372036854774784",
+		"3b7ffffffffffffbff",
+	)
+	assertEncodedFromAny(
+		t,
+		3.4028234663852886e38,
+		"simple(3.4028234663852886e38)",
+		"3.4028234663852886e38",
+		"fa7f7fffff",
+	)
+	assertEncodedFromAny(
+		t,
+		3.402823466385289e38,
+		"simple(3.402823466385289e38)",
+		"3.402823466385289e38",
+		"fb47efffffe0000001",
+	)
+	assertEncodedFromAny(
+		t,
+		1.7976931348623157e308,
+		"simple(1.7976931348623157e308)",
+		"1.7976931348623157e308",
+		"fb7fefffffffffffff",
+	)
+}
+
 func TestEncodeDecodeNaNAndInfinityCanonicalization(t *testing.T) {
 	nonStandardNaN64 := math.Float64frombits(0x7ff9100000000001)
 	if !math.IsNaN(nonStandardNaN64) {

@@ -269,3 +269,102 @@ func TestWalkEmptyAndPrimitiveStructuresParity(t *testing.T) {
 		}
 	}
 }
+
+func TestWalkTextExtractionParity(t *testing.T) {
+	metadata := NewMap()
+	metadata.MustInsertAny("title", "Important Document")
+	metadata.MustInsertAny("author", "Alice Smith")
+
+	content := NewMap()
+	content.MustInsertAny("body", "Lorem ipsum dolor sit amet")
+	content.MustInsertAny("footer", "Copyright 2024")
+
+	document := NewMap()
+	document.Insert(MustFromAny("metadata"), NewCBORMap(metadata))
+	document.Insert(MustFromAny("content"), NewCBORMap(content))
+	document.Insert(MustFromAny("tags"), NewCBORArray([]CBOR{MustFromAny("urgent"), MustFromAny("confidential"), MustFromAny("draft")}))
+
+	cbor := NewCBORMap(document)
+	texts := map[string]struct{}{}
+
+	cbor.Walk(nil, func(element WalkElement, _ int, _ EdgeType, state any) (any, bool) {
+		if single, ok := element.AsSingle(); ok {
+			if text, ok := single.AsText(); ok {
+				texts[text] = struct{}{}
+			}
+		}
+		if key, value, ok := element.AsKeyValue(); ok {
+			if text, ok := key.AsText(); ok {
+				texts[text] = struct{}{}
+			}
+			if text, ok := value.AsText(); ok {
+				texts[text] = struct{}{}
+			}
+		}
+		return state, false
+	})
+
+	expected := []string{
+		"title", "Important Document", "author", "Alice Smith",
+		"body", "Lorem ipsum dolor sit amet", "footer", "Copyright 2024",
+		"metadata", "content", "tags", "urgent", "confidential", "draft",
+	}
+	for _, value := range expected {
+		if _, ok := texts[value]; !ok {
+			t.Fatalf("missing extracted text %q (all=%v)", value, texts)
+		}
+	}
+}
+
+func TestWalkRealWorldDocumentParity(t *testing.T) {
+	person := NewMap()
+	person.MustInsertAny("name", "John Doe")
+	person.MustInsertAny("age", 30)
+	person.MustInsertAny("email", "john@example.com")
+
+	address := NewMap()
+	address.MustInsertAny("street", "123 Main St")
+	address.MustInsertAny("city", "Anytown")
+	address.MustInsertAny("zipcode", "12345")
+	person.Insert(MustFromAny("address"), NewCBORMap(address))
+
+	person.Insert(MustFromAny("hobbies"), NewCBORArray([]CBOR{MustFromAny("reading"), MustFromAny("cycling"), MustFromAny("cooking")}))
+
+	skills := NewMap()
+	skills.Insert(MustFromAny("programming"), NewCBORArray([]CBOR{MustFromAny("Rust"), MustFromAny("Python"), MustFromAny("JavaScript")}))
+	skills.Insert(MustFromAny("languages"), NewCBORArray([]CBOR{MustFromAny("English"), MustFromAny("Spanish")}))
+	person.Insert(MustFromAny("skills"), NewCBORMap(skills))
+
+	document := NewCBORMap(person)
+
+	stringsFound := map[string]struct{}{}
+	document.Walk(nil, func(element WalkElement, _ int, _ EdgeType, state any) (any, bool) {
+		if single, ok := element.AsSingle(); ok {
+			if text, ok := single.AsText(); ok {
+				stringsFound[text] = struct{}{}
+			}
+		}
+		if key, value, ok := element.AsKeyValue(); ok {
+			if text, ok := key.AsText(); ok {
+				stringsFound[text] = struct{}{}
+			}
+			if text, ok := value.AsText(); ok {
+				stringsFound[text] = struct{}{}
+			}
+		}
+		return state, false
+	})
+
+	expected := []string{
+		"name", "John Doe", "age", "email", "john@example.com",
+		"address", "street", "123 Main St", "city", "Anytown", "zipcode", "12345",
+		"hobbies", "reading", "cycling", "cooking",
+		"skills", "programming", "Rust", "Python", "JavaScript",
+		"languages", "English", "Spanish",
+	}
+	for _, value := range expected {
+		if _, ok := stringsFound[value]; !ok {
+			t.Fatalf("missing extracted string %q", value)
+		}
+	}
+}

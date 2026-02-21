@@ -1264,7 +1264,31 @@ func formatFloatDiagnostic(v float64) string {
 			text = strconv.FormatFloat(v, 'f', -1, 64)
 		}
 	}
-	return strings.ReplaceAll(text, "e+", "e")
+	return normalizeExponent(strings.ReplaceAll(strings.ToLower(text), "e+", "e"))
+}
+
+func normalizeExponent(text string) string {
+	index := strings.IndexByte(text, 'e')
+	if index < 0 || index+1 >= len(text) {
+		return text
+	}
+	sign := byte(0)
+	start := index + 1
+	if text[start] == '+' || text[start] == '-' {
+		sign = text[start]
+		start++
+	}
+	if start >= len(text) {
+		return text
+	}
+	exponent := strings.TrimLeft(text[start:], "0")
+	if exponent == "" {
+		exponent = "0"
+	}
+	if sign == 0 {
+		return text[:index+1] + exponent
+	}
+	return text[:index+1] + string(sign) + exponent
 }
 
 // ToNative returns a generic representation suitable for JSON-like handling.
