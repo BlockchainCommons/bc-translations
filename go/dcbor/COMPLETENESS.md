@@ -126,7 +126,8 @@ Current translated tests: 86/86 (100.0%)
 ## Documentation Coverage
 
 - ✅ Package-level docs present (`doc.go`).
-- ⚠️ Public API doc parity is partial relative to heavily documented Rust surface (improved with expanded comments for conversion/equality helpers, core collection APIs, date helpers, walk/tag/simple/byte-string wrappers, core CBOR constructors/conveniences, tag-store APIs, and float16 helpers).
+- ✅ Exported Go API symbols now have concise documentation comments across core/value/conversion/format/tag-store surfaces.
+- ⚠️ Rust narrative documentation depth (long-form explanations/examples) is still only partially mirrored.
 
 ## Completeness Summary
 
@@ -134,11 +135,11 @@ Current translated tests: 86/86 (100.0%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
-- Docs parity: partial
+- Docs parity: broad symbol coverage, partial narrative parity
 
 VERDICT: INCOMPLETE
 
 Primary remaining work:
 
-1. Continue expanding exported API comments toward Rust-level documentation breadth, especially the large conversion/format accessor surface in `cbor.go` and `format.go`.
+1. Improve higher-level narrative docs/examples to better mirror Rust crate guidance beyond symbol-level comments.
 2. Reduce residual signature/protocol parity gaps where Rust generic trait matrices are modeled by explicit Go helpers instead of one-to-one impl coverage.

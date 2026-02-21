@@ -25,6 +25,7 @@ type WrongTagError struct {
 	Actual   Tag
 }
 
+// Error returns the mismatch description.
 func (e WrongTagError) Error() string {
 	return fmt.Sprintf("expected CBOR tag %s, but got %s", e.Expected.String(), e.Actual.String())
 }
@@ -34,6 +35,7 @@ type InvalidDateError struct {
 	Value string
 }
 
+// Error returns the invalid-date description.
 func (e InvalidDateError) Error() string {
 	return fmt.Sprintf("invalid ISO 8601 date string: %s", e.Value)
 }
@@ -43,6 +45,7 @@ type CustomError struct {
 	Message string
 }
 
+// Error returns the wrapped custom message.
 func (e CustomError) Error() string {
 	return e.Message
 }

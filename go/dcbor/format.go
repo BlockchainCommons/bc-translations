@@ -16,11 +16,13 @@ type DiagFormatOpts struct {
 	tagsSet   bool
 }
 
+// Annotate toggles tag-name annotations in diagnostic output.
 func (o DiagFormatOpts) Annotate(v bool) DiagFormatOpts {
 	o.annotate = v
 	return o
 }
 
+// Summarize toggles tag summarization in diagnostic output.
 func (o DiagFormatOpts) Summarize(v bool) DiagFormatOpts {
 	o.summarize = v
 	if v {
@@ -29,17 +31,20 @@ func (o DiagFormatOpts) Summarize(v bool) DiagFormatOpts {
 	return o
 }
 
+// Flat toggles single-line formatting for nested values.
 func (o DiagFormatOpts) Flat(v bool) DiagFormatOpts {
 	o.flat = v
 	return o
 }
 
+// Tags sets the tag context used for name lookup and summarizers.
 func (o DiagFormatOpts) Tags(v TagsStoreOpt) DiagFormatOpts {
 	o.tags = v
 	o.tagsSet = true
 	return o
 }
 
+// DiagnosticOpt formats CBOR using the supplied diagnostic options.
 func (c CBOR) DiagnosticOpt(opts DiagFormatOpts) string {
 	opts = normalizeDiagOpts(opts)
 	return c.diagnosticAtLevel(0, opts)
@@ -183,11 +188,13 @@ type HexFormatOpts struct {
 	tagsSet  bool
 }
 
+// Annotate toggles structured annotated-hex output.
 func (o HexFormatOpts) Annotate(v bool) HexFormatOpts {
 	o.annotate = v
 	return o
 }
 
+// Context sets the tag context used for annotated comments.
 func (o HexFormatOpts) Context(tags TagsStoreOpt) HexFormatOpts {
 	o.tags = tags
 	o.tagsSet = true
@@ -201,6 +208,7 @@ func normalizeHexOpts(opts HexFormatOpts) HexFormatOpts {
 	return opts
 }
 
+// HexOpt formats CBOR as hex with optional annotation comments.
 func (c CBOR) HexOpt(opts HexFormatOpts) string {
 	opts = normalizeHexOpts(opts)
 	hexOnly := c.Hex()

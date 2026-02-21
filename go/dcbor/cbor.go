@@ -381,14 +381,17 @@ func reduceFloatToIntegerCBOR(value float64) (CBOR, bool) {
 	return NewCBORNegative(encodedMagnitude.Uint64()), true
 }
 
+// Kind returns the CBOR variant discriminator.
 func (c CBOR) Kind() CBORKind {
 	return c.kind
 }
 
+// ToCBOR returns a cloned CBOR value for `CBOREncodable` compatibility.
 func (c CBOR) ToCBOR() CBOR {
 	return c.Clone()
 }
 
+// Clone returns a deep copy of the CBOR value.
 func (c CBOR) Clone() CBOR {
 	switch c.kind {
 	case CBORKindUnsigned, CBORKindNegative:
@@ -416,10 +419,12 @@ func (c CBOR) Clone() CBOR {
 	}
 }
 
+// AsCase returns a copyable tagged-union view of the CBOR value.
 func (c CBOR) AsCase() CBORCase {
 	return CBORCase{Kind: c.kind, Value: c.caseValueCopy()}
 }
 
+// IntoCase is an alias for AsCase.
 func (c CBOR) IntoCase() CBORCase {
 	return c.AsCase()
 }
@@ -445,6 +450,7 @@ func (c CBOR) caseValueCopy() any {
 	}
 }
 
+// AsUnsigned returns the value as uint64 when CBOR kind is unsigned.
 func (c CBOR) AsUnsigned() (uint64, bool) {
 	if c.kind != CBORKindUnsigned {
 		return 0, false
@@ -452,6 +458,7 @@ func (c CBOR) AsUnsigned() (uint64, bool) {
 	return c.value.(uint64), true
 }
 
+// AsInt64 returns the value as int64 when it fits signed 64-bit range.
 func (c CBOR) AsInt64() (int64, bool) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -471,6 +478,7 @@ func (c CBOR) AsInt64() (int64, bool) {
 	}
 }
 
+// AsFloat64 returns the numeric value as float64 when representable.
 func (c CBOR) AsFloat64() (float64, bool) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -489,6 +497,7 @@ func (c CBOR) AsFloat64() (float64, bool) {
 	}
 }
 
+// TryIntoUInt64 strictly converts the value to uint64.
 func (c CBOR) TryIntoUInt64() (uint64, error) {
 	if c.kind == CBORKindUnsigned {
 		return c.value.(uint64), nil
@@ -499,10 +508,12 @@ func (c CBOR) TryIntoUInt64() (uint64, error) {
 	return 0, ErrWrongType
 }
 
+// TryUInt64 is an alias for TryIntoUInt64.
 func (c CBOR) TryUInt64() (uint64, error) {
 	return c.TryIntoUInt64()
 }
 
+// IntoUInt64 converts the value to uint64, returning false on failure.
 func (c CBOR) IntoUInt64() (uint64, bool) {
 	value, err := c.TryIntoUInt64()
 	if err != nil {
@@ -511,6 +522,7 @@ func (c CBOR) IntoUInt64() (uint64, bool) {
 	return value, true
 }
 
+// TryIntoInt64 strictly converts the value to int64.
 func (c CBOR) TryIntoInt64() (int64, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -530,10 +542,12 @@ func (c CBOR) TryIntoInt64() (int64, error) {
 	}
 }
 
+// TryInt64 is an alias for TryIntoInt64.
 func (c CBOR) TryInt64() (int64, error) {
 	return c.TryIntoInt64()
 }
 
+// IntoInt64 converts the value to int64, returning false on failure.
 func (c CBOR) IntoInt64() (int64, bool) {
 	value, err := c.TryIntoInt64()
 	if err != nil {
@@ -542,6 +556,7 @@ func (c CBOR) IntoInt64() (int64, bool) {
 	return value, true
 }
 
+// TryIntoInt32 strictly converts the value to int32.
 func (c CBOR) TryIntoInt32() (int32, error) {
 	value, err := c.TryIntoInt64()
 	if err != nil {
@@ -553,10 +568,12 @@ func (c CBOR) TryIntoInt32() (int32, error) {
 	return int32(value), nil
 }
 
+// TryInt32 is an alias for TryIntoInt32.
 func (c CBOR) TryInt32() (int32, error) {
 	return c.TryIntoInt32()
 }
 
+// IntoInt32 converts the value to int32, returning false on failure.
 func (c CBOR) IntoInt32() (int32, bool) {
 	value, err := c.TryIntoInt32()
 	if err != nil {
@@ -565,6 +582,7 @@ func (c CBOR) IntoInt32() (int32, bool) {
 	return value, true
 }
 
+// TryIntoInt16 strictly converts the value to int16.
 func (c CBOR) TryIntoInt16() (int16, error) {
 	value, err := c.TryIntoInt64()
 	if err != nil {
@@ -576,10 +594,12 @@ func (c CBOR) TryIntoInt16() (int16, error) {
 	return int16(value), nil
 }
 
+// TryInt16 is an alias for TryIntoInt16.
 func (c CBOR) TryInt16() (int16, error) {
 	return c.TryIntoInt16()
 }
 
+// IntoInt16 converts the value to int16, returning false on failure.
 func (c CBOR) IntoInt16() (int16, bool) {
 	value, err := c.TryIntoInt16()
 	if err != nil {
@@ -588,6 +608,7 @@ func (c CBOR) IntoInt16() (int16, bool) {
 	return value, true
 }
 
+// TryIntoInt8 strictly converts the value to int8.
 func (c CBOR) TryIntoInt8() (int8, error) {
 	value, err := c.TryIntoInt64()
 	if err != nil {
@@ -599,10 +620,12 @@ func (c CBOR) TryIntoInt8() (int8, error) {
 	return int8(value), nil
 }
 
+// TryInt8 is an alias for TryIntoInt8.
 func (c CBOR) TryInt8() (int8, error) {
 	return c.TryIntoInt8()
 }
 
+// IntoInt8 converts the value to int8, returning false on failure.
 func (c CBOR) IntoInt8() (int8, bool) {
 	value, err := c.TryIntoInt8()
 	if err != nil {
@@ -611,6 +634,7 @@ func (c CBOR) IntoInt8() (int8, bool) {
 	return value, true
 }
 
+// TryIntoInt strictly converts the value to native-size int.
 func (c CBOR) TryIntoInt() (int, error) {
 	value, err := c.TryIntoInt64()
 	if err != nil {
@@ -622,10 +646,12 @@ func (c CBOR) TryIntoInt() (int, error) {
 	return int(value), nil
 }
 
+// TryInt is an alias for TryIntoInt.
 func (c CBOR) TryInt() (int, error) {
 	return c.TryIntoInt()
 }
 
+// IntoInt converts the value to native-size int, returning false on failure.
 func (c CBOR) IntoInt() (int, bool) {
 	value, err := c.TryIntoInt()
 	if err != nil {
@@ -634,6 +660,7 @@ func (c CBOR) IntoInt() (int, bool) {
 	return value, true
 }
 
+// TryIntoUInt32 strictly converts the value to uint32.
 func (c CBOR) TryIntoUInt32() (uint32, error) {
 	value, err := c.TryIntoUInt64()
 	if err != nil {
@@ -645,10 +672,12 @@ func (c CBOR) TryIntoUInt32() (uint32, error) {
 	return uint32(value), nil
 }
 
+// TryUInt32 is an alias for TryIntoUInt32.
 func (c CBOR) TryUInt32() (uint32, error) {
 	return c.TryIntoUInt32()
 }
 
+// IntoUInt32 converts the value to uint32, returning false on failure.
 func (c CBOR) IntoUInt32() (uint32, bool) {
 	value, err := c.TryIntoUInt32()
 	if err != nil {
@@ -657,6 +686,7 @@ func (c CBOR) IntoUInt32() (uint32, bool) {
 	return value, true
 }
 
+// TryIntoUInt16 strictly converts the value to uint16.
 func (c CBOR) TryIntoUInt16() (uint16, error) {
 	value, err := c.TryIntoUInt64()
 	if err != nil {
@@ -668,10 +698,12 @@ func (c CBOR) TryIntoUInt16() (uint16, error) {
 	return uint16(value), nil
 }
 
+// TryUInt16 is an alias for TryIntoUInt16.
 func (c CBOR) TryUInt16() (uint16, error) {
 	return c.TryIntoUInt16()
 }
 
+// IntoUInt16 converts the value to uint16, returning false on failure.
 func (c CBOR) IntoUInt16() (uint16, bool) {
 	value, err := c.TryIntoUInt16()
 	if err != nil {
@@ -680,6 +712,7 @@ func (c CBOR) IntoUInt16() (uint16, bool) {
 	return value, true
 }
 
+// TryIntoUInt8 strictly converts the value to uint8.
 func (c CBOR) TryIntoUInt8() (uint8, error) {
 	value, err := c.TryIntoUInt64()
 	if err != nil {
@@ -691,10 +724,12 @@ func (c CBOR) TryIntoUInt8() (uint8, error) {
 	return uint8(value), nil
 }
 
+// TryUInt8 is an alias for TryIntoUInt8.
 func (c CBOR) TryUInt8() (uint8, error) {
 	return c.TryIntoUInt8()
 }
 
+// IntoUInt8 converts the value to uint8, returning false on failure.
 func (c CBOR) IntoUInt8() (uint8, bool) {
 	value, err := c.TryIntoUInt8()
 	if err != nil {
@@ -703,6 +738,7 @@ func (c CBOR) IntoUInt8() (uint8, bool) {
 	return value, true
 }
 
+// TryIntoUInt strictly converts the value to native-size uint.
 func (c CBOR) TryIntoUInt() (uint, error) {
 	value, err := c.TryIntoUInt64()
 	if err != nil {
@@ -714,10 +750,12 @@ func (c CBOR) TryIntoUInt() (uint, error) {
 	return uint(value), nil
 }
 
+// TryUInt is an alias for TryIntoUInt.
 func (c CBOR) TryUInt() (uint, error) {
 	return c.TryIntoUInt()
 }
 
+// IntoUInt converts the value to native-size uint, returning false on failure.
 func (c CBOR) IntoUInt() (uint, bool) {
 	value, err := c.TryIntoUInt()
 	if err != nil {
@@ -768,6 +806,7 @@ func decodeNegativeBigNumUntagged(c CBOR) (*big.Int, error) {
 	return n, nil
 }
 
+// TryIntoBigUint strictly converts the value to a non-negative big integer.
 func (c CBOR) TryIntoBigUint() (*big.Int, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -790,10 +829,12 @@ func (c CBOR) TryIntoBigUint() (*big.Int, error) {
 	}
 }
 
+// TryBigUint is an alias for TryIntoBigUint.
 func (c CBOR) TryBigUint() (*big.Int, error) {
 	return c.TryIntoBigUint()
 }
 
+// IntoBigUint converts to big integer, returning false on failure.
 func (c CBOR) IntoBigUint() (*big.Int, bool) {
 	value, err := c.TryIntoBigUint()
 	if err != nil {
@@ -802,6 +843,7 @@ func (c CBOR) IntoBigUint() (*big.Int, bool) {
 	return value, true
 }
 
+// TryIntoBigInt strictly converts the value to a signed big integer.
 func (c CBOR) TryIntoBigInt() (*big.Int, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -828,10 +870,12 @@ func (c CBOR) TryIntoBigInt() (*big.Int, error) {
 	}
 }
 
+// TryBigInt is an alias for TryIntoBigInt.
 func (c CBOR) TryBigInt() (*big.Int, error) {
 	return c.TryIntoBigInt()
 }
 
+// IntoBigInt converts to signed big integer, returning false on failure.
 func (c CBOR) IntoBigInt() (*big.Int, bool) {
 	value, err := c.TryIntoBigInt()
 	if err != nil {
@@ -840,6 +884,7 @@ func (c CBOR) IntoBigInt() (*big.Int, bool) {
 	return value, true
 }
 
+// TryIntoFloat16 strictly converts the value to an exact Float16.
 func (c CBOR) TryIntoFloat16() (Float16, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -879,10 +924,12 @@ func (c CBOR) TryIntoFloat16() (Float16, error) {
 	}
 }
 
+// TryFloat16 is an alias for TryIntoFloat16.
 func (c CBOR) TryFloat16() (Float16, error) {
 	return c.TryIntoFloat16()
 }
 
+// IntoFloat16 converts to Float16, returning false on failure.
 func (c CBOR) IntoFloat16() (Float16, bool) {
 	value, err := c.TryIntoFloat16()
 	if err != nil {
@@ -891,6 +938,7 @@ func (c CBOR) IntoFloat16() (Float16, bool) {
 	return value, true
 }
 
+// TryIntoFloat64 strictly converts the value to float64.
 func (c CBOR) TryIntoFloat64() (float64, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -919,6 +967,7 @@ func (c CBOR) TryIntoFloat64() (float64, error) {
 	}
 }
 
+// TryIntoFloat32 strictly converts the value to float32.
 func (c CBOR) TryIntoFloat32() (float32, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -954,10 +1003,12 @@ func (c CBOR) TryIntoFloat32() (float32, error) {
 	}
 }
 
+// TryFloat32 is an alias for TryIntoFloat32.
 func (c CBOR) TryFloat32() (float32, error) {
 	return c.TryIntoFloat32()
 }
 
+// IntoFloat32 converts to float32, returning false on failure.
 func (c CBOR) IntoFloat32() (float32, bool) {
 	value, err := c.TryIntoFloat32()
 	if err != nil {
@@ -966,10 +1017,12 @@ func (c CBOR) IntoFloat32() (float32, bool) {
 	return value, true
 }
 
+// TryFloat64 is an alias for TryIntoFloat64.
 func (c CBOR) TryFloat64() (float64, error) {
 	return c.TryIntoFloat64()
 }
 
+// IntoFloat64 converts to float64, returning false on failure.
 func (c CBOR) IntoFloat64() (float64, bool) {
 	value, err := c.TryIntoFloat64()
 	if err != nil {
@@ -978,6 +1031,7 @@ func (c CBOR) IntoFloat64() (float64, bool) {
 	return value, true
 }
 
+// AsByteString returns byte payload when kind is byte string.
 func (c CBOR) AsByteString() ([]byte, bool) {
 	if c.kind != CBORKindByteString {
 		return nil, false
@@ -985,6 +1039,7 @@ func (c CBOR) AsByteString() ([]byte, bool) {
 	return c.value.(ByteString).Data(), true
 }
 
+// AsText returns text payload when kind is text.
 func (c CBOR) AsText() (string, bool) {
 	if c.kind != CBORKindText {
 		return "", false
@@ -992,6 +1047,7 @@ func (c CBOR) AsText() (string, bool) {
 	return c.value.(string), true
 }
 
+// AsArray returns cloned array payload when kind is array.
 func (c CBOR) AsArray() ([]CBOR, bool) {
 	if c.kind != CBORKindArray {
 		return nil, false
@@ -1004,6 +1060,7 @@ func (c CBOR) AsArray() ([]CBOR, bool) {
 	return copied, true
 }
 
+// AsMap returns cloned map payload when kind is map.
 func (c CBOR) AsMap() (Map, bool) {
 	if c.kind != CBORKindMap {
 		return Map{}, false
@@ -1011,6 +1068,7 @@ func (c CBOR) AsMap() (Map, bool) {
 	return c.value.(Map).Clone(), true
 }
 
+// AsTaggedValue returns cloned tag/content when kind is tagged.
 func (c CBOR) AsTaggedValue() (Tag, CBOR, bool) {
 	if c.kind != CBORKindTagged {
 		return Tag{}, CBOR{}, false
@@ -1019,6 +1077,7 @@ func (c CBOR) AsTaggedValue() (Tag, CBOR, bool) {
 	return tagged.Tag.clone(), tagged.Value.Clone(), true
 }
 
+// AsSimpleValue returns simple payload when kind is simple.
 func (c CBOR) AsSimpleValue() (Simple, bool) {
 	if c.kind != CBORKindSimple {
 		return Simple{}, false
@@ -1026,10 +1085,12 @@ func (c CBOR) AsSimpleValue() (Simple, bool) {
 	return c.value.(Simple), true
 }
 
+// IsByteString reports whether the value is a byte string.
 func (c CBOR) IsByteString() bool {
 	return c.kind == CBORKindByteString
 }
 
+// TryIntoByteString strictly converts the value to bytes.
 func (c CBOR) TryIntoByteString() ([]byte, error) {
 	if value, ok := c.AsByteString(); ok {
 		return value, nil
@@ -1037,6 +1098,7 @@ func (c CBOR) TryIntoByteString() ([]byte, error) {
 	return nil, ErrWrongType
 }
 
+// IntoByteString converts to bytes, returning false on failure.
 func (c CBOR) IntoByteString() ([]byte, bool) {
 	value, err := c.TryIntoByteString()
 	if err != nil {
@@ -1045,14 +1107,17 @@ func (c CBOR) IntoByteString() ([]byte, bool) {
 	return value, true
 }
 
+// TryByteString is an alias for TryIntoByteString.
 func (c CBOR) TryByteString() ([]byte, error) {
 	return c.TryIntoByteString()
 }
 
+// IsTaggedValue reports whether the value is tagged.
 func (c CBOR) IsTaggedValue() bool {
 	return c.kind == CBORKindTagged
 }
 
+// TryIntoTaggedValue strictly converts the value to tag/content pair.
 func (c CBOR) TryIntoTaggedValue() (Tag, CBOR, error) {
 	tag, value, ok := c.AsTaggedValue()
 	if !ok {
@@ -1061,10 +1126,12 @@ func (c CBOR) TryIntoTaggedValue() (Tag, CBOR, error) {
 	return tag, value, nil
 }
 
+// TryTaggedValue is an alias for TryIntoTaggedValue.
 func (c CBOR) TryTaggedValue() (Tag, CBOR, error) {
 	return c.TryIntoTaggedValue()
 }
 
+// TryIntoExpectedTaggedValue converts tagged value and validates expected tag.
 func (c CBOR) TryIntoExpectedTaggedValue(expected Tag) (CBOR, error) {
 	tag, value, err := c.TryIntoTaggedValue()
 	if err != nil {
@@ -1076,18 +1143,22 @@ func (c CBOR) TryIntoExpectedTaggedValue(expected Tag) (CBOR, error) {
 	return value, nil
 }
 
+// TryExpectedTaggedValue is an alias for TryIntoExpectedTaggedValue.
 func (c CBOR) TryExpectedTaggedValue(expected Tag) (CBOR, error) {
 	return c.TryIntoExpectedTaggedValue(expected)
 }
 
+// TryIntoDate strictly converts a tagged date value.
 func (c CBOR) TryIntoDate() (Date, error) {
 	return DateFromTaggedCBOR(c)
 }
 
+// TryDate is an alias for TryIntoDate.
 func (c CBOR) TryDate() (Date, error) {
 	return c.TryIntoDate()
 }
 
+// IntoDate converts to Date, returning false on failure.
 func (c CBOR) IntoDate() (Date, bool) {
 	value, err := c.TryIntoDate()
 	if err != nil {
@@ -1096,6 +1167,7 @@ func (c CBOR) IntoDate() (Date, bool) {
 	return value, true
 }
 
+// TryIntoText strictly converts the value to text.
 func (c CBOR) TryIntoText() (string, error) {
 	if value, ok := c.AsText(); ok {
 		return value, nil
@@ -1103,14 +1175,17 @@ func (c CBOR) TryIntoText() (string, error) {
 	return "", ErrWrongType
 }
 
+// IsText reports whether the value is text.
 func (c CBOR) IsText() bool {
 	return c.kind == CBORKindText
 }
 
+// TryText is an alias for TryIntoText.
 func (c CBOR) TryText() (string, error) {
 	return c.TryIntoText()
 }
 
+// IntoText converts to text, returning false on failure.
 func (c CBOR) IntoText() (string, bool) {
 	value, err := c.TryIntoText()
 	if err != nil {
@@ -1119,6 +1194,7 @@ func (c CBOR) IntoText() (string, bool) {
 	return value, true
 }
 
+// TryIntoArray strictly converts the value to array.
 func (c CBOR) TryIntoArray() ([]CBOR, error) {
 	if value, ok := c.AsArray(); ok {
 		return value, nil
@@ -1126,14 +1202,17 @@ func (c CBOR) TryIntoArray() ([]CBOR, error) {
 	return nil, ErrWrongType
 }
 
+// IsArray reports whether the value is array.
 func (c CBOR) IsArray() bool {
 	return c.kind == CBORKindArray
 }
 
+// TryArray is an alias for TryIntoArray.
 func (c CBOR) TryArray() ([]CBOR, error) {
 	return c.TryIntoArray()
 }
 
+// IntoArray converts to array, returning false on failure.
 func (c CBOR) IntoArray() ([]CBOR, bool) {
 	value, err := c.TryIntoArray()
 	if err != nil {
@@ -1142,6 +1221,7 @@ func (c CBOR) IntoArray() ([]CBOR, bool) {
 	return value, true
 }
 
+// TryIntoSet strictly converts an array value into deterministic set semantics.
 func (c CBOR) TryIntoSet() (Set, error) {
 	items, err := c.TryIntoArray()
 	if err != nil {
@@ -1150,10 +1230,12 @@ func (c CBOR) TryIntoSet() (Set, error) {
 	return TrySetFromVec(items)
 }
 
+// TrySet is an alias for TryIntoSet.
 func (c CBOR) TrySet() (Set, error) {
 	return c.TryIntoSet()
 }
 
+// IntoSet converts to Set, returning false on failure.
 func (c CBOR) IntoSet() (Set, bool) {
 	value, err := c.TryIntoSet()
 	if err != nil {
@@ -1162,6 +1244,7 @@ func (c CBOR) IntoSet() (Set, bool) {
 	return value, true
 }
 
+// TryIntoMap strictly converts the value to map.
 func (c CBOR) TryIntoMap() (Map, error) {
 	if value, ok := c.AsMap(); ok {
 		return value, nil
@@ -1169,14 +1252,17 @@ func (c CBOR) TryIntoMap() (Map, error) {
 	return Map{}, ErrWrongType
 }
 
+// IsMap reports whether the value is map.
 func (c CBOR) IsMap() bool {
 	return c.kind == CBORKindMap
 }
 
+// TryMap is an alias for TryIntoMap.
 func (c CBOR) TryMap() (Map, error) {
 	return c.TryIntoMap()
 }
 
+// IntoMap converts to map, returning false on failure.
 func (c CBOR) IntoMap() (Map, bool) {
 	value, err := c.TryIntoMap()
 	if err != nil {
@@ -1185,6 +1271,7 @@ func (c CBOR) IntoMap() (Map, bool) {
 	return value, true
 }
 
+// TryIntoSimpleValue strictly converts the value to simple payload.
 func (c CBOR) TryIntoSimpleValue() (Simple, error) {
 	if value, ok := c.AsSimpleValue(); ok {
 		return value, nil
@@ -1192,10 +1279,12 @@ func (c CBOR) TryIntoSimpleValue() (Simple, error) {
 	return Simple{}, ErrWrongType
 }
 
+// TrySimpleValue is an alias for TryIntoSimpleValue.
 func (c CBOR) TrySimpleValue() (Simple, error) {
 	return c.TryIntoSimpleValue()
 }
 
+// IntoSimpleValue converts to simple payload, returning false on failure.
 func (c CBOR) IntoSimpleValue() (Simple, bool) {
 	value, err := c.TryIntoSimpleValue()
 	if err != nil {
@@ -1204,6 +1293,7 @@ func (c CBOR) IntoSimpleValue() (Simple, bool) {
 	return value, true
 }
 
+// IsBool reports whether the value is a simple true/false.
 func (c CBOR) IsBool() bool {
 	simple, ok := c.AsSimpleValue()
 	if !ok {
@@ -1212,6 +1302,7 @@ func (c CBOR) IsBool() bool {
 	return simple.Kind() == SimpleFalse || simple.Kind() == SimpleTrue
 }
 
+// AsBool returns the bool value when the CBOR value is true/false.
 func (c CBOR) AsBool() (bool, bool) {
 	simple, ok := c.AsSimpleValue()
 	if !ok {
@@ -1227,6 +1318,7 @@ func (c CBOR) AsBool() (bool, bool) {
 	}
 }
 
+// TryIntoBool strictly converts the value to bool.
 func (c CBOR) TryIntoBool() (bool, error) {
 	if value, ok := c.AsBool(); ok {
 		return value, nil
@@ -1234,25 +1326,30 @@ func (c CBOR) TryIntoBool() (bool, error) {
 	return false, ErrWrongType
 }
 
+// TryBool is an alias for TryIntoBool.
 func (c CBOR) TryBool() (bool, error) {
 	return c.TryIntoBool()
 }
 
+// IsTrue reports whether the value is simple true.
 func (c CBOR) IsTrue() bool {
 	value, ok := c.AsBool()
 	return ok && value
 }
 
+// IsFalse reports whether the value is simple false.
 func (c CBOR) IsFalse() bool {
 	value, ok := c.AsBool()
 	return ok && !value
 }
 
+// IsNull reports whether the value is simple null.
 func (c CBOR) IsNull() bool {
 	simple, ok := c.AsSimpleValue()
 	return ok && simple.Kind() == SimpleNull
 }
 
+// IsNumber reports whether the value is integer or floating-point numeric.
 func (c CBOR) IsNumber() bool {
 	if c.kind == CBORKindUnsigned || c.kind == CBORKindNegative {
 		return true
@@ -1264,6 +1361,7 @@ func (c CBOR) IsNumber() bool {
 	return simple.Kind() == SimpleFloat
 }
 
+// IsNaN reports whether the value is a floating-point NaN.
 func (c CBOR) IsNaN() bool {
 	simple, ok := c.AsSimpleValue()
 	if !ok {
@@ -1272,6 +1370,7 @@ func (c CBOR) IsNaN() bool {
 	return simple.IsNaN()
 }
 
+// String returns the flat display form.
 func (c CBOR) String() string {
 	return c.displayFlat()
 }
@@ -1310,6 +1409,7 @@ func (c CBOR) displayFlat() string {
 	}
 }
 
+// DebugString returns a debug-oriented textual representation.
 func (c CBOR) DebugString() string {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -1345,38 +1445,45 @@ func (c CBOR) DebugString() string {
 	}
 }
 
+// Diagnostic returns multiline diagnostic formatting.
 func (c CBOR) Diagnostic() string {
 	return c.DiagnosticOpt(DiagFormatOpts{})
 }
 
+// DiagnosticAnnotated returns diagnostic formatting with tag-name annotations.
 func (c CBOR) DiagnosticAnnotated() string {
 	opts := DiagFormatOpts{}
 	opts = opts.Annotate(true)
 	return c.DiagnosticOpt(opts)
 }
 
+// DiagnosticFlat returns single-line diagnostic formatting.
 func (c CBOR) DiagnosticFlat() string {
 	opts := DiagFormatOpts{}
 	opts = opts.Flat(true)
 	return c.DiagnosticOpt(opts)
 }
 
+// Summary returns summarized diagnostic text using registered tag summarizers.
 func (c CBOR) Summary() string {
 	opts := DiagFormatOpts{}
 	opts = opts.Summarize(true)
 	return c.DiagnosticOpt(opts)
 }
 
+// Hex returns lowercase hex encoding of canonical CBOR bytes.
 func (c CBOR) Hex() string {
 	return hex.EncodeToString(c.ToCBORData())
 }
 
+// HexAnnotated returns annotated hex formatting.
 func (c CBOR) HexAnnotated() string {
 	opts := HexFormatOpts{}
 	opts = opts.Annotate(true)
 	return c.HexOpt(opts)
 }
 
+// ToCBORData returns canonical encoded bytes, panicking on internal encode errors.
 func (c CBOR) ToCBORData() []byte {
 	data, err := c.toCBORDataNoPanic()
 	if err != nil {
@@ -1864,6 +1971,7 @@ func NormalizeViaFxamacker(data []byte) ([]byte, error) {
 	return encMode.Marshal(v)
 }
 
+// MustEqual panics when two CBOR values do not compare equal.
 func (c CBOR) MustEqual(other CBOR) {
 	if !c.Equal(other) {
 		panic(fmt.Sprintf("CBOR values differ\nactual:   %s\nexpected: %s", c.DiagnosticFlat(), other.DiagnosticFlat()))

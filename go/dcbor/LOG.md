@@ -1334,3 +1334,28 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (docs parity improved again; broad conversion/format docs and signature parity work remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing docs parity across the remaining large exported API surfaces
+- Adding comments to `CBOR` conversion/accessor/format methods and formatting option builders
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added concise exported comments across:
+  - `cbor.go` (core kind/case helpers, numeric conversion matrix, typed accessors/convenience checks, display/diagnostic/hex methods, and assertion helpers)
+  - `format.go` (`DiagFormatOpts`/`HexFormatOpts` builders and `DiagnosticOpt`/`HexOpt`)
+  - `error.go` exported `Error()` methods
+- Verified no remaining undocumented exported funcs/methods via a non-test-file scan
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after broad exported symbol documentation sweep
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` docs section to reflect complete symbol-level comment coverage and remaining narrative-doc parity gap
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (symbol-level docs now complete; remaining work is narrative docs and residual signature/protocol parity)
