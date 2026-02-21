@@ -35,14 +35,17 @@ Chronological record of all translation activity in this repository.
 | 2026-02-20 | dcbor       | 0.25.1  | Go         | dcbor        | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | dcbor       | 0.25.1  | Kotlin     | dcbor        | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-20 | dcbor       | 0.25.1  | Python     | dcbor        | 🎻 Claude Opus 4.6 | Translation |
-| 2026-02-21 | dcbor       | 0.25.1  | Python     | dcbor        | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 rerun + traversal/api ergonomics) |
-| 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor   | 📖 GPT 5.3 Codex   | Translation |
-| 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor   | 📖 GPT 5.3 Codex   | Fluency critique |
+| 2026-02-21 | dcbor       | 0.25.1  | Python     | dcbor        | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor    | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-21 | dcbor       | 0.25.1  | TypeScript | @bc/dcbor    | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Translation |
-| 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Fluency critique |
+| 2026-02-21 | dcbor       | 0.25.1  | Swift      | DCBOR        | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 📖 GPT 5.3 Codex   | Translation |
-| 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 docs + API pass) |
+| 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 📖 GPT 5.3 Codex   | Translation |
-| 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 📖 GPT 5.3 Codex   | Fluency critique |
-| 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags     | 📖 GPT 5.3 Codex   | Translation |
-| 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags     | 📖 GPT 5.3 Codex   | Fluency critique (Stage 4 pass) |
+| 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags      | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-21 | bc-tags     | 0.12.0  | Python     | bc-tags      | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-lifehash | 0.1.0   | Go         | bclifehash   | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-lifehash | 0.1.0   | C#         | BCLifeHash   | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-lifehash | 0.1.0   | Python     | bc-lifehash  | 📖 GPT 5.3 Codex   | Fluency     |
