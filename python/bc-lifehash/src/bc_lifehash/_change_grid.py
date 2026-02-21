@@ -14,6 +14,6 @@ class ChangeGrid:
         h = self.grid.height
         for oy in range(-1, 2):
             for ox in range(-1, 2):
-                nx = ((ox + px) % w + w) % w
-                ny = ((oy + py) % h + h) % h
+                nx = (ox + px) % w
+                ny = (oy + py) % h
                 self.grid.set_value(True, nx, ny)

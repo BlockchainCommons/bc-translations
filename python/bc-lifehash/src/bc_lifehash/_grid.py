@@ -25,7 +25,7 @@ class Grid(list[T]):
 
     @staticmethod
     def _circular_index(index: int, modulus: int) -> int:
-        return (index % modulus + modulus) % modulus
+        return index % modulus
 
     def set_all(self, value: T) -> None:
         for i in range(len(self)):

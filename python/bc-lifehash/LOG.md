@@ -57,3 +57,18 @@ COMPLETED
   8. Removed redundant bytes(digest) in _lifehash.py
 - Tests: 2/2 passing after fixes
 - Verdict: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Running fluency critique rerun for idiomatic Python API/docs/style
+- Will apply only justified improvements and re-run full test suite
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 3 issues found (2 SHOULD FIX, 1 NICE TO HAVE)
+- All 3 fixes applied:
+  1. Simplified toroidal modulo indexing in _grid.py to idiomatic Python `%`
+  2. Simplified toroidal modulo indexing in _change_grid.py to idiomatic Python `%`
+  3. Added TYPE_CHECKING imports for Version annotations in _patterns.py and _gradients.py
+- Tests: 2/2 passing after fixes (`PYTHONPATH=src pytest -q`, 202.81s)
+- Verdict: IDIOMATIC

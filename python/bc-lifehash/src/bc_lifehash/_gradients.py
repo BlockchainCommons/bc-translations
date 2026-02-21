@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ._bit_enumerator import BitEnumerator
 from ._color import BLACK, WHITE, Color, lerp, modulo
 from ._color_func import ColorFunc, blend, blend2, reverse
 from ._hsb_color import HSBColor
+
+if TYPE_CHECKING:
+    from ._lifehash import Version
 
 
 def _grayscale() -> ColorFunc:
