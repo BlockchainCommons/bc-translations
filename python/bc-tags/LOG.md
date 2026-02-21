@@ -66,3 +66,22 @@ COMPLETED
 - Fixes applied: removed all `*_V1` symbols from constants, registration list, exports, and parity tests.
 - Verified tests after fixes: 5/5 passing (`PYTHONPATH=src dcbor/.venv/bin/pytest -q tests`).
 - Verdict: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency pass by Claude Opus 4.6 (original: GPT 5.3 Codex).
+- Reviewing target-language code only for naming, structure, completeness, and idiomaticness.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- MUST FIX: Restored 9 missing deprecated V1 tag constant pairs and their registration entries (18 constants, 9 `_BC_TAGS` entries). Previous fluency pass incorrectly removed them; they are part of the Rust public API and registration set.
+- MUST FIX: Registration list restored to 75 entries matching Rust insertion order exactly.
+- SHOULD FIX: Restored `with_tags()` guard in `register_tags()` with clear docstring explaining the non-reentrant lock deadlock it prevents, after confirming the deadlock via test hang.
+- SHOULD FIX: Removed unused `with_tags` import from top-level module imports (moved to local import in `register_tags()`).
+- NICE TO HAVE: Added section-comment headers grouping tag constants by category (Standard CBOR, Core Envelope, Extensions, DFC, Crypto, ML-KEM/DSA, Wallet, SSH, Provenance, Deprecated V1, Output subtypes).
+- NICE TO HAVE: Added `__all__` category comments matching the section structure.
+- NICE TO HAVE: Added `test_registration_count_matches_rust` test verifying `_BC_TAGS` has exactly 75 entries.
+- Updated `EXPECTED_TAGS` test list from 66 to 75 entries.
+- Test result: 6/6 passed.
+- No downstream Python dependents exist yet (bc-components, provenance-mark not translated).
+- Verdict: IDIOMATIC.

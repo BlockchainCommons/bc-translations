@@ -1,8 +1,9 @@
 """CBOR tags registry for Blockchain Commons projects.
 
 Defines tag constants and registration helpers corresponding to the Rust
-`bc-tags` crate. The module extends `dcbor`'s registry with Blockchain
-Commons tag assignments.
+``bc-tags`` crate.  The module extends ``dcbor``'s registry with Blockchain
+Commons tag assignments, including deprecated V1 tags that remain registered
+for backward compatibility with external consumers.
 """
 
 from __future__ import annotations
@@ -12,15 +13,22 @@ from dcbor import (
     TagValue,
     TagsStore,
     register_tags_in as register_dcbor_tags_in,
-    with_tags,
     with_tags_mut,
 )
+
+# ---------------------------------------------------------------------------
+# Standard CBOR tags
+# ---------------------------------------------------------------------------
 
 TAG_URI: TagValue = 32
 TAG_NAME_URI = "url"
 
 TAG_UUID: TagValue = 37
 TAG_NAME_UUID = "uuid"
+
+# ---------------------------------------------------------------------------
+# Core Envelope tags
+# ---------------------------------------------------------------------------
 
 TAG_ENCODED_CBOR: TagValue = 24
 TAG_NAME_ENCODED_CBOR = "encoded-cbor"
@@ -34,6 +42,10 @@ TAG_NAME_LEAF = "leaf"
 TAG_JSON: TagValue = 262
 TAG_NAME_JSON = "json"
 
+# ---------------------------------------------------------------------------
+# Envelope extension tags
+# ---------------------------------------------------------------------------
+
 TAG_KNOWN_VALUE: TagValue = 40000
 TAG_NAME_KNOWN_VALUE = "known-value"
 
@@ -45,6 +57,10 @@ TAG_NAME_ENCRYPTED = "encrypted"
 
 TAG_COMPRESSED: TagValue = 40003
 TAG_NAME_COMPRESSED = "compressed"
+
+# ---------------------------------------------------------------------------
+# Distributed Function Call tags
+# ---------------------------------------------------------------------------
 
 TAG_REQUEST: TagValue = 40004
 TAG_NAME_REQUEST = "request"
@@ -63,6 +79,10 @@ TAG_NAME_PLACEHOLDER = "placeholder"
 
 TAG_REPLACEMENT: TagValue = 40009
 TAG_NAME_REPLACEMENT = "replacement"
+
+# ---------------------------------------------------------------------------
+# Crypto / identity tags
+# ---------------------------------------------------------------------------
 
 TAG_X25519_PRIVATE_KEY: TagValue = 40010
 TAG_NAME_X25519_PRIVATE_KEY = "agreement-private-key"
@@ -118,6 +138,10 @@ TAG_NAME_EVENT = "event"
 TAG_ENCRYPTED_KEY: TagValue = 40027
 TAG_NAME_ENCRYPTED_KEY = "encrypted-key"
 
+# ---------------------------------------------------------------------------
+# ML-KEM / ML-DSA post-quantum tags
+# ---------------------------------------------------------------------------
+
 TAG_MLKEM_PRIVATE_KEY: TagValue = 40100
 TAG_NAME_MLKEM_PRIVATE_KEY = "mlkem-private-key"
 
@@ -135,6 +159,10 @@ TAG_NAME_MLDSA_PUBLIC_KEY = "mldsa-public-key"
 
 TAG_MLDSA_SIGNATURE: TagValue = 40105
 TAG_NAME_MLDSA_SIGNATURE = "mldsa-signature"
+
+# ---------------------------------------------------------------------------
+# Wallet / key-management tags
+# ---------------------------------------------------------------------------
 
 TAG_SEED: TagValue = 40300
 TAG_NAME_SEED = "seed"
@@ -166,6 +194,10 @@ TAG_NAME_PSBT = "psbt"
 TAG_ACCOUNT_DESCRIPTOR: TagValue = 40311
 TAG_NAME_ACCOUNT_DESCRIPTOR = "account-descriptor"
 
+# ---------------------------------------------------------------------------
+# SSH tags
+# ---------------------------------------------------------------------------
+
 TAG_SSH_TEXT_PRIVATE_KEY: TagValue = 40800
 TAG_NAME_SSH_TEXT_PRIVATE_KEY = "ssh-private"
 
@@ -178,8 +210,51 @@ TAG_NAME_SSH_TEXT_SIGNATURE = "ssh-signature"
 TAG_SSH_TEXT_CERTIFICATE: TagValue = 40803
 TAG_NAME_SSH_TEXT_CERTIFICATE = "ssh-certificate"
 
+# ---------------------------------------------------------------------------
+# Provenance
+# ---------------------------------------------------------------------------
+
 TAG_PROVENANCE_MARK: TagValue = 1347571542
 TAG_NAME_PROVENANCE_MARK = "provenance"
+
+# ---------------------------------------------------------------------------
+# Deprecated V1 tags
+#
+# These tags are deprecated and should not be used in new code.  They remain
+# registered because external developers may still reference them.  Most have
+# been superseded by "First Come First Served" tags in the 40000+ range.
+# ---------------------------------------------------------------------------
+
+TAG_SEED_V1: TagValue = 300
+TAG_NAME_SEED_V1 = "crypto-seed"
+
+TAG_EC_KEY_V1: TagValue = 306
+TAG_NAME_EC_KEY_V1 = "crypto-eckey"
+
+TAG_SSKR_SHARE_V1: TagValue = 309
+TAG_NAME_SSKR_SHARE_V1 = "crypto-sskr"
+
+TAG_HDKEY_V1: TagValue = 303
+TAG_NAME_HDKEY_V1 = "crypto-hdkey"
+
+TAG_DERIVATION_PATH_V1: TagValue = 304
+TAG_NAME_DERIVATION_PATH_V1 = "crypto-keypath"
+
+TAG_USE_INFO_V1: TagValue = 305
+TAG_NAME_USE_INFO_V1 = "crypto-coin-info"
+
+TAG_OUTPUT_DESCRIPTOR_V1: TagValue = 307
+TAG_NAME_OUTPUT_DESCRIPTOR_V1 = "crypto-output"
+
+TAG_PSBT_V1: TagValue = 310
+TAG_NAME_PSBT_V1 = "crypto-psbt"
+
+TAG_ACCOUNT_V1: TagValue = 311
+TAG_NAME_ACCOUNT_V1 = "crypto-account"
+
+# ---------------------------------------------------------------------------
+# Output script subtype tags
+# ---------------------------------------------------------------------------
 
 TAG_OUTPUT_SCRIPT_HASH: TagValue = 400
 TAG_NAME_OUTPUT_SCRIPT_HASH = "output-script-hash"
@@ -214,6 +289,10 @@ TAG_NAME_OUTPUT_TAPROOT = "output-taproot"
 TAG_OUTPUT_COSIGNER: TagValue = 410
 TAG_NAME_OUTPUT_COSIGNER = "output-cosigner"
 
+# ---------------------------------------------------------------------------
+# Registration list — order must match the Rust ``register_tags_in`` exactly.
+# ---------------------------------------------------------------------------
+
 _BC_TAGS: list[Tag] = [
     Tag(TAG_URI, TAG_NAME_URI),
     Tag(TAG_UUID, TAG_NAME_UUID),
@@ -232,6 +311,9 @@ _BC_TAGS: list[Tag] = [
     Tag(TAG_PLACEHOLDER, TAG_NAME_PLACEHOLDER),
     Tag(TAG_REPLACEMENT, TAG_NAME_REPLACEMENT),
     Tag(TAG_EVENT, TAG_NAME_EVENT),
+    Tag(TAG_SEED_V1, TAG_NAME_SEED_V1),
+    Tag(TAG_EC_KEY_V1, TAG_NAME_EC_KEY_V1),
+    Tag(TAG_SSKR_SHARE_V1, TAG_NAME_SSKR_SHARE_V1),
     Tag(TAG_SEED, TAG_NAME_SEED),
     Tag(TAG_EC_KEY, TAG_NAME_EC_KEY),
     Tag(TAG_SSKR_SHARE, TAG_NAME_SSKR_SHARE),
@@ -258,6 +340,12 @@ _BC_TAGS: list[Tag] = [
     Tag(TAG_MLDSA_PRIVATE_KEY, TAG_NAME_MLDSA_PRIVATE_KEY),
     Tag(TAG_MLDSA_PUBLIC_KEY, TAG_NAME_MLDSA_PUBLIC_KEY),
     Tag(TAG_MLDSA_SIGNATURE, TAG_NAME_MLDSA_SIGNATURE),
+    Tag(TAG_HDKEY_V1, TAG_NAME_HDKEY_V1),
+    Tag(TAG_DERIVATION_PATH_V1, TAG_NAME_DERIVATION_PATH_V1),
+    Tag(TAG_USE_INFO_V1, TAG_NAME_USE_INFO_V1),
+    Tag(TAG_OUTPUT_DESCRIPTOR_V1, TAG_NAME_OUTPUT_DESCRIPTOR_V1),
+    Tag(TAG_PSBT_V1, TAG_NAME_PSBT_V1),
+    Tag(TAG_ACCOUNT_V1, TAG_NAME_ACCOUNT_V1),
     Tag(TAG_HDKEY, TAG_NAME_HDKEY),
     Tag(TAG_DERIVATION_PATH, TAG_NAME_DERIVATION_PATH),
     Tag(TAG_USE_INFO, TAG_NAME_USE_INFO),
@@ -285,23 +373,29 @@ _BC_TAGS: list[Tag] = [
 
 
 def register_tags_in(tags_store: TagsStore) -> None:
-    """Register all `dcbor` and Blockchain Commons tags into `tags_store`."""
+    """Register all ``dcbor`` and Blockchain Commons tags into *tags_store*."""
     register_dcbor_tags_in(tags_store)
     tags_store.insert_all(_BC_TAGS)
 
 
 def register_tags() -> None:
-    """Register all `dcbor` and Blockchain Commons tags in the global store."""
-    # Ensure the global store is initialized before taking the mutable lock.
+    """Register all ``dcbor`` and Blockchain Commons tags in the global store."""
+    # Force lazy initialization of the global TagsStore *before* acquiring the
+    # mutable lock.  ``with_tags_mut`` holds a non-reentrant lock, and the
+    # internal ``_get_global_tags()`` would deadlock trying to acquire it again
+    # if the store has not yet been created.
+    from dcbor import with_tags
     with_tags(lambda _: None)
-    with_tags_mut(lambda tags_store: register_tags_in(tags_store))
+    with_tags_mut(lambda store: register_tags_in(store))
 
 
 __all__ = [
+    # Standard CBOR
     "TAG_URI",
     "TAG_NAME_URI",
     "TAG_UUID",
     "TAG_NAME_UUID",
+    # Core Envelope
     "TAG_ENCODED_CBOR",
     "TAG_NAME_ENCODED_CBOR",
     "TAG_ENVELOPE",
@@ -310,6 +404,7 @@ __all__ = [
     "TAG_NAME_LEAF",
     "TAG_JSON",
     "TAG_NAME_JSON",
+    # Envelope extensions
     "TAG_KNOWN_VALUE",
     "TAG_NAME_KNOWN_VALUE",
     "TAG_DIGEST",
@@ -318,6 +413,7 @@ __all__ = [
     "TAG_NAME_ENCRYPTED",
     "TAG_COMPRESSED",
     "TAG_NAME_COMPRESSED",
+    # Distributed Function Calls
     "TAG_REQUEST",
     "TAG_NAME_REQUEST",
     "TAG_RESPONSE",
@@ -330,6 +426,7 @@ __all__ = [
     "TAG_NAME_PLACEHOLDER",
     "TAG_REPLACEMENT",
     "TAG_NAME_REPLACEMENT",
+    # Crypto / identity
     "TAG_X25519_PRIVATE_KEY",
     "TAG_NAME_X25519_PRIVATE_KEY",
     "TAG_X25519_PUBLIC_KEY",
@@ -366,6 +463,7 @@ __all__ = [
     "TAG_NAME_EVENT",
     "TAG_ENCRYPTED_KEY",
     "TAG_NAME_ENCRYPTED_KEY",
+    # ML-KEM / ML-DSA
     "TAG_MLKEM_PRIVATE_KEY",
     "TAG_NAME_MLKEM_PRIVATE_KEY",
     "TAG_MLKEM_PUBLIC_KEY",
@@ -378,6 +476,7 @@ __all__ = [
     "TAG_NAME_MLDSA_PUBLIC_KEY",
     "TAG_MLDSA_SIGNATURE",
     "TAG_NAME_MLDSA_SIGNATURE",
+    # Wallet / key-management
     "TAG_SEED",
     "TAG_NAME_SEED",
     "TAG_HDKEY",
@@ -398,6 +497,7 @@ __all__ = [
     "TAG_NAME_PSBT",
     "TAG_ACCOUNT_DESCRIPTOR",
     "TAG_NAME_ACCOUNT_DESCRIPTOR",
+    # SSH
     "TAG_SSH_TEXT_PRIVATE_KEY",
     "TAG_NAME_SSH_TEXT_PRIVATE_KEY",
     "TAG_SSH_TEXT_PUBLIC_KEY",
@@ -406,8 +506,29 @@ __all__ = [
     "TAG_NAME_SSH_TEXT_SIGNATURE",
     "TAG_SSH_TEXT_CERTIFICATE",
     "TAG_NAME_SSH_TEXT_CERTIFICATE",
+    # Provenance
     "TAG_PROVENANCE_MARK",
     "TAG_NAME_PROVENANCE_MARK",
+    # Deprecated V1
+    "TAG_SEED_V1",
+    "TAG_NAME_SEED_V1",
+    "TAG_EC_KEY_V1",
+    "TAG_NAME_EC_KEY_V1",
+    "TAG_SSKR_SHARE_V1",
+    "TAG_NAME_SSKR_SHARE_V1",
+    "TAG_HDKEY_V1",
+    "TAG_NAME_HDKEY_V1",
+    "TAG_DERIVATION_PATH_V1",
+    "TAG_NAME_DERIVATION_PATH_V1",
+    "TAG_USE_INFO_V1",
+    "TAG_NAME_USE_INFO_V1",
+    "TAG_OUTPUT_DESCRIPTOR_V1",
+    "TAG_NAME_OUTPUT_DESCRIPTOR_V1",
+    "TAG_PSBT_V1",
+    "TAG_NAME_PSBT_V1",
+    "TAG_ACCOUNT_V1",
+    "TAG_NAME_ACCOUNT_V1",
+    # Output script subtypes
     "TAG_OUTPUT_SCRIPT_HASH",
     "TAG_NAME_OUTPUT_SCRIPT_HASH",
     "TAG_OUTPUT_WITNESS_SCRIPT_HASH",
@@ -430,6 +551,7 @@ __all__ = [
     "TAG_NAME_OUTPUT_TAPROOT",
     "TAG_OUTPUT_COSIGNER",
     "TAG_NAME_OUTPUT_COSIGNER",
+    # Functions
     "register_tags",
     "register_tags_in",
 ]

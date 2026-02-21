@@ -17,6 +17,8 @@ from bc_tags import (
 )
 import bc_tags.tags_registry as tags_registry
 
+# Every tag constant pair in the module, matching the Rust source order.
+# (suffix, numeric_value, name_string)
 EXPECTED_TAGS = [
     ("URI", 32, "url"),
     ("UUID", 37, "uuid"),
@@ -73,6 +75,17 @@ EXPECTED_TAGS = [
     ("SSH_TEXT_SIGNATURE", 40802, "ssh-signature"),
     ("SSH_TEXT_CERTIFICATE", 40803, "ssh-certificate"),
     ("PROVENANCE_MARK", 1347571542, "provenance"),
+    # Deprecated V1 tags
+    ("SEED_V1", 300, "crypto-seed"),
+    ("EC_KEY_V1", 306, "crypto-eckey"),
+    ("SSKR_SHARE_V1", 309, "crypto-sskr"),
+    ("HDKEY_V1", 303, "crypto-hdkey"),
+    ("DERIVATION_PATH_V1", 304, "crypto-keypath"),
+    ("USE_INFO_V1", 305, "crypto-coin-info"),
+    ("OUTPUT_DESCRIPTOR_V1", 307, "crypto-output"),
+    ("PSBT_V1", 310, "crypto-psbt"),
+    ("ACCOUNT_V1", 311, "crypto-account"),
+    # Output script subtypes
     ("OUTPUT_SCRIPT_HASH", 400, "output-script-hash"),
     ("OUTPUT_WITNESS_SCRIPT_HASH", 401, "output-witness-script-hash"),
     ("OUTPUT_PUBLIC_KEY", 402, "output-public-key"),
@@ -92,7 +105,7 @@ def test_public_reexport_from_dcbor_available() -> None:
 
 
 def test_constants_match_expected_values() -> None:
-    assert len(EXPECTED_TAGS) == 66
+    assert len(EXPECTED_TAGS) == 75
 
     for suffix, expected_value, expected_name in EXPECTED_TAGS:
         assert getattr(tags_registry, f"TAG_{suffix}") == expected_value
@@ -133,3 +146,8 @@ def test_register_tags_updates_global_store() -> None:
         assert store.name_for_value(TAG_URI) == TAG_NAME_URI
 
     with_tags(check)
+
+
+def test_registration_count_matches_rust() -> None:
+    """Verify the internal registration list has exactly 75 entries."""
+    assert len(tags_registry._BC_TAGS) == 75
