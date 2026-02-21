@@ -45,7 +45,7 @@ from .ed25519_signing import (
     ed25519_sign,
     ed25519_verify,
 )
-from .error import AeadError, Error, Result
+from .error import AeadError, Error
 from .hash import (
     CRC32_SIZE,
     SHA256_SIZE,
@@ -107,7 +107,6 @@ __all__ = [
     "Error",
     "GENERIC_PRIVATE_KEY_SIZE",
     "GENERIC_PUBLIC_KEY_SIZE",
-    "Result",
     "SCHNORR_PUBLIC_KEY_SIZE",
     "SCHNORR_SIGNATURE_SIZE",
     "SHA256_SIZE",

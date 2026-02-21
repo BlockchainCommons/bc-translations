@@ -53,3 +53,15 @@ COMPLETED
 - NICE TO HAVE applied: Created conftest.py with shared test_seed and fake_rng fixtures
 - NICE TO HAVE declined: rng_ prefix retained for cross-language API consistency per "Translate, don't rewrite"
 - All 8 tests still passing after all fixes
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing public API for legacy/compatibility symbols and alias-based shims.
+- Preparing targeted cleanup while preserving current API behavior.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Findings: 1 compatibility-style API issue (`rng_random_array` implemented as direct alias symbol).
+- Fixes applied: replaced alias assignment with an explicit function implementation.
+- Verified tests after fixes: 8/8 passing (`uv run pytest -q`).
+- Verdict: IDIOMATIC.

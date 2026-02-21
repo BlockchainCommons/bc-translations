@@ -153,8 +153,9 @@ def rng_next_in_closed_range(
     return start + rng_next_with_upper_bound(rng, delta + 1, bits=bits)
 
 
-rng_random_array = rng_random_data
-"""Alias for ``rng_random_data``."""
+def rng_random_array(rng: RandomNumberGenerator, size: int) -> bytes:
+    """Return a bytes object of random bytes of the given size."""
+    return rng_random_data(rng, size)
 
 
 def rng_random_bool(rng: RandomNumberGenerator) -> bool:

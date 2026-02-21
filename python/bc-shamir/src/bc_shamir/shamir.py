@@ -93,7 +93,7 @@ def split_secret(
         for index in range(threshold - 2, share_count):
             value = interpolate(n, x, secret_len, y, index)
             result[index][:] = value
-    except Exception as exc:  # pragma: no cover - defensive parity with Rust Result
+    except Exception as exc:  # pragma: no cover - defensive normalization
         raise InterpolationFailure() from exc
     finally:
         memzero(digest)
@@ -129,7 +129,7 @@ def recover_secret(
             interpolate(threshold, indexes_u8, share_length, shares, DIGEST_INDEX)
         )
         secret = interpolate(threshold, indexes_u8, share_length, shares, SECRET_INDEX)
-    except Exception as exc:  # pragma: no cover - defensive parity with Rust Result
+    except Exception as exc:  # pragma: no cover - defensive normalization
         raise InterpolationFailure() from exc
 
     verify = bytearray(_create_digest(digest[4:], secret))

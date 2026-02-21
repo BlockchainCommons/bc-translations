@@ -42,3 +42,15 @@ COMPLETED
 - Confirmed module boundaries, naming, and return types align with Python usage while preserving Rust behavior.
 - Retained deterministic secp256k1 semantics via libsecp bindings for vector parity.
 - Key metrics: no additional behavioral fixes required after critique; test suite remains 44/44 passing.
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing public API for legacy/compatibility symbols and transitional shims.
+- Preparing cleanup and dependent-package verification for any API changes.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Findings: 1 compatibility symbol (`Result` alias export in error surface).
+- Fixes applied: removed `Result` alias from public API and exports.
+- Verified tests after fixes: 44/44 passing (`.venv/bin/pytest -q`).
+- Verdict: IDIOMATIC.

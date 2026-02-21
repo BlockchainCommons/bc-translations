@@ -72,3 +72,14 @@ COMPLETED
   3. Added TYPE_CHECKING imports for Version annotations in _patterns.py and _gradients.py
 - Tests: 2/2 passing after fixes (`PYTHONPATH=src pytest -q`, 202.81s)
 - Verdict: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing public API for legacy/compatibility symbols and transitional shims.
+- Verifying package behavior after audit via test rerun.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Findings: 0 compatibility symbols or transitional APIs requiring changes.
+- Verified tests after audit: 2/2 passing (`.venv/bin/pytest -q`).
+- Verdict: IDIOMATIC.

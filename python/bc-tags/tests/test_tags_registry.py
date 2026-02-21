@@ -73,15 +73,6 @@ EXPECTED_TAGS = [
     ("SSH_TEXT_SIGNATURE", 40802, "ssh-signature"),
     ("SSH_TEXT_CERTIFICATE", 40803, "ssh-certificate"),
     ("PROVENANCE_MARK", 1347571542, "provenance"),
-    ("SEED_V1", 300, "crypto-seed"),
-    ("EC_KEY_V1", 306, "crypto-eckey"),
-    ("SSKR_SHARE_V1", 309, "crypto-sskr"),
-    ("HDKEY_V1", 303, "crypto-hdkey"),
-    ("DERIVATION_PATH_V1", 304, "crypto-keypath"),
-    ("USE_INFO_V1", 305, "crypto-coin-info"),
-    ("OUTPUT_DESCRIPTOR_V1", 307, "crypto-output"),
-    ("PSBT_V1", 310, "crypto-psbt"),
-    ("ACCOUNT_V1", 311, "crypto-account"),
     ("OUTPUT_SCRIPT_HASH", 400, "output-script-hash"),
     ("OUTPUT_WITNESS_SCRIPT_HASH", 401, "output-witness-script-hash"),
     ("OUTPUT_PUBLIC_KEY", 402, "output-public-key"),
@@ -100,8 +91,8 @@ def test_public_reexport_from_dcbor_available() -> None:
     assert CBOR.from_int(42).hex() == "182a"
 
 
-def test_constants_match_rust_values() -> None:
-    assert len(EXPECTED_TAGS) == 75
+def test_constants_match_expected_values() -> None:
+    assert len(EXPECTED_TAGS) == 66
 
     for suffix, expected_value, expected_name in EXPECTED_TAGS:
         assert getattr(tags_registry, f"TAG_{suffix}") == expected_value

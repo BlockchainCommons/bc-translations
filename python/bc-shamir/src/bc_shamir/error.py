@@ -1,7 +1,5 @@
 """Error types for bc-shamir."""
 
-from typing import Any
-
 
 class Error(Exception):
     """Base error for bc-shamir operations."""
@@ -63,15 +61,11 @@ class SharesUnequalLength(Error):
         super().__init__("shares have unequal length")
 
 
-Result = Any
-
-
 __all__ = [
     "ChecksumFailure",
     "Error",
     "InterpolationFailure",
     "InvalidThreshold",
-    "Result",
     "SecretNotEvenLen",
     "SecretTooLong",
     "SecretTooShort",

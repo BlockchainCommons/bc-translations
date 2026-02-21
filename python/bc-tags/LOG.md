@@ -54,3 +54,15 @@ COMPLETED
 - Verified package layout, symbol naming, and re-export strategy are idiomatic for this monorepo.
 - Re-ran tests after critique: 5/5 passing.
 - VERDICT: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing public API for legacy/compatibility symbols and transitional shims.
+- Preparing cleanup and dependent-package verification for any API changes.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Findings: 1 legacy API surface (`*_V1` tag constants and registrations).
+- Fixes applied: removed all `*_V1` symbols from constants, registration list, exports, and parity tests.
+- Verified tests after fixes: 5/5 passing (`PYTHONPATH=src dcbor/.venv/bin/pytest -q tests`).
+- Verdict: IDIOMATIC.

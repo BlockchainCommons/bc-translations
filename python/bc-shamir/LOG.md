@@ -42,3 +42,15 @@ COMPLETED
 - Applied fluency fixes: made helper functions private by convention and narrowed module exports to public API entrypoints.
 - Confirmed naming and package structure are idiomatic Python while preserving Rust behavior.
 - Key metrics: 2 fluency issues fixed; tests remain 6/6 passing (`pytest -q python/bc-shamir/tests`).
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing public API for legacy/compatibility symbols and transitional shims.
+- Preparing cleanup and dependent-package verification for any API changes.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Findings: 2 compatibility-style artifacts (`Result` alias export and Rust-Result wording in defensive comments).
+- Fixes applied: removed `Result` alias from public API and normalized defensive comments.
+- Verified tests after fixes: 6/6 passing (`bc-crypto/.venv/bin/pytest -q tests`).
+- Verdict: IDIOMATIC.

@@ -70,3 +70,14 @@ COMPLETED
 - Added tests for map item access semantics and set membership protocol, plus stronger state-propagation assertions in walk tests
 - All 58 tests passing
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Auditing public API for legacy/compatibility symbols and transitional shims.
+- Verifying package behavior after audit via test rerun.
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Findings: 0 compatibility symbols or transitional APIs requiring changes.
+- Verified tests after audit: 58/58 passing (`uv run pytest -q`).
+- Verdict: IDIOMATIC.

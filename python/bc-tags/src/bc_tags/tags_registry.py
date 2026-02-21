@@ -2,7 +2,7 @@
 
 Defines tag constants and registration helpers corresponding to the Rust
 `bc-tags` crate. The module extends `dcbor`'s registry with Blockchain
-Commons tag assignments, including deprecated aliases for compatibility.
+Commons tag assignments.
 """
 
 from __future__ import annotations
@@ -181,33 +181,6 @@ TAG_NAME_SSH_TEXT_CERTIFICATE = "ssh-certificate"
 TAG_PROVENANCE_MARK: TagValue = 1347571542
 TAG_NAME_PROVENANCE_MARK = "provenance"
 
-TAG_SEED_V1: TagValue = 300
-TAG_NAME_SEED_V1 = "crypto-seed"
-
-TAG_EC_KEY_V1: TagValue = 306
-TAG_NAME_EC_KEY_V1 = "crypto-eckey"
-
-TAG_SSKR_SHARE_V1: TagValue = 309
-TAG_NAME_SSKR_SHARE_V1 = "crypto-sskr"
-
-TAG_HDKEY_V1: TagValue = 303
-TAG_NAME_HDKEY_V1 = "crypto-hdkey"
-
-TAG_DERIVATION_PATH_V1: TagValue = 304
-TAG_NAME_DERIVATION_PATH_V1 = "crypto-keypath"
-
-TAG_USE_INFO_V1: TagValue = 305
-TAG_NAME_USE_INFO_V1 = "crypto-coin-info"
-
-TAG_OUTPUT_DESCRIPTOR_V1: TagValue = 307
-TAG_NAME_OUTPUT_DESCRIPTOR_V1 = "crypto-output"
-
-TAG_PSBT_V1: TagValue = 310
-TAG_NAME_PSBT_V1 = "crypto-psbt"
-
-TAG_ACCOUNT_V1: TagValue = 311
-TAG_NAME_ACCOUNT_V1 = "crypto-account"
-
 TAG_OUTPUT_SCRIPT_HASH: TagValue = 400
 TAG_NAME_OUTPUT_SCRIPT_HASH = "output-script-hash"
 
@@ -259,9 +232,6 @@ _BC_TAGS: list[Tag] = [
     Tag(TAG_PLACEHOLDER, TAG_NAME_PLACEHOLDER),
     Tag(TAG_REPLACEMENT, TAG_NAME_REPLACEMENT),
     Tag(TAG_EVENT, TAG_NAME_EVENT),
-    Tag(TAG_SEED_V1, TAG_NAME_SEED_V1),
-    Tag(TAG_EC_KEY_V1, TAG_NAME_EC_KEY_V1),
-    Tag(TAG_SSKR_SHARE_V1, TAG_NAME_SSKR_SHARE_V1),
     Tag(TAG_SEED, TAG_NAME_SEED),
     Tag(TAG_EC_KEY, TAG_NAME_EC_KEY),
     Tag(TAG_SSKR_SHARE, TAG_NAME_SSKR_SHARE),
@@ -288,12 +258,6 @@ _BC_TAGS: list[Tag] = [
     Tag(TAG_MLDSA_PRIVATE_KEY, TAG_NAME_MLDSA_PRIVATE_KEY),
     Tag(TAG_MLDSA_PUBLIC_KEY, TAG_NAME_MLDSA_PUBLIC_KEY),
     Tag(TAG_MLDSA_SIGNATURE, TAG_NAME_MLDSA_SIGNATURE),
-    Tag(TAG_HDKEY_V1, TAG_NAME_HDKEY_V1),
-    Tag(TAG_DERIVATION_PATH_V1, TAG_NAME_DERIVATION_PATH_V1),
-    Tag(TAG_USE_INFO_V1, TAG_NAME_USE_INFO_V1),
-    Tag(TAG_OUTPUT_DESCRIPTOR_V1, TAG_NAME_OUTPUT_DESCRIPTOR_V1),
-    Tag(TAG_PSBT_V1, TAG_NAME_PSBT_V1),
-    Tag(TAG_ACCOUNT_V1, TAG_NAME_ACCOUNT_V1),
     Tag(TAG_HDKEY, TAG_NAME_HDKEY),
     Tag(TAG_DERIVATION_PATH, TAG_NAME_DERIVATION_PATH),
     Tag(TAG_USE_INFO, TAG_NAME_USE_INFO),
@@ -444,24 +408,6 @@ __all__ = [
     "TAG_NAME_SSH_TEXT_CERTIFICATE",
     "TAG_PROVENANCE_MARK",
     "TAG_NAME_PROVENANCE_MARK",
-    "TAG_SEED_V1",
-    "TAG_NAME_SEED_V1",
-    "TAG_EC_KEY_V1",
-    "TAG_NAME_EC_KEY_V1",
-    "TAG_SSKR_SHARE_V1",
-    "TAG_NAME_SSKR_SHARE_V1",
-    "TAG_HDKEY_V1",
-    "TAG_NAME_HDKEY_V1",
-    "TAG_DERIVATION_PATH_V1",
-    "TAG_NAME_DERIVATION_PATH_V1",
-    "TAG_USE_INFO_V1",
-    "TAG_NAME_USE_INFO_V1",
-    "TAG_OUTPUT_DESCRIPTOR_V1",
-    "TAG_NAME_OUTPUT_DESCRIPTOR_V1",
-    "TAG_PSBT_V1",
-    "TAG_NAME_PSBT_V1",
-    "TAG_ACCOUNT_V1",
-    "TAG_NAME_ACCOUNT_V1",
     "TAG_OUTPUT_SCRIPT_HASH",
     "TAG_NAME_OUTPUT_SCRIPT_HASH",
     "TAG_OUTPUT_WITNESS_SCRIPT_HASH",
