@@ -58,6 +58,8 @@ export {
   type CborSummarizer,
   type SummarizerResult,
   getGlobalTagsStore,
+  withTags,
+  withTagsMut,
 } from "./tags-store";
 export * from "./tags";
 export { registerTags, registerTagsIn, tagsForValues } from "./tags";
@@ -73,7 +75,7 @@ export { hexOpt, hexToBytes, bytesToHex, type HexFormatOpts } from "./dump";
 
 // Walk/Traversal functionality
 export {
-  type EdgeType,
+  EdgeType,
   type EdgeTypeVariant,
   type WalkElement,
   type Visitor,
@@ -86,10 +88,10 @@ export {
 // Codable interfaces
 export { type CborCodable, type CborEncodable, type CborDecodable } from "./cbor-codable";
 
-// Error types (matches Rust's Error enum)
+// Error types
 export { type Error, type Result, Ok, Err, errorMsg, errorToString, CborError } from "./error";
 
-// Note: conveniences.ts is an internal module (not exported in Rust either)
+// Note: conveniences.ts is an internal module
 // The main convenience functions are exported from cbor.ts above
 
 // BigNum support (CBOR tags 2/3, RFC 8949 §3.4.3)

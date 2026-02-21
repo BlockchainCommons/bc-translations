@@ -82,3 +82,19 @@ COMPLETED
 - Removed compatibility-only exports and wrappers: `tryIntoText`, `tryIntoBool`, `tryIntoByteString`, `tryExpectedTaggedValue`, `asTaggedValue`, `asByteString`, `asCborArray`, `asCborMap`, and `CborArrayWrapper`
 - Verification: `npm run build` and `npm test` pass (211/211 tests)
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original: GPT 5.3 Codex)
+- Reviewing naming, error handling, API design, TypeScript idioms, documentation
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model)
+COMPLETED
+- Issues found: 12 (4 MUST FIX, 5 SHOULD FIX, 3 NICE TO HAVE)
+- Issues fixed: 12/12
+- MUST FIX: Converted EdgeType from enum to const object pattern (matches MajorType); removed empty globals.d.ts and unnecessary global.d.ts; removed dead validateCanonical functions from float.ts; tightened CborMap.get type safety
+- SHOULD FIX: Removed dead cborFalse/cborTrue/cborNull/cborNaN factory functions; removed CborMap.len() method; fixed == to === for Infinity comparisons; exported withTags/withTagsMut from index.ts; cleaned Rust-referencing doc comments across 13 files
+- NICE TO HAVE: Removed unreachable return in extractCbor; replaced custom getUint64 with native DataView.getBigUint64; improved stdlib.ts module doc
+- No downstream TypeScript dependents affected (bc-tags not yet translated)
+- Verification: `npm test` passes (211/211 tests)
+- VERDICT: IDIOMATIC

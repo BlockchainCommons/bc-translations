@@ -80,7 +80,7 @@ export type CborNumber = number | bigint;
  * - Collections: `CborMap`, arrays, JavaScript `Map`, JavaScript `Set`
  * - Objects: Plain objects are converted to CBOR maps
  *
- * Matches Rust's `From<T>` trait implementations for CBOR.
+ * Covers all types that the `cbor()` function can accept.
  *
  * @example
  * ```typescript
@@ -282,7 +282,7 @@ export type Cbor = (
   CborMethods;
 
 // ============================================================================
-// Encoding Functions (matches Rust CBOR conversion logic)
+// Encoding Functions
 // ============================================================================
 
 export interface ToCbor {
@@ -319,7 +319,6 @@ const hasToCbor = (value: unknown): value is ToCbor => {
 
 /**
  * Convert any value to a CBOR representation.
- * Matches Rust's `From` trait implementations for CBOR.
  */
 export const cbor = (value: CborInput): Cbor => {
   // If already CBOR and has methods, return as-is
@@ -339,12 +338,12 @@ export const cbor = (value: CborInput): Cbor => {
       result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: NaN } };
     } else if (typeof value === "number" && hasFractionalPart(value)) {
       result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: value } };
-    } else if (value == Infinity) {
+    } else if (value === Infinity) {
       result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: Infinity } };
-    } else if (value == -Infinity) {
+    } else if (value === -Infinity) {
       result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: -Infinity } };
     } else if (value < 0) {
-      // Store the magnitude to encode, matching Rust's representation
+      // Store the magnitude to encode
       // For a negative value n, CBOR encodes it as -1-n, so we store -n-1
       if (typeof value === "bigint") {
         result = { isCbor: true, type: MajorType.Negative, value: -value - 1n };
@@ -416,7 +415,6 @@ export const cborHex = (value: CborInput): string => {
 
 /**
  * Encode a CBOR value to binary data.
- * Matches Rust's `CBOR::to_cbor_data()` method.
  */
 export const cborData = (value: CborInput): Uint8Array => {
   const c = cbor(value);
@@ -425,7 +423,7 @@ export const cborData = (value: CborInput): Uint8Array => {
       return encodeVarInt(c.value, MajorType.Unsigned);
     }
     case MajorType.Negative: {
-      // Value is already stored as the magnitude to encode (matching Rust)
+      // Value is already stored as the magnitude to encode
       return encodeVarInt(c.value, MajorType.Negative);
     }
     case MajorType.ByteString: {
@@ -513,25 +511,6 @@ export const toTaggedValue = (tag: CborNumber | Tag, item: CborInput): Cbor => {
   });
 };
 
-export const cborFalse = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "False" } });
-};
-
-export const cborTrue = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "True" } });
-};
-
-export const cborNull = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "Null" } });
-};
-
-export const cborNaN = (): Cbor => {
-  return attachMethods({
-    isCbor: true,
-    type: MajorType.Simple,
-    value: { type: "Float", value: NaN },
-  });
-};
 
 // ============================================================================
 // Method Attachment System
@@ -816,11 +795,11 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
  * CBOR constants and helper methods.
  *
  * Provides constants for common simple values (False, True, Null) and static methods
- * matching the Rust CBOR API for encoding/decoding.
+ * for encoding/decoding.
  */
 // eslint-disable-next-line no-redeclare
 export const Cbor = {
-  // Static CBOR simple values (matching Rust naming) - with methods attached
+  // Static CBOR simple values - with methods attached
   False: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "False" } }),
   True: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "True" } }),
   Null: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "Null" } }),
@@ -831,13 +810,11 @@ export const Cbor = {
   }),
 
   // ============================================================================
-  // Static Factory/Decoding Methods (matches Rust CBOR static methods)
+  // Static Factory/Decoding Methods
   // ============================================================================
 
   /**
    * Creates a CBOR value from any JavaScript value.
-   *
-   * Matches Rust's `CBOR::from()` behavior for various types.
    *
    * @param value - Any JavaScript value (number, string, boolean, null, array, object, etc.)
    * @returns A CBOR symbolic representation with instance methods
@@ -849,8 +826,6 @@ export const Cbor = {
   /**
    * Decodes binary data into CBOR symbolic representation.
    *
-   * Matches Rust's `CBOR::try_from_data()` method.
-   *
    * @param data - The binary data to decode
    * @returns A CBOR value with instance methods
    * @throws Error if the data is not valid CBOR or violates dCBOR encoding rules
@@ -861,8 +836,6 @@ export const Cbor = {
 
   /**
    * Decodes a hexadecimal string into CBOR symbolic representation.
-   *
-   * Matches Rust's `CBOR::try_from_hex()` method.
    *
    * @param hex - A string containing hexadecimal characters
    * @returns A CBOR value with instance methods

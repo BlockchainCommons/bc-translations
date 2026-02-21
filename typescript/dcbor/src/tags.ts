@@ -46,13 +46,11 @@ export const TAG_NEGATIVE_BIGNUM = 3;
 
 /**
  * Name for tag 2 (positive bignum).
- * Matches Rust's `TAG_NAME_POSITIVE_BIGNUM`.
  */
 export const TAG_NAME_POSITIVE_BIGNUM = "positive-bignum";
 
 /**
  * Name for tag 3 (negative bignum).
- * Matches Rust's `TAG_NAME_NEGATIVE_BIGNUM`.
  */
 export const TAG_NAME_NEGATIVE_BIGNUM = "negative-bignum";
 
@@ -145,9 +143,9 @@ export const TAG_SET = 258;
 
 // ============================================================================
 // NOTE: Blockchain Commons envelope and extension tags (TAG_ENVELOPE, TAG_LEAF,
-// TAG_KNOWN_VALUE, TAG_COMPRESSED, etc.) are defined in the @bcts/tags
-// package, NOT in dcbor. This matches the Rust architecture where bc-dcbor-rust
-// only defines TAG_DATE, and bc-tags-rust defines all envelope-related tags.
+// TAG_KNOWN_VALUE, TAG_COMPRESSED, etc.) are defined in the @bc/tags
+// package, NOT in dcbor. This package only defines TAG_DATE and standard
+// IANA tags; all envelope-related tags belong to bc-tags.
 // ============================================================================
 
 // ============================================================================
@@ -161,7 +159,6 @@ export const TAG_SELF_DESCRIBE_CBOR = 55799;
 
 // ============================================================================
 // Global Tags Store Registration
-// Matches Rust's register_tags() functionality
 // ============================================================================
 
 import type { TagsStore, SummarizerResult } from "./tags-store";
@@ -170,13 +167,12 @@ import { CborDate } from "./date";
 import type { Cbor } from "./cbor";
 import { biguintFromUntaggedCbor, bigintFromNegativeUntaggedCbor } from "./bignum";
 
-// Tag constants matching Rust
+// Tag constants
 export const TAG_DATE = 1;
 export const TAG_NAME_DATE = "date";
 
 /**
  * Register standard tags in a specific tags store.
- * Matches Rust's register_tags_in() function.
  *
  * @param tagsStore - The tags store to register tags into
  */
@@ -189,13 +185,13 @@ export const registerTagsIn = (tagsStore: TagsStore): void => {
     try {
       return { ok: true, value: CborDate.fromUntaggedCbor(untaggedCbor).toString() };
     } catch (e) {
-      // On error, return error result matching Rust's Result::Err
+      // On error, return error result
       const message = e instanceof Error ? e.message : String(e);
       return { ok: false, error: { type: "Custom", message } };
     }
   });
 
-  // Register bignum tags (matching Rust's #[cfg(feature = "num-bigint")] block)
+  // Register bignum tags
   const biguintTag = createTag(TAG_POSITIVE_BIGNUM, TAG_NAME_POSITIVE_BIGNUM);
   const bigintTag = createTag(TAG_NEGATIVE_BIGNUM, TAG_NAME_NEGATIVE_BIGNUM);
   tagsStore.insertAll([biguintTag, bigintTag]);
@@ -231,7 +227,6 @@ export const registerTagsIn = (tagsStore: TagsStore): void => {
 
 /**
  * Register standard tags in the global tags store.
- * Matches Rust's register_tags() function.
  *
  * This function is idempotent - calling it multiple times is safe.
  */
@@ -242,7 +237,6 @@ export const registerTags = (): void => {
 
 /**
  * Converts an array of tag values to their corresponding Tag objects.
- * Matches Rust's tags_for_values() function.
  *
  * This function looks up each tag value in the global tag registry and returns
  * an array of complete Tag objects. For any tag values that aren't

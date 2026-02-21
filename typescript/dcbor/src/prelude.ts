@@ -5,10 +5,8 @@
  *
  * Prelude module - Re-exports commonly used types and classes.
  *
- * This module provides a curated set of imports matching Rust's prelude.rs.
+ * This module provides a curated set of commonly used imports.
  * Exports only types, interfaces, and core classes - not convenience functions.
- *
- * Equivalent to Rust's prelude.rs
  *
  * @module prelude
  *

@@ -16,7 +16,7 @@ import type { Tag } from "./tag";
 import type { Error as CborErrorType } from "./error";
 
 /**
- * Result type for summarizer functions, matching Rust's Result<String, Error>.
+ * Result type for summarizer functions.
  */
 export type SummarizerResult =
   | { readonly ok: true; readonly value: string }
@@ -26,7 +26,7 @@ export type SummarizerResult =
  * Function type for custom CBOR value summarizers.
  *
  * Summarizers provide custom string representations for tagged values.
- * Returns a Result type matching Rust's `Result<String, Error>`.
+ * Returns a SummarizerResult indicating success or failure.
  *
  * @param cbor - The CBOR value to summarize
  * @param flat - If true, produce single-line output
@@ -98,14 +98,13 @@ export class TagsStore implements TagsStoreTrait {
   private readonly _summarizers = new Map<string, CborSummarizer>();
 
   constructor() {
-    // Start with empty store, matching Rust's Default implementation
+    // Start with empty store
     // Tags must be explicitly registered using insert() or registerTags()
   }
 
   /**
    * Insert a tag into the registry.
    *
-   * Matches Rust's TagsStore::insert() behavior:
    * - Throws if the tag name is undefined or empty
    * - Throws if a tag with the same value exists with a different name
    * - Allows re-registering the same tag value with the same name
@@ -122,7 +121,7 @@ export class TagsStore implements TagsStoreTrait {
   insert(tag: Tag): void {
     const name = tag.name;
 
-    // Rust: let name = tag.name().unwrap(); assert!(!name.is_empty());
+    // Tag must have a non-empty name
     if (name === undefined || name === "") {
       throw new Error(`Tag ${tag.value} must have a non-empty name`);
     }
@@ -130,7 +129,7 @@ export class TagsStore implements TagsStoreTrait {
     const key = this._valueKey(tag.value);
     const existing = this._tagsByValue.get(key);
 
-    // Rust: if old_name != name { panic!(...) }
+    // Reject conflicting name for same tag value
     if (existing?.name !== undefined && existing.name !== name) {
       throw new Error(
         `Attempt to register tag: ${tag.value} '${existing.name}' with different name: '${name}'`,
@@ -143,7 +142,6 @@ export class TagsStore implements TagsStoreTrait {
 
   /**
    * Insert multiple tags into the registry.
-   * Matches Rust's insert_all() method.
    *
    * @param tags - Array of tags to register
    *
@@ -268,7 +266,7 @@ export const withTags = <T>(action: (tags: TagsStore) => T): T => {
 /**
  * Execute a function with mutable access to the global tags store.
  *
- * This is an alias for withTags() for consistency with Rust API.
+ * This is an alias for withTags() that signals mutating intent.
  *
  * @template T - Return type of the action function
  * @param action - Function to execute with the tags store

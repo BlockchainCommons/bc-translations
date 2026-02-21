@@ -72,7 +72,6 @@ export const extractCbor = (cbor: Cbor | Uint8Array): unknown => {
       if (c.value.type === "Float") return c.value.value;
       return c;
   }
-  return undefined;
 };
 
 // ============================================================================

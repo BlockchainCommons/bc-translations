@@ -36,8 +36,6 @@ const TAG_3_NEGATIVE_BIGNUM = 3;
 /**
  * Validates that a bignum magnitude byte string is in shortest canonical form.
  *
- * Matches Rust's `validate_bignum_magnitude()`.
- *
  * Rules:
  * - For positive bignums (tag 2): empty byte string represents zero;
  *   non-empty must not have leading zero bytes.
@@ -71,8 +69,6 @@ export function validateBignumMagnitude(bytes: Uint8Array, isNegative: boolean):
 /**
  * Strips leading zero bytes from a byte array, returning the minimal
  * representation.
- *
- * Matches Rust's `strip_leading_zeros()`.
  *
  * @param bytes - The byte array to strip
  * @returns A subarray with leading zeros removed
@@ -124,8 +120,6 @@ export function bytesToBigint(bytes: Uint8Array): bigint {
 /**
  * Encode a non-negative bigint as a CBOR tag 2 (positive bignum).
  *
- * Matches Rust's `From<BigUint> for CBOR`.
- *
  * The value is always encoded as a bignum regardless of size.
  * Zero is encoded as tag 2 with an empty byte string.
  *
@@ -144,8 +138,6 @@ export function biguintToCbor(value: bigint): Cbor {
 
 /**
  * Encode a bigint as a CBOR tag 2 or tag 3 bignum.
- *
- * Matches Rust's `From<BigInt> for CBOR`.
  *
  * - Non-negative values use tag 2 (positive bignum).
  * - Negative values use tag 3 (negative bignum), where the encoded
@@ -173,8 +165,6 @@ export function bigintToCbor(value: bigint): Cbor {
 /**
  * Decode a BigUint from an untagged CBOR byte string.
  *
- * Matches Rust's `biguint_from_untagged_cbor()`.
- *
  * This function is intended for use in tag summarizers where the tag has
  * already been stripped. It expects a CBOR byte string representing the
  * big-endian magnitude of a positive bignum (tag 2 content).
@@ -197,8 +187,6 @@ export function biguintFromUntaggedCbor(cbor: Cbor): bigint {
 
 /**
  * Decode a BigInt from an untagged CBOR byte string for a negative bignum.
- *
- * Matches Rust's `bigint_from_negative_untagged_cbor()`.
  *
  * This function is intended for use in tag summarizers where the tag has
  * already been stripped. It expects a CBOR byte string representing `n` where
@@ -225,8 +213,6 @@ export function bigintFromNegativeUntaggedCbor(cbor: Cbor): bigint {
 
 /**
  * Convert CBOR to a non-negative bigint.
- *
- * Matches Rust's `TryFrom<CBOR> for BigUint`.
  *
  * Accepts:
  * - Major type 0 (unsigned integer)
@@ -274,8 +260,6 @@ export function cborToBiguint(cbor: Cbor): bigint {
 
 /**
  * Convert CBOR to a bigint (any sign).
- *
- * Matches Rust's `TryFrom<CBOR> for BigInt`.
  *
  * Accepts:
  * - Major type 0 (unsigned integer)

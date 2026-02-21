@@ -100,7 +100,7 @@ export const decodeVarIntData = (
       offset += 4;
       break;
     case 27: // 8-byte additional info
-      value = getUint64(dataView, offset, false);
+      value = dataView.getBigUint64(offset, false);
       if (value <= Number.MAX_SAFE_INTEGER) {
         value = Number(value);
       }
@@ -118,13 +118,3 @@ export const decodeVarInt = (
 ): { majorType: MajorType; value: CborNumber; offset: number } => {
   return decodeVarIntData(new DataView(data.buffer, data.byteOffset, data.byteLength), 0);
 };
-
-function getUint64(view: DataView, byteOffset: number, littleEndian: boolean): bigint {
-  const lowWord = littleEndian
-    ? view.getUint32(byteOffset, true)
-    : view.getUint32(byteOffset + 4, false);
-  const highWord = littleEndian
-    ? view.getUint32(byteOffset + 4, true)
-    : view.getUint32(byteOffset, false);
-  return (BigInt(highWord) << BigInt(32)) + BigInt(lowWord);
-}

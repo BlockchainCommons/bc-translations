@@ -500,7 +500,7 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
    */
   toString(): string {
     const dt = this._datetime;
-    // Check only hours, minutes, and seconds (not milliseconds) to match Rust behavior
+    // Check only hours, minutes, and seconds (not milliseconds)
     const hasTime = dt.getUTCHours() !== 0 || dt.getUTCMinutes() !== 0 || dt.getUTCSeconds() !== 0;
 
     if (!hasTime) {
@@ -511,7 +511,7 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
       }
       return datePart;
     } else {
-      // Show full ISO datetime without milliseconds (matches Rust's SecondsFormat::Secs)
+      // Show full ISO datetime without milliseconds
       const iso = dt.toISOString();
       // Remove milliseconds: "2023-02-08T15:30:45.000Z" -> "2023-02-08T15:30:45Z"
       return iso.replace(/\.\d{3}Z$/, "Z");

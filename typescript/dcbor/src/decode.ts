@@ -141,7 +141,7 @@ function decodeCborInternal(data: DataView): { cbor: Cbor; len: number } {
       return { cbor, len: varIntLen };
     }
     case MajorType.Negative: {
-      // Store the magnitude as-is, matching Rust's representation
+      // Store the magnitude as-is (CBOR negative = -1 - value)
       // The decoded value is what gets encoded (not the actual negative number)
       const cborObj = { isCbor: true, type: MajorType.Negative, value: value } as const;
       const cbor = attachMethods(cborObj);

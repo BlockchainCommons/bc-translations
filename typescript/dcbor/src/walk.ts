@@ -22,21 +22,28 @@ import { CborError } from "./error";
 
 /**
  * Types of edges in the CBOR tree traversal.
+ *
+ * Uses a const object pattern (consistent with MajorType) instead of
+ * an enum, to avoid TypeScript enum pitfalls and align with modern
+ * idiomatic TypeScript.
  */
-export enum EdgeType {
+export const EdgeType = {
   /** No specific edge type (root element) */
-  None = "none",
+  None: "none",
   /** Element within an array */
-  ArrayElement = "array_element",
+  ArrayElement: "array_element",
   /** Key-value pair in a map (semantic unit) */
-  MapKeyValue = "map_key_value",
+  MapKeyValue: "map_key_value",
   /** Key within a map */
-  MapKey = "map_key",
+  MapKey: "map_key",
   /** Value within a map */
-  MapValue = "map_value",
+  MapValue: "map_value",
   /** Content of a tagged value */
-  TaggedContent = "tagged_content",
-}
+  TaggedContent: "tagged_content",
+} as const;
+
+// eslint-disable-next-line no-redeclare -- Intentionally using same name for value and type
+export type EdgeType = (typeof EdgeType)[keyof typeof EdgeType];
 
 /**
  * Discriminated union for edge type information.

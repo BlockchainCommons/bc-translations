@@ -3,10 +3,7 @@
  * Copyright © 2025-2026 Leonardo Amoroso Custodio
  * Copyright © 2026 Parity Technologies
  *
- * Standard library re-exports and compatibility layer.
- *
- * In Rust, this handles std/no_std feature flags.
- * In TypeScript, this is primarily documentation.
+ * Standard library utilities for byte array operations.
  *
  * @module stdlib
  */

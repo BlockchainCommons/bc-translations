@@ -122,9 +122,7 @@ export const simpleEquals = (a: Simple, b: Simple): boolean => {
 };
 
 /**
- * Hash a Simple value.
- *
- * Matches Rust's Hash trait implementation.
+ * Hash a Simple value using FNV-1a.
  */
 export const simpleHash = (simple: Simple): number => {
   // Simple FNV-1a hash

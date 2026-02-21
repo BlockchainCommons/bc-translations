@@ -66,7 +66,6 @@ export class CborMap {
 
   /**
    * Creates a new, empty CBOR Map.
-   * Matches Rust's Map::new().
    */
   static new(): CborMap {
     return new CborMap();
@@ -74,7 +73,6 @@ export class CborMap {
 
   /**
    * Inserts a key-value pair into the map.
-   * Matches Rust's Map::insert().
    */
   set<K extends CborInput, V extends CborInput>(key: K, value: V): void {
     const keyCbor = cbor(key);
@@ -84,7 +82,7 @@ export class CborMap {
   }
 
   /**
-   * Alias for set() to match Rust's insert() method.
+   * Alias for set().
    */
   insert<K extends CborInput, V extends CborInput>(key: K, value: V): void {
     this.set(key, value);
@@ -98,7 +96,6 @@ export class CborMap {
   /**
    * Get a value from the map, given a key.
    * Returns undefined if the key is not present in the map.
-   * Matches Rust's Map::get().
    */
   get<K extends CborInput, V>(key: K): V | undefined {
     const keyData = this._makeKey(key);
@@ -113,7 +110,6 @@ export class CborMap {
   /**
    * Get a value from the map, given a key.
    * Throws an error if the key is not present.
-   * Matches Rust's Map::extract().
    */
   extract<K extends CborInput, V>(key: K): V {
     const value = this.get<K, V>(key);
@@ -125,7 +121,6 @@ export class CborMap {
 
   /**
    * Tests if the map contains a key.
-   * Matches Rust's Map::contains_key().
    */
   containsKey<K extends CborInput>(key: K): boolean {
     const keyData = this._makeKey(key);
@@ -150,7 +145,6 @@ export class CborMap {
 
   /**
    * Returns the number of entries in the map.
-   * Matches Rust's Map::len().
    */
   get length(): number {
     return this._dict.length;
@@ -158,23 +152,13 @@ export class CborMap {
 
   /**
    * Alias for length to match JavaScript Map API.
-   * Also matches Rust's Map::len().
    */
   get size(): number {
     return this._dict.length;
   }
 
   /**
-   * Returns the number of entries in the map.
-   * Matches Rust's Map::len().
-   */
-  len(): number {
-    return this._dict.length;
-  }
-
-  /**
    * Checks if the map is empty.
-   * Matches Rust's Map::is_empty().
    */
   isEmpty(): boolean {
     return this._dict.length === 0;
@@ -194,7 +178,6 @@ export class CborMap {
   /**
    * Gets an iterator over the entries of the CBOR map, sorted by key.
    * Key sorting order is lexicographic by the key's binary-encoded CBOR.
-   * Matches Rust's Map::iter().
    */
   iter(): MapEntry[] {
     return this.entriesArray;
@@ -214,7 +197,6 @@ export class CborMap {
    * Inserts the next key-value pair into the map during decoding.
    * This is used for efficient map building during CBOR decoding.
    * Throws if the key is not in ascending order or is a duplicate.
-   * Matches Rust's Map::insert_next().
    */
   setNext<K extends CborInput, V extends CborInput>(key: K, value: V): void {
     const lastEntry = this._dict.max();

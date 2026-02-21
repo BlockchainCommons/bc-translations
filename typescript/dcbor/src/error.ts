@@ -138,8 +138,6 @@ export type Error =
 
 /**
  * Create a custom error with a message.
- *
- * Matches Rust's `Error::msg()` method.
  */
 export const errorMsg = (message: string): Error => ({
   type: "Custom",
@@ -148,8 +146,6 @@ export const errorMsg = (message: string): Error => ({
 
 /**
  * Convert an Error to a display string.
- *
- * Matches Rust's `Display` trait / `to_string()` method.
  */
 export const errorToString = (error: Error): string => {
   switch (error.type) {
@@ -189,10 +185,9 @@ export const errorToString = (error: Error): string => {
 };
 
 /**
- * Result type matching Rust's `Result<T, Error>`.
+ * Result type for operations that can fail with a CBOR error.
  *
- * In TypeScript, we use a discriminated union for Result instead of
- * try/catch for better type safety and Rust compatibility.
+ * Uses a discriminated union for explicit success/failure handling.
  */
 export type Result<T> = { ok: true; value: T } | { ok: false; error: Error };
 

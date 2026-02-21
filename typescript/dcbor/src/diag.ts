@@ -380,21 +380,19 @@ function formatMap(map: CborMap, opts: DiagFormatOpts): string {
 
 /**
  * Format tagged value.
- *
- * Matches Rust's diag_item() for Tagged case.
  */
 function formatTagged(tag: number | bigint, content: Cbor, opts: DiagFormatOpts): string {
-  // Check for summarizer first (matches Rust's summarization logic)
+  // Check for summarizer first
   if (opts.summarize === true) {
     const store = resolveTagsStore(opts.tags);
     const summarizer = store?.summarizer(tag);
     if (summarizer !== undefined) {
-      // Call summarizer and handle Result type (matching Rust's match on Result)
+      // Call summarizer and handle Result type
       const result = summarizer(content, opts.flat ?? false);
       if (result.ok) {
         return result.value;
       } else {
-        // Match Rust's error format: "<error: {}>"
+        // Format error as "<error: ...>"
         const errorMsg =
           result.error.type === "Custom"
             ? result.error.message
