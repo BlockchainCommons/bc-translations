@@ -633,3 +633,25 @@ COMPLETED
 - API coverage improved from 64/83 to 65/83 key manifest targets
 - Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (date surface improved; baseline parity and format-fidelity gaps remain)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing byte-string API parity beyond fixed-length conversion behavior
+- Adding method-level parity checks for copy semantics and mutation helpers
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Extended `byte_string_parity_test.go` with `TestByteStringMethodParity`
+- Added checks for `Len`, `IsEmpty`, `Data` copy semantics, `Extend`, `ToVec`, `Iter`, and `AsRef`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (84 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after byte-string method parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with supplemental byte-string method parity coverage
+- API coverage unchanged: 65/83 key manifest targets
+- Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (supplemental coverage improved; baseline parity still incomplete)

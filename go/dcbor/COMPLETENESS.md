@@ -44,7 +44,7 @@
 
 ### Implemented in Go
 
-- 83 tests total across:
+- 84 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -68,6 +68,7 @@
   - translated `walk.rs` traversal parity checks (counts, stop semantics, edge types, key-value semantics, depth limits, primitive/empty structure behavior, text extraction, realistic document traversal)
   - supplemental walk helper/edge-label parity checks (`WalkElement` accessors and full edge-label matrix)
   - translated `byte_string.rs` fixed-length conversion parity behavior
+  - supplemental byte-string method parity checks (`Len`, `IsEmpty`, `Data`, `Extend`, `ToVec`, `Iter`, `AsRef`)
 
 ### Rust Baseline (default-feature applicable)
 
