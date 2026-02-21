@@ -10,6 +10,13 @@ context: fork
 
 # Translation Coder
 
+## API Evolution Policy (De Novo)
+
+- This repository is de novo; there are no external consumers requiring backward compatibility.
+- When correctness or fluency work changes an API, apply the new API directly.
+- Never add deprecated aliases, compatibility wrappers, or transitional shims.
+- If an API change breaks dependent targets in this monorepo, update those dependents in the same work stream and re-run tests.
+
 Translate a Rust crate to a target language. The relevant `rust-to-<lang>` skill will be auto-loaded alongside this one for language-specific guidance.
 
 ## Inputs

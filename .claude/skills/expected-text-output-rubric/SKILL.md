@@ -9,6 +9,13 @@ context: fork
 
 # Expected Text Output Rubric
 
+## API Evolution Policy (De Novo)
+
+- This repository is de novo; there are no external consumers requiring backward compatibility.
+- When correctness or fluency work changes an API, apply the new API directly.
+- Never add deprecated aliases, compatibility wrappers, or transitional shims.
+- If an API change breaks dependent targets in this monorepo, update those dependents in the same work stream and re-run tests.
+
 When a test validates complex rendered output (diagnostic notation, pretty dumps,
 tree output, formatted documents, CLI output), prefer one whole-text comparison
 over many small assertions on fragments.

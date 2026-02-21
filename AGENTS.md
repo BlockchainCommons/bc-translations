@@ -147,6 +147,13 @@ In addition to per-target logs, append a row to the root `LOG.md` table for any 
 - **One manifest per crate.** The planner's output is language-agnostic and reused across all six targets.
 - **Aggressive context management.** The planner reads the full Rust source. The coder reads only the current translation unit plus its deps. The fluency critic reads only the target-language code.
 
+### API Evolution Policy (De Novo)
+
+- **No compatibility layer required.** This repository is de novo; there are no external dependents that require backward compatibility.
+- **Prefer direct API improvement.** When fluency or correctness work changes an API, apply the new API directly instead of preserving old forms.
+- **Do not add deprecations or shims.** Never add deprecated aliases, compatibility wrappers, or transitional APIs in this repo.
+- **Fix internal breakage immediately.** If an API change breaks dependent targets in this monorepo, update those dependents in the same work stream and re-run tests.
+
 ## Package Search Indexes
 
 The following registries/indexes can be searched for published packages:
