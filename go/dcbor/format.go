@@ -364,6 +364,10 @@ func renderAnnotatedHex(lines []annotatedHexLine) string {
 			maxHexLen = len(line.hexText)
 		}
 	}
+	// Extremely long payload lines should not force huge comment columns.
+	if maxHexLen > 32 {
+		maxHexLen = 32
+	}
 
 	var out strings.Builder
 	for i, line := range lines {
