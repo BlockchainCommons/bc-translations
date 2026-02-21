@@ -183,7 +183,7 @@ bash scripts/update-fluency-needed.sh
 
 `FLUENCY_NEEDED.md` is the authoritative running list of translated targets that still need a fluency pass by a different model than the translation model.
 
-Commit the result.
+Commit the result. **Only stage files you changed** — your `<lang>/<package>/` directory plus root tracking files (`LOG.md`, `FLUENCY_NEEDED.md`, `AGENTS.md`). Never use `git add -A` or `git add .`. Ignore unstaged changes in other languages; those belong to parallel agents.
 
 ### Step 6: Capture Lessons (Rule One)
 Before reporting results, apply Rule One: review what went wrong or was unexpected during the session, and record lessons learned in the auto memory files. Check for:

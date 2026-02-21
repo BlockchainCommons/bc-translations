@@ -113,4 +113,4 @@ This skill run is complete only when:
 
 Stop only when blocked by a real technical barrier (for example, irreproducible failing tests or missing upstream translation artifacts). Otherwise continue through dependent repairs and verification.
 
-Do not commit unless explicitly asked by the user.
+Do not commit unless explicitly asked by the user. When committing, **only stage files you changed** — your target's `<lang>/<package>/` directory (and any repaired dependents) plus root tracking files (`LOG.md`, `FLUENCY_NEEDED.md`, `AGENTS.md`). Never use `git add -A` or `git add .`. Ignore unstaged changes in other languages; those belong to parallel agents.
