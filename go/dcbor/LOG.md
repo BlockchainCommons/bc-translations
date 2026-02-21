@@ -721,3 +721,14 @@ COMPLETED
 - API coverage unchanged: 65/83 key manifest targets
 - Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (helper-surface confidence improved; baseline parity still incomplete)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-evaluating baseline test coverage accounting after accumulating additional `exact.rs` parity groups
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` baseline metrics to include translated `exact.rs` matrix groups already covered in Go tests
+- Baseline translated-test coverage revised from 73/86 to 83/86 applicable Rust behavior tests
+- Remaining uncovered baseline groups are Rust-width-specific (`i128`, `u128`, `f16`)
+- VERDICT: INCOMPLETE (coverage is now high; remaining parity and API-surface gaps still open)

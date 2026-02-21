@@ -87,7 +87,9 @@
 
 Applicable Rust behavior tests for parity target (excluding Rust metadata checks): 86
 
-Current translated tests: 73/86 (84.9%)
+Current translated tests: 83/86 (96.5%)
+
+Remaining uncovered baseline tests are from `exact.rs` groups that depend on Rust-specific numeric widths not directly native in Go (`i128`, `u128`, `f16`).
 
 ## Derive/Protocol Coverage
 
@@ -102,7 +104,7 @@ Current translated tests: 73/86 (84.9%)
 ## Completeness Summary
 
 - API Coverage: 65/83 key manifest items (78.3%)
-- Test Coverage: 73/86 applicable behavior tests (84.9%)
+- Test Coverage: 83/86 applicable behavior tests (96.5%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
 - Docs parity: partial
@@ -113,5 +115,5 @@ Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Expand translated tests from 73 to near-complete default-feature parity.
+3. Resolve remaining unsupported `exact.rs` coverage items (`i128`, `u128`, `f16`) or formally scope them out for Go.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.
