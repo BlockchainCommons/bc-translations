@@ -80,4 +80,7 @@ func TestByteStringMethodParity(t *testing.T) {
 	if b.Equal(NewByteString([]byte{1, 2, 3, 5})) {
 		t.Fatalf("ByteString.Equal expected inequality for differing content")
 	}
+	if got, want := b.String(), "h'01020304'"; got != want {
+		t.Fatalf("ByteString.String mismatch: got %q want %q", got, want)
+	}
 }

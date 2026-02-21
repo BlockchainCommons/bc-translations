@@ -121,6 +121,7 @@ Current translated tests: 86/86 (100.0%)
 - ✅ Core equality semantics based on deterministic CBOR bytes are implemented for `CBOR.Equal`.
 - ✅ Deterministic collection equality helpers are implemented for `Map.Equal` and `Set.Equal`.
 - ✅ Additional value-type equality helpers implemented for `ByteString.Equal`, `Simple.Equal`, and `Date.Equal`.
+- ✅ Added display/string helpers for value and collection wrappers (`Simple.String`, `ByteString.String`, `Map.String`, `Set.String`) for closer Display/Debug ergonomics.
 
 ## Documentation Coverage
 

@@ -1211,3 +1211,32 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (API surface complete; broader docs/signature/derive breadth still partial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing derive/display parity by adding explicit `String()` helpers on core wrappers and collections
+- Verifying deterministic textual output semantics for map/set/simple/byte-string wrappers
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `String()` helpers in:
+  - `simple.go` (`Simple.String`)
+  - `byte_string.go` (`ByteString.String`)
+  - `map.go` (`Map.String`)
+  - `set.go` (`Set.String`)
+- Expanded parity tests for new string/display behavior in:
+  - `cbor_test.go`
+  - `byte_string_parity_test.go`
+  - `collections_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after display/string helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated derive/protocol notes in `COMPLETENESS.md` with added wrapper/collection display helper coverage
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (display parity improved; broader docs/signature/derive breadth still partial)

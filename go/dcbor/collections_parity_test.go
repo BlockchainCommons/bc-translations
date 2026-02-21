@@ -78,6 +78,9 @@ func TestMapAPIParity(t *testing.T) {
 	if clone.Equal(equalMap) {
 		t.Fatalf("Map.Equal expected inequality after map mutation")
 	}
+	if got, want := clone.String(), `{10: 3, "a": 1, "b": 2}`; got != want {
+		t.Fatalf("Map.String mismatch: got %q want %q", got, want)
+	}
 }
 
 func TestSetAPIParity(t *testing.T) {
@@ -129,6 +132,9 @@ func TestSetAPIParity(t *testing.T) {
 	equalSet.Insert(MustFromAny(4))
 	if clone.Equal(equalSet) {
 		t.Fatalf("Set.Equal expected inequality after set mutation")
+	}
+	if got, want := clone.String(), "[1, 2]"; got != want {
+		t.Fatalf("Set.String mismatch: got %q want %q", got, want)
 	}
 }
 

@@ -176,4 +176,10 @@ func TestSimpleValueConvenienceParity(t *testing.T) {
 	if SimpleFloatValue(math.NaN()).Equal(SimpleFloatValue(math.NaN())) {
 		t.Fatalf("Simple.Equal expected false for NaN parity to match floating-point equality semantics")
 	}
+	if got, want := SimpleTrueValue().String(), "true"; got != want {
+		t.Fatalf("Simple.String mismatch for true: got %q want %q", got, want)
+	}
+	if got, want := SimpleFloatValue(1.5).String(), "1.5"; got != want {
+		t.Fatalf("Simple.String mismatch for float: got %q want %q", got, want)
+	}
 }

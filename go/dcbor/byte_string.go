@@ -47,3 +47,8 @@ func (b ByteString) AsRef() []byte {
 func (b ByteString) Equal(other ByteString) bool {
 	return bytes.Equal(b.data, other.data)
 }
+
+// String returns the diagnostic-style hex form of the byte string.
+func (b ByteString) String() string {
+	return NewCBORByteString(b).DiagnosticFlat()
+}

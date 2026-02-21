@@ -233,6 +233,11 @@ func (m Map) Equal(other Map) bool {
 	return true
 }
 
+// String returns a deterministic diagnostic representation of the map.
+func (m Map) String() string {
+	return NewCBORMap(m).DiagnosticFlat()
+}
+
 func (m Map) firstGreaterIndex(keyData []byte) int {
 	for i, entry := range m.entries {
 		if bytes.Compare(entry.keyData, keyData) > 0 {

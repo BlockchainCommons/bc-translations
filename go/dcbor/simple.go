@@ -49,6 +49,11 @@ func (s Simple) Name() string {
 	}
 }
 
+// String returns the canonical textual name for the simple value.
+func (s Simple) String() string {
+	return s.Name()
+}
+
 func (s Simple) IsFloat() bool {
 	return s.kind == SimpleFloat
 }

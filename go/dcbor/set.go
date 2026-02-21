@@ -90,6 +90,11 @@ func (s Set) Equal(other Set) bool {
 	return s.m.Equal(other.m)
 }
 
+// String returns the deterministic diagnostic representation of the set-as-array encoding.
+func (s Set) String() string {
+	return NewCBORArray(s.AsVec()).DiagnosticFlat()
+}
+
 // SetIter iterates set elements.
 type SetIter struct {
 	inner MapIter
