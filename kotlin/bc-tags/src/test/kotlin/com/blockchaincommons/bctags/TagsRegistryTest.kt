@@ -37,10 +37,25 @@ class TagsRegistryTest {
     }
 
     @Test
-    fun registrationOrderMatchesRustList() {
+    fun registrationOrderIsConsistent() {
         assertEquals(TAG_URI, BC_TAGS.first().value)
         assertEquals(TAG_PROVENANCE_MARK, BC_TAGS.last().value)
         assertEquals(TAG_NAME_URI, BC_TAGS.first().name)
         assertEquals(TAG_NAME_PROVENANCE_MARK, BC_TAGS.last().name)
+    }
+
+    @Test
+    fun spotCheckMidRangeConstants() {
+        val store = TagsStore()
+        registerTagsIn(store)
+
+        // Verify a selection of mid-range tags to guard against copy-paste errors
+        assertEquals("encrypted", store.nameForValue(TAG_ENCRYPTED))
+        assertEquals("agreement-public-key", store.nameForValue(TAG_X25519_PUBLIC_KEY))
+        assertEquals("mlkem-ciphertext", store.nameForValue(TAG_MLKEM_CIPHERTEXT))
+        assertEquals("hdkey", store.nameForValue(TAG_HDKEY))
+        assertEquals("ssh-signature", store.nameForValue(TAG_SSH_TEXT_SIGNATURE))
+        assertEquals("crypto-hdkey", store.nameForValue(TAG_HDKEY_V1))
+        assertEquals("output-taproot", store.nameForValue(TAG_OUTPUT_TAPROOT))
     }
 }

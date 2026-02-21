@@ -145,31 +145,33 @@ public class TagsTests
     ];
 
     [Fact]
-    public void TagConstantsMatchRustRegistry()
+    public void TagConstantsMatchExpectedValues()
     {
         Assert.Equal(ExpectedTags.Length, ActualTagsFromConstants.Length);
 
-        for (var index = 0; index < ExpectedTags.Length; index++)
+        for (var i = 0; i < ExpectedTags.Length; i++)
         {
-            Assert.Equal(ExpectedTags[index].Value, ActualTagsFromConstants[index].Value);
-            Assert.Equal(ExpectedTags[index].Name, ActualTagsFromConstants[index].Name);
+            Assert.Equal(ExpectedTags[i].Value, ActualTagsFromConstants[i].Value);
+            Assert.Equal(ExpectedTags[i].Name, ActualTagsFromConstants[i].Name);
         }
 
-        Assert.Equal(ExpectedTags.Length, ExpectedTags.Select(tag => tag.Value).Distinct().Count());
-        Assert.Equal(ExpectedTags.Length, ExpectedTags.Select(tag => tag.Name).Distinct().Count());
+        Assert.Equal(ExpectedTags.Length, ExpectedTags.Select(t => t.Value).Distinct().Count());
+        Assert.Equal(ExpectedTags.Length, ExpectedTags.Select(t => t.Name).Distinct().Count());
     }
 
     [Fact]
-    public void RegisterTagsInRegistersDcborAndBcTags()
+    public void RegisterTagsInPopulatesStoreWithAllTags()
     {
         var store = new TagsStore();
 
         BcTags.RegisterTagsIn(store);
 
+        // Verify dcbor base tags are registered
         var dateTag = store.TagForValue(CborTags.TagDate);
         Assert.NotNull(dateTag);
         Assert.Equal(CborTags.TagNameDate, dateTag!.Name);
 
+        // Verify all BC tags are registered by value and name
         foreach (var (value, name) in ExpectedTags)
         {
             var byValue = store.TagForValue(value);
@@ -183,7 +185,7 @@ public class TagsTests
     }
 
     [Fact]
-    public void RegisterTagsRegistersInGlobalStore()
+    public void RegisterTagsPopulatesGlobalStore()
     {
         BcTags.RegisterTags();
 

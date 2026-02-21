@@ -92,3 +92,22 @@ COMPLETED
 - Fixed: 0
 - Verification: `gradle test` passed for `kotlin/bc-tags`.
 - Verdict: IDIOMATIC (no compatibility shims found)
+
+## 2026-02-21 — Stage 4: Cross-Model Fluency Review
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing naming, documentation, structure, and test quality.
+
+## 2026-02-21 — Stage 4: Cross-Model Fluency Review
+COMPLETED
+- Issues found: 7 (1 MUST FIX, 3 SHOULD FIX, 3 NICE TO HAVE)
+- Applied all fixes:
+  - Moved package KDoc to proper `@file:` position above package declaration
+  - Added section comments grouping the 150 constants into logical categories
+  - Improved KDoc on `BC_TAGS`, `registerTagsIn`, and `registerTags`
+  - Renamed test `registrationOrderMatchesRustList` to `registrationOrderIsConsistent` (removed source-language reference)
+  - Added trailing comma to `BC_TAGS` list for diff-friendliness
+  - Added `spotCheckMidRangeConstants` test for stronger coverage against copy-paste errors
+- Tests: `gradle test` passed (4/4 tests)
+- No downstream Kotlin dependents required repair
+- Verdict: IDIOMATIC

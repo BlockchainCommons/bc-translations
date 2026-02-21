@@ -1,15 +1,18 @@
-package com.blockchaincommons.bctags
-
-import com.blockchaincommons.dcbor.GlobalTags
-import com.blockchaincommons.dcbor.Tag
-import com.blockchaincommons.dcbor.TagsStore
-
 /**
  * Blockchain Commons CBOR tag registry.
  *
  * This package defines Blockchain Commons tag constants and helpers to
  * register them in a [TagsStore] or in dCBOR's global tags store.
  */
+package com.blockchaincommons.bctags
+
+import com.blockchaincommons.dcbor.GlobalTags
+import com.blockchaincommons.dcbor.Tag
+import com.blockchaincommons.dcbor.TagsStore
+
+// ---------------------------------------------------------------------------
+// Standard CBOR Tags
+// ---------------------------------------------------------------------------
 
 const val TAG_URI: ULong = 32uL
 const val TAG_NAME_URI: String = "url"
@@ -20,6 +23,10 @@ const val TAG_NAME_UUID: String = "uuid"
 const val TAG_ENCODED_CBOR: ULong = 24uL
 const val TAG_NAME_ENCODED_CBOR: String = "encoded-cbor"
 
+// ---------------------------------------------------------------------------
+// Envelope Tags
+// ---------------------------------------------------------------------------
+
 const val TAG_ENVELOPE: ULong = 200uL
 const val TAG_NAME_ENVELOPE: String = "envelope"
 
@@ -28,6 +35,10 @@ const val TAG_NAME_LEAF: String = "leaf"
 
 const val TAG_JSON: ULong = 262uL
 const val TAG_NAME_JSON: String = "json"
+
+// ---------------------------------------------------------------------------
+// Blockchain Commons Core Tags (40000-series)
+// ---------------------------------------------------------------------------
 
 const val TAG_KNOWN_VALUE: ULong = 40000uL
 const val TAG_NAME_KNOWN_VALUE: String = "known-value"
@@ -58,6 +69,10 @@ const val TAG_NAME_PLACEHOLDER: String = "placeholder"
 
 const val TAG_REPLACEMENT: ULong = 40009uL
 const val TAG_NAME_REPLACEMENT: String = "replacement"
+
+// ---------------------------------------------------------------------------
+// Key Agreement and Identity Tags
+// ---------------------------------------------------------------------------
 
 const val TAG_X25519_PRIVATE_KEY: ULong = 40010uL
 const val TAG_NAME_X25519_PRIVATE_KEY: String = "agreement-private-key"
@@ -113,6 +128,10 @@ const val TAG_NAME_EVENT: String = "event"
 const val TAG_ENCRYPTED_KEY: ULong = 40027uL
 const val TAG_NAME_ENCRYPTED_KEY: String = "encrypted-key"
 
+// ---------------------------------------------------------------------------
+// Post-Quantum Cryptography Tags (ML-KEM / ML-DSA)
+// ---------------------------------------------------------------------------
+
 const val TAG_MLKEM_PRIVATE_KEY: ULong = 40100uL
 const val TAG_NAME_MLKEM_PRIVATE_KEY: String = "mlkem-private-key"
 
@@ -130,6 +149,10 @@ const val TAG_NAME_MLDSA_PUBLIC_KEY: String = "mldsa-public-key"
 
 const val TAG_MLDSA_SIGNATURE: ULong = 40105uL
 const val TAG_NAME_MLDSA_SIGNATURE: String = "mldsa-signature"
+
+// ---------------------------------------------------------------------------
+// Wallet Tags (40300-series)
+// ---------------------------------------------------------------------------
 
 const val TAG_SEED: ULong = 40300uL
 const val TAG_NAME_SEED: String = "seed"
@@ -161,6 +184,10 @@ const val TAG_NAME_PSBT: String = "psbt"
 const val TAG_ACCOUNT_DESCRIPTOR: ULong = 40311uL
 const val TAG_NAME_ACCOUNT_DESCRIPTOR: String = "account-descriptor"
 
+// ---------------------------------------------------------------------------
+// SSH Tags
+// ---------------------------------------------------------------------------
+
 const val TAG_SSH_TEXT_PRIVATE_KEY: ULong = 40800uL
 const val TAG_NAME_SSH_TEXT_PRIVATE_KEY: String = "ssh-private"
 
@@ -173,8 +200,16 @@ const val TAG_NAME_SSH_TEXT_SIGNATURE: String = "ssh-signature"
 const val TAG_SSH_TEXT_CERTIFICATE: ULong = 40803uL
 const val TAG_NAME_SSH_TEXT_CERTIFICATE: String = "ssh-certificate"
 
+// ---------------------------------------------------------------------------
+// Provenance Mark Tag
+// ---------------------------------------------------------------------------
+
 const val TAG_PROVENANCE_MARK: ULong = 1347571542uL
 const val TAG_NAME_PROVENANCE_MARK: String = "provenance"
+
+// ---------------------------------------------------------------------------
+// Legacy V1 Tags (deprecated tag numbers, kept for backward compatibility)
+// ---------------------------------------------------------------------------
 
 const val TAG_SEED_V1: ULong = 300uL
 const val TAG_NAME_SEED_V1: String = "crypto-seed"
@@ -202,6 +237,10 @@ const val TAG_NAME_PSBT_V1: String = "crypto-psbt"
 
 const val TAG_ACCOUNT_V1: ULong = 311uL
 const val TAG_NAME_ACCOUNT_V1: String = "crypto-account"
+
+// ---------------------------------------------------------------------------
+// Output Descriptor Script Tags
+// ---------------------------------------------------------------------------
 
 const val TAG_OUTPUT_SCRIPT_HASH: ULong = 400uL
 const val TAG_NAME_OUTPUT_SCRIPT_HASH: String = "output-script-hash"
@@ -236,7 +275,16 @@ const val TAG_NAME_OUTPUT_TAPROOT: String = "output-taproot"
 const val TAG_OUTPUT_COSIGNER: ULong = 410uL
 const val TAG_NAME_OUTPUT_COSIGNER: String = "output-cosigner"
 
-/** Internal ordered tag list used by [registerTagsIn]. */
+// ---------------------------------------------------------------------------
+// Tag Registration
+// ---------------------------------------------------------------------------
+
+/**
+ * All Blockchain Commons tags in their canonical registration order.
+ *
+ * This list is used internally by [registerTagsIn] and is also available for
+ * iteration and inspection within the module.
+ */
 internal val BC_TAGS: List<Tag> = listOf(
     Tag(TAG_URI, TAG_NAME_URI),
     Tag(TAG_UUID, TAG_NAME_UUID),
@@ -312,15 +360,26 @@ internal val BC_TAGS: List<Tag> = listOf(
     Tag(TAG_OUTPUT_RAW_SCRIPT, TAG_NAME_OUTPUT_RAW_SCRIPT),
     Tag(TAG_OUTPUT_TAPROOT, TAG_NAME_OUTPUT_TAPROOT),
     Tag(TAG_OUTPUT_COSIGNER, TAG_NAME_OUTPUT_COSIGNER),
-    Tag(TAG_PROVENANCE_MARK, TAG_NAME_PROVENANCE_MARK))
+    Tag(TAG_PROVENANCE_MARK, TAG_NAME_PROVENANCE_MARK),
+)
 
-/** Registers dCBOR base tags and Blockchain Commons tags in [tagsStore]. */
+/**
+ * Registers dCBOR base tags and all Blockchain Commons tags in [tagsStore].
+ *
+ * This first delegates to [com.blockchaincommons.dcbor.registerTagsIn] for
+ * the standard CBOR tags (e.g., date), then inserts all BC-specific tags.
+ */
 fun registerTagsIn(tagsStore: TagsStore) {
     com.blockchaincommons.dcbor.registerTagsIn(tagsStore)
     tagsStore.insertAll(BC_TAGS)
 }
 
-/** Registers Blockchain Commons tags in dCBOR's global tag store. */
+/**
+ * Registers all Blockchain Commons tags in dCBOR's global tag store.
+ *
+ * Call this once at application startup to enable tag name resolution in
+ * diagnostic output formatting.
+ */
 fun registerTags() {
     GlobalTags.withTagsMut { registerTagsIn(it) }
 }

@@ -3,668 +3,340 @@ using BlockchainCommons.DCbor;
 namespace BlockchainCommons.BCTags;
 
 /// <summary>
-/// Blockchain Commons CBOR tag constants and registration helpers.
+/// Well-known Blockchain Commons CBOR tag constants and registration helpers.
+/// Each tag is a (value, name) pair that can be registered in a <see cref="TagsStore"/>
+/// for human-readable CBOR diagnostic output.
 /// </summary>
 public static class BcTags
 {
-    /// <summary>
-    /// Numeric CBOR tag value for uri (url).
-    /// </summary>
+    /// <summary>Tag value for URI (RFC 3986).</summary>
     public const ulong TagUri = 32ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for uri.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagUri"/>.</summary>
     public const string TagNameUri = "url";
 
-    /// <summary>
-    /// Numeric CBOR tag value for uuid (uuid).
-    /// </summary>
+    /// <summary>Tag value for UUID (RFC 4122).</summary>
     public const ulong TagUuid = 37ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for uuid.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagUuid"/>.</summary>
     public const string TagNameUuid = "uuid";
 
-    /// <summary>
-    /// Numeric CBOR tag value for encoded cbor (encoded-cbor).
-    /// </summary>
+    /// <summary>Tag value for encoded CBOR data item.</summary>
     public const ulong TagEncodedCbor = 24ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for encoded cbor.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagEncodedCbor"/>.</summary>
     public const string TagNameEncodedCbor = "encoded-cbor";
 
-    /// <summary>
-    /// Numeric CBOR tag value for envelope (envelope).
-    /// </summary>
+    /// <summary>Tag value for Gordian Envelope.</summary>
     public const ulong TagEnvelope = 200ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for envelope.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagEnvelope"/>.</summary>
     public const string TagNameEnvelope = "envelope";
 
-    /// <summary>
-    /// Numeric CBOR tag value for leaf (leaf).
-    /// </summary>
+    /// <summary>Tag value for Gordian Envelope leaf node.</summary>
     public const ulong TagLeaf = 201ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for leaf.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagLeaf"/>.</summary>
     public const string TagNameLeaf = "leaf";
 
-    /// <summary>
-    /// Numeric CBOR tag value for json (json).
-    /// </summary>
+    /// <summary>Tag value for embedded JSON text.</summary>
     public const ulong TagJson = 262ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for json.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagJson"/>.</summary>
     public const string TagNameJson = "json";
 
-    /// <summary>
-    /// Numeric CBOR tag value for known value (known-value).
-    /// </summary>
+    /// <summary>Tag value for Gordian Known Value.</summary>
     public const ulong TagKnownValue = 40000ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for known value.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagKnownValue"/>.</summary>
     public const string TagNameKnownValue = "known-value";
 
-    /// <summary>
-    /// Numeric CBOR tag value for digest (digest).
-    /// </summary>
+    /// <summary>Tag value for cryptographic digest.</summary>
     public const ulong TagDigest = 40001ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for digest.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagDigest"/>.</summary>
     public const string TagNameDigest = "digest";
 
-    /// <summary>
-    /// Numeric CBOR tag value for encrypted (encrypted).
-    /// </summary>
+    /// <summary>Tag value for IETF-ChaCha20-Poly1305 encrypted message.</summary>
     public const ulong TagEncrypted = 40002ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for encrypted.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagEncrypted"/>.</summary>
     public const string TagNameEncrypted = "encrypted";
 
-    /// <summary>
-    /// Numeric CBOR tag value for compressed (compressed).
-    /// </summary>
+    /// <summary>Tag value for compressed data.</summary>
     public const ulong TagCompressed = 40003ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for compressed.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagCompressed"/>.</summary>
     public const string TagNameCompressed = "compressed";
 
-    /// <summary>
-    /// Numeric CBOR tag value for request (request).
-    /// </summary>
+    /// <summary>Tag value for Gordian request.</summary>
     public const ulong TagRequest = 40004ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for request.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagRequest"/>.</summary>
     public const string TagNameRequest = "request";
 
-    /// <summary>
-    /// Numeric CBOR tag value for response (response).
-    /// </summary>
+    /// <summary>Tag value for Gordian response.</summary>
     public const ulong TagResponse = 40005ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for response.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagResponse"/>.</summary>
     public const string TagNameResponse = "response";
 
-    /// <summary>
-    /// Numeric CBOR tag value for function (function).
-    /// </summary>
+    /// <summary>Tag value for Gordian Envelope function call.</summary>
     public const ulong TagFunction = 40006ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for function.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagFunction"/>.</summary>
     public const string TagNameFunction = "function";
 
-    /// <summary>
-    /// Numeric CBOR tag value for parameter (parameter).
-    /// </summary>
+    /// <summary>Tag value for Gordian Envelope function parameter.</summary>
     public const ulong TagParameter = 40007ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for parameter.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagParameter"/>.</summary>
     public const string TagNameParameter = "parameter";
 
-    /// <summary>
-    /// Numeric CBOR tag value for placeholder (placeholder).
-    /// </summary>
+    /// <summary>Tag value for Gordian Envelope placeholder.</summary>
     public const ulong TagPlaceholder = 40008ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for placeholder.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagPlaceholder"/>.</summary>
     public const string TagNamePlaceholder = "placeholder";
 
-    /// <summary>
-    /// Numeric CBOR tag value for replacement (replacement).
-    /// </summary>
+    /// <summary>Tag value for Gordian Envelope replacement.</summary>
     public const ulong TagReplacement = 40009ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for replacement.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagReplacement"/>.</summary>
     public const string TagNameReplacement = "replacement";
 
-    /// <summary>
-    /// Numeric CBOR tag value for x25519 private key (agreement-private-key).
-    /// </summary>
+    /// <summary>Tag value for X25519 agreement private key.</summary>
     public const ulong TagX25519PrivateKey = 40010ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for x25519 private key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagX25519PrivateKey"/>.</summary>
     public const string TagNameX25519PrivateKey = "agreement-private-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for x25519 public key (agreement-public-key).
-    /// </summary>
+    /// <summary>Tag value for X25519 agreement public key.</summary>
     public const ulong TagX25519PublicKey = 40011ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for x25519 public key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagX25519PublicKey"/>.</summary>
     public const string TagNameX25519PublicKey = "agreement-public-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for arid (arid).
-    /// </summary>
+    /// <summary>Tag value for Apparently Random Identifier (ARID).</summary>
     public const ulong TagArid = 40012ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for arid.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagArid"/>.</summary>
     public const string TagNameArid = "arid";
 
-    /// <summary>
-    /// Numeric CBOR tag value for private keys (crypto-prvkeys).
-    /// </summary>
+    /// <summary>Tag value for private key set.</summary>
     public const ulong TagPrivateKeys = 40013ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for private keys.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagPrivateKeys"/>.</summary>
     public const string TagNamePrivateKeys = "crypto-prvkeys";
 
-    /// <summary>
-    /// Numeric CBOR tag value for nonce (nonce).
-    /// </summary>
+    /// <summary>Tag value for cryptographic nonce.</summary>
     public const ulong TagNonce = 40014ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for nonce.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagNonce"/>.</summary>
     public const string TagNameNonce = "nonce";
 
-    /// <summary>
-    /// Numeric CBOR tag value for password (password).
-    /// </summary>
+    /// <summary>Tag value for password.</summary>
     public const ulong TagPassword = 40015ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for password.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagPassword"/>.</summary>
     public const string TagNamePassword = "password";
 
-    /// <summary>
-    /// Numeric CBOR tag value for private key base (crypto-prvkey-base).
-    /// </summary>
+    /// <summary>Tag value for private key base.</summary>
     public const ulong TagPrivateKeyBase = 40016ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for private key base.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagPrivateKeyBase"/>.</summary>
     public const string TagNamePrivateKeyBase = "crypto-prvkey-base";
 
-    /// <summary>
-    /// Numeric CBOR tag value for public keys (crypto-pubkeys).
-    /// </summary>
+    /// <summary>Tag value for public key set.</summary>
     public const ulong TagPublicKeys = 40017ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for public keys.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagPublicKeys"/>.</summary>
     public const string TagNamePublicKeys = "crypto-pubkeys";
 
-    /// <summary>
-    /// Numeric CBOR tag value for salt (salt).
-    /// </summary>
+    /// <summary>Tag value for cryptographic salt.</summary>
     public const ulong TagSalt = 40018ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for salt.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSalt"/>.</summary>
     public const string TagNameSalt = "salt";
 
-    /// <summary>
-    /// Numeric CBOR tag value for sealed message (crypto-sealed).
-    /// </summary>
+    /// <summary>Tag value for sealed message (public-key encrypted).</summary>
     public const ulong TagSealedMessage = 40019ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for sealed message.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSealedMessage"/>.</summary>
     public const string TagNameSealedMessage = "crypto-sealed";
 
-    /// <summary>
-    /// Numeric CBOR tag value for signature (signature).
-    /// </summary>
+    /// <summary>Tag value for cryptographic signature.</summary>
     public const ulong TagSignature = 40020ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for signature.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSignature"/>.</summary>
     public const string TagNameSignature = "signature";
 
-    /// <summary>
-    /// Numeric CBOR tag value for signing private key (signing-private-key).
-    /// </summary>
+    /// <summary>Tag value for signing private key.</summary>
     public const ulong TagSigningPrivateKey = 40021ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for signing private key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSigningPrivateKey"/>.</summary>
     public const string TagNameSigningPrivateKey = "signing-private-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for signing public key (signing-public-key).
-    /// </summary>
+    /// <summary>Tag value for signing public key.</summary>
     public const ulong TagSigningPublicKey = 40022ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for signing public key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSigningPublicKey"/>.</summary>
     public const string TagNameSigningPublicKey = "signing-public-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for symmetric key (crypto-key).
-    /// </summary>
+    /// <summary>Tag value for symmetric encryption key.</summary>
     public const ulong TagSymmetricKey = 40023ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for symmetric key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSymmetricKey"/>.</summary>
     public const string TagNameSymmetricKey = "crypto-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for xid (xid).
-    /// </summary>
+    /// <summary>Tag value for XID (extended identifier).</summary>
     public const ulong TagXid = 40024ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for xid.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagXid"/>.</summary>
     public const string TagNameXid = "xid";
 
-    /// <summary>
-    /// Numeric CBOR tag value for reference (reference).
-    /// </summary>
+    /// <summary>Tag value for Gordian reference.</summary>
     public const ulong TagReference = 40025ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for reference.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagReference"/>.</summary>
     public const string TagNameReference = "reference";
 
-    /// <summary>
-    /// Numeric CBOR tag value for event (event).
-    /// </summary>
+    /// <summary>Tag value for Gordian event.</summary>
     public const ulong TagEvent = 40026ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for event.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagEvent"/>.</summary>
     public const string TagNameEvent = "event";
 
-    /// <summary>
-    /// Numeric CBOR tag value for encrypted key (encrypted-key).
-    /// </summary>
+    /// <summary>Tag value for encrypted key.</summary>
     public const ulong TagEncryptedKey = 40027ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for encrypted key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagEncryptedKey"/>.</summary>
     public const string TagNameEncryptedKey = "encrypted-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for mlkem private key (mlkem-private-key).
-    /// </summary>
+    /// <summary>Tag value for ML-KEM private key (post-quantum).</summary>
     public const ulong TagMlkemPrivateKey = 40100ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for mlkem private key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagMlkemPrivateKey"/>.</summary>
     public const string TagNameMlkemPrivateKey = "mlkem-private-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for mlkem public key (mlkem-public-key).
-    /// </summary>
+    /// <summary>Tag value for ML-KEM public key (post-quantum).</summary>
     public const ulong TagMlkemPublicKey = 40101ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for mlkem public key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagMlkemPublicKey"/>.</summary>
     public const string TagNameMlkemPublicKey = "mlkem-public-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for mlkem ciphertext (mlkem-ciphertext).
-    /// </summary>
+    /// <summary>Tag value for ML-KEM ciphertext (post-quantum).</summary>
     public const ulong TagMlkemCiphertext = 40102ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for mlkem ciphertext.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagMlkemCiphertext"/>.</summary>
     public const string TagNameMlkemCiphertext = "mlkem-ciphertext";
 
-    /// <summary>
-    /// Numeric CBOR tag value for mldsa private key (mldsa-private-key).
-    /// </summary>
+    /// <summary>Tag value for ML-DSA private key (post-quantum).</summary>
     public const ulong TagMldsaPrivateKey = 40103ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for mldsa private key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagMldsaPrivateKey"/>.</summary>
     public const string TagNameMldsaPrivateKey = "mldsa-private-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for mldsa public key (mldsa-public-key).
-    /// </summary>
+    /// <summary>Tag value for ML-DSA public key (post-quantum).</summary>
     public const ulong TagMldsaPublicKey = 40104ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for mldsa public key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagMldsaPublicKey"/>.</summary>
     public const string TagNameMldsaPublicKey = "mldsa-public-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for mldsa signature (mldsa-signature).
-    /// </summary>
+    /// <summary>Tag value for ML-DSA signature (post-quantum).</summary>
     public const ulong TagMldsaSignature = 40105ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for mldsa signature.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagMldsaSignature"/>.</summary>
     public const string TagNameMldsaSignature = "mldsa-signature";
 
-    /// <summary>
-    /// Numeric CBOR tag value for seed (seed).
-    /// </summary>
+    /// <summary>Tag value for cryptographic seed.</summary>
     public const ulong TagSeed = 40300ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for seed.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSeed"/>.</summary>
     public const string TagNameSeed = "seed";
 
-    /// <summary>
-    /// Numeric CBOR tag value for hdkey (hdkey).
-    /// </summary>
+    /// <summary>Tag value for HD (hierarchical deterministic) key.</summary>
     public const ulong TagHdkey = 40303ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for hdkey.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagHdkey"/>.</summary>
     public const string TagNameHdkey = "hdkey";
 
-    /// <summary>
-    /// Numeric CBOR tag value for derivation path (keypath).
-    /// </summary>
+    /// <summary>Tag value for key derivation path.</summary>
     public const ulong TagDerivationPath = 40304ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for derivation path.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagDerivationPath"/>.</summary>
     public const string TagNameDerivationPath = "keypath";
 
-    /// <summary>
-    /// Numeric CBOR tag value for use info (coin-info).
-    /// </summary>
+    /// <summary>Tag value for cryptocurrency use info.</summary>
     public const ulong TagUseInfo = 40305ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for use info.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagUseInfo"/>.</summary>
     public const string TagNameUseInfo = "coin-info";
 
-    /// <summary>
-    /// Numeric CBOR tag value for ec key (eckey).
-    /// </summary>
+    /// <summary>Tag value for elliptic-curve key.</summary>
     public const ulong TagEcKey = 40306ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for ec key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagEcKey"/>.</summary>
     public const string TagNameEcKey = "eckey";
 
-    /// <summary>
-    /// Numeric CBOR tag value for address (address).
-    /// </summary>
+    /// <summary>Tag value for cryptocurrency address.</summary>
     public const ulong TagAddress = 40307ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for address.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagAddress"/>.</summary>
     public const string TagNameAddress = "address";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output descriptor (output-descriptor).
-    /// </summary>
+    /// <summary>Tag value for output descriptor.</summary>
     public const ulong TagOutputDescriptor = 40308ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output descriptor.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputDescriptor"/>.</summary>
     public const string TagNameOutputDescriptor = "output-descriptor";
 
-    /// <summary>
-    /// Numeric CBOR tag value for sskr share (sskr).
-    /// </summary>
+    /// <summary>Tag value for SSKR (Sharded Secret Key Reconstruction) share.</summary>
     public const ulong TagSskrShare = 40309ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for sskr share.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSskrShare"/>.</summary>
     public const string TagNameSskrShare = "sskr";
 
-    /// <summary>
-    /// Numeric CBOR tag value for psbt (psbt).
-    /// </summary>
+    /// <summary>Tag value for Partially Signed Bitcoin Transaction (PSBT).</summary>
     public const ulong TagPsbt = 40310ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for psbt.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagPsbt"/>.</summary>
     public const string TagNamePsbt = "psbt";
 
-    /// <summary>
-    /// Numeric CBOR tag value for account descriptor (account-descriptor).
-    /// </summary>
+    /// <summary>Tag value for account descriptor.</summary>
     public const ulong TagAccountDescriptor = 40311ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for account descriptor.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagAccountDescriptor"/>.</summary>
     public const string TagNameAccountDescriptor = "account-descriptor";
 
-    /// <summary>
-    /// Numeric CBOR tag value for ssh text private key (ssh-private).
-    /// </summary>
+    /// <summary>Tag value for SSH text-format private key.</summary>
     public const ulong TagSshTextPrivateKey = 40800ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for ssh text private key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSshTextPrivateKey"/>.</summary>
     public const string TagNameSshTextPrivateKey = "ssh-private";
 
-    /// <summary>
-    /// Numeric CBOR tag value for ssh text public key (ssh-public).
-    /// </summary>
+    /// <summary>Tag value for SSH text-format public key.</summary>
     public const ulong TagSshTextPublicKey = 40801ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for ssh text public key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSshTextPublicKey"/>.</summary>
     public const string TagNameSshTextPublicKey = "ssh-public";
 
-    /// <summary>
-    /// Numeric CBOR tag value for ssh text signature (ssh-signature).
-    /// </summary>
+    /// <summary>Tag value for SSH text-format signature.</summary>
     public const ulong TagSshTextSignature = 40802ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for ssh text signature.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSshTextSignature"/>.</summary>
     public const string TagNameSshTextSignature = "ssh-signature";
 
-    /// <summary>
-    /// Numeric CBOR tag value for ssh text certificate (ssh-certificate).
-    /// </summary>
+    /// <summary>Tag value for SSH text-format certificate.</summary>
     public const ulong TagSshTextCertificate = 40803ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for ssh text certificate.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagSshTextCertificate"/>.</summary>
     public const string TagNameSshTextCertificate = "ssh-certificate";
 
-    /// <summary>
-    /// Numeric CBOR tag value for provenance mark (provenance).
-    /// </summary>
+    /// <summary>Tag value for provenance mark.</summary>
     public const ulong TagProvenanceMark = 1347571542ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for provenance mark.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagProvenanceMark"/>.</summary>
     public const string TagNameProvenanceMark = "provenance";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output script hash (output-script-hash).
-    /// </summary>
+    /// <summary>Tag value for output script hash descriptor.</summary>
     public const ulong TagOutputScriptHash = 400ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output script hash.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputScriptHash"/>.</summary>
     public const string TagNameOutputScriptHash = "output-script-hash";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output witness script hash (output-witness-script-hash).
-    /// </summary>
+    /// <summary>Tag value for output witness script hash descriptor.</summary>
     public const ulong TagOutputWitnessScriptHash = 401ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output witness script hash.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputWitnessScriptHash"/>.</summary>
     public const string TagNameOutputWitnessScriptHash = "output-witness-script-hash";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output public key (output-public-key).
-    /// </summary>
+    /// <summary>Tag value for output public key descriptor.</summary>
     public const ulong TagOutputPublicKey = 402ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output public key.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputPublicKey"/>.</summary>
     public const string TagNameOutputPublicKey = "output-public-key";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output public key hash (output-public-key-hash).
-    /// </summary>
+    /// <summary>Tag value for output public key hash descriptor.</summary>
     public const ulong TagOutputPublicKeyHash = 403ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output public key hash.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputPublicKeyHash"/>.</summary>
     public const string TagNameOutputPublicKeyHash = "output-public-key-hash";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output witness public key hash (output-witness-public-key-hash).
-    /// </summary>
+    /// <summary>Tag value for output witness public key hash descriptor.</summary>
     public const ulong TagOutputWitnessPublicKeyHash = 404ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output witness public key hash.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputWitnessPublicKeyHash"/>.</summary>
     public const string TagNameOutputWitnessPublicKeyHash = "output-witness-public-key-hash";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output combo (output-combo).
-    /// </summary>
+    /// <summary>Tag value for output combo descriptor.</summary>
     public const ulong TagOutputCombo = 405ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output combo.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputCombo"/>.</summary>
     public const string TagNameOutputCombo = "output-combo";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output multisig (output-multisig).
-    /// </summary>
+    /// <summary>Tag value for output multisig descriptor.</summary>
     public const ulong TagOutputMultisig = 406ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output multisig.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputMultisig"/>.</summary>
     public const string TagNameOutputMultisig = "output-multisig";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output sorted multisig (output-sorted-multisig).
-    /// </summary>
+    /// <summary>Tag value for output sorted multisig descriptor.</summary>
     public const ulong TagOutputSortedMultisig = 407ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output sorted multisig.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputSortedMultisig"/>.</summary>
     public const string TagNameOutputSortedMultisig = "output-sorted-multisig";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output raw script (output-raw-script).
-    /// </summary>
+    /// <summary>Tag value for output raw script descriptor.</summary>
     public const ulong TagOutputRawScript = 408ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output raw script.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputRawScript"/>.</summary>
     public const string TagNameOutputRawScript = "output-raw-script";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output taproot (output-taproot).
-    /// </summary>
+    /// <summary>Tag value for output Taproot descriptor.</summary>
     public const ulong TagOutputTaproot = 409ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output taproot.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputTaproot"/>.</summary>
     public const string TagNameOutputTaproot = "output-taproot";
 
-    /// <summary>
-    /// Numeric CBOR tag value for output cosigner (output-cosigner).
-    /// </summary>
+    /// <summary>Tag value for output cosigner descriptor.</summary>
     public const ulong TagOutputCosigner = 410ul;
-
-    /// <summary>
-    /// Canonical CBOR tag name for output cosigner.
-    /// </summary>
+    /// <summary>Tag name for <see cref="TagOutputCosigner"/>.</summary>
     public const string TagNameOutputCosigner = "output-cosigner";
 
     private static readonly Tag[] TagsInRegistrationOrder =
@@ -738,9 +410,10 @@ public static class BcTags
     ];
 
     /// <summary>
-    /// Registers dcbor base tags, then all Blockchain Commons tags in the provided store.
+    /// Registers the built-in dcbor tags followed by all Blockchain Commons tags
+    /// in the provided <paramref name="tagsStore"/>.
     /// </summary>
-    /// <param name="tagsStore">The target tag store.</param>
+    /// <param name="tagsStore">The target tag store to populate.</param>
     public static void RegisterTagsIn(TagsStore tagsStore)
     {
         ArgumentNullException.ThrowIfNull(tagsStore);
@@ -749,7 +422,8 @@ public static class BcTags
     }
 
     /// <summary>
-    /// Registers dcbor base tags and all Blockchain Commons tags in the global tag registry.
+    /// Registers the built-in dcbor tags and all Blockchain Commons tags
+    /// in the global tag registry.
     /// </summary>
     public static void RegisterTags()
     {

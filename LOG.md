@@ -90,3 +90,5 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-lifehash | 0.1.0   | Swift      | BCLifeHash   | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | bc-shamir   | 0.13.0  | Kotlin     | bc-shamir    | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | bc-shamir   | 0.13.0  | Python     | bc-shamir    | 🎻 Claude Opus 4.6 | Fluency     |
+| 2026-02-21 | bc-tags     | 0.12.0  | C#         | BCTags       | 🎻 Claude Opus 4.6 | Fluency     |
+| 2026-02-21 | bc-tags     | 0.12.0  | Kotlin     | bc-tags      | 🎻 Claude Opus 4.6 | Fluency     |

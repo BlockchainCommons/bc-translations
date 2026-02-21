@@ -87,3 +87,21 @@ COMPLETED
 - Updated parity tests to reflect the de novo API surface.
 - Validation sweep across all extant C# targets: BCLifeHash (2/2), BCRand (14/14), BCCrypto (42/42), BCShamir (4/4), DCbor (63/63), BCTags (3/3).
 - VERDICT: LEGACY SURFACE REMOVED
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing BCTags for C# idiomaticness: naming, docs, API design, test conventions.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- 1 SHOULD FIX: Replaced mechanical XML doc comments on all 66 tag constants with descriptive domain-specific summaries; added `<see cref>` cross-references from name constants to value constants.
+- 1 SHOULD FIX: Improved class-level summary to reference `TagsStore` with `<see cref>`.
+- 1 SHOULD FIX: Renamed test `TagConstantsMatchRustRegistry` to `TagConstantsMatchExpectedValues` (removed source-language leak).
+- 1 SHOULD FIX: Renamed test `RegisterTagsInRegistersDcborAndBcTags` to `RegisterTagsInPopulatesStoreWithAllTags` and `RegisterTagsRegistersInGlobalStore` to `RegisterTagsPopulatesGlobalStore` for clearer intent.
+- 1 NICE TO HAVE: Added section comments in registration test for readability.
+- 1 NICE TO HAVE: Shortened loop variable names in tests for conciseness (`index` to `i`, `tag` to `t`).
+- All findings implemented, 0 skipped.
+- No downstream C# dependents of bc-tags exist yet (bc-components, known-values, etc. are all pending).
+- Test result after critique: 3/3 passing.
+- VERDICT: IDIOMATIC
