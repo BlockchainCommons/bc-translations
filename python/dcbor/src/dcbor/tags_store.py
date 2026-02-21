@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import threading
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 from .tag import Tag, TagValue
 
 if TYPE_CHECKING:
     from .cbor import CBOR
+
+T = TypeVar("T")
 
 
 CBORSummarizer = Callable[["CBOR", bool], str]
@@ -92,11 +94,11 @@ def _get_global_tags() -> TagsStore:
     return _global_tags
 
 
-def with_tags(action: Callable[[TagsStore], object]) -> object:
+def with_tags(action: Callable[[TagsStore], T]) -> T:
     return action(_get_global_tags())
 
 
-def with_tags_mut(action: Callable[[TagsStore], object]) -> object:
+def with_tags_mut(action: Callable[[TagsStore], T]) -> T:
     with _global_lock:
         return action(_get_global_tags())
 

@@ -6,7 +6,7 @@ from .string_util import flanked
 
 if TYPE_CHECKING:
     from .cbor import CBOR
-    from .tags_store import TagsStore
+    from .tags_store import CBORSummarizer, TagsStore
 
 _NO_TAGS = object()
 
@@ -216,7 +216,7 @@ def _build_diag_item(
     return _DiagLeaf("")
 
 
-def _get_summarizer(tag_value: int, tags_store: TagsStore | None) -> object | None:
+def _get_summarizer(tag_value: int, tags_store: TagsStore | None) -> CBORSummarizer | None:
     if tags_store is None:
         from .tags_store import _get_global_tags
         store = _get_global_tags()

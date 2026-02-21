@@ -73,7 +73,12 @@ class Map:
         return self.contains_key(key)
 
     def __getitem__(self, key: CBOR | int | str | float | bool) -> CBOR:
-        return self.extract(key)
+        cbor_key = CBOR.from_value(key) if not isinstance(key, CBOR) else key
+        encoded_key = cbor_key.to_cbor_data()
+        entry = self._entries.get(encoded_key)
+        if entry is None:
+            raise KeyError(key)
+        return entry.value
 
     def iter(self) -> Iterator[tuple[CBOR, CBOR]]:
         for encoded_key in sorted(self._entries.keys()):

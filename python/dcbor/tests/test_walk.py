@@ -1,4 +1,4 @@
-"""Tests for CBOR tree traversal — matches Rust dcbor/tests/walk.rs."""
+"""Tests for CBOR tree traversal."""
 
 from __future__ import annotations
 
@@ -155,8 +155,9 @@ def test_walk_with_state():
         final_sum[0] = new_state
         return (new_state, False)
 
-    cbor.walk(0, visitor)
-    assert final_sum[0] > 0
+    final_state = cbor.walk(0, visitor)
+    assert final_state == 3
+    assert final_sum[0] == 3
 
 
 def test_depth_limited_traversal():

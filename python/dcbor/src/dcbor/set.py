@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 
 from .cbor import CBOR, CBORCase
 from .error import DuplicateMapKey, MisorderedMapKey
@@ -33,6 +33,11 @@ class Set:
     def contains(self, value: CBOR | int | str | float | bool) -> bool:
         return self._map.contains_key(value)
 
+    def __contains__(self, value: object) -> bool:
+        if not isinstance(value, (CBOR, int, str, float, bool)):
+            return False
+        return self.contains(value)
+
     def iter(self) -> Iterator[CBOR]:
         for key, _ in self._map.iter():
             yield key
@@ -44,7 +49,7 @@ class Set:
         return list(self.iter())
 
     @staticmethod
-    def from_list(items: list) -> Set:
+    def from_list(items: Iterable[CBOR | int | str | float | bool]) -> Set:
         s = Set()
         for item in items:
             cbor_value = CBOR.from_value(item) if not isinstance(item, CBOR) else item
@@ -52,7 +57,7 @@ class Set:
         return s
 
     @staticmethod
-    def from_sorted_list(items: list) -> Set:
+    def from_sorted_list(items: Iterable[CBOR | int | str | float | bool]) -> Set:
         s = Set()
         for item in items:
             cbor_value = CBOR.from_value(item) if not isinstance(item, CBOR) else item

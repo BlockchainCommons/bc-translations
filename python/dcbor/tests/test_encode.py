@@ -1,4 +1,4 @@
-"""Tests for CBOR encoding and decoding — matches Rust dcbor/tests/encode.rs."""
+"""Tests for CBOR encoding and decoding."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ from dcbor import (
     MisorderedMapKey,
     NonCanonicalNumeric,
     NonCanonicalString,
+    Set,
     Tag,
     UnusedData,
 )
@@ -184,6 +185,24 @@ def test_encode_map():
 def test_encode_map_misordered():
     with pytest.raises(MisorderedMapKey):
         CBOR.from_hex("a2026141016142")
+
+
+def test_map_getitem_raises_keyerror():
+    m = Map()
+    m.insert("x", 1)
+
+    assert m["x"] == CBOR.from_int(1)
+    with pytest.raises(KeyError):
+        _ = m["missing"]
+
+
+def test_set_contains_protocol():
+    s = Set.from_list([1, "hello", 3])
+
+    assert 1 in s
+    assert "hello" in s
+    assert 2 not in s
+    assert object() not in s
 
 
 # --- Tagged values ---

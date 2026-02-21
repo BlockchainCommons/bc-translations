@@ -74,43 +74,42 @@ class EdgeType(Enum):
 Visitor = Callable[[WalkElement, int, EdgeType, S], tuple[S, bool]]
 
 
-def walk_impl(cbor: CBOR, state: S, visitor: Visitor[S]) -> None:
-    from .cbor import CBORCase
-
-    _walk(cbor, 0, EdgeType.NONE, None, state, visitor)
+def walk_impl(cbor: CBOR, state: S, visitor: Visitor[S]) -> S:
+    return _walk(cbor, 0, EdgeType.NONE, state, visitor)
 
 
 def _walk(
     cbor: CBOR,
     level: int,
     edge: EdgeType,
-    edge_index: int | None,
     state: S,
     visitor: Visitor[S],
-) -> None:
+) -> S:
     from .cbor import CBORCase
 
     element = WalkElement.make_single(cbor)
     state, stop = visitor(element, level, edge, state)
     if stop:
-        return
+        return state
 
     next_level = level + 1
 
     match cbor.case:
         case CBORCase.ARRAY:
-            for i, child in enumerate(cbor.value):
-                _walk(child, next_level, EdgeType.ARRAY_ELEMENT, i, state, visitor)
+            for child in cbor.value:
+                state = _walk(child, next_level, EdgeType.ARRAY_ELEMENT, state, visitor)
 
         case CBORCase.MAP:
             for key, value in cbor.value.iter():
                 kv_element = WalkElement.make_key_value(key, value)
-                new_state, stop = visitor(kv_element, next_level, EdgeType.MAP_KEY_VALUE, state)
+                state, stop = visitor(kv_element, next_level, EdgeType.MAP_KEY_VALUE, state)
                 if stop:
                     continue
-                _walk(key, next_level, EdgeType.MAP_KEY, None, new_state, visitor)
-                _walk(value, next_level, EdgeType.MAP_VALUE, None, new_state, visitor)
+                state = _walk(key, next_level, EdgeType.MAP_KEY, state, visitor)
+                state = _walk(value, next_level, EdgeType.MAP_VALUE, state, visitor)
 
         case CBORCase.TAGGED:
             _, content = cbor.value
-            _walk(content, next_level, EdgeType.TAGGED_CONTENT, None, state, visitor)
+            state = _walk(content, next_level, EdgeType.TAGGED_CONTENT, state, visitor)
+
+    return state

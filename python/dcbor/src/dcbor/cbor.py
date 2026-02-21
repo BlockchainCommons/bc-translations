@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import math
 from enum import IntEnum
-from typing import TYPE_CHECKING, Any
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from .byte_string import ByteString
 from .error import (
@@ -20,6 +21,10 @@ from .varint import MajorType, encode_varint
 
 if TYPE_CHECKING:
     from .map import Map
+    from .tags_store import TagsStore
+    from .walk import EdgeType, WalkElement
+
+S = TypeVar("S")
 
 _U64_MAX = 0xFFFFFFFFFFFFFFFF
 
@@ -371,7 +376,7 @@ class CBOR:
         from .diag import diagnostic_impl
         return diagnostic_impl(self, annotate=False, flat=False, summarize=False)
 
-    def diagnostic_annotated(self, tags_store: object = None) -> str:
+    def diagnostic_annotated(self, tags_store: TagsStore | None = None) -> str:
         from .diag import diagnostic_impl
         return diagnostic_impl(
             self, annotate=True, flat=False, summarize=False,
@@ -382,7 +387,7 @@ class CBOR:
         from .diag import diagnostic_impl
         return diagnostic_impl(self, annotate=False, flat=True, summarize=False)
 
-    def summary(self, tags_store: object = None) -> str:
+    def summary(self, tags_store: TagsStore | None = None) -> str:
         from .diag import diagnostic_impl
         return diagnostic_impl(
             self, annotate=True, flat=True, summarize=True,
@@ -395,13 +400,17 @@ class CBOR:
         """Return the deterministic CBOR encoding of this value as a hex string."""
         return self.to_cbor_data().hex()
 
-    def hex_annotated(self, tags_store: object = None) -> str:
+    def hex_annotated(self, tags_store: TagsStore | None = None) -> str:
         from .dump import hex_annotated_impl
         return hex_annotated_impl(self, tags_store=tags_store)
 
     # --- Walk (delegate to walk module) ---
 
-    def walk(self, state: object, visitor: object) -> object:
+    def walk(
+        self,
+        state: S,
+        visitor: Callable[[WalkElement, int, EdgeType, S], tuple[S, bool]],
+    ) -> S:
         from .walk import walk_impl
         return walk_impl(self, state, visitor)
 

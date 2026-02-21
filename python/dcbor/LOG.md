@@ -55,3 +55,18 @@ COMPLETED
 - NICE TO HAVE: DRY'd __str__/_leaf_str, sorted __all__, added sentinel for tags_store, added docstrings to all public API, renamed TAG_NAME_DATE to private, renamed test helper
 - All 56 tests passing
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Independent fluency critique rerun by Codex (without Rust source)
+- Auditing API ergonomics, naming consistency, docs, and test idiomaticness
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 6 findings total: 2 MUST FIX, 3 SHOULD FIX, 1 NICE TO HAVE
+- MUST FIX: `walk` now propagates and returns traversal state; `Map.__getitem__` now raises `KeyError` for missing keys
+- SHOULD FIX: `Set` now supports `in`; public signatures tightened (`CBOR.walk`, `diagnostic_annotated`, `summary`, `hex_annotated`, `with_tags`); set factory methods now accept `Iterable`
+- NICE TO HAVE: removed Rust-reference phrasing from test module docstrings; clarified `ByteString` class doc wording
+- Added tests for map item access semantics and set membership protocol, plus stronger state-propagation assertions in walk tests
+- All 58 tests passing
+- VERDICT: IDIOMATIC

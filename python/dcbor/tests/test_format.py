@@ -1,4 +1,4 @@
-"""Tests for CBOR diagnostic and hex-annotated formatting — matches Rust dcbor/tests/format.rs."""
+"""Tests for CBOR diagnostic and hex-annotated formatting."""
 
 from __future__ import annotations
 

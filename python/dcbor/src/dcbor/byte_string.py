@@ -4,7 +4,7 @@ from collections.abc import Iterator
 
 
 class ByteString:
-    """Immutable byte sequence used as a CBOR byte-string value."""
+    """Byte-string wrapper used as a CBOR byte-string value."""
 
     __slots__ = ("_data",)
 
