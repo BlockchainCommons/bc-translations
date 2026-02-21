@@ -427,3 +427,28 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage unchanged: 63/86 applicable Rust behavior tests (supplemental API tests added outside baseline)
 - VERDICT: INCOMPLETE (broader behavior confidence improved; baseline parity still has significant remaining scope)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing baseline parity translation from `exact.rs`
+- Adding typed conversion matrix tests for `int16/int32/uint16/uint32`
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `conversion_parity_test.go` coverage for additional `exact.rs`-aligned typed conversion vectors:
+  - `TestExactInt16ConversionParity`
+  - `TestExactInt32ConversionParity`
+  - `TestExactUInt16ConversionParity`
+  - `TestExactUInt32ConversionParity`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (73 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after additional exact conversion matrix parity tests
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with refreshed baseline parity metrics
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage improved from 63/86 to 67/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (baseline coverage approaching 78%; remaining exact/format/API gaps still pending)

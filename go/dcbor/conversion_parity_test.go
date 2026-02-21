@@ -424,3 +424,119 @@ func TestTypedIntegerConversionErrorsParity(t *testing.T) {
 		t.Fatalf("expected IntoUInt32 to fail for negative value")
 	}
 }
+
+func TestExactInt16ConversionParity(t *testing.T) {
+	assertInt16OK := func(name string, v any, want int16) {
+		t.Helper()
+		got, err := MustFromAny(v).TryIntoInt16()
+		if err != nil || got != want {
+			t.Fatalf("%s: TryIntoInt16 got=%d err=%v want=%d", name, got, err, want)
+		}
+	}
+	assertInt16Err := func(name string, v any) {
+		t.Helper()
+		if _, err := MustFromAny(v).TryIntoInt16(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertInt16OK("f64_21", 21.0, 21)
+	assertInt16OK("i64_neg21", int64(-21), -21)
+	assertInt16OK("u64_21", uint64(21), 21)
+	assertInt16Err("f64_fractional", 21.5)
+	assertInt16Err("f64_nan", math.NaN())
+	assertInt16Err("f64_inf", math.Inf(1))
+	assertInt16Err("f64_neg_inf", math.Inf(-1))
+	assertInt16Err("u64_max", uint64(math.MaxUint64))
+	assertInt16Err("u64_65536", uint64(65536))
+	assertInt16Err("i64_max", int64(math.MaxInt64))
+	assertInt16Err("i64_min", int64(math.MinInt64))
+	assertInt16Err("i64_neg65536", int64(-65536))
+}
+
+func TestExactInt32ConversionParity(t *testing.T) {
+	assertInt32OK := func(name string, v any, want int32) {
+		t.Helper()
+		got, err := MustFromAny(v).TryIntoInt32()
+		if err != nil || got != want {
+			t.Fatalf("%s: TryIntoInt32 got=%d err=%v want=%d", name, got, err, want)
+		}
+	}
+	assertInt32Err := func(name string, v any) {
+		t.Helper()
+		if _, err := MustFromAny(v).TryIntoInt32(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertInt32OK("f64_21", 21.0, 21)
+	assertInt32OK("i64_neg21", int64(-21), -21)
+	assertInt32OK("u64_21", uint64(21), 21)
+	assertInt32Err("f64_fractional", 21.5)
+	assertInt32Err("f64_nan", math.NaN())
+	assertInt32Err("f64_inf", math.Inf(1))
+	assertInt32Err("f64_neg_inf", math.Inf(-1))
+	assertInt32Err("u64_max", uint64(math.MaxUint64))
+	assertInt32Err("u64_4294967296", uint64(4294967296))
+	assertInt32Err("i64_max", int64(math.MaxInt64))
+	assertInt32Err("i64_min", int64(math.MinInt64))
+	assertInt32Err("i64_neg4294967296", int64(-4294967296))
+}
+
+func TestExactUInt16ConversionParity(t *testing.T) {
+	assertUInt16OK := func(name string, v any, want uint16) {
+		t.Helper()
+		got, err := MustFromAny(v).TryIntoUInt16()
+		if err != nil || got != want {
+			t.Fatalf("%s: TryIntoUInt16 got=%d err=%v want=%d", name, got, err, want)
+		}
+	}
+	assertUInt16Err := func(name string, v any) {
+		t.Helper()
+		if _, err := MustFromAny(v).TryIntoUInt16(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertUInt16OK("f64_21", 21.0, 21)
+	assertUInt16OK("i64_21", int64(21), 21)
+	assertUInt16OK("u64_21", uint64(21), 21)
+	assertUInt16Err("f64_fractional", 21.5)
+	assertUInt16Err("f64_nan", math.NaN())
+	assertUInt16Err("f64_inf", math.Inf(1))
+	assertUInt16Err("f64_neg_inf", math.Inf(-1))
+	assertUInt16Err("u64_max", uint64(math.MaxUint64))
+	assertUInt16Err("u64_65536", uint64(65536))
+	assertUInt16Err("i64_neg21", int64(-21))
+	assertUInt16Err("i64_min", int64(math.MinInt64))
+	assertUInt16Err("i64_neg65536", int64(-65536))
+}
+
+func TestExactUInt32ConversionParity(t *testing.T) {
+	assertUInt32OK := func(name string, v any, want uint32) {
+		t.Helper()
+		got, err := MustFromAny(v).TryIntoUInt32()
+		if err != nil || got != want {
+			t.Fatalf("%s: TryIntoUInt32 got=%d err=%v want=%d", name, got, err, want)
+		}
+	}
+	assertUInt32Err := func(name string, v any) {
+		t.Helper()
+		if _, err := MustFromAny(v).TryIntoUInt32(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertUInt32OK("f64_21", 21.0, 21)
+	assertUInt32OK("i64_21", int64(21), 21)
+	assertUInt32OK("u64_21", uint64(21), 21)
+	assertUInt32Err("f64_fractional", 21.5)
+	assertUInt32Err("f64_nan", math.NaN())
+	assertUInt32Err("f64_inf", math.Inf(1))
+	assertUInt32Err("f64_neg_inf", math.Inf(-1))
+	assertUInt32Err("u64_max", uint64(math.MaxUint64))
+	assertUInt32Err("u64_4294967296", uint64(4294967296))
+	assertUInt32Err("i64_neg21", int64(-21))
+	assertUInt32Err("i64_min", int64(math.MinInt64))
+	assertUInt32Err("i64_neg4294967296", int64(-4294967296))
+}
