@@ -542,3 +542,25 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage unchanged: 69/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (conversion API ergonomics improved; baseline parity still incomplete)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing baseline `exact.rs` parity work for float conversion behavior
+- Adding an explicit `f64` conversion matrix test over CBOR integer/float edge cases
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TestExactFloat64ConversionParity` to `conversion_parity_test.go`
+- Validates Rust-aligned `TryIntoFloat64` behavior across NaN/Infinity, unsigned/negative integer edges, and out-of-range cases
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (79 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after adding exact `f64` conversion parity coverage
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with exact `f64` parity coverage notes and refreshed metrics
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage improved from 69/86 to 70/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (baseline parity improved; substantial remaining work still open)

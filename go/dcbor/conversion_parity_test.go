@@ -632,3 +632,44 @@ func TestTypedDecodeHelperParity(t *testing.T) {
 		t.Fatalf("expected ErrOutOfRange for DecodeInt32 underflow, got %v", err)
 	}
 }
+
+func TestExactFloat64ConversionParity(t *testing.T) {
+	assertFloat64OK := func(name string, value any, want float64) {
+		t.Helper()
+		got, err := MustFromAny(value).TryIntoFloat64()
+		if err != nil {
+			t.Fatalf("%s: unexpected error: %v", name, err)
+		}
+		if math.IsNaN(want) {
+			if !math.IsNaN(got) {
+				t.Fatalf("%s: expected NaN, got %v", name, got)
+			}
+			return
+		}
+		if got != want {
+			t.Fatalf("%s: got %v want %v", name, got, want)
+		}
+	}
+	assertFloat64Err := func(name string, value any) {
+		t.Helper()
+		if _, err := MustFromAny(value).TryIntoFloat64(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertFloat64OK("f64_21", 21.0, 21.0)
+	assertFloat64OK("f64_21_5", 21.5, 21.5)
+	assertFloat64OK("f64_nan", math.NaN(), math.NaN())
+	assertFloat64OK("f64_inf", math.Inf(1), math.Inf(1))
+	assertFloat64OK("f64_neg_inf", math.Inf(-1), math.Inf(-1))
+
+	assertFloat64OK("u64_21", uint64(21), 21.0)
+	assertFloat64OK("u64_max", uint64(math.MaxUint64), 18446744073709551616.0)
+	assertFloat64Err("u64_9223372036854775809", uint64(9223372036854775809))
+
+	assertFloat64OK("i64_21", int64(21), 21.0)
+	assertFloat64OK("i64_neg21", int64(-21), -21.0)
+	assertFloat64Err("i64_max", int64(math.MaxInt64))
+	assertFloat64Err("i64_min", int64(math.MinInt64))
+	assertFloat64Err("i64_neg9223372036854775807", int64(-9223372036854775807))
+}

@@ -42,12 +42,13 @@
 
 ### Implemented in Go
 
-- 78 tests total across:
+- 79 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
   - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)
   - exact numeric-conversion boundary parity vectors (`exact.rs`-aligned float-to-int exactness cases via Go CBOR reduction behavior)
+  - exact `f64` conversion parity vectors for CBOR integer/float edge cases
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
@@ -79,7 +80,7 @@
 
 Applicable Rust behavior tests for parity target (excluding Rust metadata checks): 86
 
-Current translated tests: 69/86 (80.2%)
+Current translated tests: 70/86 (81.4%)
 
 ## Derive/Protocol Coverage
 
@@ -94,7 +95,7 @@ Current translated tests: 69/86 (80.2%)
 ## Completeness Summary
 
 - API Coverage: 63/83 key manifest items (75.9%)
-- Test Coverage: 69/86 applicable behavior tests (80.2%)
+- Test Coverage: 70/86 applicable behavior tests (81.4%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
 - Docs parity: partial
@@ -105,5 +106,5 @@ Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Expand translated tests from 69 to near-complete default-feature parity.
+3. Expand translated tests from 70 to near-complete default-feature parity.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.
