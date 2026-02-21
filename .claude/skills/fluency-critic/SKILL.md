@@ -5,6 +5,7 @@ description: >-
   conventions, error handling patterns, API design, and ecosystem norms.
   Use after the completeness checker confirms a translation is complete.
 user-invocable: false
+context: fork
 ---
 
 # Fluency Critic

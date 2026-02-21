@@ -6,6 +6,7 @@ description: >-
   inventory, and translation hazards. Use when beginning translation of a Rust
   crate to any target language.
 user-invocable: false
+context: fork
 ---
 
 # Translation Planner

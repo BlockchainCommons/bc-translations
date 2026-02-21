@@ -30,7 +30,7 @@ Select and begin the next translation target. Optionally specify a language and/
    - If a language was specified, filter to that language
    - If a crate was specified, filter to that crate
    - Otherwise, prefer resuming interrupted work first, then crates higher in the dependency graph (fewer deps), then languages with the most progress
-6. Present the selection to the user for confirmation before proceeding
+6. Announce the selection and proceed immediately — do not ask for confirmation
 
 ## Dependency Rules
 
@@ -44,7 +44,7 @@ Examples:
 
 ## Pipeline
 
-Once a target is selected and confirmed:
+Once a target is selected, run the entire pipeline to completion without pausing to ask whether the next stage should begin. Move directly from Plan → Code → Check → Critique → Status → Lessons → Next. Only stop to ask the user if you hit a serious technical blocker (e.g., build failures that resist multiple fix attempts, missing upstream dependencies, ambiguous requirements that cannot be resolved from the manifest or existing translations).
 
 ### Step 0: Mark In Progress
 Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧. This signals to other agents that work is underway on this pair.

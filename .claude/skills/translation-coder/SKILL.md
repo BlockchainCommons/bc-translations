@@ -5,6 +5,7 @@ description: >-
   from the planner. Produces source code, tests, and package configuration.
   Use when writing the actual translation of a Rust crate.
 user-invocable: false
+context: fork
 ---
 
 # Translation Coder

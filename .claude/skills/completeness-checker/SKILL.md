@@ -5,6 +5,7 @@ description: >-
   Checks API surface coverage, test coverage, and signature compatibility.
   Use after the coder finishes translating a crate to verify nothing was missed.
 user-invocable: false
+context: fork
 ---
 
 # Completeness Checker
