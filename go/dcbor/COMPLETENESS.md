@@ -30,6 +30,7 @@
 - ✅ Conversion helpers expanded: strict numeric `TryInto*` methods, reflective container conversion (`FromAny` for slices/arrays/maps), and generic decode helpers (`DecodeArray`, `DecodeMap`)
 - ✅ Added simple-value convenience extractors (`TryIntoSimpleValue`, `TrySimpleValue`, `IntoSimpleValue`) for closer `conveniences.rs` parity
 - ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
+- ✅ Added additional typed integer extractors for narrow/native widths (`TryIntoInt8/UInt8/Int/UInt` plus alias/Into forms) and decode helpers (`DecodeInt8/UInt8/Int/UInt`)
 - ✅ Added `float32` conversion helpers (`TryIntoFloat32`, `TryFloat32`, `IntoFloat32`, `DecodeFloat32`) with parity tests
 - ✅ Added big-integer conversion helpers (`TryIntoBigInt`/`TryIntoBigUint` + decode helpers) to cover Rust-width parity beyond Go native ints
 - ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
@@ -116,7 +117,7 @@ VERDICT: INCOMPLETE
 
 Primary remaining work:
 
-1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
+1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity), now including primarily Rust-only-width/trait-surface items after adding `int8`/`uint8`/native-width helper parity.
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
 3. Continue closing remaining API-surface/trait parity gaps and improving exact annotated-format fidelity.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.

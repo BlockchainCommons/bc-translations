@@ -532,6 +532,52 @@ func (c CBOR) IntoInt16() (int16, bool) {
 	return value, true
 }
 
+func (c CBOR) TryIntoInt8() (int8, error) {
+	value, err := c.TryIntoInt64()
+	if err != nil {
+		return 0, err
+	}
+	if value < math.MinInt8 || value > math.MaxInt8 {
+		return 0, ErrOutOfRange
+	}
+	return int8(value), nil
+}
+
+func (c CBOR) TryInt8() (int8, error) {
+	return c.TryIntoInt8()
+}
+
+func (c CBOR) IntoInt8() (int8, bool) {
+	value, err := c.TryIntoInt8()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoInt() (int, error) {
+	value, err := c.TryIntoInt64()
+	if err != nil {
+		return 0, err
+	}
+	if strconv.IntSize == 32 && (value < math.MinInt32 || value > math.MaxInt32) {
+		return 0, ErrOutOfRange
+	}
+	return int(value), nil
+}
+
+func (c CBOR) TryInt() (int, error) {
+	return c.TryIntoInt()
+}
+
+func (c CBOR) IntoInt() (int, bool) {
+	value, err := c.TryIntoInt()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryIntoUInt32() (uint32, error) {
 	value, err := c.TryIntoUInt64()
 	if err != nil {
@@ -572,6 +618,52 @@ func (c CBOR) TryUInt16() (uint16, error) {
 
 func (c CBOR) IntoUInt16() (uint16, bool) {
 	value, err := c.TryIntoUInt16()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoUInt8() (uint8, error) {
+	value, err := c.TryIntoUInt64()
+	if err != nil {
+		return 0, err
+	}
+	if value > math.MaxUint8 {
+		return 0, ErrOutOfRange
+	}
+	return uint8(value), nil
+}
+
+func (c CBOR) TryUInt8() (uint8, error) {
+	return c.TryIntoUInt8()
+}
+
+func (c CBOR) IntoUInt8() (uint8, bool) {
+	value, err := c.TryIntoUInt8()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoUInt() (uint, error) {
+	value, err := c.TryIntoUInt64()
+	if err != nil {
+		return 0, err
+	}
+	if strconv.IntSize == 32 && value > math.MaxUint32 {
+		return 0, ErrOutOfRange
+	}
+	return uint(value), nil
+}
+
+func (c CBOR) TryUInt() (uint, error) {
+	return c.TryIntoUInt()
+}
+
+func (c CBOR) IntoUInt() (uint, bool) {
+	value, err := c.TryIntoUInt()
 	if err != nil {
 		return 0, false
 	}

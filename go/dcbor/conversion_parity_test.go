@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
@@ -403,6 +404,17 @@ func TestExactI64FromF64ParityVectors(t *testing.T) {
 }
 
 func TestTypedIntegerConversionParity(t *testing.T) {
+	int8Value := MustFromAny(-21)
+	if got, err := int8Value.TryIntoInt8(); err != nil || got != -21 {
+		t.Fatalf("TryIntoInt8 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := int8Value.TryInt8(); err != nil || got != -21 {
+		t.Fatalf("TryInt8 mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := int8Value.IntoInt8(); !ok || got != -21 {
+		t.Fatalf("IntoInt8 mismatch: got=%d ok=%v", got, ok)
+	}
+
 	int16Value := MustFromAny(-21)
 	if got, err := int16Value.TryIntoInt16(); err != nil || got != -21 {
 		t.Fatalf("TryIntoInt16 mismatch: got=%d err=%v", got, err)
@@ -423,6 +435,28 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	}
 	if got, ok := int32Value.IntoInt32(); !ok || got != 2147483647 {
 		t.Fatalf("IntoInt32 mismatch: got=%d ok=%v", got, ok)
+	}
+
+	intValue := MustFromAny(-42)
+	if got, err := intValue.TryIntoInt(); err != nil || got != -42 {
+		t.Fatalf("TryIntoInt mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := intValue.TryInt(); err != nil || got != -42 {
+		t.Fatalf("TryInt mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := intValue.IntoInt(); !ok || got != -42 {
+		t.Fatalf("IntoInt mismatch: got=%d ok=%v", got, ok)
+	}
+
+	uint8Value := MustFromAny(255)
+	if got, err := uint8Value.TryIntoUInt8(); err != nil || got != 255 {
+		t.Fatalf("TryIntoUInt8 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := uint8Value.TryUInt8(); err != nil || got != 255 {
+		t.Fatalf("TryUInt8 mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := uint8Value.IntoUInt8(); !ok || got != 255 {
+		t.Fatalf("IntoUInt8 mismatch: got=%d ok=%v", got, ok)
 	}
 
 	uint16Value := MustFromAny(65535)
@@ -446,9 +480,26 @@ func TestTypedIntegerConversionParity(t *testing.T) {
 	if got, ok := uint32Value.IntoUInt32(); !ok || got != 4294967295 {
 		t.Fatalf("IntoUInt32 mismatch: got=%d ok=%v", got, ok)
 	}
+
+	uintValue := MustFromAny(uint64(42))
+	if got, err := uintValue.TryIntoUInt(); err != nil || got != 42 {
+		t.Fatalf("TryIntoUInt mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := uintValue.TryUInt(); err != nil || got != 42 {
+		t.Fatalf("TryUInt mismatch: got=%d err=%v", got, err)
+	}
+	if got, ok := uintValue.IntoUInt(); !ok || got != 42 {
+		t.Fatalf("IntoUInt mismatch: got=%d ok=%v", got, ok)
+	}
 }
 
 func TestTypedIntegerConversionErrorsParity(t *testing.T) {
+	if _, err := MustFromAny(128).TryIntoInt8(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for int8 overflow, got %v", err)
+	}
+	if _, err := MustFromAny(-129).TryIntoInt8(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for int8 underflow, got %v", err)
+	}
 	if _, err := MustFromAny(32768).TryIntoInt16(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for int16 overflow, got %v", err)
 	}
@@ -464,11 +515,25 @@ func TestTypedIntegerConversionErrorsParity(t *testing.T) {
 	if _, err := MustFromAny(65536).TryIntoUInt16(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for uint16 overflow, got %v", err)
 	}
+	if _, err := MustFromAny(256).TryIntoUInt8(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for uint8 overflow, got %v", err)
+	}
 	if _, err := MustFromAny(uint64(4294967296)).TryIntoUInt32(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for uint32 overflow, got %v", err)
 	}
+	if strconv.IntSize == 32 {
+		if _, err := MustFromAny(int64(math.MaxInt32) + 1).TryIntoInt(); !errors.Is(err, ErrOutOfRange) {
+			t.Fatalf("expected ErrOutOfRange for int overflow on 32-bit, got %v", err)
+		}
+		if _, err := MustFromAny(uint64(math.MaxUint32) + 1).TryIntoUInt(); !errors.Is(err, ErrOutOfRange) {
+			t.Fatalf("expected ErrOutOfRange for uint overflow on 32-bit, got %v", err)
+		}
+	}
 	if _, err := MustFromAny(-1).TryIntoUInt16(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for negative->uint16, got %v", err)
+	}
+	if _, err := MustFromAny(-1).TryIntoUInt8(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for negative->uint8, got %v", err)
 	}
 	if _, err := MustFromAny(-1).TryIntoUInt32(); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for negative->uint32, got %v", err)
@@ -476,15 +541,27 @@ func TestTypedIntegerConversionErrorsParity(t *testing.T) {
 	if _, err := MustFromAny(42.5).TryIntoInt32(); !errors.Is(err, ErrWrongType) {
 		t.Fatalf("expected ErrWrongType for non-integral float->int32, got %v", err)
 	}
+	if _, err := MustFromAny(42.5).TryIntoInt8(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for non-integral float->int8, got %v", err)
+	}
 	if _, err := MustFromAny("42").TryIntoUInt16(); !errors.Is(err, ErrWrongType) {
 		t.Fatalf("expected ErrWrongType for text->uint16, got %v", err)
+	}
+	if _, err := MustFromAny("42").TryIntoUInt8(); !errors.Is(err, ErrWrongType) {
+		t.Fatalf("expected ErrWrongType for text->uint8, got %v", err)
 	}
 
 	if _, ok := MustFromAny(42.5).IntoInt16(); ok {
 		t.Fatalf("expected IntoInt16 to fail for non-integral float")
 	}
+	if _, ok := MustFromAny(42.5).IntoInt8(); ok {
+		t.Fatalf("expected IntoInt8 to fail for non-integral float")
+	}
 	if _, ok := MustFromAny(-1).IntoUInt32(); ok {
 		t.Fatalf("expected IntoUInt32 to fail for negative value")
+	}
+	if _, ok := MustFromAny(-1).IntoUInt8(); ok {
+		t.Fatalf("expected IntoUInt8 to fail for negative value")
 	}
 }
 
@@ -658,11 +735,20 @@ func TestExactUInt64ConversionParity(t *testing.T) {
 }
 
 func TestTypedDecodeHelperParity(t *testing.T) {
+	if got, err := DecodeUInt8(MustFromAny(255)); err != nil || got != 255 {
+		t.Fatalf("DecodeUInt8 mismatch: got=%d err=%v", got, err)
+	}
 	if got, err := DecodeUInt16(MustFromAny(65535)); err != nil || got != 65535 {
 		t.Fatalf("DecodeUInt16 mismatch: got=%d err=%v", got, err)
 	}
 	if got, err := DecodeUInt32(MustFromAny(uint64(4294967295))); err != nil || got != 4294967295 {
 		t.Fatalf("DecodeUInt32 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := DecodeUInt(MustFromAny(uint64(42))); err != nil || got != 42 {
+		t.Fatalf("DecodeUInt mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := DecodeInt8(MustFromAny(-128)); err != nil || got != -128 {
+		t.Fatalf("DecodeInt8 mismatch: got=%d err=%v", got, err)
 	}
 	if got, err := DecodeInt16(MustFromAny(-32768)); err != nil || got != -32768 {
 		t.Fatalf("DecodeInt16 mismatch: got=%d err=%v", got, err)
@@ -670,18 +756,37 @@ func TestTypedDecodeHelperParity(t *testing.T) {
 	if got, err := DecodeInt32(MustFromAny(-2147483648)); err != nil || got != -2147483648 {
 		t.Fatalf("DecodeInt32 mismatch: got=%d err=%v", got, err)
 	}
+	if got, err := DecodeInt(MustFromAny(-42)); err != nil || got != -42 {
+		t.Fatalf("DecodeInt mismatch: got=%d err=%v", got, err)
+	}
 
+	if _, err := DecodeUInt8(MustFromAny(256)); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for DecodeUInt8 overflow, got %v", err)
+	}
 	if _, err := DecodeUInt16(MustFromAny(-1)); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for DecodeUInt16(-1), got %v", err)
 	}
 	if _, err := DecodeUInt32(MustFromAny(uint64(4294967296))); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for DecodeUInt32 overflow, got %v", err)
 	}
+	if strconv.IntSize == 32 {
+		if _, err := DecodeUInt(MustFromAny(uint64(math.MaxUint32) + 1)); !errors.Is(err, ErrOutOfRange) {
+			t.Fatalf("expected ErrOutOfRange for DecodeUInt overflow on 32-bit, got %v", err)
+		}
+	}
+	if _, err := DecodeInt8(MustFromAny(128)); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for DecodeInt8 overflow, got %v", err)
+	}
 	if _, err := DecodeInt16(MustFromAny(32768)); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for DecodeInt16 overflow, got %v", err)
 	}
 	if _, err := DecodeInt32(MustFromAny(-2147483649)); !errors.Is(err, ErrOutOfRange) {
 		t.Fatalf("expected ErrOutOfRange for DecodeInt32 underflow, got %v", err)
+	}
+	if strconv.IntSize == 32 {
+		if _, err := DecodeInt(MustFromAny(int64(math.MaxInt32) + 1)); !errors.Is(err, ErrOutOfRange) {
+			t.Fatalf("expected ErrOutOfRange for DecodeInt overflow on 32-bit, got %v", err)
+		}
 	}
 }
 

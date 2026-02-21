@@ -29,6 +29,14 @@ func DecodeUInt16(c CBOR) (uint16, error) {
 	return c.TryIntoUInt16()
 }
 
+func DecodeUInt8(c CBOR) (uint8, error) {
+	return c.TryIntoUInt8()
+}
+
+func DecodeUInt(c CBOR) (uint, error) {
+	return c.TryIntoUInt()
+}
+
 func DecodeInt64(c CBOR) (int64, error) {
 	return c.TryIntoInt64()
 }
@@ -39,6 +47,14 @@ func DecodeInt32(c CBOR) (int32, error) {
 
 func DecodeInt16(c CBOR) (int16, error) {
 	return c.TryIntoInt16()
+}
+
+func DecodeInt8(c CBOR) (int8, error) {
+	return c.TryIntoInt8()
+}
+
+func DecodeInt(c CBOR) (int, error) {
+	return c.TryIntoInt()
 }
 
 func DecodeFloat64(c CBOR) (float64, error) {

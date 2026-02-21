@@ -785,3 +785,31 @@ COMPLETED
 - Baseline translated-test coverage revised from 73/86 to 83/86 applicable Rust behavior tests
 - Remaining uncovered baseline groups are Rust-width-specific (`i128`, `u128`, `f16`)
 - VERDICT: INCOMPLETE (coverage is now high; remaining parity and API-surface gaps still open)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion matrix parity by adding missing narrow/native integer helper surface
+- Implementing `int8`/`uint8` and native `int`/`uint` conversion helpers plus decode helpers
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added integer conversion APIs in `cbor.go`:
+  - `TryIntoInt8`, `TryInt8`, `IntoInt8`
+  - `TryIntoUInt8`, `TryUInt8`, `IntoUInt8`
+  - `TryIntoInt`, `TryInt`, `IntoInt`
+  - `TryIntoUInt`, `TryUInt`, `IntoUInt`
+- Added decode helpers in `conversion.go`:
+  - `DecodeInt8`, `DecodeUInt8`, `DecodeInt`, `DecodeUInt`
+- Expanded parity coverage in `conversion_parity_test.go` for success/error/range semantics (including 32-bit guard paths)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (94 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after narrow/native integer conversion parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect newly covered `int8`/`uint8`/native-width conversion and decode helper surface
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- API/trait/docs/format fidelity work remains open
+- VERDICT: INCOMPLETE (conversion parity improved; remaining API-surface and format-fidelity gaps persist)
