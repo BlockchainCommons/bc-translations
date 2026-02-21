@@ -59,3 +59,27 @@ COMPLETED
 - NICE TO HAVE: TestVector.Colors cached with ??= pattern
 - Tests: all 35 vectors still pass after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Running a Stage 4 rerun for C# idiomaticness and documentation consistency
+- Reviewing API naming, constants/style, and test ergonomics before retesting
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- 3 issues found (1 MUST FIX, 2 SHOULD FIX), all 3 fixed
+- MUST FIX: Public API methods lacked null guards; added `ArgumentNullException.ThrowIfNull` checks
+- SHOULD FIX: Public API surface lacked XML docs on factory methods and image properties
+- SHOULD FIX: PNG generation helper executed as a normal test; marked as manual `[Fact(Skip=...)]`
+- Tests: `dotnet test csharp/BCLifeHash/BCLifeHash.slnx` → Passed 1, Skipped 1, Failed 0
+- VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique
+STARTED
+- Applying follow-up fluency preference: PNG generation test should run by default
+
+## 2026-02-21 — Stage 4: Critique
+COMPLETED
+- Reverted PNG helper back to default-on test execution (`[Fact]`)
+- Tests: `dotnet test csharp/BCLifeHash/BCLifeHash.slnx` → Passed 2, Skipped 0, Failed 0
+- VERDICT: IDIOMATIC

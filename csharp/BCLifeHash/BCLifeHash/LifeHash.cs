@@ -20,12 +20,24 @@ public enum LifeHashVersion
 /// </summary>
 public sealed class LifeHashImage
 {
+    /// <summary>
+    /// Image width in pixels.
+    /// </summary>
     public int Width { get; }
+
+    /// <summary>
+    /// Image height in pixels.
+    /// </summary>
     public int Height { get; }
+
+    /// <summary>
+    /// Pixel components in row-major order (RGB or RGBA based on generation options).
+    /// </summary>
     public byte[] Colors { get; }
 
     internal LifeHashImage(int width, int height, byte[] colors)
     {
+        ArgumentNullException.ThrowIfNull(colors);
         Width = width;
         Height = height;
         Colors = colors;
@@ -81,31 +93,55 @@ public static class LifeHash
         return new LifeHashImage(scaledWidth, scaledHeight, resultColors);
     }
 
+    /// <summary>
+    /// Creates a LifeHash image from UTF-8 text input.
+    /// </summary>
+    /// <param name="text">Text to hash.</param>
+    /// <param name="version">LifeHash rendering version.</param>
+    /// <param name="moduleSize">Scale factor for each logical cell.</param>
+    /// <param name="hasAlpha">Whether to emit RGBA output instead of RGB.</param>
     public static LifeHashImage CreateFromUtf8(
-        string s,
+        string text,
         LifeHashVersion version,
         int moduleSize,
         bool hasAlpha)
     {
-        return CreateFromData(Encoding.UTF8.GetBytes(s), version, moduleSize, hasAlpha);
+        ArgumentNullException.ThrowIfNull(text);
+        return CreateFromData(Encoding.UTF8.GetBytes(text), version, moduleSize, hasAlpha);
     }
 
+    /// <summary>
+    /// Creates a LifeHash image from arbitrary binary input by hashing it with SHA-256.
+    /// </summary>
+    /// <param name="data">Input bytes to hash.</param>
+    /// <param name="version">LifeHash rendering version.</param>
+    /// <param name="moduleSize">Scale factor for each logical cell.</param>
+    /// <param name="hasAlpha">Whether to emit RGBA output instead of RGB.</param>
     public static LifeHashImage CreateFromData(
         byte[] data,
         LifeHashVersion version,
         int moduleSize,
         bool hasAlpha)
     {
+        ArgumentNullException.ThrowIfNull(data);
         var digest = Sha256(data);
         return CreateFromDigest(digest, version, moduleSize, hasAlpha);
     }
 
+    /// <summary>
+    /// Creates a LifeHash image from a precomputed SHA-256 digest.
+    /// </summary>
+    /// <param name="digest">A 32-byte SHA-256 digest.</param>
+    /// <param name="version">LifeHash rendering version.</param>
+    /// <param name="moduleSize">Scale factor for each logical cell.</param>
+    /// <param name="hasAlpha">Whether to emit RGBA output instead of RGB.</param>
     public static LifeHashImage CreateFromDigest(
         byte[] digest,
         LifeHashVersion version,
         int moduleSize,
         bool hasAlpha)
     {
+        ArgumentNullException.ThrowIfNull(digest);
         if (digest.Length != 32)
             throw new ArgumentException("Digest must be 32 bytes", nameof(digest));
 
