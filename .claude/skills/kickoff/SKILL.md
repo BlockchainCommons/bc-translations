@@ -42,9 +42,26 @@ Examples:
 - `(bc-crypto, python)` is eligible only if `(bc-rand, python)` is ✅
 - `(bc-components, python)` is eligible only if bc-rand, bc-crypto, dcbor, bc-tags, bc-ur, and sskr are all ✅ for python
 
+## Definition of Done
+
+A translation is **not done** until ALL of the following are true:
+
+1. **API-complete**: Every public type, function, constant, and trait in the manifest is translated. COMPLETENESS.md has no unchecked items.
+2. **Tests-complete**: Every test in the manifest is translated with matching test vectors. All tests pass.
+3. **Fluency-complete**: The fluency critic has run, ALL findings (MUST FIX, SHOULD FIX, and NICE TO HAVE) have been addressed, and tests still pass after fixes.
+4. **Documentation-complete**: Public API has idiomatic doc comments in the target language.
+5. **Status updated**: CLAUDE.md shows ✅, root LOG.md has a row, per-target LOG.md has all stages COMPLETED.
+6. **Lessons captured**: Rule One has been applied and memory files updated.
+
+Do not report completion, mark ✅, or stop work until all six criteria are met.
+
 ## Pipeline
 
-Once a target is selected, run the entire pipeline to completion without pausing to ask whether the next stage should begin. Move directly from Plan → Code → Check → Critique → Status → Lessons → Next. Only stop to ask the user if you hit a serious technical blocker (e.g., build failures that resist multiple fix attempts, missing upstream dependencies, ambiguous requirements that cannot be resolved from the manifest or existing translations).
+**YOU MUST RUN THE FULL PIPELINE TO COMPLETION.** Do not stop after any individual stage. Do not ask "should I continue?" between stages. Do not report partial results and wait for instructions. Move directly and automatically from Plan → Code → Check → Critique → Status → Lessons → Next.
+
+The only acceptable reason to stop is a **technical barrier that requires the user to intervene** — for example, build failures that resist 5+ fix attempts, a missing upstream dependency that hasn't been translated yet, or an ambiguous requirement that cannot be resolved from the manifest or existing translations. If the problem is something you can solve yourself (test failures, compilation errors, fluency fixes, missing test vectors you can derive from the Rust source), then solve it and keep going.
+
+**Stopping early because you ran a stage successfully is not acceptable.** Completing Stage 2 (Code) does not mean you are done — you still owe Stages 3, 4, 5, 6, and 7. Completing Stage 4 (Critique) does not mean you are done — you still owe status updates, log entries, lesson capture, and the next-target suggestion.
 
 ### Step 0: Mark In Progress
 Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧 **and** append the model marker emoji (see the Model Markers section of CLAUDE.md). For example, change `⏳ DCbor` to `🚧🎻 DCbor` for a Claude Opus translation. This signals to other agents that work is underway on this pair and which model is doing the work.
