@@ -865,3 +865,55 @@ func TestBigIntRoundTripWithinCBORRange(t *testing.T) {
 		}
 	}
 }
+
+func TestFloat16ConversionParity(t *testing.T) {
+	assertFloat16OK := func(name string, value any, want float64) {
+		t.Helper()
+		got, err := MustFromAny(value).TryIntoFloat16()
+		if err != nil {
+			t.Fatalf("%s: unexpected error: %v", name, err)
+		}
+		if math.IsNaN(want) {
+			if !got.IsNaN() {
+				t.Fatalf("%s: expected NaN, got bits=0x%04x", name, got.Bits())
+			}
+			return
+		}
+		if got.Float64() != want {
+			t.Fatalf("%s: got %v want %v", name, got.Float64(), want)
+		}
+	}
+	assertFloat16Err := func(name string, value any) {
+		t.Helper()
+		if _, err := MustFromAny(value).TryIntoFloat16(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertFloat16OK("f64_21", 21.0, 21.0)
+	assertFloat16OK("f64_21_5", 21.5, 21.5)
+	assertFloat16OK("f64_nan", math.NaN(), math.NaN())
+	assertFloat16OK("f64_inf", math.Inf(1), math.Inf(1))
+	assertFloat16OK("f64_neg_inf", math.Inf(-1), math.Inf(-1))
+	assertFloat16OK("u64_21", uint64(21), 21.0)
+	assertFloat16Err("u64_max", uint64(math.MaxUint64))
+	assertFloat16Err("u64_65536", uint64(65536))
+	assertFloat16OK("i64_21", int64(21), 21.0)
+	assertFloat16OK("i64_neg21", int64(-21), -21.0)
+	assertFloat16Err("i64_max", int64(math.MaxInt64))
+	assertFloat16Err("i64_min", int64(math.MinInt64))
+	assertFloat16Err("i64_neg65536", int64(-65536))
+
+	if got, err := DecodeFloat16(MustFromAny(21.5)); err != nil || got.Float64() != 21.5 {
+		t.Fatalf("DecodeFloat16 mismatch: got=%v err=%v", got.Float64(), err)
+	}
+	if got, err := MustFromAny(21.5).TryFloat16(); err != nil || got.Float64() != 21.5 {
+		t.Fatalf("TryFloat16 mismatch: got=%v err=%v", got.Float64(), err)
+	}
+	if got, ok := MustFromAny(21.5).IntoFloat16(); !ok || got.Float64() != 21.5 {
+		t.Fatalf("IntoFloat16 mismatch: got=%v ok=%v", got.Float64(), ok)
+	}
+	if _, ok := MustFromAny("x").IntoFloat16(); ok {
+		t.Fatalf("expected IntoFloat16 to fail for non-number")
+	}
+}

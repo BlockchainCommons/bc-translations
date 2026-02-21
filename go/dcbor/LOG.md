@@ -751,6 +751,30 @@ COMPLETED
 - Remaining uncovered baseline group is `exact.rs` `f16`-specific behavior
 - VERDICT: INCOMPLETE (near-complete baseline parity; residual f16/format/fluency work remains)
 
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing exact conversion parity to close remaining `f16` behavior gap
+- Implementing explicit half-precision type/conversion helpers in Go
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `Float16` type and helpers in `half.go`
+- Added `TryIntoFloat16`, `TryFloat16`, `IntoFloat16` in `cbor.go`
+- Added `DecodeFloat16` in `conversion.go`
+- Added `TestFloat16ConversionParity` and `TestFloat16TypeParity`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (94 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after float16 conversion parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with float16 conversion coverage and refreshed totals
+- API coverage improved from 67/83 to 69/83 key manifest targets
+- Baseline translated-test coverage improved from 85/86 to 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (baseline test parity complete; API/trait/docs/format fidelity gaps remain)
+
 ## 2026-02-21 -- Stage 3: Check
 STARTED
 - Re-evaluating baseline test coverage accounting after accumulating additional `exact.rs` parity groups

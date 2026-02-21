@@ -630,6 +630,57 @@ func (c CBOR) IntoBigInt() (*big.Int, bool) {
 	return value, true
 }
 
+func (c CBOR) TryIntoFloat16() (Float16, error) {
+	switch c.kind {
+	case CBORKindUnsigned:
+		u := c.value.(uint64)
+		h, ok := exactFloat16FromFloat64(float64(u))
+		if !ok {
+			return 0, ErrOutOfRange
+		}
+		if uint64(h.Float64()) != u {
+			return 0, ErrOutOfRange
+		}
+		return h, nil
+	case CBORKindNegative:
+		u := c.value.(uint64)
+		f := float64(u)
+		if uint64(f) != u {
+			return 0, ErrOutOfRange
+		}
+		h, ok := exactFloat16FromFloat64(-1.0 - f)
+		if !ok {
+			return 0, ErrOutOfRange
+		}
+		return h, nil
+	case CBORKindSimple:
+		s := c.value.(Simple)
+		if s.Kind() != SimpleFloat {
+			return 0, ErrWrongType
+		}
+		n, _ := s.Float64()
+		h, ok := exactFloat16FromFloat64(n)
+		if !ok {
+			return 0, ErrOutOfRange
+		}
+		return h, nil
+	default:
+		return 0, ErrWrongType
+	}
+}
+
+func (c CBOR) TryFloat16() (Float16, error) {
+	return c.TryIntoFloat16()
+}
+
+func (c CBOR) IntoFloat16() (Float16, bool) {
+	value, err := c.TryIntoFloat16()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryIntoFloat64() (float64, error) {
 	switch c.kind {
 	case CBORKindUnsigned:

@@ -49,6 +49,10 @@ func DecodeFloat32(c CBOR) (float32, error) {
 	return c.TryIntoFloat32()
 }
 
+func DecodeFloat16(c CBOR) (Float16, error) {
+	return c.TryIntoFloat16()
+}
+
 func DecodeBigInt(c CBOR) (*big.Int, error) {
 	return c.TryIntoBigInt()
 }

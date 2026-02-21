@@ -5,6 +5,7 @@
 ### Types and Core Exports
 
 - ✅ `CBOR`, `CBORCase`, `ByteString`, `Map`, `MapIter`, `Set`, `SetIter`, `Simple`, `Date`, `Tag`, `TagValue`
+- ✅ `Float16` half-precision helper type for parity with Rust exact conversion behavior
 - ✅ `Error` surface (Go error values/types)
 - ✅ `DiagFormatOpts`, `HexFormatOpts`
 - ✅ `TagsStore`, `TagsStoreOpt`, `TagsStoreTrait`, `CBORSummarizer`, `LazyTagsStore`, `GLOBAL_TAGS`
@@ -31,6 +32,7 @@
 - ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
 - ✅ Added `float32` conversion helpers (`TryIntoFloat32`, `TryFloat32`, `IntoFloat32`, `DecodeFloat32`) with parity tests
 - ✅ Added big-integer conversion helpers (`TryIntoBigInt`/`TryIntoBigUint` + decode helpers) to cover Rust-width parity beyond Go native ints
+- ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
 - ⚠️ Complex structure `hex_annotated` checks now validate critical fragments, but exact full-text layout/comment alignment still differs from Rust
@@ -46,13 +48,14 @@
 
 ### Implemented in Go
 
-- 92 tests total across:
+- 94 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
   - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)
   - exact numeric-conversion boundary parity vectors (`exact.rs`-aligned float-to-int exactness cases via Go CBOR reduction behavior)
   - exact `f64` conversion parity vectors for CBOR integer/float edge cases
+  - exact `f16` conversion parity vectors for CBOR integer/float edge cases
   - big-integer conversion parity vectors covering extended-width integer extraction semantics
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
   - set-conversion parity checks and additional map/encoding vectors
@@ -89,9 +92,7 @@
 
 Applicable Rust behavior tests for parity target (excluding Rust metadata checks): 86
 
-Current translated tests: 85/86 (98.8%)
-
-Remaining uncovered baseline test group is `exact.rs` `f16`-specific behavior.
+Current translated tests: 86/86 (100.0%)
 
 ## Derive/Protocol Coverage
 
@@ -105,8 +106,8 @@ Remaining uncovered baseline test group is `exact.rs` `f16`-specific behavior.
 
 ## Completeness Summary
 
-- API Coverage: 67/83 key manifest items (80.7%)
-- Test Coverage: 85/86 applicable behavior tests (98.8%)
+- API Coverage: 69/83 key manifest items (83.1%)
+- Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
 - Docs parity: partial
@@ -117,5 +118,5 @@ Primary remaining work:
 
 1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity).
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
-3. Resolve or formally scope out remaining `f16`-specific parity behavior.
+3. Continue closing remaining API-surface/trait parity gaps and improving exact annotated-format fidelity.
 4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.

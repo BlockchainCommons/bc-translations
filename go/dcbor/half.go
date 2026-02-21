@@ -2,6 +2,54 @@ package dcbor
 
 import "math"
 
+// Float16 is an IEEE 754 binary16 value.
+type Float16 uint16
+
+func Float16FromBits(bits uint16) Float16 {
+	return Float16(bits)
+}
+
+func (h Float16) Bits() uint16 {
+	return uint16(h)
+}
+
+func (h Float16) Float32() float32 {
+	return halfBitsToFloat32(uint16(h))
+}
+
+func (h Float16) Float64() float64 {
+	return float64(h.Float32())
+}
+
+func (h Float16) IsNaN() bool {
+	return math.IsNaN(h.Float64())
+}
+
+func (h Float16) IsInf(sign int) bool {
+	return math.IsInf(h.Float64(), sign)
+}
+
+func exactFloat16FromFloat64(value float64) (Float16, bool) {
+	if math.IsNaN(value) {
+		return Float16(0x7e00), true
+	}
+	if math.IsInf(value, 1) {
+		return Float16(0x7c00), true
+	}
+	if math.IsInf(value, -1) {
+		return Float16(0xfc00), true
+	}
+	if value > 65504.0 || value < -65504.0 {
+		return 0, false
+	}
+	bits := float32ToHalfBits(float32(value))
+	back := float64(halfBitsToFloat32(bits))
+	if back == value {
+		return Float16(bits), true
+	}
+	return 0, false
+}
+
 func halfBitsToFloat32(h uint16) float32 {
 	sign := uint32(h>>15) & 0x1
 	texp := uint32(h>>10) & 0x1f
