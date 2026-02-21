@@ -162,6 +162,27 @@ func TestEncodeMapWithMapKeys(t *testing.T) {
 	)
 }
 
+func TestEncodeAndersMapVector(t *testing.T) {
+	m := NewMap()
+	m.MustInsertAny(1, 45.7)
+	m.MustInsertAny(2, "Hi there!")
+
+	if got, want := NewCBORMap(m).Hex(), "a201fb4046d9999999999a0269486920746865726521"; got != want {
+		t.Fatalf("anders map hex mismatch: got %q want %q", got, want)
+	}
+	value, err := m.ExtractAny(1)
+	if err != nil {
+		t.Fatalf("ExtractAny failed: %v", err)
+	}
+	decodedFloat, err := value.TryIntoFloat64()
+	if err != nil {
+		t.Fatalf("TryIntoFloat64 failed: %v", err)
+	}
+	if decodedFloat != 45.7 {
+		t.Fatalf("decoded float mismatch: got %v want %v", decodedFloat, 45.7)
+	}
+}
+
 func TestEncodeTaggedValue(t *testing.T) {
 	assertEncodedCBOR(
 		t,
@@ -170,6 +191,29 @@ func TestEncodeTaggedValue(t *testing.T) {
 		`1("Hello")`,
 		"c16548656c6c6f",
 	)
+}
+
+func TestEncodeEnvelopeVector(t *testing.T) {
+	alice := ToTaggedValue(TagWithValue(200), ToTaggedValue(TagWithValue(201), MustFromAny("Alice")))
+	knows := ToTaggedValue(TagWithValue(200), ToTaggedValue(TagWithValue(201), MustFromAny("knows")))
+	bob := ToTaggedValue(TagWithValue(200), ToTaggedValue(TagWithValue(201), MustFromAny("Bob")))
+	knowsBob := ToTaggedValue(TagWithValue(200), ToTaggedValue(TagWithValue(221), NewCBORArray([]CBOR{knows, bob})))
+	envelope := ToTaggedValue(TagWithValue(200), NewCBORArray([]CBOR{alice, knowsBob}))
+
+	if got, want := envelope.String(), `200([200(201("Alice")), 200(221([200(201("knows")), 200(201("Bob"))]))])`; got != want {
+		t.Fatalf("envelope display mismatch: got %q want %q", got, want)
+	}
+	if got, want := envelope.Hex(), "d8c882d8c8d8c965416c696365d8c8d8dd82d8c8d8c9656b6e6f7773d8c8d8c963426f62"; got != want {
+		t.Fatalf("envelope hex mismatch: got %q want %q", got, want)
+	}
+
+	decoded, err := TryFromData(envelope.ToCBORData())
+	if err != nil {
+		t.Fatalf("TryFromData failed: %v", err)
+	}
+	if !decoded.Equal(envelope) {
+		t.Fatalf("envelope round-trip mismatch")
+	}
 }
 
 func TestEncodeFloatVectors(t *testing.T) {
@@ -247,12 +291,53 @@ func TestEncodeDecodeNaNAndInfinityCanonicalization(t *testing.T) {
 	}
 }
 
+func TestDecodeInfinityCanonicalAndNonCanonical(t *testing.T) {
+	posInf, err := TryFromHex("f97c00")
+	if err != nil {
+		t.Fatalf("TryFromHex canonical +inf failed: %v", err)
+	}
+	posInfValue, err := posInf.TryIntoFloat64()
+	if err != nil {
+		t.Fatalf("TryIntoFloat64 canonical +inf failed: %v", err)
+	}
+	if !math.IsInf(posInfValue, 1) {
+		t.Fatalf("expected +Infinity, got %v", posInfValue)
+	}
+
+	negInf, err := TryFromHex("f9fc00")
+	if err != nil {
+		t.Fatalf("TryFromHex canonical -inf failed: %v", err)
+	}
+	negInfValue, err := negInf.TryIntoFloat64()
+	if err != nil {
+		t.Fatalf("TryIntoFloat64 canonical -inf failed: %v", err)
+	}
+	if !math.IsInf(negInfValue, -1) {
+		t.Fatalf("expected -Infinity, got %v", negInfValue)
+	}
+
+	nonCanonical := []string{
+		"fa7f800000",         // +inf as single
+		"fb7ff0000000000000", // +inf as double
+		"faff800000",         // -inf as single
+		"fbfff0000000000000", // -inf as double
+	}
+	for _, hexValue := range nonCanonical {
+		if _, err := TryFromHex(hexValue); !errors.Is(err, ErrNonCanonicalNumeric) {
+			t.Fatalf("expected ErrNonCanonicalNumeric for %s, got %v", hexValue, err)
+		}
+	}
+}
+
 func TestDecodeNonCanonicalAndLargeNegativeVectors(t *testing.T) {
 	if _, err := TryFromHex("FB3FF8000000000000"); !errors.Is(err, ErrNonCanonicalNumeric) {
 		t.Fatalf("expected ErrNonCanonicalNumeric, got %v", err)
 	}
 	if _, err := TryFromHex("F94A00"); !errors.Is(err, ErrNonCanonicalNumeric) {
 		t.Fatalf("expected ErrNonCanonicalNumeric, got %v", err)
+	}
+	if _, err := TryFromHex("a2026141016142"); !errors.Is(err, ErrMisorderedMapKey) {
+		t.Fatalf("expected ErrMisorderedMapKey, got %v", err)
 	}
 	if _, err := TryFromHex("0001"); err == nil || err.Error() != "the decoded CBOR had 1 extra bytes at the end" {
 		t.Fatalf("expected trailing data error, got %v", err)

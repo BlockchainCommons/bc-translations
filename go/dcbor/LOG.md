@@ -103,3 +103,54 @@ COMPLETED
 - API coverage unchanged: 52/83 key manifest items
 - Test coverage improved from 21/86 to 33/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (coverage rising; main remaining gaps are API conversion surface and full annotated formatting fidelity)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing post-commit parity work on conversion surface
+- Adding typed numeric extraction methods and broader container conversion helpers
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Extended conversion APIs in `cbor.go`:
+  - added strict `TryIntoUInt64`, `TryIntoInt64`, `TryIntoFloat64` (+ alias/Into helpers)
+  - added reflective `FromAny` support for slices/arrays/maps and `CBOREncodable`
+- Added `conversion.go` with generic decode helpers (`DecodeArray`, `DecodeMap`) and scalar decode functions
+- Added `conversion_parity_test.go` with translated conversion-focused behavior tests (map/vector usage vectors, int/float coercion, out-of-range checks)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (38 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after conversion-surface expansion
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` for new conversion APIs and additional test parity coverage
+- API coverage improved to 58/83 key manifest targets
+- Test coverage improved from 33/86 to 38/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (remaining work centers on full formatting fidelity and residual API parity gaps)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity expansion on conversion and encode vectors
+- Adding set decode support and translating additional encode edge cases
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `DecodeSet` in `conversion.go` and corresponding `conversion_parity_test.go` coverage
+- Added additional Rust-aligned encode vectors in `encode_test.go`:
+  - envelope tagged-structure round-trip
+  - anders map vector
+  - canonical/non-canonical infinity decode checks
+  - additional misordered-map rejection vector
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (42 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after latest conversion and encode parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with latest conversion/vector coverage
+- API coverage improved to 60/83 key manifest targets
+- Test coverage improved from 38/86 to 42/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (steady progress; significant default-feature parity still pending)

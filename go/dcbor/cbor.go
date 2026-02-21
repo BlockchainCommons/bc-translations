@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"reflect"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -130,6 +131,10 @@ func ToTaggedValue(tag Tag, value CBOR) CBOR {
 
 // FromAny converts common Go values into CBOR.
 func FromAny(value any) (CBOR, error) {
+	if encodable, ok := value.(CBOREncodable); ok {
+		return encodable.ToCBOR().Clone(), nil
+	}
+
 	switch v := value.(type) {
 	case CBOR:
 		return v.Clone(), nil
@@ -191,7 +196,7 @@ func FromAny(value any) (CBOR, error) {
 	case float64:
 		return newCBORFromFloat(v), nil
 	default:
-		return CBOR{}, Errorf("unsupported conversion to CBOR: %T", value)
+		return fromReflectValue(reflect.ValueOf(value))
 	}
 }
 
@@ -201,6 +206,84 @@ func MustFromAny(value any) CBOR {
 		panic(err)
 	}
 	return cbor
+}
+
+func fromReflectValue(v reflect.Value) (CBOR, error) {
+	if !v.IsValid() {
+		return Null(), nil
+	}
+
+	for v.Kind() == reflect.Interface || v.Kind() == reflect.Pointer {
+		if v.IsNil() {
+			return Null(), nil
+		}
+		v = v.Elem()
+	}
+
+	switch v.Kind() {
+	case reflect.Bool:
+		return FromAny(v.Bool())
+	case reflect.String:
+		return FromAny(v.String())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return fromBigSigned(v.Int())
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return FromAny(v.Uint())
+	case reflect.Float32, reflect.Float64:
+		return FromAny(v.Float())
+	case reflect.Slice:
+		if v.Type().Elem().Kind() == reflect.Uint8 {
+			data := make([]byte, v.Len())
+			reflect.Copy(reflect.ValueOf(data), v)
+			return FromAny(data)
+		}
+		items := make([]CBOR, 0, v.Len())
+		for i := 0; i < v.Len(); i++ {
+			item, err := fromReflectValue(v.Index(i))
+			if err != nil {
+				return CBOR{}, err
+			}
+			items = append(items, item)
+		}
+		return NewCBORArray(items), nil
+	case reflect.Array:
+		items := make([]CBOR, 0, v.Len())
+		for i := 0; i < v.Len(); i++ {
+			item, err := fromReflectValue(v.Index(i))
+			if err != nil {
+				return CBOR{}, err
+			}
+			items = append(items, item)
+		}
+		return NewCBORArray(items), nil
+	case reflect.Map:
+		if v.IsNil() {
+			return NewCBORMap(NewMap()), nil
+		}
+		m := NewMap()
+		iter := v.MapRange()
+		for iter.Next() {
+			key, err := fromReflectValue(iter.Key())
+			if err != nil {
+				return CBOR{}, err
+			}
+			value, err := fromReflectValue(iter.Value())
+			if err != nil {
+				return CBOR{}, err
+			}
+			m.Insert(key, value)
+		}
+		return NewCBORMap(m), nil
+	default:
+		return CBOR{}, Errorf("unsupported conversion to CBOR: %T", v.Interface())
+	}
+}
+
+func fromBigSigned(value int64) (CBOR, error) {
+	if value >= 0 {
+		return NewCBORUnsigned(uint64(value)), nil
+	}
+	return NewCBORNegative(uint64(-1 - value)), nil
 }
 
 func fromSignedInt(v int64) CBOR {
@@ -348,6 +431,103 @@ func (c CBOR) AsFloat64() (float64, bool) {
 	default:
 		return 0, false
 	}
+}
+
+func (c CBOR) TryIntoUInt64() (uint64, error) {
+	if c.kind == CBORKindUnsigned {
+		return c.value.(uint64), nil
+	}
+	if c.kind == CBORKindNegative {
+		return 0, ErrOutOfRange
+	}
+	return 0, ErrWrongType
+}
+
+func (c CBOR) TryUInt64() (uint64, error) {
+	return c.TryIntoUInt64()
+}
+
+func (c CBOR) IntoUInt64() (uint64, bool) {
+	value, err := c.TryIntoUInt64()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoInt64() (int64, error) {
+	switch c.kind {
+	case CBORKindUnsigned:
+		u := c.value.(uint64)
+		if u > math.MaxInt64 {
+			return 0, ErrOutOfRange
+		}
+		return int64(u), nil
+	case CBORKindNegative:
+		u := c.value.(uint64)
+		if u > math.MaxInt64 {
+			return 0, ErrOutOfRange
+		}
+		return -1 - int64(u), nil
+	default:
+		return 0, ErrWrongType
+	}
+}
+
+func (c CBOR) TryInt64() (int64, error) {
+	return c.TryIntoInt64()
+}
+
+func (c CBOR) IntoInt64() (int64, bool) {
+	value, err := c.TryIntoInt64()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
+func (c CBOR) TryIntoFloat64() (float64, error) {
+	switch c.kind {
+	case CBORKindUnsigned:
+		u := c.value.(uint64)
+		integer := new(big.Int).SetUint64(u)
+		f, acc := new(big.Float).SetInt(integer).Float64()
+		if acc != big.Exact {
+			return 0, ErrOutOfRange
+		}
+		return f, nil
+	case CBORKindNegative:
+		u := c.value.(uint64)
+		integer := new(big.Int).SetUint64(u)
+		integer.Add(integer, big.NewInt(1))
+		integer.Neg(integer)
+		f, acc := new(big.Float).SetInt(integer).Float64()
+		if acc != big.Exact {
+			return 0, ErrOutOfRange
+		}
+		return f, nil
+	case CBORKindSimple:
+		s := c.value.(Simple)
+		if s.Kind() != SimpleFloat {
+			return 0, ErrWrongType
+		}
+		f, _ := s.Float64()
+		return f, nil
+	default:
+		return 0, ErrWrongType
+	}
+}
+
+func (c CBOR) TryFloat64() (float64, error) {
+	return c.TryIntoFloat64()
+}
+
+func (c CBOR) IntoFloat64() (float64, bool) {
+	value, err := c.TryIntoFloat64()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
 }
 
 func (c CBOR) AsByteString() ([]byte, bool) {
