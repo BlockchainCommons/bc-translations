@@ -10,7 +10,7 @@ public static class Bytewords
     /// <summary>
     /// The 256 bytewords, indexed by byte value.
     /// </summary>
-    public static readonly string[] Words =
+    private static readonly string[] WordValues =
     [
         "able", "acid", "also", "apex", "aqua", "arch", "atom", "aunt", "away",
         "axis", "back", "bald", "barn", "belt", "beta", "bias", "blue", "body",
@@ -46,7 +46,7 @@ public static class Bytewords
     /// <summary>
     /// The 256 bytemojis, indexed by byte value.
     /// </summary>
-    public static readonly string[] Bytemojis =
+    private static readonly string[] BytemojiValues =
     [
         "😀", "😂", "😆", "😉", "🙄", "😋", "😎", "😍", "😘", "😭", "🫠", "🥱",
         "🤩", "😶", "🤨", "🫥", "🥵", "🥶", "😳", "🤪", "😵", "😡", "🤢", "😇",
@@ -72,6 +72,16 @@ public static class Bytewords
         "🦭", "🐟", "🐬", "🐳"
     ];
 
+    /// <summary>
+    /// The 256 bytewords, indexed by byte value.
+    /// </summary>
+    public static IReadOnlyList<string> Words { get; } = Array.AsReadOnly(WordValues);
+
+    /// <summary>
+    /// The 256 bytemojis, indexed by byte value.
+    /// </summary>
+    public static IReadOnlyList<string> Bytemojis { get; } = Array.AsReadOnly(BytemojiValues);
+
     // Minimal encoding: first and last letter of each word
     private static readonly string[] Minimals = BuildMinimals();
 
@@ -86,7 +96,7 @@ public static class Bytewords
         var result = new string[256];
         for (int i = 0; i < 256; i++)
         {
-            var w = Words[i];
+            var w = WordValues[i];
             result[i] = $"{w[0]}{w[^1]}";
         }
         return result;
@@ -97,7 +107,7 @@ public static class Bytewords
         var dict = new Dictionary<string, byte>(256);
         for (int i = 0; i < 256; i++)
         {
-            dict[Words[i]] = (byte)i;
+            dict[WordValues[i]] = (byte)i;
         }
         return dict;
     }
@@ -229,7 +239,7 @@ public static class Bytewords
     public static string Identifier(byte[] data)
     {
         if (data.Length != 4) throw new ArgumentException("data must be exactly 4 bytes", nameof(data));
-        return string.Join(" ", data.Select(b => Words[b]));
+        return string.Join(" ", data.Select(b => WordValues[b]));
     }
 
     /// <summary>
@@ -238,6 +248,6 @@ public static class Bytewords
     public static string BytemojiIdentifier(byte[] data)
     {
         if (data.Length != 4) throw new ArgumentException("data must be exactly 4 bytes", nameof(data));
-        return string.Join(" ", data.Select(b => Bytemojis[b]));
+        return string.Join(" ", data.Select(b => BytemojiValues[b]));
     }
 }

@@ -69,3 +69,16 @@ COMPLETED
 - Added regression test `MultipartDecoderAcceptsUppercaseQrParts` to lock behavior
 - All tests pass after changes: 37/37
 - Verdict: IDIOMATIC (1 issue found, 1 fixed)
+
+## 2026-02-21 — Stage 4: Fluency
+STARTED
+- Additional independent cross-model fluency critique (GPT Codex) for BCUR C# translation
+- Reviewing API surface and tests for C# idiomaticness and mutability hazards
+
+## 2026-02-21 — Stage 4: Fluency
+COMPLETED
+- SHOULD FIX: Replaced mutable public `Bytewords.Words`/`Bytewords.Bytemojis` arrays with read-only `IReadOnlyList<string>` views backed by private arrays
+- Added regression test `BytewordsTablesAreReadOnly` to prevent table-mutation regressions
+- Verified same-language downstream fallout: no translated C# dependents of `bc-ur` yet, so no repair pass required
+- All tests pass after changes: 38/38
+- Verdict: IDIOMATIC (1 issue found, 1 fixed)

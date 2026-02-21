@@ -114,4 +114,16 @@ public class BytewordsTests
         var overLength = Bytewords.Bytemojis.Where(e => System.Text.Encoding.UTF8.GetByteCount(e) > 4).ToList();
         Assert.Empty(overLength);
     }
+
+    [Fact]
+    public void BytewordsTablesAreReadOnly()
+    {
+        var words = Assert.IsAssignableFrom<IList<string>>(Bytewords.Words);
+        var bytemojis = Assert.IsAssignableFrom<IList<string>>(Bytewords.Bytemojis);
+
+        Assert.True(words.IsReadOnly);
+        Assert.True(bytemojis.IsReadOnly);
+        Assert.Throws<NotSupportedException>(() => words[0] = "test");
+        Assert.Throws<NotSupportedException>(() => bytemojis[0] = "test");
+    }
 }
