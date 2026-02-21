@@ -1,7 +1,7 @@
 package bctags
 
 import (
-	dcbor "github.com/nickel-blockchaincommons/dcbor-go"
+	"github.com/nickel-blockchaincommons/dcbor-go"
 )
 
 // Standard IANA tags.

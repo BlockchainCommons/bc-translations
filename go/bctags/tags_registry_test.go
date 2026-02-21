@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	dcbor "github.com/nickel-blockchaincommons/dcbor-go"
+	"github.com/nickel-blockchaincommons/dcbor-go"
 )
 
 // tagEntry pairs a numeric tag value with its expected human-readable name.

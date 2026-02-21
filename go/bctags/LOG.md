@@ -55,3 +55,16 @@ COMPLETED
 - 5 SHOULD FIX: Converted to t.Run subtests; removed redundant tests (TestBcTagsSliceLength, TestFirstAndLastTags, TestMidRangeSpotChecks merged/removed); merged count checks
 - 3 NICE TO HAVE: Used map[...]struct{} for set tests; ran gofmt -s; verified alignment
 - All 8 tests (17 subtests) pass after fixes
+
+## 2026-02-21 — Stage 4: Review Fluency
+STARTED
+- Cross-model fluency pass (GPT Codex) for go/bctags using fluency-critic and rust-to-go
+- Auditing naming, documentation, import style, and test idioms without consulting Rust source
+
+## 2026-02-21 — Stage 4: Review Fluency
+COMPLETED
+- 0 MUST FIX, 0 SHOULD FIX, 1 NICE TO HAVE addressed
+- Removed redundant explicit `dcbor` import aliases in source and tests; ran gofmt
+- `go test ./...` passes (8 tests, 17 subtests)
+- No translated Go dependents of bc-tags exist yet, so no downstream repair was required
+- Verdict: IDIOMATIC
