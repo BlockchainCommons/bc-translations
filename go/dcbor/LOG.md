@@ -80,3 +80,26 @@ COMPLETED
 - API coverage remains partial (52/83 key manifest targets)
 - Test coverage improved from 9/86 to 21/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (substantial progress; remaining gaps are mostly conversion-surface and full formatting fidelity)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing parity work after commit
+- Translating additional Rust `walk.rs` and `format.rs` test behaviors into Go
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `walk_parity_test.go` with translated traversal tests (counts, stop semantics, edge-type coverage, map key/value semantics, depth limits, empty and primitive cases)
+- Added `format_parity_test.go` with translated display/debug/diagnostic/date-format tests
+- Re-ran formatting and test suite successfully after additions
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (33 tests passing)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after added walk/format parity coverage
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect increased translated behavior coverage
+- API coverage unchanged: 52/83 key manifest items
+- Test coverage improved from 21/86 to 33/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (coverage rising; main remaining gaps are API conversion surface and full annotated formatting fidelity)
