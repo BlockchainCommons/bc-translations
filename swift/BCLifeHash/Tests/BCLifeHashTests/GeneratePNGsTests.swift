@@ -53,7 +53,7 @@ private func packageRoot() -> URL {
         .deletingLastPathComponent() // package root
 }
 
-@Test(.disabled("PNG generation is a visual verification tool, not a correctness test"))
+@Test
 func generatePNGs() throws {
     let versions: [(String, Version)] = [
         ("version1", .version1),
