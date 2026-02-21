@@ -405,3 +405,25 @@ COMPLETED
 - API coverage improved from 61/83 to 63/83 key manifest targets
 - Test coverage improved from 61/86 to 63/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (conversion matrix improved; major remaining parity still pending)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing with parity hardening on collection and tag registry APIs
+- Adding explicit tests for `Map`/`Set` method behavior and `TagsStore` registration/summarizer paths
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `collections_parity_test.go` covering `Map` and `Set` API behavior (ordering, iteration, clone independence, contains/get/extract)
+- Added `tags_store_parity_test.go` covering core lookups, conflicting insert panic behavior, registration helpers, and date summarizer behavior
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (69 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after supplemental collection/tag-store parity tests
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to include supplemental collection/tag-store parity coverage
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage unchanged: 63/86 applicable Rust behavior tests (supplemental API tests added outside baseline)
+- VERDICT: INCOMPLETE (broader behavior confidence improved; baseline parity still has significant remaining scope)
