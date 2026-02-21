@@ -155,18 +155,40 @@ func (l *LazyTagsStore) Get() *TagsStore {
 var GLOBAL_TAGS = &LazyTagsStore{}
 
 const (
-	TAG_DATE      uint64 = 1
-	TAG_NAME_DATE        = "date"
+	TAG_DATE                 uint64 = 1
+	TAG_NAME_DATE                   = "date"
+	TAG_POSITIVE_BIGNUM      uint64 = 2
+	TAG_NAME_POSITIVE_BIGNUM        = "positive-bignum"
+	TAG_NEGATIVE_BIGNUM      uint64 = 3
+	TAG_NAME_NEGATIVE_BIGNUM        = "negative-bignum"
 )
 
 func RegisterTagsIn(tagsStore *TagsStore) {
-	tagsStore.InsertAll([]Tag{NewTag(TAG_DATE, TAG_NAME_DATE)})
+	tagsStore.InsertAll([]Tag{
+		NewTag(TAG_DATE, TAG_NAME_DATE),
+		NewTag(TAG_POSITIVE_BIGNUM, TAG_NAME_POSITIVE_BIGNUM),
+		NewTag(TAG_NEGATIVE_BIGNUM, TAG_NAME_NEGATIVE_BIGNUM),
+	})
 	tagsStore.SetSummarizer(TAG_DATE, func(untagged CBOR, _ bool) (string, error) {
 		date, err := DateFromUntaggedCBOR(untagged)
 		if err != nil {
 			return "", err
 		}
 		return date.String(), nil
+	})
+	tagsStore.SetSummarizer(TAG_POSITIVE_BIGNUM, func(untagged CBOR, _ bool) (string, error) {
+		value, err := decodePositiveBigNumUntagged(untagged)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("bignum(%s)", value.String()), nil
+	})
+	tagsStore.SetSummarizer(TAG_NEGATIVE_BIGNUM, func(untagged CBOR, _ bool) (string, error) {
+		value, err := decodeNegativeBigNumUntagged(untagged)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("bignum(%s)", value.String()), nil
 	})
 }
 

@@ -171,6 +171,13 @@ func FromAny(value any) (CBOR, error) {
 		return v.TaggedCBOR(), nil
 	case Simple:
 		return NewCBORSimple(v), nil
+	case big.Int:
+		return cborFromBigInt(&v), nil
+	case *big.Int:
+		if v == nil {
+			return Null(), nil
+		}
+		return cborFromBigInt(v), nil
 	case uint8:
 		return NewCBORUnsigned(uint64(v)), nil
 	case uint16:
@@ -218,6 +225,11 @@ func fromReflectValue(v reflect.Value) (CBOR, error) {
 			return Null(), nil
 		}
 		v = v.Elem()
+	}
+
+	if v.Type() == reflect.TypeOf(big.Int{}) {
+		b := v.Interface().(big.Int)
+		return cborFromBigInt(&b), nil
 	}
 
 	switch v.Kind() {
@@ -284,6 +296,20 @@ func fromBigSigned(value int64) (CBOR, error) {
 		return NewCBORUnsigned(uint64(value)), nil
 	}
 	return NewCBORNegative(uint64(-1 - value)), nil
+}
+
+func cborFromBigInt(value *big.Int) CBOR {
+	if value.Sign() >= 0 {
+		return NewCBORTagged(TagWithValue(TAG_POSITIVE_BIGNUM), ToByteString(value.Bytes()))
+	}
+
+	magnitude := new(big.Int).Neg(value)
+	n := new(big.Int).Sub(magnitude, big.NewInt(1))
+	bytes := n.Bytes()
+	if len(bytes) == 0 {
+		bytes = []byte{0}
+	}
+	return NewCBORTagged(TagWithValue(TAG_NEGATIVE_BIGNUM), ToByteString(bytes))
 }
 
 func fromSignedInt(v int64) CBOR {
@@ -670,6 +696,48 @@ func (c CBOR) IntoUInt() (uint, bool) {
 	return value, true
 }
 
+func validateBigNumMagnitude(bytes []byte, isNegative bool) error {
+	if isNegative {
+		if len(bytes) == 0 {
+			return ErrNonCanonicalNumeric
+		}
+		if len(bytes) > 1 && bytes[0] == 0 {
+			return ErrNonCanonicalNumeric
+		}
+		return nil
+	}
+
+	if len(bytes) > 0 && bytes[0] == 0 {
+		return ErrNonCanonicalNumeric
+	}
+	return nil
+}
+
+func decodePositiveBigNumUntagged(c CBOR) (*big.Int, error) {
+	bytes, err := c.TryIntoByteString()
+	if err != nil {
+		return nil, err
+	}
+	if err := validateBigNumMagnitude(bytes, false); err != nil {
+		return nil, err
+	}
+	return new(big.Int).SetBytes(bytes), nil
+}
+
+func decodeNegativeBigNumUntagged(c CBOR) (*big.Int, error) {
+	bytes, err := c.TryIntoByteString()
+	if err != nil {
+		return nil, err
+	}
+	if err := validateBigNumMagnitude(bytes, true); err != nil {
+		return nil, err
+	}
+	n := new(big.Int).SetBytes(bytes)
+	n.Add(n, big.NewInt(1))
+	n.Neg(n)
+	return n, nil
+}
+
 func (c CBOR) TryIntoBigUint() (*big.Int, error) {
 	switch c.kind {
 	case CBORKindUnsigned:
@@ -677,6 +745,16 @@ func (c CBOR) TryIntoBigUint() (*big.Int, error) {
 		return new(big.Int).SetUint64(u), nil
 	case CBORKindNegative:
 		return nil, ErrOutOfRange
+	case CBORKindTagged:
+		tagged := c.value.(TaggedValue)
+		switch tagged.Tag.Value() {
+		case TAG_POSITIVE_BIGNUM:
+			return decodePositiveBigNumUntagged(tagged.Value)
+		case TAG_NEGATIVE_BIGNUM:
+			return nil, ErrOutOfRange
+		default:
+			return nil, ErrWrongType
+		}
 	default:
 		return nil, ErrWrongType
 	}
@@ -705,6 +783,16 @@ func (c CBOR) TryIntoBigInt() (*big.Int, error) {
 		magnitude.Add(magnitude, big.NewInt(1))
 		magnitude.Neg(magnitude)
 		return magnitude, nil
+	case CBORKindTagged:
+		tagged := c.value.(TaggedValue)
+		switch tagged.Tag.Value() {
+		case TAG_POSITIVE_BIGNUM:
+			return decodePositiveBigNumUntagged(tagged.Value)
+		case TAG_NEGATIVE_BIGNUM:
+			return decodeNegativeBigNumUntagged(tagged.Value)
+		default:
+			return nil, ErrWrongType
+		}
 	default:
 		return nil, ErrWrongType
 	}

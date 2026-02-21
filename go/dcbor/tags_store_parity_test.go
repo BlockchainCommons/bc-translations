@@ -72,6 +72,46 @@ func TestTagRegistrationAndSummarizerParity(t *testing.T) {
 	if got, want := out, "1970-01-01"; got != want {
 		t.Fatalf("date summarizer output mismatch: got %q want %q", got, want)
 	}
+
+	positiveBigNumTag, ok := store.TagForValue(TAG_POSITIVE_BIGNUM)
+	if !ok {
+		t.Fatalf("expected TAG_POSITIVE_BIGNUM registration")
+	}
+	if got, want := positiveBigNumTag.String(), TAG_NAME_POSITIVE_BIGNUM; got != want {
+		t.Fatalf("positive bignum tag name mismatch: got %q want %q", got, want)
+	}
+
+	negativeBigNumTag, ok := store.TagForValue(TAG_NEGATIVE_BIGNUM)
+	if !ok {
+		t.Fatalf("expected TAG_NEGATIVE_BIGNUM registration")
+	}
+	if got, want := negativeBigNumTag.String(), TAG_NAME_NEGATIVE_BIGNUM; got != want {
+		t.Fatalf("negative bignum tag name mismatch: got %q want %q", got, want)
+	}
+
+	positiveSummarizer, ok := store.Summarizer(TAG_POSITIVE_BIGNUM)
+	if !ok {
+		t.Fatalf("expected positive bignum summarizer registration")
+	}
+	positiveOut, err := positiveSummarizer(ToByteString([]byte{0x01, 0x00}), true)
+	if err != nil {
+		t.Fatalf("positive bignum summarizer failed: %v", err)
+	}
+	if got, want := positiveOut, "bignum(256)"; got != want {
+		t.Fatalf("positive bignum summarizer output mismatch: got %q want %q", got, want)
+	}
+
+	negativeSummarizer, ok := store.Summarizer(TAG_NEGATIVE_BIGNUM)
+	if !ok {
+		t.Fatalf("expected negative bignum summarizer registration")
+	}
+	negativeOut, err := negativeSummarizer(ToByteString([]byte{0x00}), true)
+	if err != nil {
+		t.Fatalf("negative bignum summarizer failed: %v", err)
+	}
+	if got, want := negativeOut, "bignum(-1)"; got != want {
+		t.Fatalf("negative bignum summarizer output mismatch: got %q want %q", got, want)
+	}
 }
 
 func TestTagsStoreOptHelpersParity(t *testing.T) {

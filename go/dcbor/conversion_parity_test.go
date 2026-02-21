@@ -946,6 +946,81 @@ func TestBigUintConversionParity(t *testing.T) {
 	}
 }
 
+func TestBigNumTaggedConversionParity(t *testing.T) {
+	positiveTagged, err := TryFromHex("c249010000000000000000") // 2^64
+	if err != nil {
+		t.Fatalf("TryFromHex positive bignum failed: %v", err)
+	}
+	if got, err := positiveTagged.TryIntoBigUint(); err != nil || got.String() != "18446744073709551616" {
+		t.Fatalf("TryIntoBigUint tagged mismatch: got=%v err=%v", got, err)
+	}
+	if got, err := positiveTagged.TryIntoBigInt(); err != nil || got.String() != "18446744073709551616" {
+		t.Fatalf("TryIntoBigInt tagged positive mismatch: got=%v err=%v", got, err)
+	}
+
+	negativeTagged, err := TryFromHex("c349010000000000000000") // -2^64 - 1
+	if err != nil {
+		t.Fatalf("TryFromHex negative bignum failed: %v", err)
+	}
+	if got, err := negativeTagged.TryIntoBigInt(); err != nil || got.String() != "-18446744073709551617" {
+		t.Fatalf("TryIntoBigInt tagged negative mismatch: got=%v err=%v", got, err)
+	}
+	if _, err := negativeTagged.TryIntoBigUint(); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for negative tagged bignum to big uint, got %v", err)
+	}
+
+	nonCanonicalPositive, err := TryFromHex("c2420001")
+	if err != nil {
+		t.Fatalf("TryFromHex non-canonical positive failed: %v", err)
+	}
+	if _, err := nonCanonicalPositive.TryIntoBigInt(); !errors.Is(err, ErrNonCanonicalNumeric) {
+		t.Fatalf("expected ErrNonCanonicalNumeric for leading-zero positive bignum, got %v", err)
+	}
+
+	nonCanonicalNegative, err := TryFromHex("c340")
+	if err != nil {
+		t.Fatalf("TryFromHex non-canonical negative failed: %v", err)
+	}
+	if _, err := nonCanonicalNegative.TryIntoBigInt(); !errors.Is(err, ErrNonCanonicalNumeric) {
+		t.Fatalf("expected ErrNonCanonicalNumeric for empty negative bignum, got %v", err)
+	}
+}
+
+func TestBigIntFromAnyTaggedEncodingParity(t *testing.T) {
+	positive := new(big.Int).Lsh(big.NewInt(1), 64)
+	cPositive, err := FromAny(positive)
+	if err != nil {
+		t.Fatalf("FromAny positive big.Int failed: %v", err)
+	}
+	if got, want := cPositive.DiagnosticFlat(), "2(h'010000000000000000')"; got != want {
+		t.Fatalf("positive big.Int encoding mismatch: got %q want %q", got, want)
+	}
+	if roundTrip, err := cPositive.TryIntoBigInt(); err != nil || roundTrip.Cmp(positive) != 0 {
+		t.Fatalf("positive big.Int round-trip mismatch: got=%v err=%v", roundTrip, err)
+	}
+
+	negative := new(big.Int).Neg(new(big.Int).Add(new(big.Int).Lsh(big.NewInt(1), 64), big.NewInt(1)))
+	cNegative, err := FromAny(negative)
+	if err != nil {
+		t.Fatalf("FromAny negative big.Int failed: %v", err)
+	}
+	if got, want := cNegative.DiagnosticFlat(), "3(h'010000000000000000')"; got != want {
+		t.Fatalf("negative big.Int encoding mismatch: got %q want %q", got, want)
+	}
+	if roundTrip, err := cNegative.TryIntoBigInt(); err != nil || roundTrip.Cmp(negative) != 0 {
+		t.Fatalf("negative big.Int round-trip mismatch: got=%v err=%v", roundTrip, err)
+	}
+
+	zero := big.NewInt(0)
+	cZero, err := FromAny(zero)
+	if err != nil {
+		t.Fatalf("FromAny zero big.Int failed: %v", err)
+	}
+	if got, want := cZero.DiagnosticFlat(), "2(h'')"; got != want {
+		t.Fatalf("zero big.Int encoding mismatch: got %q want %q", got, want)
+	}
+}
+
 func TestBigIntRoundTripWithinCBORRange(t *testing.T) {
 	values := []*big.Int{
 		big.NewInt(0),

@@ -14,9 +14,9 @@
 ### Public Functions / Constants
 
 - ✅ `TAG_DATE`, `TAG_NAME_DATE`
+- ✅ `TAG_POSITIVE_BIGNUM`, `TAG_NAME_POSITIVE_BIGNUM`, `TAG_NEGATIVE_BIGNUM`, `TAG_NAME_NEGATIVE_BIGNUM`
 - ✅ `RegisterTagsIn`, `RegisterTags`, `TagsForValues`
 - ✅ `TryFromData`, `TryFromHex`, `DecodeCBOR`
-- ⚠️ Feature-gated bignum tag constants/functions are not implemented (deferred with `num-bigint` parity)
 
 ### Methods and Behavior (Key Manifest Targets)
 
@@ -32,7 +32,8 @@
 - ✅ Added typed integer extractors (`TryIntoInt16/Int32/UInt16/UInt32` plus alias/Into forms) to close part of the Rust `TryFrom` conversion matrix gap
 - ✅ Added additional typed integer extractors for narrow/native widths (`TryIntoInt8/UInt8/Int/UInt` plus alias/Into forms) and decode helpers (`DecodeInt8/UInt8/Int/UInt`)
 - ✅ Added `float32` conversion helpers (`TryIntoFloat32`, `TryFloat32`, `IntoFloat32`, `DecodeFloat32`) with parity tests
-- ✅ Added big-integer conversion helpers (`TryIntoBigInt`/`TryIntoBigUint` + decode helpers) to cover Rust-width parity beyond Go native ints
+- ✅ Added big-integer conversion helpers (`TryIntoBigInt`/`TryIntoBigUint` + decode helpers), including tagged bignum tag-2/tag-3 decode and canonical byte-string validation
+- ✅ Added `FromAny` support for `big.Int`/`*big.Int` to encode large signed values as tagged bignums (tags 2/3) with RFC-style semantics
 - ✅ Added `float16` conversion helpers (`TryIntoFloat16`, `TryFloat16`, `IntoFloat16`, `DecodeFloat16`) with parity tests
 - ✅ Display/diagnostic separation improved: display uses tag names while diagnostic uses numeric tags with annotation context
 - ⚠️ Complex structure display/debug/diagnostic parity is now covered; exact `hex_annotated` layout/comment alignment for large structures still differs from Rust
@@ -49,7 +50,7 @@
 
 ### Implemented in Go
 
-- 94 tests total across:
+- 100 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -58,6 +59,7 @@
   - exact `f64` conversion parity vectors for CBOR integer/float edge cases
   - exact `f16` conversion parity vectors for CBOR integer/float edge cases
   - big-integer conversion parity vectors covering extended-width integer extraction semantics
+  - tagged bignum (tags 2/3) decode parity vectors including RFC-aligned large values and non-canonical bignum rejection cases
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)
   - set-conversion parity checks and additional map/encoding vectors
   - translated `encode.rs` vectors for unsigned/signed/bytes/text/arrays/maps/tagged/floats, including additional boundary float vectors
@@ -108,7 +110,7 @@ Current translated tests: 86/86 (100.0%)
 
 ## Completeness Summary
 
-- API Coverage: 70/83 key manifest items (84.3%)
+- API Coverage: 73/83 key manifest items (88.0%)
 - Test Coverage: 86/86 applicable behavior tests (100.0%)
 - Signature mismatches / unmodeled semantics: multiple (documented above)
 - Derive/protocol gaps: present
@@ -118,7 +120,6 @@ VERDICT: INCOMPLETE
 
 Primary remaining work:
 
-1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity), now including primarily Rust-only-width/trait-surface items after adding `int8`/`uint8`/native-width helper parity.
+1. Translate remaining conversion APIs (`TryFrom`-style matrix and collection/typed extraction parity), now focused on residual Rust trait/macro-driven surfaces and remaining edge helpers.
 2. Bring annotated-hex formatting to Rust-equivalent fidelity across multiline structures.
 3. Continue closing remaining API-surface/trait parity gaps and improving exact annotated-format fidelity.
-4. Add deferred `num-bigint` feature implementation and tests in a dedicated follow-up pass.

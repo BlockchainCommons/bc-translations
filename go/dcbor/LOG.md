@@ -842,3 +842,32 @@ COMPLETED
 - API coverage improved from 69/83 to 70/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (trait parity improved; remaining API/format/docs work persists)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing bignum parity by implementing tag-2/tag-3 behavior beyond plain integer-backed big conversions
+- Adding tagged bignum decoding canonical checks, registration constants, and `FromAny` support for `big.Int`
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added bignum tag constants and names in `tags_store.go`:
+  - `TAG_POSITIVE_BIGNUM` / `TAG_NAME_POSITIVE_BIGNUM`
+  - `TAG_NEGATIVE_BIGNUM` / `TAG_NAME_NEGATIVE_BIGNUM`
+- Extended `RegisterTagsIn` to register bignum tags and summarizers (`bignum(...)` output)
+- Extended `TryIntoBigInt`/`TryIntoBigUint` in `cbor.go` to decode tagged bignum values (tags 2/3) with canonical byte-string validation
+- Added `FromAny` support for `big.Int`/`*big.Int` to emit tagged bignum CBOR for out-of-range signed values
+- Added parity tests:
+  - tagged bignum conversion vectors and canonical-failure cases in `conversion_parity_test.go`
+  - bignum tag registration/summarizer checks in `tags_store_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (100 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after tagged bignum parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to reflect implemented bignum tag constants and tagged conversion behavior
+- API coverage improved from 70/83 to 73/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (bignum parity improved; format-fidelity and remaining API/trait gaps remain)
