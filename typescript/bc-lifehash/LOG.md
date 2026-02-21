@@ -36,3 +36,16 @@ COMPLETED
 - Also replaced Buffer.from(hex) in tests with pure hexToBytes() utility
 - All 41 tests passing after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Fluency Review
+STARTED
+- Stage 4 rerun requested for `typescript/bc-lifehash`
+- Verify that PNG generation tests run by default as part of `npm test`
+
+## 2026-02-21 — Stage 4: Fluency Review
+COMPLETED
+- Issues found: 0 (0 MUST FIX, 0 SHOULD FIX, 0 NICE TO HAVE)
+- No fluency code changes required
+- Verified PNG generation tests are default-on (`npm test` runs `tests/generate-pngs.test.ts`: 5 passing tests)
+- Verification: 41/41 tests passing
+- VERDICT: IDIOMATIC

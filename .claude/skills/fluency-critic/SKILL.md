@@ -111,4 +111,4 @@ Also append a row to the root `LOG.md` table for every fluency critique pass (in
 
 `| <date> | <crate> | <version> | <language> | <package> | <model> | <task> |`
 
-The task must begin with `Fluency critique` and should summarize scope (for example: `Fluency critique (Stage 4 rerun + naming fixes)`).
+Use task `Fluency` for root `LOG.md` rows to match repository convention.
