@@ -46,8 +46,14 @@ final class PublicKeyEncryptionTests: XCTestCase {
         let bobPrivateKey = x25519NewPrivateKeyUsing(&rng)
         let bobPublicKey = x25519PublicKeyFromPrivateKey(bobPrivateKey)
 
-        let aliceShared = x25519SharedKey(alicePrivateKey, bobPublicKey)
-        let bobShared = x25519SharedKey(bobPrivateKey, alicePublicKey)
+        let aliceShared = x25519SharedKey(
+            privateKey: alicePrivateKey,
+            publicKey: bobPublicKey
+        )
+        let bobShared = x25519SharedKey(
+            privateKey: bobPrivateKey,
+            publicKey: alicePublicKey
+        )
 
         XCTAssertEqual(aliceShared, bobShared)
         XCTAssertEqual(

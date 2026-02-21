@@ -1,34 +1,42 @@
 import CryptoSwift
 import Foundation
 
-public func scrypt(_ pass: Data, _ salt: Data, _ outputLen: Int) -> Data {
-    let params = (logN: 15, r: 8, p: 1)
-    let scrypt = try! Scrypt(
-        password: Array(pass),
-        salt: Array(salt),
-        dkLen: outputLen,
-        N: 1 << params.logN,
-        r: params.r,
-        p: params.p
-    )
-    return Data(try! scrypt.calculate())
+/// Derives a key using scrypt with the default parameters (logN=15, r=8, p=1).
+///
+/// - Parameters:
+///   - password: The password bytes.
+///   - salt: The salt bytes.
+///   - outputLength: The desired output length in bytes.
+/// - Returns: The derived key.
+public func scrypt(password: Data, salt: Data, outputLength: Int) -> Data {
+    scrypt(password: password, salt: salt, outputLength: outputLength, logN: 15, r: 8, p: 1)
 }
 
-public func scryptOpt(
-    _ pass: Data,
-    _ salt: Data,
-    _ outputLen: Int,
-    _ logN: UInt8,
-    _ r: UInt32,
-    _ p: UInt32
+/// Derives a key using scrypt with custom parameters.
+///
+/// - Parameters:
+///   - password: The password bytes.
+///   - salt: The salt bytes.
+///   - outputLength: The desired output length in bytes.
+///   - logN: The log2 of the CPU/memory cost parameter N.
+///   - r: The block size parameter.
+///   - p: The parallelism parameter.
+/// - Returns: The derived key.
+public func scrypt(
+    password: Data,
+    salt: Data,
+    outputLength: Int,
+    logN: UInt8,
+    r: UInt32,
+    p: UInt32
 ) -> Data {
-    let scrypt = try! Scrypt(
-        password: Array(pass),
+    let scryptKDF = try! Scrypt(
+        password: Array(password),
         salt: Array(salt),
-        dkLen: outputLen,
+        dkLen: outputLength,
         N: 1 << Int(logN),
         r: Int(r),
         p: Int(p)
     )
-    return Data(try! scrypt.calculate())
+    return Data(try! scryptKDF.calculate())
 }

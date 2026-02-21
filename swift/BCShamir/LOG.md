@@ -71,3 +71,14 @@ COMPLETED
 - Legacy/compatibility symbol audit complete; no deprecated aliases, shims, or transitional APIs found in BCShamir.
 - Verification: `swift test` passed (4 tests, 0 failures).
 - VERDICT: IDIOMATIC.
+
+## 2026-02-21 — Stage 4: Critique (Dependency Fallout Repair)
+STARTED
+- Updating BCShamir for upstream BCCrypto API changes from cross-model fluency review.
+
+## 2026-02-21 — Stage 4: Critique (Dependency Fallout Repair)
+COMPLETED
+- Updated `hmacSHA256(Data, Data)` call to `hmacSHA256(key:message:)` in Shamir.swift.
+- Updated `memzeroVecVecU8(&y)` to `memzero(&y)` in Shamir.swift and Interpolate.swift (overload rename).
+- Verification: `swift test` passed (4 tests, 0 failures).
+- VERDICT: IDIOMATIC.

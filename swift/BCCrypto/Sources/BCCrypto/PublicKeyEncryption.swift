@@ -2,73 +2,99 @@ import BCRand
 import CryptoKit
 import Foundation
 
-let genericPrivateKeySize = 32
-let genericPublicKeySize = 32
+private let genericPrivateKeySize = 32
+private let genericPublicKeySize = 32
 
+/// The size in bytes of an X25519 private key.
 public let x25519PrivateKeySize = 32
+
+/// The size in bytes of an X25519 public key.
 public let x25519PublicKeySize = 32
 
+/// Derives an X25519 agreement private key from arbitrary key material using HKDF.
+///
+/// - Parameter keyMaterial: The input key material.
+/// - Returns: A 32-byte derived private key suitable for key agreement.
 public func deriveAgreementPrivateKey(_ keyMaterial: Data) -> Data {
     hkdfHmacSHA256(
-        keyMaterial,
-        Data("agreement".utf8),
-        genericPrivateKeySize
+        keyMaterial: keyMaterial,
+        salt: Data("agreement".utf8),
+        keyLength: genericPrivateKeySize
     )
 }
 
+/// Derives a signing private key from arbitrary key material using HKDF.
+///
+/// - Parameter keyMaterial: The input key material.
+/// - Returns: A 32-byte derived private key suitable for signing.
 public func deriveSigningPrivateKey(_ keyMaterial: Data) -> Data {
     hkdfHmacSHA256(
-        keyMaterial,
-        Data("signing".utf8),
-        genericPublicKeySize
+        keyMaterial: keyMaterial,
+        salt: Data("signing".utf8),
+        keyLength: genericPublicKeySize
     )
 }
 
+/// Generates a new random X25519 private key.
+///
+/// - Parameter rng: The random number generator to use.
+/// - Returns: A 32-byte private key.
 public func x25519NewPrivateKeyUsing<R: BCRandomNumberGenerator>(
     _ rng: inout R
 ) -> Data {
-    randomDataUsing(&rng, count: x25519PrivateKeySize)
+    rng.randomData(count: x25519PrivateKeySize)
 }
 
-public func x25519PublicKeyFromPrivateKey(_ x25519PrivateKey: Data) -> Data {
+/// Derives the X25519 public key from a private key.
+///
+/// - Parameter privateKey: A 32-byte X25519 private key.
+/// - Returns: The corresponding 32-byte public key.
+public func x25519PublicKeyFromPrivateKey(_ privateKey: Data) -> Data {
     requireLength(
-        x25519PrivateKey,
+        privateKey,
         expected: x25519PrivateKeySize,
-        name: "x25519PrivateKey"
+        name: "privateKey"
     )
     let key = try! Curve25519.KeyAgreement.PrivateKey(
-        rawRepresentation: x25519PrivateKey
+        rawRepresentation: privateKey
     )
     return key.publicKey.rawRepresentation
 }
 
+/// Computes a shared symmetric key from an X25519 key pair using Diffie-Hellman
+/// key agreement followed by HKDF derivation.
+///
+/// - Parameters:
+///   - privateKey: The local 32-byte X25519 private key.
+///   - publicKey: The remote 32-byte X25519 public key.
+/// - Returns: A 32-byte derived symmetric key.
 public func x25519SharedKey(
-    _ x25519PrivateKey: Data,
-    _ x25519PublicKey: Data
+    privateKey: Data,
+    publicKey: Data
 ) -> Data {
     requireLength(
-        x25519PrivateKey,
+        privateKey,
         expected: x25519PrivateKeySize,
-        name: "x25519PrivateKey"
+        name: "privateKey"
     )
     requireLength(
-        x25519PublicKey,
+        publicKey,
         expected: x25519PublicKeySize,
-        name: "x25519PublicKey"
+        name: "publicKey"
     )
 
-    let privateKey = try! Curve25519.KeyAgreement.PrivateKey(
-        rawRepresentation: x25519PrivateKey
+    let x25519Private = try! Curve25519.KeyAgreement.PrivateKey(
+        rawRepresentation: privateKey
     )
-    let publicKey = try! Curve25519.KeyAgreement.PublicKey(
-        rawRepresentation: x25519PublicKey
+    let x25519Public = try! Curve25519.KeyAgreement.PublicKey(
+        rawRepresentation: publicKey
     )
-    let secret = try! privateKey.sharedSecretFromKeyAgreement(with: publicKey)
+    let secret = try! x25519Private.sharedSecretFromKeyAgreement(with: x25519Public)
     let shared = secret.withUnsafeBytes { Data($0) }
 
     return hkdfHmacSHA256(
-        shared,
-        Data("agreement".utf8),
-        symmetricKeySize
+        keyMaterial: shared,
+        salt: Data("agreement".utf8),
+        keyLength: symmetricKeySize
     )
 }

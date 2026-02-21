@@ -28,7 +28,7 @@ final class SchnorrSigningTests: XCTestCase {
                 expectedPublicKey
             )
             XCTAssertEqual(
-                schnorrSignWithAuxRand(secretKey, message, auxRand),
+                schnorrSign(secretKey, message, auxiliaryRandom: auxRand),
                 expectedSignature
             )
         }

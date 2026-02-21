@@ -1,7 +1,16 @@
 import Foundation
 import Sodium
 
-public func argon2id(_ pass: Data, _ salt: Data, _ outputLen: Int) -> Data {
+/// Derives a key using Argon2id password hashing.
+///
+/// The salt is normalized to `crypto_pwhash_SALTBYTES` by zero-padding or truncation.
+///
+/// - Parameters:
+///   - password: The password bytes.
+///   - salt: The salt bytes (will be padded or truncated to the required length).
+///   - outputLength: The desired output length in bytes.
+/// - Returns: The derived key.
+public func argon2id(password: Data, salt: Data, outputLength: Int) -> Data {
     let sodium = Sodium()
     let saltBytes = sodium.pwHash.SaltBytes
     var normalizedSalt = Array(salt)
@@ -15,8 +24,8 @@ public func argon2id(_ pass: Data, _ salt: Data, _ outputLen: Int) -> Data {
     }
 
     let hashed = sodium.pwHash.hash(
-        outputLength: outputLen,
-        passwd: Array(pass),
+        outputLength: outputLength,
+        passwd: Array(password),
         salt: normalizedSalt,
         opsLimit: 2,
         memLimit: 19 * 1024 * 1024,

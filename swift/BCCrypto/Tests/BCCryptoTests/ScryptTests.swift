@@ -6,9 +6,9 @@ final class ScryptTests: XCTestCase {
     func testScryptBasic() {
         let pass = Data("password".utf8)
         let salt = Data("salt".utf8)
-        let output = scrypt(pass, salt, 32)
+        let output = scrypt(password: pass, salt: salt, outputLength: 32)
         XCTAssertEqual(output.count, 32)
-        XCTAssertEqual(output, scrypt(pass, salt, 32))
+        XCTAssertEqual(output, scrypt(password: pass, salt: salt, outputLength: 32))
     }
 
     func testScryptDifferentSalt() {
@@ -16,13 +16,23 @@ final class ScryptTests: XCTestCase {
         let salt1 = Data("salt1".utf8)
         let salt2 = Data("salt2".utf8)
 
-        XCTAssertNotEqual(scrypt(pass, salt1, 32), scrypt(pass, salt2, 32))
+        XCTAssertNotEqual(
+            scrypt(password: pass, salt: salt1, outputLength: 32),
+            scrypt(password: pass, salt: salt2, outputLength: 32)
+        )
     }
 
-    func testScryptOptBasic() {
+    func testScryptCustomParams() {
         let pass = Data("password".utf8)
         let salt = Data("salt".utf8)
-        let output = scryptOpt(pass, salt, 32, 15, 8, 1)
+        let output = scrypt(
+            password: pass,
+            salt: salt,
+            outputLength: 32,
+            logN: 15,
+            r: 8,
+            p: 1
+        )
         XCTAssertEqual(output.count, 32)
     }
 
@@ -31,7 +41,10 @@ final class ScryptTests: XCTestCase {
         let salt = Data("salt".utf8)
 
         for length in [16, 24, 32, 64] {
-            XCTAssertEqual(scrypt(pass, salt, length).count, length)
+            XCTAssertEqual(
+                scrypt(password: pass, salt: salt, outputLength: length).count,
+                length
+            )
         }
     }
 }

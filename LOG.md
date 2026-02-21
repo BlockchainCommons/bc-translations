@@ -81,3 +81,5 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-crypto   | 0.14.0  | Go         | bccrypto     | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | bc-shamir   | 0.13.0  | Go         | bcshamir     | 🎻 Claude Opus 4.6 | Fluency     |
 | 2026-02-21 | bc-shamir   | 0.13.0  | Go         | bcshamir     | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-crypto   | 0.14.0  | Swift      | BCCrypto     | 🎻 Claude Opus 4.6 | Fluency     |
+| 2026-02-21 | bc-shamir   | 0.13.0  | Swift      | BCShamir     | 🎻 Claude Opus 4.6 | Fluency     |

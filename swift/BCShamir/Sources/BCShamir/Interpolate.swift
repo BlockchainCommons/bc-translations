@@ -83,7 +83,7 @@ func interpolate(
     memzero(&ySlice)
     memzero(&resultSlice)
     memzero(&temp)
-    memzeroVecVecU8(&y)
+    memzero(&y)
     memzero(&values)
 
     return result

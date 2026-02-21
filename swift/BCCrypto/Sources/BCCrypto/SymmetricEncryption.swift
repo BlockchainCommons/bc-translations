@@ -1,78 +1,78 @@
 import CryptoKit
 import Foundation
 
+/// The size in bytes of a symmetric encryption key.
 public let symmetricKeySize = 32
+
+/// The size in bytes of a symmetric encryption nonce.
 public let symmetricNonceSize = 12
+
+/// The size in bytes of a symmetric authentication tag.
 public let symmetricAuthSize = 16
 
-public func aeadChaCha20Poly1305EncryptWithAAD(
+/// Encrypts data using ChaCha20-Poly1305 AEAD with optional additional authenticated data.
+///
+/// - Parameters:
+///   - plaintext: The data to encrypt.
+///   - key: The 32-byte encryption key.
+///   - nonce: The 12-byte nonce.
+///   - aad: Additional authenticated data (defaults to empty).
+/// - Returns: A tuple of the ciphertext and the 16-byte authentication tag.
+public func aeadChaCha20Poly1305Encrypt(
     _ plaintext: Data,
-    _ key: Data,
-    _ nonce: Data,
-    _ aad: Data
-) -> (Data, Data) {
+    key: Data,
+    nonce: Data,
+    aad: Data = Data()
+) -> (ciphertext: Data, tag: Data) {
     requireLength(key, expected: symmetricKeySize, name: "key")
     requireLength(nonce, expected: symmetricNonceSize, name: "nonce")
 
-    let key = SymmetricKey(data: key)
-    let nonce = try! ChaChaPoly.Nonce(data: nonce)
+    let symmetricKey = SymmetricKey(data: key)
+    let chachaNonce = try! ChaChaPoly.Nonce(data: nonce)
     let sealed = try! ChaChaPoly.seal(
         plaintext,
-        using: key,
-        nonce: nonce,
+        using: symmetricKey,
+        nonce: chachaNonce,
         authenticating: aad
     )
     return (sealed.ciphertext, sealed.tag)
 }
 
-public func aeadChaCha20Poly1305Encrypt(
-    _ plaintext: Data,
-    _ key: Data,
-    _ nonce: Data
-) -> (Data, Data) {
-    aeadChaCha20Poly1305EncryptWithAAD(plaintext, key, nonce, Data())
-}
-
-public func aeadChaCha20Poly1305DecryptWithAAD(
+/// Decrypts data using ChaCha20-Poly1305 AEAD with optional additional authenticated data.
+///
+/// - Parameters:
+///   - ciphertext: The encrypted data.
+///   - key: The 32-byte encryption key.
+///   - nonce: The 12-byte nonce.
+///   - aad: Additional authenticated data (defaults to empty).
+///   - tag: The 16-byte authentication tag.
+/// - Returns: The decrypted plaintext.
+/// - Throws: ``BCCryptoError/authenticationFailed`` if the tag does not verify.
+public func aeadChaCha20Poly1305Decrypt(
     _ ciphertext: Data,
-    _ key: Data,
-    _ nonce: Data,
-    _ aad: Data,
-    _ auth: Data
-) throws -> Data {
+    key: Data,
+    nonce: Data,
+    aad: Data = Data(),
+    tag: Data
+) throws(BCCryptoError) -> Data {
     requireLength(key, expected: symmetricKeySize, name: "key")
     requireLength(nonce, expected: symmetricNonceSize, name: "nonce")
-    requireLength(auth, expected: symmetricAuthSize, name: "auth")
+    requireLength(tag, expected: symmetricAuthSize, name: "tag")
 
     do {
-        let key = SymmetricKey(data: key)
-        let nonce = try ChaChaPoly.Nonce(data: nonce)
+        let symmetricKey = SymmetricKey(data: key)
+        let chachaNonce = try ChaChaPoly.Nonce(data: nonce)
         let sealedBox = try ChaChaPoly.SealedBox(
-            nonce: nonce,
+            nonce: chachaNonce,
             ciphertext: ciphertext,
-            tag: auth
+            tag: tag
         )
         return try ChaChaPoly.open(
             sealedBox,
-            using: key,
+            using: symmetricKey,
             authenticating: aad
         )
     } catch {
-        throw BCCryptoError.aeadError
+        throw BCCryptoError.authenticationFailed
     }
-}
-
-public func aeadChaCha20Poly1305Decrypt(
-    _ ciphertext: Data,
-    _ key: Data,
-    _ nonce: Data,
-    _ auth: Data
-) throws -> Data {
-    try aeadChaCha20Poly1305DecryptWithAAD(
-        ciphertext,
-        key,
-        nonce,
-        Data(),
-        auth
-    )
 }

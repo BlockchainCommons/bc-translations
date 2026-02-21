@@ -25,7 +25,7 @@ private let secretIndex: UInt8 = 255
 private let digestIndex: UInt8 = 254
 
 private func createDigest(randomData: [UInt8], sharedSecret: [UInt8]) -> [UInt8] {
-    Array(hmacSHA256(Data(randomData), Data(sharedSecret)))
+    Array(hmacSHA256(key: Data(randomData), message: Data(sharedSecret)))
 }
 
 private func validateParameters(threshold: Int, shareCount: Int, secretLength: Int) throws(ShamirError) {
@@ -101,7 +101,7 @@ public func splitSecret(
         // Zero sensitive temporaries.
         memzero(&digest)
         memzero(&x)
-        memzeroVecVecU8(&y)
+        memzero(&y)
 
         return result
     }

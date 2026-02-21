@@ -9,17 +9,6 @@ func requireLength(_ data: Data, expected: Int, name: String) {
     )
 }
 
-@inline(__always)
-func toFixedBytes(_ data: Data, expected: Int, name: String) -> [UInt8] {
-    requireLength(data, expected: expected, name: name)
-    return Array(data)
-}
-
-@inline(__always)
-func randomDataUsing<R: BCRandomNumberGenerator>(_ rng: inout R, count: Int) -> Data {
-    rng.randomData(count: count)
-}
-
 extension Data {
     init(hex: String) {
         self.init()
