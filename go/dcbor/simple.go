@@ -67,3 +67,14 @@ func (s Simple) Float64() (float64, bool) {
 	}
 	return s.float, true
 }
+
+// Equal reports value equality for simple values.
+func (s Simple) Equal(other Simple) bool {
+	if s.kind != other.kind {
+		return false
+	}
+	if s.kind != SimpleFloat {
+		return true
+	}
+	return s.float == other.float
+}

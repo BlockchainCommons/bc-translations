@@ -1,5 +1,7 @@
 package dcbor
 
+import "bytes"
+
 // ByteString is a CBOR byte string wrapper.
 type ByteString struct {
 	data []byte
@@ -39,4 +41,9 @@ func (b ByteString) Iter() []byte {
 
 func (b ByteString) AsRef() []byte {
 	return b.Data()
+}
+
+// Equal reports byte-for-byte equality.
+func (b ByteString) Equal(other ByteString) bool {
+	return bytes.Equal(b.data, other.data)
 }

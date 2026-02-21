@@ -177,4 +177,12 @@ func TestDateTaggedAndUntaggedDataHelpersParity(t *testing.T) {
 	if _, err := DateFromTaggedCBORData(wrongTagData); err == nil {
 		t.Fatalf("expected wrong-tag failure for DateFromTaggedCBORData")
 	}
+
+	sameInstant := DateFromDatetime(date.Datetime())
+	if !date.Equal(sameInstant) {
+		t.Fatalf("Date.Equal expected equality for identical instant")
+	}
+	if date.Equal(date.AddSeconds(1)) {
+		t.Fatalf("Date.Equal expected inequality for different instant")
+	}
 }

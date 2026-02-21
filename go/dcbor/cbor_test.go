@@ -2,6 +2,7 @@ package dcbor
 
 import (
 	"errors"
+	"math"
 	"testing"
 )
 
@@ -158,5 +159,21 @@ func TestSimpleValueConvenienceParity(t *testing.T) {
 	}
 	if _, ok := MustFromAny("text").IntoSimpleValue(); ok {
 		t.Fatalf("expected IntoSimpleValue to fail for text")
+	}
+
+	if !SimpleTrueValue().Equal(SimpleTrueValue()) {
+		t.Fatalf("Simple.Equal expected true for identical non-float kind")
+	}
+	if SimpleTrueValue().Equal(SimpleFalseValue()) {
+		t.Fatalf("Simple.Equal expected false for differing non-float kinds")
+	}
+	if !SimpleFloatValue(1.5).Equal(SimpleFloatValue(1.5)) {
+		t.Fatalf("Simple.Equal expected true for identical float value")
+	}
+	if SimpleFloatValue(1.5).Equal(SimpleFloatValue(1.25)) {
+		t.Fatalf("Simple.Equal expected false for differing float values")
+	}
+	if SimpleFloatValue(math.NaN()).Equal(SimpleFloatValue(math.NaN())) {
+		t.Fatalf("Simple.Equal expected false for NaN parity to match floating-point equality semantics")
 	}
 }

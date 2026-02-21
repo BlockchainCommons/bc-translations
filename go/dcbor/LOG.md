@@ -1166,3 +1166,27 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (API surface complete; broader docs/derive/signature parity still partial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing derive-style parity with explicit equality helpers for core value wrappers
+- Adding equality methods for `ByteString`, `Simple`, and `Date` with tests
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `ByteString.Equal` in `byte_string.go`
+- Added `Simple.Equal` in `simple.go`
+- Added `Date.Equal` in `date.go`
+- Expanded tests to cover equality semantics (including NaN behavior for `Simple.Equal`)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (107 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after value-type equality helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated derive/protocol notes in `COMPLETENESS.md` with new value-type equality coverage
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (equality parity improved; docs/signature/remaining derive breadth still partial)

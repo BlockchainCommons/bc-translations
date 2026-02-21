@@ -60,6 +60,11 @@ func (d Date) Datetime() time.Time {
 	return d.time
 }
 
+// Equal reports instant equality between two dates.
+func (d Date) Equal(other Date) bool {
+	return d.time.Equal(other.time)
+}
+
 func (d Date) Timestamp() float64 {
 	sec := d.time.Unix()
 	nsec := d.time.Nanosecond()

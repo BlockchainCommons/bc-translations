@@ -73,4 +73,11 @@ func TestByteStringMethodParity(t *testing.T) {
 	if !empty.IsEmpty() || empty.Len() != 0 {
 		t.Fatalf("empty ByteString mismatch: len=%d empty=%v", empty.Len(), empty.IsEmpty())
 	}
+
+	if !b.Equal(NewByteString([]byte{1, 2, 3, 4})) {
+		t.Fatalf("ByteString.Equal expected equality for identical content")
+	}
+	if b.Equal(NewByteString([]byte{1, 2, 3, 5})) {
+		t.Fatalf("ByteString.Equal expected inequality for differing content")
+	}
 }
