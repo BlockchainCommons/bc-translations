@@ -42,9 +42,10 @@
 
 ### Implemented in Go
 
-- 77 tests total across:
+- 78 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
+  - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
   - typed integer conversion range/type parity checks (`int16/int32/uint16/uint32`)
   - exact numeric-conversion boundary parity vectors (`exact.rs`-aligned float-to-int exactness cases via Go CBOR reduction behavior)
   - supplemental collection/tag-store API parity checks (`Map`, `Set`, `TagsStore`, tag registration/summarizer behavior)

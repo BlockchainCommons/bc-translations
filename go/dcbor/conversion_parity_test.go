@@ -604,3 +604,31 @@ func TestExactUInt64ConversionParity(t *testing.T) {
 	assertUInt64Err("i64_neg21", int64(-21))
 	assertUInt64Err("i64_min", int64(math.MinInt64))
 }
+
+func TestTypedDecodeHelperParity(t *testing.T) {
+	if got, err := DecodeUInt16(MustFromAny(65535)); err != nil || got != 65535 {
+		t.Fatalf("DecodeUInt16 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := DecodeUInt32(MustFromAny(uint64(4294967295))); err != nil || got != 4294967295 {
+		t.Fatalf("DecodeUInt32 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := DecodeInt16(MustFromAny(-32768)); err != nil || got != -32768 {
+		t.Fatalf("DecodeInt16 mismatch: got=%d err=%v", got, err)
+	}
+	if got, err := DecodeInt32(MustFromAny(-2147483648)); err != nil || got != -2147483648 {
+		t.Fatalf("DecodeInt32 mismatch: got=%d err=%v", got, err)
+	}
+
+	if _, err := DecodeUInt16(MustFromAny(-1)); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for DecodeUInt16(-1), got %v", err)
+	}
+	if _, err := DecodeUInt32(MustFromAny(uint64(4294967296))); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for DecodeUInt32 overflow, got %v", err)
+	}
+	if _, err := DecodeInt16(MustFromAny(32768)); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for DecodeInt16 overflow, got %v", err)
+	}
+	if _, err := DecodeInt32(MustFromAny(-2147483649)); !errors.Is(err, ErrOutOfRange) {
+		t.Fatalf("expected ErrOutOfRange for DecodeInt32 underflow, got %v", err)
+	}
+}

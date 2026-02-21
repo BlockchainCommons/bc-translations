@@ -519,3 +519,26 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage unchanged: 69/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (conversion semantics improved; substantial baseline parity work remains)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion surface parity with typed decode convenience helpers
+- Adding decode wrappers for the newly added typed integer conversion methods
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added decode helpers in `conversion.go`:
+  - `DecodeInt16`, `DecodeInt32`, `DecodeUInt16`, `DecodeUInt32`
+- Added `TestTypedDecodeHelperParity` in `conversion_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (78 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after typed decode helper additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` to include supplemental typed decode helper coverage
+- API coverage unchanged: 63/83 key manifest targets
+- Baseline translated-test coverage unchanged: 69/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (conversion API ergonomics improved; baseline parity still incomplete)
