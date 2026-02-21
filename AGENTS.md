@@ -154,7 +154,7 @@ In addition to per-target logs, append a row to the root `LOG.md` table for any 
 
 - **No compatibility layer required.** This repository is de novo; there are no external dependents that require backward compatibility.
 - **Prefer direct API improvement.** When fluency or correctness work changes an API, apply the new API directly instead of preserving old forms.
-- **Do not add deprecations or shims.** Never add deprecated aliases, compatibility wrappers, or transitional APIs in this repo.
+- **Do not add deprecations or shims.** Never add deprecated aliases, compatibility wrappers, or transitional APIs in this repo. EXCEPTION: If the *original* Rust implementation adds a new API, deprecates an old one, or adds a compatibility shim, the translations should follow suit.
 - **Fix internal breakage immediately.** If an API change breaks dependent targets in this monorepo, update those dependents in the same work stream and re-run tests.
 
 ## Package Search Indexes
