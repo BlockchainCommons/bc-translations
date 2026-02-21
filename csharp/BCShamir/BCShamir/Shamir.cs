@@ -8,19 +8,13 @@ namespace BlockchainCommons.BCShamir;
 /// </summary>
 public static class Shamir
 {
-    /// <summary>
-    /// The minimum length of a secret.
-    /// </summary>
+    /// <summary>The minimum length of a secret in bytes (16).</summary>
     public const int MinSecretLen = 16;
 
-    /// <summary>
-    /// The maximum length of a secret.
-    /// </summary>
+    /// <summary>The maximum length of a secret in bytes (32).</summary>
     public const int MaxSecretLen = 32;
 
-    /// <summary>
-    /// The maximum number of shares that can be generated from a secret.
-    /// </summary>
+    /// <summary>The maximum number of shares that can be generated (16).</summary>
     public const int MaxShareCount = 16;
 
     private const byte SecretIndex = 255;
@@ -34,15 +28,15 @@ public static class Shamir
     private static void ValidateParameters(int threshold, int shareCount, int secretLength)
     {
         if (shareCount > MaxShareCount)
-            throw new BCShamirException(Error.TooManyShares);
+            throw new BCShamirException(ShamirError.TooManyShares);
         if (threshold < 1 || threshold > shareCount)
-            throw new BCShamirException(Error.InvalidThreshold);
+            throw new BCShamirException(ShamirError.InvalidThreshold);
         if (secretLength > MaxSecretLen)
-            throw new BCShamirException(Error.SecretTooLong);
+            throw new BCShamirException(ShamirError.SecretTooLong);
         if (secretLength < MinSecretLen)
-            throw new BCShamirException(Error.SecretTooShort);
+            throw new BCShamirException(ShamirError.SecretTooShort);
         if ((secretLength & 1) != 0)
-            throw new BCShamirException(Error.SecretNotEvenLen);
+            throw new BCShamirException(ShamirError.SecretNotEvenLen);
     }
 
     /// <summary>
@@ -50,9 +44,9 @@ public static class Shamir
     /// </summary>
     /// <param name="threshold">The minimum number of shares required to reconstruct the secret.</param>
     /// <param name="shareCount">The total number of shares to generate.</param>
-    /// <param name="secret">The secret to split.</param>
+    /// <param name="secret">The secret to split. Must be between <see cref="MinSecretLen"/> and <see cref="MaxSecretLen"/> bytes, with an even length.</param>
     /// <param name="randomGenerator">The random number generator used to generate random data.</param>
-    /// <returns>The shares of the secret.</returns>
+    /// <returns>An array of <paramref name="shareCount"/> shares, indexed 0 through <c>shareCount - 1</c>. Pass any <paramref name="threshold"/> of them (with their indices) to <see cref="RecoverSecret"/> to reconstruct the original secret.</returns>
     public static byte[][] SplitSecret(
         int threshold,
         int shareCount,
@@ -130,17 +124,17 @@ public static class Shamir
     /// <summary>
     /// Recovers the secret from the given shares using the Shamir secret sharing algorithm.
     /// </summary>
-    /// <param name="indexes">The indexes of the shares returned by <see cref="SplitSecret"/>.</param>
+    /// <param name="indexes">The share indexes (0-based byte values) returned by <see cref="SplitSecret"/>.</param>
     /// <param name="shares">The shares matching the given <paramref name="indexes"/>.</param>
     /// <returns>The recovered secret.</returns>
-    public static byte[] RecoverSecret(IReadOnlyList<int> indexes, IReadOnlyList<byte[]> shares)
+    public static byte[] RecoverSecret(IReadOnlyList<byte> indexes, IReadOnlyList<byte[]> shares)
     {
         ArgumentNullException.ThrowIfNull(indexes);
         ArgumentNullException.ThrowIfNull(shares);
 
         var threshold = shares.Count;
         if (threshold == 0 || indexes.Count != threshold)
-            throw new BCShamirException(Error.InvalidThreshold);
+            throw new BCShamirException(ShamirError.InvalidThreshold);
 
         var firstShare = shares[0] ?? throw new ArgumentNullException(nameof(shares), "Shares cannot contain null entries.");
         var shareLength = firstShare.Length;
@@ -150,7 +144,7 @@ public static class Shamir
         {
             var share = shares[i] ?? throw new ArgumentNullException(nameof(shares), "Shares cannot contain null entries.");
             if (share.Length != shareLength)
-                throw new BCShamirException(Error.SharesUnequalLength);
+                throw new BCShamirException(ShamirError.SharesUnequalLength);
         }
 
         if (threshold == 1)
@@ -158,8 +152,9 @@ public static class Shamir
 
         var byteIndexes = new byte[threshold];
         for (var i = 0; i < threshold; i++)
-            byteIndexes[i] = unchecked((byte)indexes[i]);
+            byteIndexes[i] = indexes[i];
         byte[]? digest = null;
+        byte[]? secret = null;
         byte[]? verify = null;
 
         try
@@ -171,7 +166,7 @@ public static class Shamir
                 shares,
                 DigestIndex);
 
-            var secret = Interpolation.Interpolate(
+            secret = Interpolation.Interpolate(
                 threshold,
                 byteIndexes,
                 shareLength,
@@ -185,7 +180,10 @@ public static class Shamir
                 valid &= digest[i] == verify[i];
 
             if (!valid)
-                throw new BCShamirException(Error.ChecksumFailure);
+            {
+                Memzero.Zero(secret);
+                throw new BCShamirException(ShamirError.ChecksumFailure);
+            }
 
             return secret;
         }

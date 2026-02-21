@@ -53,3 +53,28 @@ COMPLETED
 - All 3 issues fixed, 0 skipped.
 - Test result after critique: 4/4 passing.
 - VERDICT: IDIOMATIC
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing naming, error handling, API design, resource management, docs, and tests.
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- 12 fluency issues found and fixed:
+  - [MUST FIX] Renamed `Error` enum to `ShamirError` to avoid generic naming collision.
+  - [SHOULD FIX] Renamed `BCShamirException.Kind` to `ErrorKind` for clarity.
+  - [SHOULD FIX] Changed `RecoverSecret` indexes parameter from `IReadOnlyList<int>` to `IReadOnlyList<byte>` to match domain.
+  - [SHOULD FIX] Added secret zeroing on checksum failure path in `RecoverSecret`.
+  - [NICE TO HAVE] Added XML doc comments to `ShamirError` enum values.
+  - [NICE TO HAVE] Added class-level XML doc comment to `Hazmat`.
+  - [NICE TO HAVE] Added class-level XML doc comment to `Interpolation`.
+  - [NICE TO HAVE] Updated `Error.` references to `ShamirError.` across all files.
+  - [NICE TO HAVE] Improved `SplitSecret` return value documentation.
+  - [NICE TO HAVE] Improved constant doc comments with concrete values.
+  - [NICE TO HAVE] Updated tests to use `byte[]` indexes instead of `int[]`.
+  - [NICE TO HAVE] Kept duplicate `ZeroUInt32` in `Interpolation` (identical impl, avoids cross-class visibility concern).
+- All 12 issues fixed, 0 skipped.
+- API CHANGES: `Error` -> `ShamirError`, `Kind` -> `ErrorKind`, `RecoverSecret` indexes `int` -> `byte`.
+- Test result after critique: 4/4 passing.
+- VERDICT: IDIOMATIC

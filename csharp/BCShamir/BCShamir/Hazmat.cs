@@ -3,6 +3,9 @@ using System.Security.Cryptography;
 
 namespace BlockchainCommons.BCShamir;
 
+/// <summary>
+/// Bitsliced GF(256) arithmetic primitives for constant-time Shamir interpolation.
+/// </summary>
 internal static class Hazmat
 {
     private const int FieldBits = 8;

@@ -44,7 +44,7 @@ public class ShamirTests
         Assert.Equal(Convert.FromHexString("0d8cf5f6ec337bc764d1866b5d07ca42"), shares[3]);
         Assert.Equal(Convert.FromHexString("1aa7fe3199bc5092ef3816b074cabdf2"), shares[4]);
 
-        int[] recoveredShareIndexes = [1, 2, 4];
+        byte[] recoveredShareIndexes = [1, 2, 4];
         byte[][] recoveredShares = recoveredShareIndexes.Select(index => shares[index]).ToArray();
 
         var recoveredSecret = Shamir.RecoverSecret(recoveredShareIndexes, recoveredShares);
@@ -69,7 +69,7 @@ public class ShamirTests
         Assert.Equal(Convert.FromHexString("a797d4a32d2a39a4aacd9de48036478fff77b1e83b4f16a099c34bfb0b7acdee"), shares[5]);
         Assert.Equal(Convert.FromHexString("28a19475dcde9f09ba2e9e881979413592027216e60c8513cdee937c67b2c586"), shares[6]);
 
-        int[] recoveredShareIndexes = [3, 4];
+        byte[] recoveredShareIndexes = [3, 4];
         byte[][] recoveredShares = recoveredShareIndexes.Select(index => shares[index]).ToArray();
 
         var recoveredSecret = Shamir.RecoverSecret(recoveredShareIndexes, recoveredShares);
@@ -94,7 +94,7 @@ public class ShamirTests
     [Fact]
     public void ExampleRecover()
     {
-        int[] indexes = [0, 2];
+        byte[] indexes = [0, 2];
         byte[][] shares =
         [
             [

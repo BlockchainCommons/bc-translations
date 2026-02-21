@@ -4,6 +4,9 @@ using BlockchainCommons.BCCrypto;
 
 namespace BlockchainCommons.BCShamir;
 
+/// <summary>
+/// Lagrange interpolation over GF(256) for Shamir secret sharing.
+/// </summary>
 internal static class Interpolation
 {
     private static void ZeroUInt32(uint[] data)
@@ -74,15 +77,15 @@ internal static class Interpolation
         byte x)
     {
         if (n <= 0)
-            throw new BCShamirException(Error.InvalidThreshold);
+            throw new BCShamirException(ShamirError.InvalidThreshold);
         if (n > Shamir.MaxShareCount)
-            throw new BCShamirException(Error.TooManyShares);
+            throw new BCShamirException(ShamirError.TooManyShares);
         if (yLength < 0 || yLength > Shamir.MaxSecretLen)
-            throw new BCShamirException(Error.InterpolationFailure);
+            throw new BCShamirException(ShamirError.InterpolationFailure);
         if (xi.Length < n)
-            throw new BCShamirException(Error.InterpolationFailure);
+            throw new BCShamirException(ShamirError.InterpolationFailure);
         if (yij.Count < n)
-            throw new BCShamirException(Error.InterpolationFailure);
+            throw new BCShamirException(ShamirError.InterpolationFailure);
 
         var y = new byte[n][];
         for (var i = 0; i < n; i++)
@@ -100,7 +103,7 @@ internal static class Interpolation
             {
                 var share = yij[i];
                 if (share is null || share.Length < yLength)
-                    throw new BCShamirException(Error.InterpolationFailure);
+                    throw new BCShamirException(ShamirError.InterpolationFailure);
                 share.AsSpan(0, yLength).CopyTo(y[i]);
             }
 

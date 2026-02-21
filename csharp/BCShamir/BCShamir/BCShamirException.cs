@@ -3,15 +3,30 @@ namespace BlockchainCommons.BCShamir;
 /// <summary>
 /// Error codes produced by BCShamir operations.
 /// </summary>
-public enum Error
+public enum ShamirError
 {
+    /// <summary>The secret exceeds <see cref="Shamir.MaxSecretLen"/> bytes.</summary>
     SecretTooLong,
+
+    /// <summary>The requested share count exceeds <see cref="Shamir.MaxShareCount"/>.</summary>
     TooManyShares,
+
+    /// <summary>Lagrange interpolation failed due to invalid inputs.</summary>
     InterpolationFailure,
+
+    /// <summary>The recovered digest does not match the expected checksum.</summary>
     ChecksumFailure,
+
+    /// <summary>The secret is shorter than <see cref="Shamir.MinSecretLen"/> bytes.</summary>
     SecretTooShort,
+
+    /// <summary>The secret length is odd; an even byte length is required.</summary>
     SecretNotEvenLen,
+
+    /// <summary>The threshold is out of range (must be 1..shareCount).</summary>
     InvalidThreshold,
+
+    /// <summary>Not all shares have the same byte length.</summary>
     SharesUnequalLength,
 }
 
@@ -20,36 +35,37 @@ public enum Error
 /// </summary>
 public sealed class BCShamirException : Exception
 {
-    public Error Kind { get; }
+    /// <summary>The specific error that caused this exception.</summary>
+    public ShamirError ErrorKind { get; }
 
-    public BCShamirException(Error kind) : base(GetMessage(kind))
+    public BCShamirException(ShamirError errorKind) : base(GetMessage(errorKind))
     {
-        Kind = kind;
+        ErrorKind = errorKind;
     }
 
-    public BCShamirException(Error kind, string message) : base(message)
+    public BCShamirException(ShamirError errorKind, string message) : base(message)
     {
-        Kind = kind;
+        ErrorKind = errorKind;
     }
 
-    public BCShamirException(Error kind, string message, Exception innerException)
+    public BCShamirException(ShamirError errorKind, string message, Exception innerException)
         : base(message, innerException)
     {
-        Kind = kind;
+        ErrorKind = errorKind;
     }
 
-    private static string GetMessage(Error kind)
+    private static string GetMessage(ShamirError errorKind)
     {
-        return kind switch
+        return errorKind switch
         {
-            Error.SecretTooLong => "secret is too long",
-            Error.TooManyShares => "too many shares",
-            Error.InterpolationFailure => "interpolation failed",
-            Error.ChecksumFailure => "checksum failure",
-            Error.SecretTooShort => "secret is too short",
-            Error.SecretNotEvenLen => "secret is not of even length",
-            Error.InvalidThreshold => "invalid threshold",
-            Error.SharesUnequalLength => "shares have unequal length",
+            ShamirError.SecretTooLong => "secret is too long",
+            ShamirError.TooManyShares => "too many shares",
+            ShamirError.InterpolationFailure => "interpolation failed",
+            ShamirError.ChecksumFailure => "checksum failure",
+            ShamirError.SecretTooShort => "secret is too short",
+            ShamirError.SecretNotEvenLen => "secret is not of even length",
+            ShamirError.InvalidThreshold => "invalid threshold",
+            ShamirError.SharesUnequalLength => "shares have unequal length",
             _ => "bc-shamir error"
         };
     }
