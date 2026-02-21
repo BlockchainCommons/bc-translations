@@ -606,6 +606,53 @@ func (c CBOR) TryIntoFloat64() (float64, error) {
 	}
 }
 
+func (c CBOR) TryIntoFloat32() (float32, error) {
+	switch c.kind {
+	case CBORKindUnsigned:
+		u := c.value.(uint64)
+		f := float32(u)
+		if uint64(f) != u {
+			return 0, ErrOutOfRange
+		}
+		return f, nil
+	case CBORKindNegative:
+		u := c.value.(uint64)
+		f := float32(u)
+		if uint64(f) != u {
+			return 0, ErrOutOfRange
+		}
+		return -1.0 - f, nil
+	case CBORKindSimple:
+		s := c.value.(Simple)
+		if s.Kind() != SimpleFloat {
+			return 0, ErrWrongType
+		}
+		n, _ := s.Float64()
+		if math.IsNaN(n) {
+			return float32(math.NaN()), nil
+		}
+		f := float32(n)
+		if float64(f) != n {
+			return 0, ErrOutOfRange
+		}
+		return f, nil
+	default:
+		return 0, ErrWrongType
+	}
+}
+
+func (c CBOR) TryFloat32() (float32, error) {
+	return c.TryIntoFloat32()
+}
+
+func (c CBOR) IntoFloat32() (float32, bool) {
+	value, err := c.TryIntoFloat32()
+	if err != nil {
+		return 0, false
+	}
+	return value, true
+}
+
 func (c CBOR) TryFloat64() (float64, error) {
 	return c.TryIntoFloat64()
 }

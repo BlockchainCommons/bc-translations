@@ -724,3 +724,53 @@ func TestExactFloat64ConversionParity(t *testing.T) {
 	assertFloat64Err("i64_min", int64(math.MinInt64))
 	assertFloat64Err("i64_neg9223372036854775807", int64(-9223372036854775807))
 }
+
+func TestFloat32ConversionParity(t *testing.T) {
+	assertFloat32OK := func(name string, value any, want float32) {
+		t.Helper()
+		got, err := MustFromAny(value).TryIntoFloat32()
+		if err != nil {
+			t.Fatalf("%s: unexpected error: %v", name, err)
+		}
+		if math.IsNaN(float64(want)) {
+			if !math.IsNaN(float64(got)) {
+				t.Fatalf("%s: expected NaN, got %v", name, got)
+			}
+			return
+		}
+		if got != want {
+			t.Fatalf("%s: got %v want %v", name, got, want)
+		}
+	}
+	assertFloat32Err := func(name string, value any) {
+		t.Helper()
+		if _, err := MustFromAny(value).TryIntoFloat32(); err == nil {
+			t.Fatalf("%s: expected conversion failure", name)
+		}
+	}
+
+	assertFloat32OK("u64_21", uint64(21), float32(21.0))
+	assertFloat32OK("i64_neg21", int64(-21), float32(-21.0))
+	assertFloat32OK("f64_21_5", 21.5, float32(21.5))
+	assertFloat32OK("f64_nan", math.NaN(), float32(math.NaN()))
+	assertFloat32OK("f64_inf", math.Inf(1), float32(math.Inf(1)))
+	assertFloat32OK("f64_neg_inf", math.Inf(-1), float32(math.Inf(-1)))
+	assertFloat32OK("u64_max", uint64(math.MaxUint64), float32(18446744073709551616.0))
+
+	assertFloat32Err("u64_9223372036854775809", uint64(9223372036854775809))
+	assertFloat32Err("i64_neg9223372036854775807", int64(-9223372036854775807))
+	assertFloat32Err("text", "42")
+
+	if got, err := DecodeFloat32(MustFromAny(21.5)); err != nil || got != float32(21.5) {
+		t.Fatalf("DecodeFloat32 mismatch: got=%v err=%v", got, err)
+	}
+	if got, ok := MustFromAny(21.5).IntoFloat32(); !ok || got != float32(21.5) {
+		t.Fatalf("IntoFloat32 mismatch: got=%v ok=%v", got, ok)
+	}
+	if got, err := MustFromAny(21.5).TryFloat32(); err != nil || got != float32(21.5) {
+		t.Fatalf("TryFloat32 mismatch: got=%v err=%v", got, err)
+	}
+	if _, ok := MustFromAny("x").IntoFloat32(); ok {
+		t.Fatalf("expected IntoFloat32 to fail for non-number")
+	}
+}

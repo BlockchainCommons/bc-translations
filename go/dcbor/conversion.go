@@ -43,6 +43,10 @@ func DecodeFloat64(c CBOR) (float64, error) {
 	return c.TryIntoFloat64()
 }
 
+func DecodeFloat32(c CBOR) (float32, error) {
+	return c.TryIntoFloat32()
+}
+
 func DecodeArray[T any](c CBOR, decodeItem CBORDecodeFunc[T]) ([]T, error) {
 	items, err := c.TryIntoArray()
 	if err != nil {

@@ -585,3 +585,26 @@ COMPLETED
 - API coverage unchanged: 63/83 key manifest targets
 - Baseline translated-test coverage improved from 70/86 to 72/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (baseline parity now above 83%; remaining gaps still include format fidelity and residual API/tests)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing conversion matrix parity with `f32`-level decode/extraction support
+- Implementing `TryIntoFloat32` helpers and translation tests for `exact.rs`-style `f32` vectors
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TryIntoFloat32`, `TryFloat32`, and `IntoFloat32` in `cbor.go`
+- Added `DecodeFloat32` in `conversion.go`
+- Added `TestFloat32ConversionParity` in `conversion_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (82 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness metrics after float32 conversion parity additions
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with float32 conversion coverage and refreshed metrics
+- API coverage improved from 63/83 to 64/83 key manifest targets
+- Baseline translated-test coverage improved from 72/86 to 73/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (conversion surface is broader; remaining baseline parity and formatting fidelity work persists)
