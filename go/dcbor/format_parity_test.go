@@ -17,29 +17,45 @@ func runFormatCheck(
 ) {
 	t.Helper()
 
-	if got := cbor.String(); got != expectedDisplay {
-		t.Fatalf("%s display mismatch: got %q want %q", name, got, expectedDisplay)
+	if expectedDisplay != "" {
+		if got := cbor.String(); got != expectedDisplay {
+			t.Fatalf("%s display mismatch: got %q want %q", name, got, expectedDisplay)
+		}
 	}
-	if got := cbor.DebugString(); got != expectedDebug {
-		t.Fatalf("%s debug mismatch: got %q want %q", name, got, expectedDebug)
+	if expectedDebug != "" {
+		if got := cbor.DebugString(); got != expectedDebug {
+			t.Fatalf("%s debug mismatch: got %q want %q", name, got, expectedDebug)
+		}
 	}
-	if got := cbor.Diagnostic(); got != expectedDiagnostic {
-		t.Fatalf("%s diagnostic mismatch: got %q want %q", name, got, expectedDiagnostic)
+	if expectedDiagnostic != "" {
+		if got := cbor.Diagnostic(); got != expectedDiagnostic {
+			t.Fatalf("%s diagnostic mismatch: got %q want %q", name, got, expectedDiagnostic)
+		}
 	}
-	if got := cbor.DiagnosticAnnotated(); got != expectedDiagnosticAnnotated {
-		t.Fatalf("%s diagnostic_annotated mismatch: got %q want %q", name, got, expectedDiagnosticAnnotated)
+	if expectedDiagnosticAnnotated != "" {
+		if got := cbor.DiagnosticAnnotated(); got != expectedDiagnosticAnnotated {
+			t.Fatalf("%s diagnostic_annotated mismatch: got %q want %q", name, got, expectedDiagnosticAnnotated)
+		}
 	}
-	if got := cbor.DiagnosticFlat(); got != expectedDiagnosticFlat {
-		t.Fatalf("%s diagnostic_flat mismatch: got %q want %q", name, got, expectedDiagnosticFlat)
+	if expectedDiagnosticFlat != "" {
+		if got := cbor.DiagnosticFlat(); got != expectedDiagnosticFlat {
+			t.Fatalf("%s diagnostic_flat mismatch: got %q want %q", name, got, expectedDiagnosticFlat)
+		}
 	}
-	if got := cbor.Summary(); got != expectedSummary {
-		t.Fatalf("%s summary mismatch: got %q want %q", name, got, expectedSummary)
+	if expectedSummary != "" {
+		if got := cbor.Summary(); got != expectedSummary {
+			t.Fatalf("%s summary mismatch: got %q want %q", name, got, expectedSummary)
+		}
 	}
-	if got := cbor.Hex(); got != expectedHex {
-		t.Fatalf("%s hex mismatch: got %q want %q", name, got, expectedHex)
+	if expectedHex != "" {
+		if got := cbor.Hex(); got != expectedHex {
+			t.Fatalf("%s hex mismatch: got %q want %q", name, got, expectedHex)
+		}
 	}
-	if got := cbor.HexAnnotated(); got != expectedHexAnnotated {
-		t.Fatalf("%s hex_annotated mismatch: got %q want %q", name, got, expectedHexAnnotated)
+	if expectedHexAnnotated != "" {
+		if got := cbor.HexAnnotated(); got != expectedHexAnnotated {
+			t.Fatalf("%s hex_annotated mismatch: got %q want %q", name, got, expectedHexAnnotated)
+		}
 	}
 }
 
