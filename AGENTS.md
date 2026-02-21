@@ -137,6 +137,9 @@ In addition to per-target logs, append a row to the root `LOG.md` table for any 
 - Follow the root `LOG.md` table format exactly:
   `| <date> | <crate> | <version> | <language> | <package> | <model> | <task> |`
 - Keep Stage 4 task text in root `LOG.md` standardized as `Fluency`.
+- Keep root `FLUENCY_NEEDED.md` in sync as the running queue of targets still awaiting cross-model fluency checks.
+- `FLUENCY_NEEDED.md` must list each pending target and the original translation model that should **not** run the cross-check.
+- After appending any root `LOG.md` row with task `Translation` or `Fluency`, run `bash scripts/update-fluency-needed.sh` to regenerate `FLUENCY_NEEDED.md`.
 
 ### Key Principles
 

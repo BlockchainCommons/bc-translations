@@ -64,7 +64,7 @@ A translation is **not done** until ALL of the following are true:
 2. **Tests-complete**: Every test in the manifest is translated with matching test vectors. All tests pass.
 3. **Fluency-complete**: The fluency critic has run, ALL findings (MUST FIX, SHOULD FIX, and NICE TO HAVE) have been addressed, and tests still pass after fixes.
 4. **Documentation-complete**: Public API has idiomatic doc comments in the target language.
-5. **Status updated**: CLAUDE.md shows ✅, root LOG.md has a row, per-target LOG.md has all stages COMPLETED.
+5. **Status updated**: CLAUDE.md shows ✅, root LOG.md has a row, root FLUENCY_NEEDED.md is refreshed, and per-target LOG.md has all stages COMPLETED.
 6. **Lessons captured**: Rule One has been applied and memory files updated.
 
 Do not report completion, mark ✅, or stop work until all six criteria are met.
@@ -173,7 +173,15 @@ Append a row to the top-level `LOG.md` table recording what was done:
 
 Use today's date, the Rust crate version from CLAUDE.md, and the model's own identifier. The model column includes the model marker emoji followed by the model name (e.g., `🎻 Claude Opus 4.6`, `📖 GPT 5.3 Codex`). The language column is the target language name (e.g., `Go`, `C#`, `Python`). The package column is the target-language package name (e.g., `bcrand`, `BCRand`, `bc-rand`). The task column describes what was done (e.g., `Translation`). Update this log whenever a translation is completed, a status changes, or a previously completed translation is revised.
 
-When Step 4 runs as a standalone rerun or a post-completion revision, still append a root `LOG.md` row using the same 7-column format, with task text beginning `Fluency critique` (for example: `Fluency critique (Stage 4 rerun + API docs)`).
+When Step 4 runs as a standalone rerun or a post-completion revision, still append a root `LOG.md` row using the same 7-column format with task `Fluency`.
+
+After any root `LOG.md` append with task `Translation` or `Fluency`, refresh the cross-check queue:
+
+```
+bash scripts/update-fluency-needed.sh
+```
+
+`FLUENCY_NEEDED.md` is the authoritative running list of translated targets that still need a fluency pass by a different model than the translation model.
 
 Commit the result.
 

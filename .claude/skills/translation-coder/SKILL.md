@@ -81,6 +81,14 @@ As translation units and tests are completed, check off the corresponding items 
 
 Append entries to `<lang>/<package>/LOG.md` when starting and completing this stage. Include: number of files translated, number of tests translated, build result, test result. See the Orchestration section of CLAUDE.md for the log format. If a LOG.md already exists with a STARTED entry for this stage but no COMPLETED, this is a resumed session — pick up where it left off rather than redoing work.
 
+If this session also appends a root `LOG.md` row with task `Translation`, immediately run:
+
+```
+bash scripts/update-fluency-needed.sh
+```
+
+This keeps `FLUENCY_NEEDED.md` current with targets that still need a cross-model fluency pass.
+
 ## Key Principles
 
 - **Translate, don't rewrite.** Stay close to the Rust structure. The goal is a faithful translation, not a reimagination.

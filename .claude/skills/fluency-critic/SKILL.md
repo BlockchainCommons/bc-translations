@@ -119,3 +119,11 @@ Also append a row to the root `LOG.md` table for every fluency critique pass (in
 `| <date> | <crate> | <version> | <language> | <package> | <model> | <task> |`
 
 Use task `Fluency` for root `LOG.md` rows to match repository convention.
+
+After appending the root `LOG.md` fluency row, run:
+
+```
+bash scripts/update-fluency-needed.sh
+```
+
+This updates `FLUENCY_NEEDED.md`, removing targets from the queue once a different model has performed fluency, and keeping same-model fluency passes pending.
