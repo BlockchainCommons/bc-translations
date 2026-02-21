@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BCTags.Tests/BCTags.Tests.csproj" />
+  <Project Path="BCTags/BCTags.csproj" />
+</Solution>
