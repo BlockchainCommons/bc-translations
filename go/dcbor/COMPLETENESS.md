@@ -45,7 +45,7 @@
 
 ### Implemented in Go
 
-- 84 tests total across:
+- 85 tests total across:
   - core scalar encode/decode
   - conversion-surface parity checks (typed numeric extraction, array/map round-trip conversions, usage vectors, reflective container conversion)
   - supplemental typed decode helper parity checks (`DecodeInt16/Int32/UInt16/UInt32`)
@@ -64,6 +64,7 @@
   - date tag round-trip
   - date constructor/parsing/timestamp/error-path parity checks
   - date arithmetic parity checks
+  - supplemental `DateNow`/`DateWithDurationFromNow` bounded-behavior checks
   - date named-tag display behavior after tag registration
   - annotated hex smoke test
   - translated `walk.rs` traversal parity checks (counts, stop semantics, edge types, key-value semantics, depth limits, primitive/empty structure behavior, text extraction, realistic document traversal)

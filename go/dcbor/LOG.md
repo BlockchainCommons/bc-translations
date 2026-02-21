@@ -676,3 +676,24 @@ COMPLETED
 - API coverage unchanged: 65/83 key manifest targets
 - Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (format robustness improved; exact full-text parity still open)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing date surface parity for dynamic constructor helpers
+- Adding bounded-behavior tests for `DateNow` and `DateWithDurationFromNow`
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added `TestDateNowAndDurationFromNowParity` in `date_parity_test.go`
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (85 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after dynamic date helper parity tests
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated `COMPLETENESS.md` with supplemental dynamic date helper coverage
+- API coverage unchanged: 65/83 key manifest targets
+- Baseline translated-test coverage unchanged: 73/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (date helper coverage improved; baseline parity remains incomplete)

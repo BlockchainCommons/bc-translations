@@ -97,3 +97,19 @@ func TestDateArithmeticParity(t *testing.T) {
 		t.Fatalf("DiffSeconds mismatch: got %.12f want %.12f", got, want)
 	}
 }
+
+func TestDateNowAndDurationFromNowParity(t *testing.T) {
+	before := time.Now().UTC().Add(-1 * time.Second)
+	now := DateNow().Datetime()
+	after := time.Now().UTC().Add(1 * time.Second)
+	if now.Before(before) || now.After(after) {
+		t.Fatalf("DateNow out of expected bounds: got %s, bounds [%s, %s]", now, before, after)
+	}
+
+	baseNow := time.Now().UTC()
+	withDuration := DateWithDurationFromNow(2 * time.Second).Datetime()
+	diff := withDuration.Sub(baseNow)
+	if diff < 1*time.Second || diff > 3*time.Second {
+		t.Fatalf("DateWithDurationFromNow out of expected range: got %s", diff)
+	}
+}
