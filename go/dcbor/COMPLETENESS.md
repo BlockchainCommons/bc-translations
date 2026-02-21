@@ -126,7 +126,7 @@ Current translated tests: 86/86 (100.0%)
 ## Documentation Coverage
 
 - ✅ Package-level docs present (`doc.go`).
-- ⚠️ Public API doc parity is partial relative to heavily documented Rust surface (improved recently with added comments for conversion/equality helpers and core collection APIs).
+- ⚠️ Public API doc parity is partial relative to heavily documented Rust surface (improved recently with expanded comments for conversion/equality helpers and core collection APIs).
 
 ## Completeness Summary
 

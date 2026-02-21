@@ -1262,3 +1262,24 @@ COMPLETED
 - API coverage unchanged: 83/83 key manifest targets
 - Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
 - VERDICT: INCOMPLETE (robustness improved; docs/signature/derive breadth still partial)
+
+## 2026-02-21 -- Stage 2: Code
+STARTED
+- Continuing docs parity by expanding comments on exported conversion helper APIs
+- Improving discoverability and typed-decode intent for conversion surface methods
+
+## 2026-02-21 -- Stage 2: Code
+COMPLETED
+- Added concise exported comments across `conversion.go` decode helpers (scalars, numeric widths, tagged/date, array/map/set helpers)
+- Build/tests pass: `GOTOOLCHAIN=local go test ./...` (108 tests passing total)
+
+## 2026-02-21 -- Stage 3: Check
+STARTED
+- Re-checking completeness notes after conversion API documentation expansion
+
+## 2026-02-21 -- Stage 3: Check
+COMPLETED
+- Updated documentation coverage note in `COMPLETENESS.md` to reflect expanded conversion helper comments
+- API coverage unchanged: 83/83 key manifest targets
+- Baseline translated-test coverage remains complete: 86/86 applicable Rust behavior tests
+- VERDICT: INCOMPLETE (docs improved; full rust-doc breadth still not matched)
