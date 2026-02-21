@@ -32,6 +32,13 @@ Select and begin the next translation target. Optionally specify a language and/
    - Otherwise, prefer resuming interrupted work first, then crates higher in the dependency graph (fewer deps), then languages with the most progress
 6. Announce the selection and proceed immediately — do not ask for confirmation
 
+### Row Marker Ownership
+
+- The **row-start marker** (leftmost marker before the crate name) follows crate-level progress across all six languages.
+- If you are the **first agent** to start the first language conversion in a row, set that row marker from `⏳` to `🚧`.
+- If you are the agent that finishes the **last remaining language conversion** in that row, set the row marker from `🚧` to `✅`.
+- Do not set the row marker to `✅` unless all six language cells in that row are `✅`.
+
 ## Dependency Rules
 
 A (crate, language) pair is **eligible** when all of its internal BC dependencies have status ✅ for that same language. Check the Internal Dependencies section of CLAUDE.md.
@@ -65,6 +72,9 @@ The only acceptable reason to stop is a **technical barrier that requires the us
 
 ### Step 0: Mark In Progress
 Update the status table in CLAUDE.md (which is a symlink to AGENTS.md) to change the target's marker from ⏳ to 🚧 **and** append the model marker emoji (see the Model Markers section of CLAUDE.md). For example, change `⏳ DCbor` to `🚧🎻 DCbor` for a Claude Opus translation. This signals to other agents that work is underway on this pair and which model is doing the work.
+
+Also update the crate row-start marker when applicable:
+- If the row-start marker is `⏳`, change it to `🚧` (this indicates the first conversion in that crate row has begun).
 
 Initialize (or verify) the target's `<lang>/<package>/LOG.md`. The file must begin with a level-one header and a model identification line:
 
@@ -141,6 +151,10 @@ Run the **fluency-critic** workflow. Apply fixes. Re-run tests.
 Update the status in CLAUDE.md:
 - 🚧 if translation exists but has known gaps or failing tests
 - ✅ if translation is complete with all tests passing
+
+Then apply row-start marker logic for the crate:
+- If all six language entries for that crate row are now `✅`, set the row-start marker to `✅`.
+- Otherwise keep the row-start marker at `🚧` once work has begun.
 
 When marking ✅, also append the model marker emoji (see the Model Markers section of CLAUDE.md). For example, `✅🎻 BCRand` for a Claude Opus translation, `✅📖 BCRand` for a GPT Codex translation.
 
