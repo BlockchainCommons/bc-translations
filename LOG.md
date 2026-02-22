@@ -106,3 +106,6 @@ Chronological record of all translation activity in this repository.
 | 2026-02-21 | bc-ur       | 0.19.0  | C#         | BCUR         | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-ur       | 0.19.0  | C#         | BCUR         | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-02-21 | bc-ur       | 0.19.0  | Kotlin     | bc-ur        | 🎻 Claude Opus 4.6 | Translation |
+| 2026-02-22 | bc-ur       | 0.19.0  | Swift      | BCUR         | 📖 GPT 5.3 Codex   | Translation |
+| 2026-02-22 | bc-ur       | 0.19.0  | Swift      | BCUR         | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-21 | bc-ur       | 0.19.0  | Python     | bc-ur        | 🎻 Claude Opus 4.6 | Translation |
