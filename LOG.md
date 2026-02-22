@@ -132,3 +132,5 @@ Chronological record of all translation activity in this repository.
 | 2026-02-22 | known-values | 0.15.4 | Swift | KnownValues | 🎻 Claude Opus 4.6 | Translation |
 | 2026-02-22 | known-values | 0.15.4 | Swift | KnownValues | 📖 GPT 5.3 Codex | Fluency |
 | 2026-02-22 | known-values | 0.15.4 | Kotlin | known-values | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-02-22 | bc-envelope | 0.43.0 | Swift | BCEnvelope | 📖 GPT 5.3 Codex | Translation |
+| 2026-02-22 | bc-envelope | 0.43.0 | Swift | BCEnvelope | 📖 GPT 5.3 Codex | Fluency |
