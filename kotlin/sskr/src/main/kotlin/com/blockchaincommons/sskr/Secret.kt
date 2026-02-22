@@ -1,6 +1,14 @@
 package com.blockchaincommons.sskr
 
-/** A secret to be split into shares. */
+/**
+ * A secret to be split into shares.
+ *
+ * The data is defensively copied on construction and never exposed by reference.
+ *
+ * @param data The raw secret bytes. Must be [MIN_SECRET_LEN]..[MAX_SECRET_LEN] bytes
+ *   long with an even length.
+ * @throws SskrException if the data length is invalid.
+ */
 class Secret(data: ByteArray) {
     private val bytes: ByteArray = data.copyOf()
 
@@ -17,26 +25,23 @@ class Secret(data: ByteArray) {
         }
     }
 
-    /** Returns the length of the secret. */
+    /** The length of the secret in bytes. */
     val length: Int
         get() = bytes.size
 
-    /** Returns `true` if the secret is empty. */
+    /** Whether the secret is empty. */
     val isEmpty: Boolean
         get() = length == 0
 
-    /** Returns a copy of the secret data. */
-    fun data(): ByteArray = bytes.copyOf()
+    /** Returns a defensive copy of the secret bytes. */
+    fun toByteArray(): ByteArray = bytes.copyOf()
 
+    /** Returns the backing array without copying (internal use only). */
     internal fun dataRef(): ByteArray = bytes
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-        if (other !is Secret) {
-            return false
-        }
+        if (this === other) return true
+        if (other !is Secret) return false
         return bytes.contentEquals(other.bytes)
     }
 

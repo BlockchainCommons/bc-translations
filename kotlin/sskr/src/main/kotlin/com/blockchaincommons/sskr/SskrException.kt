@@ -8,7 +8,7 @@ sealed class SskrException(message: String, cause: Throwable? = null) : Exceptio
         "When combining shares, the provided shares contained a duplicate member index",
     )
 
-    class GroupSpecInvalid : SskrException("Invalid group specification.")
+    class GroupSpecInvalid : SskrException("Invalid group specification")
 
     class GroupCountInvalid : SskrException("When creating a split spec, the group count is invalid")
 

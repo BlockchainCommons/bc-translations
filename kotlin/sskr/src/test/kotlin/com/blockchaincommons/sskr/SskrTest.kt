@@ -6,6 +6,12 @@ import com.blockchaincommons.bcrand.nextInClosedRange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+/**
+ * Deterministic fake RNG for SSKR test vectors.
+ *
+ * Fills bytes by incrementing a counter by 17 (mod 256) per byte, matching
+ * the Rust test suite's `FakeRandomNumberGenerator`.
+ */
 private class FakeRandomNumberGenerator : RandomNumberGenerator() {
     override fun nextU32(): UInt = throw NotImplementedError("nextU32 is not used in these tests")
 
@@ -26,13 +32,8 @@ private class FakeRandomNumberGenerator : RandomNumberGenerator() {
     }
 }
 
-private fun hex(s: String): ByteArray {
-    require(s.length % 2 == 0) { "Hex input must have even length" }
-    return ByteArray(s.length / 2) { i ->
-        val index = i * 2
-        ((s[index].digitToInt(16) shl 4) or s[index + 1].digitToInt(16)).toByte()
-    }
-}
+@OptIn(ExperimentalStdlibApi::class)
+private fun hex(s: String): ByteArray = s.hexToByteArray()
 
 private fun <T> fisherYatesShuffle(list: MutableList<T>, rng: RandomNumberGenerator) {
     var i = list.size
@@ -82,7 +83,7 @@ private class RecoverSpec(
 
     fun printState() {
         println("---")
-        println("secret: ${secret.data().joinToString(separator = "") { "%02x".format(it) }}")
+        println("secret: ${secret.toByteArray().joinToString(separator = "") { "%02x".format(it) }}")
         println("spec: $spec")
         println("shares: $shares")
         println("recoveredGroupIndexes: $recoveredGroupIndexes")
@@ -129,7 +130,7 @@ class SskrTest {
     // intentionally omitted because they are Rust-tooling checks.
 
     @Test
-    fun testSplit35() {
+    fun testSplit3of5() {
         val rng = FakeRandomNumberGenerator()
         val secret = Secret(hex("0ff784df000c4380a5ed683f7e6e3dcf"))
         val group = GroupSpec(3, 5)
@@ -151,7 +152,7 @@ class SskrTest {
     }
 
     @Test
-    fun testSplit27() {
+    fun testSplit2of7() {
         val rng = FakeRandomNumberGenerator()
         val secret = Secret(
             hex("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"),
@@ -179,7 +180,7 @@ class SskrTest {
     }
 
     @Test
-    fun testSplit2323() {
+    fun testSplit2of3and2of3() {
         val rng = FakeRandomNumberGenerator()
         val secret = Secret(
             hex("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"),
@@ -230,7 +231,7 @@ class SskrTest {
     }
 
     @Test
-    fun fuzzTest() {
+    fun testFuzz() {
         val rng = fakeRandomNumberGenerator()
         repeat(100) {
             oneFuzzTest(rng)
@@ -238,7 +239,7 @@ class SskrTest {
     }
 
     @Test
-    fun exampleEncode() {
+    fun testExampleEncode() {
         val secretString = "my secret belongs to me.".encodeToByteArray()
         val secret = Secret(secretString)
 
@@ -265,7 +266,7 @@ class SskrTest {
     }
 
     @Test
-    fun exampleEncode3() {
+    fun testExampleRoundtrip() {
         val text = "my secret belongs to me."
 
         fun roundtrip(m: Int, n: Int): Secret {
@@ -275,13 +276,13 @@ class SskrTest {
             return sskrCombine(shares.flatten())
         }
 
-        assertEquals(text, roundtrip(2, 3).data().decodeToString())
-        assertEquals(text, roundtrip(1, 1).data().decodeToString())
-        assertEquals(text, roundtrip(1, 3).data().decodeToString())
+        assertEquals(text, roundtrip(2, 3).toByteArray().decodeToString())
+        assertEquals(text, roundtrip(1, 1).toByteArray().decodeToString())
+        assertEquals(text, roundtrip(1, 3).toByteArray().decodeToString())
     }
 
     @Test
-    fun exampleEncode4() {
+    fun testExampleIgnoreExtraGroup() {
         val text = "my secret belongs to me."
         val secret = Secret(text.encodeToByteArray())
         val spec = Spec(
@@ -303,6 +304,6 @@ class SskrTest {
         // the second group. Recovery must ignore any group's shares that cannot
         // be decoded and still return the correct master secret.
         val recoveredSecret = sskrCombine(recoveredShares)
-        assertEquals(text, recoveredSecret.data().decodeToString())
+        assertEquals(text, recoveredSecret.toByteArray().decodeToString())
     }
 }

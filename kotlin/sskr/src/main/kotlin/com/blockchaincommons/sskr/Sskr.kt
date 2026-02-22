@@ -16,6 +16,7 @@ import com.blockchaincommons.bcshamir.MIN_SECRET_LEN as BC_SHAMIR_MIN_SECRET_LEN
  * secret can be reconstructed from any share set that satisfies both per-group
  * member thresholds and the overall group threshold.
  */
+
 /** The minimum length of a secret. */
 const val MIN_SECRET_LEN: Int = BC_SHAMIR_MIN_SECRET_LEN
 
@@ -36,6 +37,13 @@ const val MIN_SERIALIZE_SIZE_BYTES: Int = METADATA_SIZE_BYTES + MIN_SECRET_LEN
 
 /**
  * Generates SSKR shares for the given [spec] and [masterSecret].
+ *
+ * Uses [SecureRandomNumberGenerator] for share generation.
+ *
+ * @param spec The split specification defining groups and thresholds.
+ * @param masterSecret The secret to split into shares.
+ * @return A list of groups, each containing serialized share byte arrays.
+ * @throws SskrException if the spec or secret is invalid.
  */
 fun sskrGenerate(spec: Spec, masterSecret: Secret): List<List<ByteArray>> {
     val rng = SecureRandomNumberGenerator()
@@ -45,6 +53,12 @@ fun sskrGenerate(spec: Spec, masterSecret: Secret): List<List<ByteArray>> {
 /**
  * Generates SSKR shares for the given [spec] and [masterSecret] using the
  * provided [randomGenerator].
+ *
+ * @param spec The split specification defining groups and thresholds.
+ * @param masterSecret The secret to split into shares.
+ * @param randomGenerator The random number generator to use for share generation.
+ * @return A list of groups, each containing serialized share byte arrays.
+ * @throws SskrException if the spec or secret is invalid.
  */
 fun sskrGenerateUsing(
     spec: Spec,
@@ -57,13 +71,13 @@ fun sskrGenerateUsing(
 
 /**
  * Combines serialized SSKR shares into a recovered [Secret].
+ *
+ * @param shares The serialized share byte arrays to combine.
+ * @return The recovered secret.
+ * @throws SskrException if the shares are invalid or insufficient.
  */
 fun sskrCombine(shares: List<ByteArray>): Secret {
-    val sskrShares = ArrayList<SskrShare>(shares.size)
-    for (share in shares) {
-        sskrShares.add(deserializeShare(share))
-    }
-    return combineShares(sskrShares)
+    return combineShares(shares.map(::deserializeShare))
 }
 
 private fun serializeShare(share: SskrShare): ByteArray {
@@ -137,8 +151,6 @@ private fun generateShares(
     randomGenerator.fillRandomData(identifierBytes)
     val identifier = ((identifierBytes[0].toInt() and 0xFF) shl 8) or (identifierBytes[1].toInt() and 0xFF)
 
-    val groupsShares = ArrayList<List<SskrShare>>(spec.groupCount)
-
     val groupSecrets = wrapShamir {
         splitSecret(
             threshold = spec.groupThreshold,
@@ -148,18 +160,17 @@ private fun generateShares(
         )
     }
 
-    for ((groupIndex, group) in spec.groups.withIndex()) {
-        val groupSecret = groupSecrets[groupIndex]
+    return spec.groups.mapIndexed { groupIndex, group ->
         val memberSecrets = wrapShamir {
             splitSecret(
                 threshold = group.memberThreshold,
                 shareCount = group.memberCount,
-                secret = groupSecret,
+                secret = groupSecrets[groupIndex],
                 randomGenerator = randomGenerator,
             )
         }.map { Secret(it) }
 
-        val memberSskrShares = memberSecrets.mapIndexed { memberIndex, memberSecret ->
+        memberSecrets.mapIndexed { memberIndex, memberSecret ->
             SskrShare(
                 identifier = identifier,
                 groupIndex = groupIndex,
@@ -170,11 +181,7 @@ private fun generateShares(
                 value = memberSecret,
             )
         }
-
-        groupsShares.add(memberSskrShares)
     }
-
-    return groupsShares
 }
 
 private class Group(
@@ -195,7 +202,6 @@ private fun combineShares(shares: List<SskrShare>): Secret {
     var groupCount = 0
     var secretLength = 0
 
-    var nextGroup = 0
     val groups = ArrayList<Group>(16)
 
     for ((index, share) in shares.withIndex()) {
@@ -218,34 +224,28 @@ private fun combineShares(shares: List<SskrShare>): Secret {
         }
 
         // Sort shares into member groups.
-        var groupFound = false
-        for (group in groups) {
-            if (share.groupIndex == group.groupIndex) {
-                groupFound = true
-                if (share.memberThreshold != group.memberThreshold) {
-                    throw SskrException.MemberThresholdInvalid()
-                }
-                if (group.memberIndexes.contains(share.memberIndex)) {
-                    throw SskrException.DuplicateMemberIndex()
-                }
-                if (group.memberIndexes.size < group.memberThreshold) {
-                    group.memberIndexes.add(share.memberIndex)
-                    group.memberShares.add(share.value)
-                }
+        val existingGroup = groups.find { it.groupIndex == share.groupIndex }
+        if (existingGroup != null) {
+            if (share.memberThreshold != existingGroup.memberThreshold) {
+                throw SskrException.MemberThresholdInvalid()
             }
-        }
-
-        if (!groupFound) {
+            if (existingGroup.memberIndexes.contains(share.memberIndex)) {
+                throw SskrException.DuplicateMemberIndex()
+            }
+            if (existingGroup.memberIndexes.size < existingGroup.memberThreshold) {
+                existingGroup.memberIndexes.add(share.memberIndex)
+                existingGroup.memberShares.add(share.value)
+            }
+        } else {
             val group = Group(share.groupIndex, share.memberThreshold)
             group.memberIndexes.add(share.memberIndex)
             group.memberShares.add(share.value)
             groups.add(group)
-            nextGroup += 1
         }
     }
 
     // Check that we have enough groups to recover the master secret.
-    if (nextGroup < groupThreshold) {
+    if (groups.size < groupThreshold) {
         throw SskrException.NotEnoughGroups()
     }
 

@@ -1,13 +1,13 @@
 package com.blockchaincommons.sskr
 
-/** A specification for an SSKR split. */
-class Spec(groupThreshold: Int, groups: List<GroupSpec>) {
-    /** The minimum number of groups required to reconstruct the secret. */
-    val groupThreshold: Int
-
-    /** The list of group specifications. */
-    val groups: List<GroupSpec>
-
+/**
+ * A specification for an SSKR split.
+ *
+ * @property groupThreshold The minimum number of groups required to reconstruct the secret.
+ * @property groups The list of group specifications.
+ * @throws SskrException if the threshold or group count is invalid.
+ */
+data class Spec(val groupThreshold: Int, val groups: List<GroupSpec>) {
     init {
         if (groupThreshold == 0) {
             throw SskrException.GroupThresholdInvalid()
@@ -18,42 +18,24 @@ class Spec(groupThreshold: Int, groups: List<GroupSpec>) {
         if (groups.size > MAX_SHARE_COUNT) {
             throw SskrException.GroupCountInvalid()
         }
-
-        this.groupThreshold = groupThreshold
-        this.groups = groups.toList()
     }
 
-    /** Returns the number of groups. */
+    /** The number of groups. */
     val groupCount: Int
         get() = groups.size
 
-    /** Returns the total number of shares across all groups. */
+    /** The total number of shares across all groups. */
     val shareCount: Int
         get() = groups.sumOf { it.memberCount }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-        if (other !is Spec) {
-            return false
-        }
-        return groupThreshold == other.groupThreshold && groups == other.groups
-    }
-
-    override fun hashCode(): Int = 31 * groupThreshold + groups.hashCode()
-
-    override fun toString(): String = "Spec(groupThreshold=$groupThreshold, groups=$groups)"
 }
 
-/** A specification for a group of shares within an SSKR split. */
-class GroupSpec(memberThreshold: Int = 1, memberCount: Int = 1) {
-    /** The minimum number of member shares required to recover this group. */
-    val memberThreshold: Int
-
-    /** The total number of member shares in this group. */
-    val memberCount: Int
-
+/**
+ * A specification for a group of shares within an SSKR split.
+ *
+ * @property memberThreshold The minimum number of member shares required to recover this group.
+ * @property memberCount The total number of member shares in this group.
+ */
+data class GroupSpec(val memberThreshold: Int = 1, val memberCount: Int = 1) {
     init {
         if (memberCount == 0) {
             throw SskrException.MemberCountInvalid()
@@ -64,13 +46,18 @@ class GroupSpec(memberThreshold: Int = 1, memberCount: Int = 1) {
         if (memberThreshold > memberCount) {
             throw SskrException.MemberThresholdInvalid()
         }
-
-        this.memberThreshold = memberThreshold
-        this.memberCount = memberCount
     }
 
-    /** Parses a group specification from an `M-of-N` string. */
+    override fun toString(): String = "$memberThreshold-of-$memberCount"
+
     companion object {
+        /**
+         * Parses a group specification from an `M-of-N` string (e.g. `"2-of-3"`).
+         *
+         * @param s The string to parse in `M-of-N` format.
+         * @return A [GroupSpec] with the parsed threshold and count.
+         * @throws SskrException.GroupSpecInvalid if the string is not valid `M-of-N` format.
+         */
         fun parse(s: String): GroupSpec {
             val parts = s.split('-')
             if (parts.size != 3) {
@@ -84,18 +71,4 @@ class GroupSpec(memberThreshold: Int = 1, memberCount: Int = 1) {
             return GroupSpec(parsedThreshold, parsedCount)
         }
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-        if (other !is GroupSpec) {
-            return false
-        }
-        return memberThreshold == other.memberThreshold && memberCount == other.memberCount
-    }
-
-    override fun hashCode(): Int = 31 * memberThreshold + memberCount
-
-    override fun toString(): String = "$memberThreshold-of-$memberCount"
 }

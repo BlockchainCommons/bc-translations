@@ -66,3 +66,28 @@ COMPLETED
 COMPLETED
 - Kotlin `sskr` pipeline completed end-to-end.
 - Next eligible Kotlin target is `bc-components` (all Kotlin dependencies are now complete).
+
+## 2026-02-21 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+
+## 2026-02-22 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- 12 issues found, 10 fixed, 2 kept as-is:
+  1. [api] Replaced imperative loop with `map` in `sskrCombine`
+  2. [structure] Removed redundant `nextGroup` counter; used `groups.size` and `find` idiom in `combineShares`
+  3. [naming] Renamed test methods for clarity: `testSplit35` -> `testSplit3of5`, etc.
+  4. [naming] Added `test` prefix to example test methods for naming consistency
+  5. [types] Converted `GroupSpec` to `data class` (auto-generates `equals`/`hashCode`, keeps custom `toString`)
+  6. [docs] Added `@param`/`@return`/`@throws` KDoc tags to all public functions and constructors
+  7. [docs] Separated orphaned package-level doc from first constant doc comment
+  8. [tests] Replaced manual `hex()` helper with stdlib `hexToByteArray()`
+  9. [types] Converted `Spec` to `data class` for consistency with `GroupSpec` (removes manual `equals`/`hashCode`/`toString`)
+  10. [api] Renamed `Secret.data()` to `Secret.toByteArray()` for Kotlin stdlib consistency (`String.toByteArray()` convention)
+  11. [docs] Added `@param`/`@return`/`@throws` KDoc to `GroupSpec.parse()`
+  12. [style] Normalized exception message punctuation (removed trailing period from `GroupSpecInvalid`)
+  - [structure] Refactored `generateShares` from imperative `ArrayList` + loop to functional `mapIndexed`
+  - 2 items reviewed and intentionally kept as-is: `sskr`-prefixed function names (cross-language consistency), `Secret.isEmpty` (API completeness)
+- No downstream Kotlin dependents to repair (`bc-components` not yet translated).
+- All 8 tests pass after fixes (`gradle clean test` -- BUILD SUCCESSFUL).
+- Fluency verdict: IDIOMATIC.
