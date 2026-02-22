@@ -46,3 +46,16 @@ COMPLETED
 - 8 SHOULD FIX: added docstrings, length validation on xor_bytes, overflow check on CBOR unsigned encode, reused type char validation
 - 6 NICE TO HAVE: added __hash__ to UR, improved error messages
 - All 35 tests pass after fixes
+
+## 2026-02-22 — Stage 4: Fluency Critique
+STARTED
+- Running cross-model fluency pass for python/bc-ur with GPT Codex
+- Reviewing target-language code only and validating with pytest
+
+## 2026-02-22 — Stage 4: Fluency Critique
+COMPLETED
+- Cross-model fluency pass completed with behavior-preserving improvements
+- Removed `type: ignore` usage in UR codable helpers by tightening protocol typing
+- Added explicit validation for empty CBOR tag lists and cleaned minor typing/import issues
+- All 35 tests pass (`./.venv/bin/pytest -q`)
+- No translated downstream Python dependents exist for bc-ur, so no fallout repair was required

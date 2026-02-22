@@ -7,10 +7,12 @@ Xoshiro256StarStar, seeded via SHA-256 as done in the `ur` crate.
 from __future__ import annotations
 
 import hashlib
+from typing import TypeVar
 
 from ._crc32 import crc32
 
 _MASK64 = (1 << 64) - 1
+T = TypeVar("T")
 
 
 def _rotl(x: int, k: int) -> int:
@@ -90,10 +92,10 @@ class Xoshiro256:
         """Generate n random bytes."""
         return bytes(self.next_byte() for _ in range(n))
 
-    def shuffled(self, items: list) -> list:
+    def shuffled(self, items: list[T]) -> list[T]:
         """Return a shuffled copy of the list."""
         remaining = list(items)
-        result = []
+        result: list[T] = []
         while remaining:
             index = self.next_int(0, len(remaining) - 1)
             result.append(remaining.pop(index))

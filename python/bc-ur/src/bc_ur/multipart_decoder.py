@@ -10,10 +10,8 @@ from ._ur_encoding import decode_ur
 from .error import (
     InvalidSchemeError,
     InvalidTypeError,
-    TypeUnspecifiedError,
     URCborError,
     URDecoderError,
-    URError,
     UnexpectedTypeError,
 )
 from .ur import UR
