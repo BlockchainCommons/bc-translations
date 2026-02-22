@@ -145,7 +145,7 @@ export const TAG_SET = 258;
 // NOTE: Blockchain Commons envelope and extension tags (TAG_ENVELOPE, TAG_LEAF,
 // TAG_KNOWN_VALUE, TAG_COMPRESSED, etc.) are defined in the @bc/tags
 // package, NOT in dcbor. This package only defines TAG_DATE and standard
-// IANA tags; all envelope-related tags belong to bc-tags.
+// IANA tags; all envelope-related tags belong to @bc/tags.
 // ============================================================================
 
 // ============================================================================
