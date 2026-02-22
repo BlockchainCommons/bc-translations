@@ -32,7 +32,7 @@ The following model markers indicate which AI model was used for each translatio
 | ✅ bc-ur           | 0.19.0  | ✅🎻 BCUR          | ✅🎻 bcur           | ✅🎻 bc-ur          | ✅🎻 bc-ur          | ✅📖 BCUR          | ✅📖 @bc/ur             |
 | 🚧 sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ✅📖 sskr           | ⏳ sskr            | ✅🎻 SSKR          | ⏳ @bc/sskr            |
 | 🚧 bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ✅🎻 bc-components   | ⏳ bc-components   | ✅📖 BCComponents   | ⏳ @bc/components      |
-| ⏳ known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bc/known-values    |
+| 🚧 known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ✅📖 known-values    | ⏳ known-values    | ✅🎻 KnownValues    | ⏳ @bc/known-values    |
 | ⏳ bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bc/envelope        |
 | ⏳ provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bc/provenance-mark |
 

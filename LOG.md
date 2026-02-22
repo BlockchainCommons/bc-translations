@@ -126,3 +126,7 @@ Chronological record of all translation activity in this repository.
 | 2026-02-22 | bc-components | 0.31.1 | Swift | BCComponents | 📖 GPT 5.3 Codex   | Translation |
 | 2026-02-22 | bc-components | 0.31.1 | Kotlin | bc-components | 🎻 Claude Opus 4.6 | Translation |
 | 2026-02-22 | bc-components | 0.31.1 | Kotlin | bc-components | 📖 GPT 5.3 Codex   | Fluency     |
+| 2026-02-22 | bc-components | 0.31.1 | Swift | BCComponents | 🎻 Claude Opus 4.6 | Fluency     |
+| 2026-02-22 | known-values | 0.15.4 | Kotlin | known-values | 📖 GPT 5.3 Codex | Translation |
+| 2026-02-22 | known-values | 0.15.4 | Kotlin | known-values | 📖 GPT 5.3 Codex | Fluency |
+| 2026-02-22 | known-values | 0.15.4 | Swift | KnownValues | 🎻 Claude Opus 4.6 | Translation |
