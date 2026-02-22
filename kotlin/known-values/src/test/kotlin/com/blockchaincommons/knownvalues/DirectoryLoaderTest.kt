@@ -4,6 +4,7 @@ import java.nio.file.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class DirectoryLoaderTest {
@@ -52,7 +53,7 @@ class DirectoryLoaderTest {
         assertEquals("fullEntry", entry.name)
         assertEquals("class", entry.entryType)
         assertEquals("https://example.com/vocab#fullEntry", entry.uri)
-        assertTrue(entry.description != null)
+        assertNotNull(entry.description)
     }
 
     @Test
@@ -92,10 +93,10 @@ class DirectoryLoaderTest {
     @Test
     fun testLoadResultMethods() {
         val result = LoadResult()
-        assertEquals(0, result.valuesCount())
-        assertFalse(result.hasErrors())
+        assertEquals(0, result.valuesCount)
+        assertFalse(result.hasErrors)
 
-        result.values[1uL] = KnownValue.newWithName(1uL, "test")
-        assertEquals(1, result.valuesCount())
+        result.putValue(KnownValue.withName(1uL, "test"))
+        assertEquals(1, result.valuesCount)
     }
 }

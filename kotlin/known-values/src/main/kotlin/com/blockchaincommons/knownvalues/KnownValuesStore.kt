@@ -3,50 +3,36 @@ package com.blockchaincommons.knownvalues
 import java.nio.file.Path
 
 /**
- * A bidirectional store for known values by numeric codepoint and assigned
- * name.
+ * A bidirectional store for known values, indexed by both numeric codepoint
+ * and assigned name.
  */
 class KnownValuesStore(
     knownValues: Iterable<KnownValue> = emptyList(),
 ) {
-    private val knownValuesByRawValue: MutableMap<ULong, KnownValue> =
-        linkedMapOf()
-    private val knownValuesByAssignedName: MutableMap<String, KnownValue> =
-        linkedMapOf()
+    private val byValue: MutableMap<ULong, KnownValue> = linkedMapOf()
+    private val byName: MutableMap<String, KnownValue> = linkedMapOf()
 
     init {
         for (knownValue in knownValues) {
-            insertInternal(
-                knownValue,
-                knownValuesByRawValue,
-                knownValuesByAssignedName,
-            )
+            insertValue(knownValue)
         }
     }
 
     /** Inserts or replaces a known value by codepoint and name. */
     fun insert(knownValue: KnownValue) {
-        insertInternal(
-            knownValue,
-            knownValuesByRawValue,
-            knownValuesByAssignedName,
-        )
+        insertValue(knownValue)
     }
 
     /** Returns the store-assigned name for a known value, if present. */
-    fun assignedName(knownValue: KnownValue): String? {
-        return knownValuesByRawValue[knownValue.value()]?.assignedName()
-    }
+    fun assignedName(knownValue: KnownValue): String? =
+        byValue[knownValue.value]?.assignedName
 
-    /** Returns the store-assigned name or falls back to value.name(). */
-    fun name(knownValue: KnownValue): String {
-        return assignedName(knownValue) ?: knownValue.name()
-    }
+    /** Returns the store-assigned name or falls back to the value's own name. */
+    fun name(knownValue: KnownValue): String =
+        assignedName(knownValue) ?: knownValue.name
 
     /** Looks up a known value by assigned name. */
-    fun knownValueNamed(assignedName: String): KnownValue? {
-        return knownValuesByAssignedName[assignedName]
-    }
+    fun knownValueNamed(assignedName: String): KnownValue? = byName[assignedName]
 
     /**
      * Loads known values from JSON registry files in a directory.
@@ -57,11 +43,10 @@ class KnownValuesStore(
     @Throws(LoadError::class)
     fun loadFromDirectory(path: Path): Int {
         val values = com.blockchaincommons.knownvalues.loadFromDirectory(path)
-        val count = values.size
         for (value in values) {
             insert(value)
         }
-        return count
+        return values.size
     }
 
     /**
@@ -70,25 +55,34 @@ class KnownValuesStore(
      */
     fun loadFromConfig(config: DirectoryConfig): LoadResult {
         val result = com.blockchaincommons.knownvalues.loadFromConfig(config)
-        for (value in result.values.values) {
+        for (value in result.values()) {
             insert(value)
         }
         return result
     }
 
-    companion object {
-        /** Static-style constructor equivalent to Rust `KnownValuesStore::new`. */
-        fun new(knownValues: Iterable<KnownValue>): KnownValuesStore {
-            return KnownValuesStore(knownValues)
+    private fun insertValue(knownValue: KnownValue) {
+        val oldValue = byValue[knownValue.value]
+        val oldName = oldValue?.assignedName
+        if (oldName != null) {
+            byName.remove(oldName)
         }
 
+        byValue[knownValue.value] = knownValue
+        val newName = knownValue.assignedName
+        if (newName != null) {
+            byName[newName] = knownValue
+        }
+    }
+
+    companion object {
         /** Returns a known value from store lookup, or a raw fallback value. */
         fun knownValueForRawValue(
             rawValue: ULong,
             knownValues: KnownValuesStore?,
         ): KnownValue {
-            return knownValues?.knownValuesByRawValue?.get(rawValue)
-                ?: KnownValue.new(rawValue)
+            return knownValues?.byValue?.get(rawValue)
+                ?: KnownValue(rawValue)
         }
 
         /** Returns a known value by name, if found in the optional store. */
@@ -104,25 +98,7 @@ class KnownValuesStore(
             knownValue: KnownValue,
             knownValues: KnownValuesStore?,
         ): String {
-            return knownValues?.assignedName(knownValue) ?: knownValue.name()
-        }
-
-        private fun insertInternal(
-            knownValue: KnownValue,
-            byRawValue: MutableMap<ULong, KnownValue>,
-            byAssignedName: MutableMap<String, KnownValue>,
-        ) {
-            val oldValue = byRawValue[knownValue.value()]
-            val oldName = oldValue?.assignedName()
-            if (oldName != null) {
-                byAssignedName.remove(oldName)
-            }
-
-            byRawValue[knownValue.value()] = knownValue
-            val newName = knownValue.assignedName()
-            if (newName != null) {
-                byAssignedName[newName] = knownValue
-            }
+            return knownValues?.assignedName(knownValue) ?: knownValue.name
         }
     }
 }

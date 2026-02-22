@@ -13,10 +13,10 @@ import kotlin.test.assertTrue
 class DirectoryLoadingIntegrationTest {
     @Test
     fun testGlobalRegistryStillWorks() {
-        val store = KNOWN_VALUES.get()
+        val store = KNOWN_VALUES
         val isA = store.knownValueNamed("isA")
         assertNotNull(isA)
-        assertEquals(1uL, isA.value())
+        assertEquals(1uL, isA.value)
     }
 
     @Test
@@ -37,7 +37,7 @@ class DirectoryLoadingIntegrationTest {
 
             val loaded = store.knownValueNamed("integrationTestValue")
             assertNotNull(loaded)
-            assertEquals(99999uL, loaded.value())
+            assertEquals(99999uL, loaded.value)
 
             assertNotNull(store.knownValueNamed("isA"))
             assertNotNull(store.knownValueNamed("note"))
@@ -62,7 +62,7 @@ class DirectoryLoadingIntegrationTest {
             assertNull(store.knownValueNamed("isA"))
             val overridden = store.knownValueNamed("overriddenIsA")
             assertNotNull(overridden)
-            assertEquals(1uL, overridden.value())
+            assertEquals(1uL, overridden.value)
         }
     }
 
@@ -100,7 +100,7 @@ class DirectoryLoadingIntegrationTest {
             val store = KnownValuesStore()
             val result = store.loadFromConfig(config)
 
-            assertEquals(2, result.valuesCount())
+            assertEquals(2, result.valuesCount)
             assertNotNull(store.knownValueNamed("fromDirOne"))
             assertNotNull(store.knownValueNamed("fromDirTwo"))
         }
@@ -124,7 +124,7 @@ class DirectoryLoadingIntegrationTest {
 
             val value = store.knownValueNamed("secondVersion")
             assertNotNull(value)
-            assertEquals(30000uL, value.value())
+            assertEquals(30000uL, value.value)
             assertNull(store.knownValueNamed("firstVersion"))
         }
     }
@@ -161,8 +161,8 @@ class DirectoryLoadingIntegrationTest {
             val config = DirectoryConfig.withPaths(listOf(tempDir))
             val result = loadFromConfig(config)
 
-            assertTrue(result.values.containsKey(40001uL))
-            assertTrue(result.hasErrors())
+            assertTrue(result.containsValue(40001uL))
+            assertTrue(result.hasErrors)
         }
     }
 
@@ -224,11 +224,11 @@ class DirectoryLoadingIntegrationTest {
             val config = DirectoryConfig.withPaths(listOf(tempDir))
             val result = loadFromConfig(config)
 
-            assertEquals(2, result.valuesCount())
-            assertTrue(!result.hasErrors())
+            assertEquals(2, result.valuesCount)
+            assertTrue(!result.hasErrors)
             assertEquals(1, result.filesProcessed.size)
 
-            val values = result.valuesIter().toList()
+            val values = result.values().toList()
             assertEquals(2, values.size)
         }
     }

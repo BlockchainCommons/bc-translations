@@ -86,3 +86,30 @@ COMPLETED
 COMPLETED
 - Kotlin `known-values` pipeline completed end-to-end.
 - Next eligible Kotlin target: `bc-envelope` (all required Kotlin dependencies are now complete).
+
+## 2026-02-22 — Stage 4: Cross-Model Fluency Review
+STARTED
+- Cross-model fluency pass by Claude Opus 4.6 (original translation by GPT 5.3 Codex).
+- Reviewing Kotlin idiomaticness across all source and test files.
+
+## 2026-02-22 — Stage 4: Cross-Model Fluency Review
+COMPLETED
+- 13 findings identified and applied:
+  - [api] Replaced Rust-style `KnownValue.new(value)` / `newWithName()` / `newWithStaticName()` with idiomatic `KnownValue(value)` (operator invoke) and `KnownValue.withName()`.
+  - [api] Removed Rust-leaking `fromULong()`, `fromInt()`, `fromUSize()` factories with Rust type names in docs.
+  - [api] Converted `KnownValue` getter methods (`value()`, `assignedName()`, `name()`) to Kotlin properties.
+  - [api] Replaced custom `LazyKnownValues` class with Kotlin's `lazy(LazyThreadSafetyMode.SYNCHRONIZED)`.
+  - [api] Removed `KnownValuesStore.new()` factory (just use the constructor).
+  - [api] Encapsulated `LoadResult` mutable fields behind read-only public properties.
+  - [api] Converted `LoadResult.valuesCount()` / `hasErrors()` from methods to properties.
+  - [api] Renamed `DirectoryConfig.new()` to `DirectoryConfig.empty()`.
+  - [api] Renamed `DirectoryConfig.copyConfig()` to `copy()`.
+  - [structure] Removed `constKnownValue()` indirection function; registry constants call `KnownValue.withName()` directly.
+  - [structure] Moved `insertInternal` from companion object to private instance method `insertValue`.
+  - [test] Renamed `test1()` to descriptive `testKnownValueLookupByName()`.
+  - [doc] Removed Rust-referencing doc comments ("`const fn`", "`From<u64>`", "`From<usize>`").
+- Updated `KnownValuesStore.loadFromConfig` to use new `result.values()` method.
+- Updated all tests to use property access instead of method calls.
+- Re-ran `gradle test --console=plain`; all 22 tests pass.
+- No downstream Kotlin dependents to repair (bc-envelope and provenance-mark not yet translated).
+- Fluency verdict: IDIOMATIC.

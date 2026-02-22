@@ -58,19 +58,48 @@ sealed class LoadError(message: String, cause: Throwable? = null) :
         )
 }
 
-/** Result of tolerant directory-loading operation. */
-class LoadResult(
-    val values: MutableMap<ULong, KnownValue> = linkedMapOf(),
-    val filesProcessed: MutableList<Path> = mutableListOf(),
-    val errors: MutableList<Pair<Path, LoadError>> = mutableListOf(),
+/** Result of a tolerant directory-loading operation. */
+class LoadResult internal constructor(
+    private val valuesByCodepoint: MutableMap<ULong, KnownValue> = linkedMapOf(),
+    private val processedFiles: MutableList<Path> = mutableListOf(),
+    private val loadErrors: MutableList<Pair<Path, LoadError>> = mutableListOf(),
 ) {
-    fun valuesCount(): Int = values.size
+    /** Number of distinct known values loaded. */
+    val valuesCount: Int get() = valuesByCodepoint.size
 
-    fun valuesIter(): Iterable<KnownValue> = values.values
+    /** The loaded known values. */
+    fun values(): Collection<KnownValue> = valuesByCodepoint.values
 
-    fun intoValues(): Iterable<KnownValue> = values.values.toList()
+    /** Returns a snapshot list of the loaded known values. */
+    fun intoValues(): List<KnownValue> = valuesByCodepoint.values.toList()
 
-    fun hasErrors(): Boolean = errors.isNotEmpty()
+    /** Whether any load errors occurred. */
+    val hasErrors: Boolean get() = loadErrors.isNotEmpty()
+
+    /** Paths of directories that were processed. */
+    val filesProcessed: List<Path> get() = processedFiles.toList()
+
+    /** Errors that occurred during loading, paired with their source paths. */
+    val errors: List<Pair<Path, LoadError>> get() = loadErrors.toList()
+
+    internal fun putValue(knownValue: KnownValue) {
+        valuesByCodepoint[knownValue.value] = knownValue
+    }
+
+    internal fun addProcessedFile(path: Path) {
+        processedFiles.add(path)
+    }
+
+    internal fun addError(path: Path, error: LoadError) {
+        loadErrors.add(path to error)
+    }
+
+    internal fun addAllErrors(errors: List<Pair<Path, LoadError>>) {
+        loadErrors.addAll(errors)
+    }
+
+    internal fun containsValue(codepoint: ULong): Boolean =
+        valuesByCodepoint.containsKey(codepoint)
 }
 
 /** Configuration for searching directories that contain registry JSON files. */
@@ -79,7 +108,7 @@ class DirectoryConfig private constructor(
 ) {
     companion object {
         /** Creates an empty configuration. */
-        fun new(): DirectoryConfig = DirectoryConfig(mutableListOf())
+        fun empty(): DirectoryConfig = DirectoryConfig(mutableListOf())
 
         /** Creates a configuration containing only the default directory. */
         fun defaultOnly(): DirectoryConfig =
@@ -112,7 +141,7 @@ class DirectoryConfig private constructor(
         configuredPaths.add(path)
     }
 
-    internal fun copyConfig(): DirectoryConfig =
+    internal fun copy(): DirectoryConfig =
         DirectoryConfig(configuredPaths.toMutableList())
 }
 
@@ -149,7 +178,7 @@ fun loadFromDirectory(path: Path): List<KnownValue> {
                     }
                     for (registryEntry in registry.entries) {
                         values.add(
-                            KnownValue.newWithName(
+                            KnownValue.withName(
                                 registryEntry.codepoint,
                                 registryEntry.name,
                             ),
@@ -178,14 +207,14 @@ fun loadFromConfig(config: DirectoryConfig): LoadResult {
         try {
             val (values, errors) = loadFromDirectoryTolerant(dirPath)
             for (value in values) {
-                result.values[value.value()] = value
+                result.putValue(value)
             }
             if (errors.isNotEmpty()) {
-                result.errors.addAll(errors)
+                result.addAllErrors(errors)
             }
-            result.filesProcessed.add(dirPath)
+            result.addProcessedFile(dirPath)
         } catch (error: LoadError) {
-            result.errors.add(dirPath to error)
+            result.addError(dirPath, error)
         }
     }
 
@@ -199,7 +228,7 @@ fun setDirectoryConfig(config: DirectoryConfig) {
         throw ConfigError.AlreadyInitialized()
     }
     synchronized(customConfigLock) {
-        customConfig = config.copyConfig()
+        customConfig = config.copy()
     }
 }
 
@@ -226,7 +255,7 @@ fun addSearchPaths(paths: List<Path>) {
 internal fun getAndLockConfig(): DirectoryConfig {
     configLocked.set(true)
     synchronized(customConfigLock) {
-        val config = customConfig?.copyConfig()
+        val config = customConfig?.copy()
         customConfig = null
         return config ?: DirectoryConfig.defaultOnly()
     }
@@ -275,7 +304,7 @@ private fun loadSingleFile(path: Path): List<KnownValue> {
     }
 
     return registry.entries.map { entry ->
-        KnownValue.newWithName(entry.codepoint, entry.name)
+        KnownValue.withName(entry.codepoint, entry.name)
     }
 }
 
