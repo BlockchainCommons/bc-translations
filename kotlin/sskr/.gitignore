@@ -1,0 +1,10 @@
+.gradle/
+build/
+!.gitignore
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+
+# OS artifacts
+.DS_Store

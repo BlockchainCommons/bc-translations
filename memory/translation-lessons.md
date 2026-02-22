@@ -18,3 +18,5 @@
 - For macro-heavy Rust crates (for example large `const_*` registries), generate translated constant tables from source declarations and verify counts against the registration list before finalizing completeness.
 - For Python packages layered on `dcbor`, initialize the global tags store with `with_tags(lambda _: None)` before calling `with_tags_mut(...)`; otherwise first-use registration can deadlock on the current non-reentrant lock path.
 - For Swift targets, always run both `swift test` and `swift test -Xswiftc -warnings-as-errors` before completion; strict builds catch symbol ambiguities and API-surface warnings that normal test runs can miss.
+- For UR/fountain translations, validate completion-index vectors against Rust before accepting third-party UR libraries; if vectors diverge, translate the fountain internals (xoshiro + weighted sampler + part reduction) directly from Rust to preserve cross-language determinism.
+- For translations that include crate-specific fake RNG implementations in Rust tests, reproduce that exact local fake RNG behavior in the target test suite instead of substituting a shared fake RNG utility from dependencies.
