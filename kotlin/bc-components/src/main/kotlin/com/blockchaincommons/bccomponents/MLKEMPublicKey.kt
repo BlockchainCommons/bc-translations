@@ -68,7 +68,7 @@ sealed class MLKEMPublicKey :
         tagsForValues(listOf(TAG_MLKEM_PUBLIC_KEY))
 
     override fun untaggedCbor(): Cbor =
-        Cbor.fromArray(listOf(Cbor.fromInt(level.level), Cbor.fromByteString(data())))
+        Cbor.fromArray(listOf(Cbor.fromInt(level.cborValue), Cbor.fromByteString(data())))
 
     // -- toString --
 

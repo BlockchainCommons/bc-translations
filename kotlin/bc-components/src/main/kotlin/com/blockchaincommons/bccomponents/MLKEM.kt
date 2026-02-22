@@ -21,10 +21,10 @@ import java.security.SecureRandom
  * - [MLKEM768]: NIST security level 3 (roughly equivalent to AES-192)
  * - [MLKEM1024]: NIST security level 5 (roughly equivalent to AES-256)
  *
- * The numeric [level] values (512, 768, 1024) correspond to the parameter
+ * The numeric [cborValue] values (512, 768, 1024) correspond to the parameter
  * sets and are used in CBOR serialization.
  */
-enum class MLKEM(val level: Int) {
+enum class MLKEM(val cborValue: Int) {
     /** ML-KEM-512 (NIST security level 1, roughly equivalent to AES-128). */
     MLKEM512(512),
 
@@ -97,7 +97,7 @@ enum class MLKEM(val level: Int) {
          *   ML-KEM level
          */
         fun fromCborValue(value: Int): MLKEM =
-            entries.find { it.level == value }
+            entries.find { it.cborValue == value }
                 ?: throw BcComponentsException.postQuantum(
                     "Invalid MLKEM level: $value"
                 )

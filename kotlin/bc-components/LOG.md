@@ -67,3 +67,14 @@ COMPLETED
 - AGENTS.md updated: 🚧🎻 → ✅🎻
 - Root LOG.md updated
 - FLUENCY_NEEDED.md refreshed
+
+## 2026-02-22 — Stage 4: Fluency Review (Cross-Model)
+STARTED
+- Running GPT Codex fluency pass on existing Kotlin translation
+
+## 2026-02-22 — Stage 4: Fluency Review (Cross-Model)
+COMPLETED
+- 1 finding identified and fixed
+- Renamed `MLKEM.level` enum property to `MLKEM.cborValue` to remove ambiguous `level.level` call sites in CBOR serialization code
+- Re-ran Kotlin test suite: 131 tests passing
+- Verdict: IDIOMATIC
