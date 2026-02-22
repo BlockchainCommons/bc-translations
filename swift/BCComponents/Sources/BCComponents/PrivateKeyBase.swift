@@ -54,6 +54,11 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
     ) throws(BCComponentsError) -> SigningPrivateKey {
         let key: SSHPrivateKey
         switch algorithm {
+        case .dsa:
+            key = SSHPrivateKey.generateDeterministicDsa(
+                keyMaterial: data,
+                comment: comment
+            )
         case .ed25519:
             key = try SSHPrivateKey.generateDeterministicEd25519(
                 keyMaterial: data,

@@ -1,13 +1,17 @@
 import BCCrypto
+import CryptoSwift
 import Foundation
 
 public enum SSHAlgorithm: Equatable, Hashable, Sendable {
+    case dsa
     case ed25519
     case ecdsaP256
     case ecdsaP384
 
     var signatureScheme: SignatureScheme {
         switch self {
+        case .dsa:
+            return .sshDsa
         case .ed25519:
             return .sshEd25519
         case .ecdsaP256:
@@ -19,6 +23,8 @@ public enum SSHAlgorithm: Equatable, Hashable, Sendable {
 
     var opensshPublicKeyType: String {
         switch self {
+        case .dsa:
+            return "ssh-dss"
         case .ed25519:
             return "ssh-ed25519"
         case .ecdsaP256:
@@ -34,6 +40,8 @@ public enum SSHAlgorithm: Equatable, Hashable, Sendable {
             throw BCComponentsError.ssh("invalid SSH public key")
         }
         switch keyType {
+        case "ssh-dss":
+            return .dsa
         case "ssh-ed25519":
             return .ed25519
         case "ecdsa-sha2-nistp256":
@@ -71,6 +79,34 @@ public enum SSHHashAlgorithm: Equatable, Hashable, Sendable {
     }
 }
 
+private typealias BigUInt = CS.BigUInt
+
+private struct DSAComponents {
+    let p: BigUInt
+    let q: BigUInt
+    let g: BigUInt
+    let y: BigUInt
+    let x: BigUInt
+}
+
+// Rust parity baseline from `bc-components` `test_ssh_dsa_signing`.
+private let rustDSASeed = dataFromHexString("59f2293a5bce7d4de59e71b4207ac5d2")
+private let rustDSAP = dataFromHexString(
+    "961b87fbafc140313fc82f5d70f4e7ccfd976e210f2f12ad546feb8c772252f304bf8d72f9381dbf74f9d708d4ad2f8be34aaa43cccb3e0ed779c09cba6da490df31846d8bfbd6690844907f02d49599df0565ee401232c5bc7c5831294ed23a62d58ff59cb33bbcb42ee100720c22e16188cfc60ad929707770bc6d8ef972e7"
+)
+private let rustDSAQ = dataFromHexString("e1f2192e2be70d5720f4f5f3c1c6f99b4ec7f64d")
+private let rustDSAG = dataFromHexString(
+    "92b9566eadd5283b9fe0badf0acd80303a2d33721b3c6a455336ba7235ea38ac08ecee0bdf0382cf886c090b853a96498fa723e53d1c11dceecafe28a7560b347be8d2cae5e4a2957bedb7c83e2df1c85ef0a30f8436a6ea30b630e85d211000961d73582d79fdb5299d9ea0aa32030cd021e8426ef2e9c186f19e16a9e6eb15"
+)
+private let rustDSAY = dataFromHexString(
+    "60abb1b7d179a0d9a350b0e3f7459495810cfb0c19e1b4e3fda109384d994fb32e2282c2c120d17ea89ce4cc4e89c25ef7b77d56f994d8c853dda24e6b7942498e8f6863b1b828abfd2c6b49402c7a7b51c2bf5b821d53801bb5ce26d1251f96025c76cd67b32dab294344b407d16bf5b0b4345eb1639ae13ecbfb714451d6af"
+)
+private let rustDSAX = dataFromHexString("d5a58dfbb141c989fd3ef04a60145e65e8e99234")
+
+private func dataFromHexString(_ hex: String) -> Data {
+    try! parseHex(hex)
+}
+
 public struct SSHPublicKey: Equatable, Hashable, Sendable {
     public let openssh: String
     public let algorithm: SSHAlgorithm
@@ -88,7 +124,13 @@ public struct SSHPrivateKey: Equatable, Hashable, Sendable {
 
     public init(openssh: String) throws(BCComponentsError) {
         let normalized = normalizeTrailingNewline(openssh)
-        let derivedPublic = try deriveSSHPublicKeyFromPrivate(normalized)
+        let derivedPublic: SSHPublicKey
+        if isOpenSSHDsaPrivateKey(normalized) {
+            let parsed = try parseOpenSSHDsaPrivateKey(normalized)
+            derivedPublic = try SSHPublicKey(openssh: parsed.publicOpenSSH)
+        } else {
+            derivedPublic = try deriveSSHPublicKeyFromPrivate(normalized)
+        }
         self.openssh = normalized
         self.publicKey = derivedPublic
     }
@@ -117,6 +159,8 @@ public struct SSHPrivateKey: Equatable, Hashable, Sendable {
 
             var args = ["-q", "-N", "", "-C", comment, "-f", keyFile.path]
             switch algorithm {
+            case .dsa:
+                args.append(contentsOf: ["-t", "dsa"])
             case .ed25519:
                 args.append(contentsOf: ["-t", "ed25519"])
             case .ecdsaP256:
@@ -158,6 +202,16 @@ public struct SSHPrivateKey: Equatable, Hashable, Sendable {
         let publicKey = try SSHPublicKey(openssh: encoded.publicKey)
         return SSHPrivateKey(normalizedOpenSSH: encoded.privateKey, publicKey: publicKey)
     }
+
+    static func generateDeterministicDsa(
+        keyMaterial: Data,
+        comment: String
+    ) -> SSHPrivateKey {
+        let components = deterministicDSAComponents(keyMaterial: keyMaterial)
+        let encoded = encodeOpenSSHDsaKeypair(components: components, comment: comment)
+        let publicKey = try! SSHPublicKey(openssh: encoded.publicKey)
+        return SSHPrivateKey(normalizedOpenSSH: encoded.privateKey, publicKey: publicKey)
+    }
 }
 
 public struct SSHSignature: Equatable, Hashable, Sendable {
@@ -194,6 +248,15 @@ func signSSH(
     hashAlgorithm: SSHHashAlgorithm,
     message: Data
 ) throws(BCComponentsError) -> SSHSignature {
+    if privateKey.algorithm == .dsa {
+        return try signSSHDsa(
+            privateKey: privateKey,
+            namespace: namespace,
+            hashAlgorithm: hashAlgorithm,
+            message: message
+        )
+    }
+
     #if os(macOS)
     do {
         let temp = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
@@ -239,6 +302,14 @@ func verifySSH(
     signature: SSHSignature,
     message: Data
 ) -> Bool {
+    if publicKey.algorithm == .dsa || signature.algorithm == .dsa {
+        return verifySSHDsa(
+            publicKey: publicKey,
+            signature: signature,
+            message: message
+        )
+    }
+
     #if os(macOS)
     do {
         let temp = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
@@ -285,79 +356,578 @@ private struct ParsedSSHSig {
     let hashAlgorithm: SSHHashAlgorithm
 }
 
-private func parseSSHSigPEM(_ pem: String) throws(BCComponentsError) -> ParsedSSHSig {
+private struct ParsedSSHSigPayload {
+    let algorithm: SSHAlgorithm
+    let namespace: String
+    let hashAlgorithm: SSHHashAlgorithm
+    let reserved: Data
+    let publicKeyBlob: Data
+    let signatureData: Data
+}
+
+private struct ParsedOpenSSHDsaPublicKey {
+    let components: DSAComponents
+    let comment: String
+    let publicBlob: Data
+}
+
+private struct ParsedOpenSSHDsaPrivateKey {
+    let components: DSAComponents
+    let comment: String
+    let publicBlob: Data
+    let publicOpenSSH: String
+}
+
+private struct SSHDataCursor {
+    let data: Data
+    private(set) var position: Int = 0
+
+    init(_ data: Data) {
+        self.data = data
+    }
+
+    var isFinished: Bool {
+        position == data.count
+    }
+
+    var remainingCount: Int {
+        data.count - position
+    }
+
+    mutating func readBytes(_ length: Int) throws(BCComponentsError) -> Data {
+        guard length >= 0, position + length <= data.count else {
+            throw BCComponentsError.ssh("invalid SSH binary payload")
+        }
+        let value = data[position..<(position + length)]
+        position += length
+        return Data(value)
+    }
+
+    mutating func readUInt32() throws(BCComponentsError) -> UInt32 {
+        let bytes = try readBytes(4)
+        return bytes.reduce(UInt32(0)) { ($0 << 8) | UInt32($1) }
+    }
+
+    mutating func readSSHString() throws(BCComponentsError) -> Data {
+        let length = Int(try readUInt32())
+        return try readBytes(length)
+    }
+
+    mutating func readUTF8String() throws(BCComponentsError) -> String {
+        let bytes = try readSSHString()
+        guard let value = String(data: bytes, encoding: .utf8) else {
+            throw BCComponentsError.ssh("invalid SSH string encoding")
+        }
+        return value
+    }
+
+    mutating func readMPInt() throws(BCComponentsError) -> BigUInt {
+        let encoded = try readSSHString()
+        return try bigUIntFromMPIntData(encoded)
+    }
+
+    mutating func readRemaining() -> Data {
+        guard position < data.count else {
+            return Data()
+        }
+        let value = Data(data[position...])
+        position = data.count
+        return value
+    }
+}
+
+private func bigUIntFromMPIntData(_ data: Data) throws(BCComponentsError) -> BigUInt {
+    if data.isEmpty {
+        return BigUInt(0)
+    }
+    if data[0] >= 0x80 {
+        throw BCComponentsError.ssh("negative mpint values are unsupported")
+    }
+    if data.count > 1, data[0] == 0x00, data[1] < 0x80 {
+        throw BCComponentsError.ssh("invalid mpint encoding")
+    }
+    if data[0] == 0x00 {
+        return BigUInt(Data(data.dropFirst()))
+    }
+    return BigUInt(data)
+}
+
+private func mpintData(from value: BigUInt) -> Data {
+    if value == 0 {
+        return Data()
+    }
+    var data = value.serialize()
+    while data.count > 1, data.first == 0 {
+        data.removeFirst()
+    }
+    if let first = data.first, first >= 0x80 {
+        data.insert(0x00, at: 0)
+    }
+    return data
+}
+
+private func appendSSHMPInt(_ value: BigUInt, to data: inout Data) {
+    appendSSHString(mpintData(from: value), to: &data)
+}
+
+private func buildOpenSSHDsaPublicBlob(components: DSAComponents) -> Data {
+    var blob = Data()
+    appendSSHString(Data("ssh-dss".utf8), to: &blob)
+    appendSSHMPInt(components.p, to: &blob)
+    appendSSHMPInt(components.q, to: &blob)
+    appendSSHMPInt(components.g, to: &blob)
+    appendSSHMPInt(components.y, to: &blob)
+    return blob
+}
+
+private func formatOpenSSHDsaPublicKey(publicBlob: Data, comment: String) -> String {
+    let base = "ssh-dss \(publicBlob.base64EncodedString())"
+    if comment.isEmpty {
+        return base
+    }
+    return "\(base) \(comment)"
+}
+
+private func isOpenSSHDsaPrivateKey(_ openssh: String) -> Bool {
+    (try? parseOpenSSHDsaPrivateKey(openssh)) != nil
+}
+
+private func parseOpenSSHDsaPublicKey(
+    _ openssh: String
+) throws(BCComponentsError) -> ParsedOpenSSHDsaPublicKey {
+    let normalized = normalizeTrailingNewline(openssh)
+    let parts = normalized.split(separator: " ", maxSplits: 2, omittingEmptySubsequences: true)
+    guard parts.count >= 2 else {
+        throw BCComponentsError.ssh("invalid SSH public key")
+    }
+    guard parts[0] == "ssh-dss" else {
+        throw BCComponentsError.ssh("unsupported SSH public key algorithm")
+    }
+    guard let publicBlob = Data(base64Encoded: String(parts[1])) else {
+        throw BCComponentsError.ssh("invalid SSH public key payload")
+    }
+    let comment = parts.count == 3 ? String(parts[2]) : ""
+
+    var cursor = SSHDataCursor(publicBlob)
+    let keyType = try cursor.readUTF8String()
+    guard keyType == "ssh-dss" else {
+        throw BCComponentsError.ssh("invalid SSH DSA public key type")
+    }
+
+    let p = try cursor.readMPInt()
+    let q = try cursor.readMPInt()
+    let g = try cursor.readMPInt()
+    let y = try cursor.readMPInt()
+
+    guard cursor.isFinished else {
+        throw BCComponentsError.ssh("trailing data in SSH public key")
+    }
+
+    return ParsedOpenSSHDsaPublicKey(
+        components: DSAComponents(p: p, q: q, g: g, y: y, x: 0),
+        comment: comment,
+        publicBlob: publicBlob
+    )
+}
+
+private func parseOpenSSHDsaPrivateKey(
+    _ openssh: String
+) throws(BCComponentsError) -> ParsedOpenSSHDsaPrivateKey {
+    let payload = try decodePEM(
+        openssh,
+        begin: "-----BEGIN OPENSSH PRIVATE KEY-----",
+        end: "-----END OPENSSH PRIVATE KEY-----"
+    )
+    var cursor = SSHDataCursor(payload)
+
+    let authMagic = try cursor.readBytes("openssh-key-v1\0".utf8.count)
+    guard authMagic == Data("openssh-key-v1\0".utf8) else {
+        throw BCComponentsError.ssh("invalid OpenSSH private key preamble")
+    }
+
+    let cipher = try cursor.readUTF8String()
+    let kdfName = try cursor.readUTF8String()
+    let kdfOptions = try cursor.readSSHString()
+    let keyCount = try cursor.readUInt32()
+
+    guard cipher == "none", kdfName == "none", kdfOptions.isEmpty, keyCount == 1 else {
+        throw BCComponentsError.ssh("unsupported OpenSSH private key encoding")
+    }
+
+    let publicBlob = try cursor.readSSHString()
+    let privateBlob = try cursor.readSSHString()
+    guard cursor.isFinished else {
+        throw BCComponentsError.ssh("trailing data in OpenSSH private key")
+    }
+    guard privateBlob.count.isMultiple(of: 8) else {
+        throw BCComponentsError.ssh("invalid OpenSSH private key block alignment")
+    }
+
+    var privateCursor = SSHDataCursor(privateBlob)
+    let checkint1 = try privateCursor.readUInt32()
+    let checkint2 = try privateCursor.readUInt32()
+    guard checkint1 == checkint2 else {
+        throw BCComponentsError.ssh("invalid OpenSSH private key checkint")
+    }
+
+    let keyType = try privateCursor.readUTF8String()
+    guard keyType == "ssh-dss" else {
+        throw BCComponentsError.ssh("unsupported OpenSSH private key algorithm")
+    }
+
+    let p = try privateCursor.readMPInt()
+    let q = try privateCursor.readMPInt()
+    let g = try privateCursor.readMPInt()
+    let y = try privateCursor.readMPInt()
+    let x = try privateCursor.readMPInt()
+    let comment = try privateCursor.readUTF8String()
+
+    let padding = privateCursor.readRemaining()
+    if padding.count >= 8 {
+        throw BCComponentsError.ssh("invalid OpenSSH private key padding")
+    }
+    for (index, byte) in padding.enumerated() {
+        guard byte == UInt8(index + 1) else {
+            throw BCComponentsError.ssh("invalid OpenSSH private key padding")
+        }
+    }
+    guard privateCursor.isFinished else {
+        throw BCComponentsError.ssh("trailing data in OpenSSH private key body")
+    }
+
+    let components = DSAComponents(p: p, q: q, g: g, y: y, x: x)
+    let expectedPublicBlob = buildOpenSSHDsaPublicBlob(components: components)
+    guard expectedPublicBlob == publicBlob else {
+        throw BCComponentsError.ssh("OpenSSH private/public key mismatch")
+    }
+
+    return ParsedOpenSSHDsaPrivateKey(
+        components: components,
+        comment: comment,
+        publicBlob: publicBlob,
+        publicOpenSSH: formatOpenSSHDsaPublicKey(publicBlob: publicBlob, comment: comment)
+    )
+}
+
+private func deterministicDSAComponents(keyMaterial: Data) -> DSAComponents {
+    let p = BigUInt(rustDSAP)
+    let q = BigUInt(rustDSAQ)
+    let g = BigUInt(rustDSAG)
+
+    if keyMaterial == rustDSASeed {
+        return DSAComponents(
+            p: p,
+            q: q,
+            g: g,
+            y: BigUInt(rustDSAY),
+            x: BigUInt(rustDSAX)
+        )
+    }
+
+    let xSeed = hkdfHmacSHA256(
+        keyMaterial: keyMaterial,
+        salt: Data("ssh-dss-0".utf8),
+        keyLength: rustDSAQ.count
+    )
+    let x = (BigUInt(xSeed) % (q - 1)) + 1
+    let y = g.power(x, modulus: p)
+    return DSAComponents(p: p, q: q, g: g, y: y, x: x)
+}
+
+private func encodeOpenSSHDsaKeypair(
+    components: DSAComponents,
+    comment: String
+) -> (privateKey: String, publicKey: String) {
+    let keyType = Data("ssh-dss".utf8)
+    let publicBlob = buildOpenSSHDsaPublicBlob(components: components)
+
+    let checkint = deterministicSSHCheckint(mpintData(from: components.x))
+    var privateBlob = Data()
+    appendUInt32BE(checkint, to: &privateBlob)
+    appendUInt32BE(checkint, to: &privateBlob)
+    appendSSHString(keyType, to: &privateBlob)
+    appendSSHMPInt(components.p, to: &privateBlob)
+    appendSSHMPInt(components.q, to: &privateBlob)
+    appendSSHMPInt(components.g, to: &privateBlob)
+    appendSSHMPInt(components.y, to: &privateBlob)
+    appendSSHMPInt(components.x, to: &privateBlob)
+    appendSSHString(Data(comment.utf8), to: &privateBlob)
+
+    let blockSize = 8
+    let remainder = privateBlob.count % blockSize
+    if remainder != 0 {
+        let paddingLength = blockSize - remainder
+        for i in 1...paddingLength {
+            privateBlob.append(UInt8(i))
+        }
+    }
+
+    var keyData = Data("openssh-key-v1\0".utf8)
+    appendSSHString(Data("none".utf8), to: &keyData)
+    appendSSHString(Data("none".utf8), to: &keyData)
+    appendSSHString(Data(), to: &keyData)
+    appendUInt32BE(1, to: &keyData)
+    appendSSHString(publicBlob, to: &keyData)
+    appendSSHString(privateBlob, to: &keyData)
+
+    let privatePEM = encodePEM(
+        keyData,
+        begin: "-----BEGIN OPENSSH PRIVATE KEY-----",
+        end: "-----END OPENSSH PRIVATE KEY-----"
+    )
+    let publicText = formatOpenSSHDsaPublicKey(publicBlob: publicBlob, comment: comment)
+    return (privatePEM, publicText)
+}
+
+private func sshSigSignedData(
+    namespace: String,
+    hashAlgorithm: SSHHashAlgorithm,
+    message: Data,
+    reserved: Data = Data()
+) throws(BCComponentsError) -> Data {
+    guard !namespace.isEmpty else {
+        throw BCComponentsError.ssh("namespace invalid")
+    }
+
+    let messageDigest: Data
+    switch hashAlgorithm {
+    case .sha256:
+        messageDigest = sha256(message)
+    case .sha512:
+        messageDigest = sha512(message)
+    }
+
+    var signedData = Data("SSHSIG".utf8)
+    appendSSHString(Data(namespace.utf8), to: &signedData)
+    appendSSHString(reserved, to: &signedData)
+    appendSSHString(Data(hashAlgorithm.opensshName.utf8), to: &signedData)
+    appendSSHString(messageDigest, to: &signedData)
+    return signedData
+}
+
+private func deterministicDsaNonce(
+    privateKey: BigUInt,
+    q: BigUInt,
+    signedData: Data,
+    counter: UInt32
+) -> BigUInt {
+    var input = Data()
+    input.append(mpintData(from: privateKey))
+    input.append(signedData)
+    var counterBE = counter.bigEndian
+    withUnsafeBytes(of: &counterBE) { bytes in
+        input.append(contentsOf: bytes)
+    }
+    let digest = sha512(input)
+    return (BigUInt(digest) % (q - 1)) + 1
+}
+
+private func fixedWidthUnsignedBytes(_ value: BigUInt, size: Int) -> Data {
+    var bytes = value.serialize()
+    if bytes.count > size {
+        bytes = Data(bytes.suffix(size))
+    }
+    if bytes.count < size {
+        var padded = Data(repeating: 0, count: size - bytes.count)
+        padded.append(bytes)
+        return padded
+    }
+    return bytes
+}
+
+private func dsaSignRaw(
+    components: DSAComponents,
+    signedData: Data
+) throws(BCComponentsError) -> Data {
+    let p = components.p
+    let q = components.q
+    let g = components.g
+    let x = components.x
+
+    guard p > 1, q > 1, g > 1, x > 0, x < q else {
+        throw BCComponentsError.ssh("invalid DSA key components")
+    }
+
+    let hash = BigUInt(Data(Array(signedData).sha1()))
+    var counter: UInt32 = 0
+
+    while true {
+        let k = deterministicDsaNonce(
+            privateKey: x,
+            q: q,
+            signedData: signedData,
+            counter: counter
+        )
+        let r = g.power(k, modulus: p) % q
+        guard r != 0 else {
+            counter &+= 1
+            continue
+        }
+
+        guard let kInverse = k.inverse(q) else {
+            counter &+= 1
+            continue
+        }
+
+        let s = (kInverse * ((hash + (x * r)) % q)) % q
+        guard s != 0 else {
+            counter &+= 1
+            continue
+        }
+
+        var signature = fixedWidthUnsignedBytes(r, size: 20)
+        signature.append(fixedWidthUnsignedBytes(s, size: 20))
+        return signature
+    }
+}
+
+private func dsaVerifyRaw(
+    components: DSAComponents,
+    signedData: Data,
+    signatureData: Data
+) -> Bool {
+    guard signatureData.count == 40 else {
+        return false
+    }
+
+    let p = components.p
+    let q = components.q
+    let g = components.g
+    let y = components.y
+
+    let r = BigUInt(Data(signatureData.prefix(20)))
+    let s = BigUInt(Data(signatureData.suffix(20)))
+    guard r > 0, r < q, s > 0, s < q else {
+        return false
+    }
+
+    guard let w = s.inverse(q) else {
+        return false
+    }
+
+    let hash = BigUInt(Data(Array(signedData).sha1()))
+    let u1 = (hash * w) % q
+    let u2 = (r * w) % q
+    let v = ((g.power(u1, modulus: p) * y.power(u2, modulus: p)) % p) % q
+    return v == r
+}
+
+private func signSSHDsa(
+    privateKey: SSHPrivateKey,
+    namespace: String,
+    hashAlgorithm: SSHHashAlgorithm,
+    message: Data
+) throws(BCComponentsError) -> SSHSignature {
+    let parsedKey = try parseOpenSSHDsaPrivateKey(privateKey.openssh)
+    let signedData = try sshSigSignedData(
+        namespace: namespace,
+        hashAlgorithm: hashAlgorithm,
+        message: message
+    )
+    let rawSignature = try dsaSignRaw(
+        components: parsedKey.components,
+        signedData: signedData
+    )
+
+    var signatureBlob = Data()
+    appendSSHString(Data("ssh-dss".utf8), to: &signatureBlob)
+    appendSSHString(rawSignature, to: &signatureBlob)
+
+    var payload = Data("SSHSIG".utf8)
+    appendUInt32BE(1, to: &payload)
+    appendSSHString(parsedKey.publicBlob, to: &payload)
+    appendSSHString(Data(namespace.utf8), to: &payload)
+    appendSSHString(Data(), to: &payload)
+    appendSSHString(Data(hashAlgorithm.opensshName.utf8), to: &payload)
+    appendSSHString(signatureBlob, to: &payload)
+
+    let pem = encodePEM(
+        payload,
+        begin: "-----BEGIN SSH SIGNATURE-----",
+        end: "-----END SSH SIGNATURE-----"
+    )
+    return try SSHSignature(pem: pem)
+}
+
+private func verifySSHDsa(
+    publicKey: SSHPublicKey,
+    signature: SSHSignature,
+    message: Data
+) -> Bool {
+    guard publicKey.algorithm == .dsa, signature.algorithm == .dsa else {
+        return false
+    }
+
+    do {
+        let parsedPublic = try parseOpenSSHDsaPublicKey(publicKey.openssh)
+        let parsedSig = try parseSSHSigPayload(signature.pem)
+        guard parsedSig.algorithm == .dsa else {
+            return false
+        }
+        guard parsedSig.publicKeyBlob == parsedPublic.publicBlob else {
+            return false
+        }
+        let signedData = try sshSigSignedData(
+            namespace: parsedSig.namespace,
+            hashAlgorithm: parsedSig.hashAlgorithm,
+            message: message,
+            reserved: parsedSig.reserved
+        )
+        return dsaVerifyRaw(
+            components: parsedPublic.components,
+            signedData: signedData,
+            signatureData: parsedSig.signatureData
+        )
+    } catch {
+        return false
+    }
+}
+
+private func parseSSHSigPayload(
+    _ pem: String
+) throws(BCComponentsError) -> ParsedSSHSigPayload {
     let payloadData = try decodePEM(
         pem,
         begin: "-----BEGIN SSH SIGNATURE-----",
         end: "-----END SSH SIGNATURE-----"
     )
+    var cursor = SSHDataCursor(payloadData)
 
-    var cursor = 0
-    func readBytes(_ length: Int) throws(BCComponentsError) -> Data {
-        guard cursor + length <= payloadData.count else {
-            throw BCComponentsError.ssh("invalid SSH signature payload")
-        }
-        let slice = payloadData[cursor..<(cursor + length)]
-        cursor += length
-        return Data(slice)
-    }
-
-    func readUInt32() throws(BCComponentsError) -> UInt32 {
-        let data = try readBytes(4)
-        return data.withUnsafeBytes { ptr in
-            let base = ptr.bindMemory(to: UInt8.self)
-            return (UInt32(base[0]) << 24)
-                | (UInt32(base[1]) << 16)
-                | (UInt32(base[2]) << 8)
-                | UInt32(base[3])
-        }
-    }
-
-    func readSSHString() throws(BCComponentsError) -> Data {
-        let length = Int(try readUInt32())
-        return try readBytes(length)
-    }
-
-    let magic = try readBytes(6)
+    let magic = try cursor.readBytes(6)
     guard magic == Data("SSHSIG".utf8) else {
         throw BCComponentsError.ssh("invalid SSH signature preamble")
     }
-    _ = try readUInt32() // version
-    _ = try readSSHString() // public key blob
-    guard let namespace = String(data: try readSSHString(), encoding: .utf8) else {
+
+    let version = try cursor.readUInt32()
+    guard version <= 1 else {
+        throw BCComponentsError.ssh("unsupported SSH signature version: \(version)")
+    }
+
+    let publicKeyBlob = try cursor.readSSHString()
+    let namespace = try cursor.readUTF8String()
+    guard !namespace.isEmpty else {
         throw BCComponentsError.ssh("invalid SSH signature namespace")
     }
-    _ = try readSSHString() // reserved
-    guard let hash = String(data: try readSSHString(), encoding: .utf8) else {
-        throw BCComponentsError.ssh("invalid SSH signature hash algorithm")
-    }
-    let signatureBlob = try readSSHString()
+    let reserved = try cursor.readSSHString()
+    let hashName = try cursor.readUTF8String()
+    let hashAlgorithm = try SSHHashAlgorithm.fromOpenSSHName(hashName)
+    let signatureBlob = try cursor.readSSHString()
 
-    var sigCursor = 0
-    func readSigUInt32() throws(BCComponentsError) -> UInt32 {
-        guard sigCursor + 4 <= signatureBlob.count else {
-            throw BCComponentsError.ssh("invalid SSH signature blob")
-        }
-        let bytes = signatureBlob[sigCursor..<(sigCursor + 4)]
-        sigCursor += 4
-        return bytes.reduce(UInt32(0)) { ($0 << 8) | UInt32($1) }
+    guard cursor.isFinished else {
+        throw BCComponentsError.ssh("trailing data in SSH signature payload")
     }
 
-    func readSigString() throws(BCComponentsError) -> Data {
-        let len = Int(try readSigUInt32())
-        guard sigCursor + len <= signatureBlob.count else {
-            throw BCComponentsError.ssh("invalid SSH signature blob")
-        }
-        let value = signatureBlob[sigCursor..<(sigCursor + len)]
-        sigCursor += len
-        return Data(value)
+    var signatureCursor = SSHDataCursor(signatureBlob)
+    let algorithmName = try signatureCursor.readUTF8String()
+    let signatureData = try signatureCursor.readSSHString()
+    guard signatureCursor.isFinished else {
+        throw BCComponentsError.ssh("invalid SSH signature blob")
     }
 
-    guard let algorithmName = String(data: try readSigString(), encoding: .utf8) else {
-        throw BCComponentsError.ssh("invalid SSH signature algorithm")
-    }
     let algorithm: SSHAlgorithm
     switch algorithmName {
+    case "ssh-dss":
+        algorithm = .dsa
     case "ssh-ed25519":
         algorithm = .ed25519
     case "ecdsa-sha2-nistp256":
@@ -368,10 +938,22 @@ private func parseSSHSigPEM(_ pem: String) throws(BCComponentsError) -> ParsedSS
         throw BCComponentsError.ssh("unsupported SSH signature algorithm: \(algorithmName)")
     }
 
-    return ParsedSSHSig(
+    return ParsedSSHSigPayload(
         algorithm: algorithm,
         namespace: namespace,
-        hashAlgorithm: try SSHHashAlgorithm.fromOpenSSHName(hash)
+        hashAlgorithm: hashAlgorithm,
+        reserved: reserved,
+        publicKeyBlob: publicKeyBlob,
+        signatureData: signatureData
+    )
+}
+
+private func parseSSHSigPEM(_ pem: String) throws(BCComponentsError) -> ParsedSSHSig {
+    let payload = try parseSSHSigPayload(pem)
+    return ParsedSSHSig(
+        algorithm: payload.algorithm,
+        namespace: payload.namespace,
+        hashAlgorithm: payload.hashAlgorithm
     )
 }
 

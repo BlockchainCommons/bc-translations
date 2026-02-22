@@ -5,6 +5,7 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
     case schnorr
     case ecdsa
     case ed25519
+    case sshDsa
     case sshEd25519
     case sshEcdsaP256
     case sshEcdsaP384
@@ -30,6 +31,12 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
             return (privateKey, try! privateKey.publicKey())
         case .ed25519:
             let privateKey = SigningPrivateKey.newEd25519(Ed25519PrivateKey.new())
+            return (privateKey, try! privateKey.publicKey())
+        case .sshDsa:
+            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+                .dsa,
+                comment: comment
+            )
             return (privateKey, try! privateKey.publicKey())
         case .sshEd25519:
             let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
@@ -79,6 +86,12 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
         case .ed25519:
             let privateKey = SigningPrivateKey.newEd25519(
                 Ed25519PrivateKey.newUsing(rng: &rng)
+            )
+            return (privateKey, try privateKey.publicKey())
+        case .sshDsa:
+            let privateKey = try PrivateKeyBase.newUsing(rng: &rng).sshSigningPrivateKey(
+                .dsa,
+                comment: comment
             )
             return (privateKey, try privateKey.publicKey())
         case .sshEd25519:

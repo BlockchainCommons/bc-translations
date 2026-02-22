@@ -115,3 +115,16 @@ COMPLETED
 - Added tests in `SigningTests.swift`: deterministic Ed25519 vector parity, SSH `keypairUsing` behavior, and explicit DSA parity placeholders (`XCTSkip` on this host)
 - Verification passed: `swift test --filter SigningTests`, `swift test --filter TagsRegistryTests`, and full `swift test` (`89` tests total, `2` skipped, `0` failures)
 - Remaining default-feature gap: Rust SSH DSA parity (algorithm support and DSA-specific vectors)
+
+## 2026-02-22 — Stage 2: Code (Resume)
+STARTED
+- Replacing temporary DSA placeholders with full Rust-parity SSH DSA support in Swift (`SSHSupport.swift`)
+- Restoring skipped DSA tests in `SigningTests.swift` with deterministic OpenSSH vector assertions
+
+## 2026-02-22 — Stage 2: Code (Resume)
+COMPLETED
+- Added full SSH DSA support: OpenSSH DSA private/public parsing, deterministic key derivation, OpenSSH DSA key encoding, SSHSIG signed-data construction, DSA sign/verify, and DSA PEM payload parsing
+- Updated `SignatureScheme`/`PrivateKeyBase` DSA path to use the new deterministic DSA implementation without `/usr/bin/ssh-keygen`
+- Replaced DSA `XCTSkip` placeholders with active tests: `testSSHDSAKeypair` and `testSSHDSASigningVector` (including exact Rust OpenSSH private/public text vectors)
+- Verification passed: `swift test --filter SigningTests` and full `swift test` in `swift/BCComponents` (`89` tests, `0` failures, `0` skips)
+- Default-feature SSH parity gap closed for supported algorithms (DSA, Ed25519, ECDSA P-256/P-384)

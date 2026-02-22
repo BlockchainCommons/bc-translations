@@ -22,11 +22,11 @@
 - [x] Encrypted-key derivation modules translated (`EncryptedKey`, params, methods)
 - [x] Key aggregates translated (`PrivateKeys`, `PublicKeys`, providers, `keypair*`)
 - [x] Post-quantum modules translated (`MLDSA*`, `MLKEM*`)
-- [ ] SSH-related modules fully translated (remaining: DSA parity support and Rust DSA vectors)
+- [x] SSH-related modules fully translated (Ed25519, DSA, ECDSA P-256/P-384; deterministic vectors covered)
 
 ## Tests
 - [x] Rust test inventory fully mapped in `MANIFEST.md`
-- [ ] All translatable behavior tests ported to Swift (`89/97` currently ported; 2 DSA SSH tests currently skipped on this host)
+- [x] All translatable behavior tests ported to Swift (`89/97` Rust tests represented in Swift scope; `0` skips in current Swift suite)
 - [x] Rust metadata/version-sync tests marked N/A with reason in `MANIFEST.md`
 - [x] Ported vector tests match Rust outputs byte-for-byte (digest, x25519, symmetric, signing, hkdf)
 
