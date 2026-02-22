@@ -31,7 +31,7 @@ The following model markers indicate which AI model was used for each translatio
 | ✅ bc-tags        | 0.12.0  | ✅📖 BCTags       | ✅🎻 bctags        | ✅📖 bc-tags       | ✅📖 bc-tags       | ✅🎻 BCTags      | ✅🎻 @bc/tags          |
 | ✅ bc-ur           | 0.19.0  | ✅🎻 BCUR          | ✅🎻 bcur           | ✅🎻 bc-ur          | ✅🎻 bc-ur          | ✅📖 BCUR          | ✅📖 @bc/ur             |
 | 🚧 sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ✅📖 sskr           | ⏳ sskr            | ✅🎻 SSKR          | ⏳ @bc/sskr            |
-| ⏳ bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bc/components      |
+| 🚧 bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | 🚧🎻 bc-components   | ⏳ bc-components   | 🚧📖 BCComponents   | ⏳ @bc/components      |
 | ⏳ known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bc/known-values    |
 | ⏳ bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ⏳ bc-envelope     | ⏳ bc-envelope     | ⏳ BCEnvelope     | ⏳ @bc/envelope        |
 | ⏳ provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ⏳ provenance-mark | ⏳ provenance-mark | ⏳ ProvenanceMark | ⏳ @bc/provenance-mark |
@@ -146,6 +146,7 @@ In addition to per-target logs, append a row to the root `LOG.md` table for any 
 ### Key Principles
 
 - **Translate, don't rewrite.** Stay close to the Rust structure. Faithful translation, not reimagination.
+- **Do not depend on pre-existing Blockchain Commons implementation packages.** Even if a package already exists that implements a BC specification, do not use it as a dependency for any target language in this repo. Implement from the Rust source of truth and rely only on the in-repo translations defined by the internal dependency graph.
 - **Correctness first, idiomaticness second.** Get it right, then make it pretty. These are separate stages for a reason (see SACTOR research on two-phase translation).
 - **Test vectors are sacred.** Crypto test vectors must produce identical byte-for-byte output across all languages. They are the primary cross-language validation signal.
 - **Default features only.** For initial translations, translate only code gated by default features. Non-default features are documented as future work.
