@@ -5,12 +5,13 @@ Running queue of translated targets that still need at least one fluency pass by
 Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-02-22
-- Targets translated: 45
+- Targets translated: 46
 - Targets with cross-model fluency complete: 44
-- Targets still needing cross-model fluency: 1
+- Targets still needing cross-model fluency: 2
 
 | Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
 |-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
+| bc-components | 0.31.1 | Kotlin | bc-components | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
 | bc-components | 0.31.1 | Swift | BCComponents | 📖 GPT 5.3 Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
 
 ## Update Rule
