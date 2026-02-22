@@ -77,14 +77,7 @@ public func sskrGenerateUsing(
 /// - Returns: The reconstructed ``Secret``.
 /// - Throws: ``SSKRError`` if the shares are invalid or insufficient.
 public func sskrCombine(shares: [[UInt8]]) throws(SSKRError) -> Secret {
-    var sskrShares: [SSKRShare] = []
-    sskrShares.reserveCapacity(shares.count)
-
-    for share in shares {
-        let sskrShare = try deserializeShare(share)
-        sskrShares.append(sskrShare)
-    }
-
+    let sskrShares = try shares.map(deserializeShare)
     return try combineShares(sskrShares)
 }
 
@@ -223,16 +216,12 @@ private func generateShares(
 // MARK: - Share Combination
 
 private struct CombineGroup {
-    let groupIndex: Int
     let memberThreshold: Int
-    var memberIndices: [Int]
-    var memberShares: [Secret]
+    var memberSharesByIndex: [Int: Secret]
 
-    init(groupIndex: Int, memberThreshold: Int) {
-        self.groupIndex = groupIndex
+    init(memberThreshold: Int) {
         self.memberThreshold = memberThreshold
-        self.memberIndices = []
-        self.memberShares = []
+        self.memberSharesByIndex = [:]
     }
 }
 
@@ -246,7 +235,7 @@ private func combineShares(_ shares: [SSKRShare]) throws(SSKRError) -> Secret {
     var groupCount = 0
     var secretLen = 0
 
-    var groups: [CombineGroup] = []
+    var groupsByIndex: [Int: CombineGroup] = [:]
 
     for (i, share) in shares.enumerated() {
         if i == 0 {
@@ -254,6 +243,7 @@ private func combineShares(_ shares: [SSKRShare]) throws(SSKRError) -> Secret {
             groupCount = share.groupCount
             groupThreshold = share.groupThreshold
             secretLen = share.value.count
+            groupsByIndex.reserveCapacity(groupCount)
         } else {
             if share.identifier != identifier
                 || share.groupThreshold != groupThreshold
@@ -264,57 +254,48 @@ private func combineShares(_ shares: [SSKRShare]) throws(SSKRError) -> Secret {
             }
         }
 
-        // Sort shares into member groups
-        var groupFound = false
-        for g in groups.indices {
-            if share.groupIndex == groups[g].groupIndex {
-                groupFound = true
-                if share.memberThreshold != groups[g].memberThreshold {
-                    throw .memberThresholdInvalid
-                }
-                if groups[g].memberIndices.contains(share.memberIndex) {
-                    throw .duplicateMemberIndex
-                }
-                if groups[g].memberIndices.count < groups[g].memberThreshold {
-                    groups[g].memberIndices.append(share.memberIndex)
-                    groups[g].memberShares.append(share.value)
-                }
-            }
+        var group = groupsByIndex[share.groupIndex] ?? CombineGroup(
+            memberThreshold: share.memberThreshold
+        )
+        if group.memberThreshold != share.memberThreshold {
+            throw .memberThresholdInvalid
         }
-
-        if !groupFound {
-            var g = CombineGroup(
-                groupIndex: share.groupIndex,
-                memberThreshold: share.memberThreshold
-            )
-            g.memberIndices.append(share.memberIndex)
-            g.memberShares.append(share.value)
-            groups.append(g)
+        if group.memberSharesByIndex[share.memberIndex] != nil {
+            throw .duplicateMemberIndex
         }
+        if group.memberSharesByIndex.count < group.memberThreshold {
+            group.memberSharesByIndex[share.memberIndex] = share.value
+        }
+        groupsByIndex[share.groupIndex] = group
     }
 
     // Check that we have enough groups
-    if groups.count < groupThreshold {
+    if groupsByIndex.count < groupThreshold {
         throw .notEnoughGroups
     }
 
     // Recover group secrets, then recover the master secret
     var masterIndices: [Int] = []
     var masterShares: [[UInt8]] = []
-    masterIndices.reserveCapacity(16)
-    masterShares.reserveCapacity(16)
+    masterIndices.reserveCapacity(groupThreshold)
+    masterShares.reserveCapacity(groupThreshold)
 
-    for group in groups {
-        // Only attempt recovery if we have enough shares
-        if group.memberIndices.count < group.memberThreshold {
+    for groupIndex in groupsByIndex.keys.sorted() {
+        guard let group = groupsByIndex[groupIndex] else {
             continue
         }
-        let memberShareData = group.memberShares.map { $0.data }
+        // Only attempt recovery if we have enough shares
+        if group.memberSharesByIndex.count < group.memberThreshold {
+            continue
+        }
+        let sortedMembers = group.memberSharesByIndex.sorted { $0.key < $1.key }
+        let memberIndices = sortedMembers.map(\.key)
+        let memberShareData = sortedMembers.map { $0.value.data }
         if let groupSecret = try? recoverSecret(
-            indices: group.memberIndices,
+            indices: memberIndices,
             shares: memberShareData
         ) {
-            masterIndices.append(group.groupIndex)
+            masterIndices.append(groupIndex)
             masterShares.append(groupSecret)
         }
         // Stop if we have enough groups

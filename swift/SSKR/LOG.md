@@ -55,3 +55,16 @@ COMPLETED
 - Removed unnecessary `import BCShamir` from Secret.swift, GroupSpec.swift, Spec.swift
 - Replaced manual for-loop with `.contains()` for duplicate member index check
 - All 8 tests still pass after fixes
+
+## 2026-02-22 — Stage 4: Review Fluency
+STARTED
+- Cross-model fluency pass by GPT Codex for Swift SSKR
+- Reviewing API ergonomics and internal collection handling in share combination logic
+
+## 2026-02-22 — Stage 4: Review Fluency
+COMPLETED
+- 2 issues found, 2 fixed
+- Replaced manual share decode loop in `sskrCombine` with `shares.map(deserializeShare)`
+- Refactored `combineShares` from O(n^2) array scanning with parallel arrays to dictionary-based grouping keyed by group/member index
+- All 8 tests pass after changes (`swift test`)
+- Verdict: IDIOMATIC
