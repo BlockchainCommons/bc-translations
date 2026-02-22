@@ -277,6 +277,20 @@ struct TagsStoreTests {
         #expect(values == [1, 2, 3])
     }
 
+    @Test("Store summarizer registration and lookup")
+    @MainActor
+    func summarizerLookup() throws {
+        let store = TagsStore([CborTag(42, "foo")])
+        store.setSummarizer(CborTag(42)) { payload, _ in
+            let text = payload as? String ?? ""
+            return "S(\(text))"
+        }
+        let summarizer = store.summarizer(for: CborTag(42))
+        #expect(summarizer != nil)
+        #expect(try summarizer?("hello", true) == "S(hello)")
+        #expect(store.summarizer(for: CborTag(99)) == nil)
+    }
+
     @Test("Free function name(for:knownTags:)")
     func freeNameFunction() {
         let store = TagsStore([CborTag(42, "foo")])

@@ -61,3 +61,30 @@ COMPLETED
 - Simplified decrypt error mapping to avoid unnecessary type-cast warning paths
 - Verification passed: `swift test` and `swift test -Xswiftc -warnings-as-errors`
 - Scope note: fluency pass applied only to currently translated baseline modules; remaining manifest units still pending Stage 2
+
+## 2026-02-22 — Stage 2: Code (Resume)
+STARTED
+- Implementing Rust `tags_registry.rs` summarizer parity and dependency-target support needed by Swift (`BCTags`/`DCBOR`)
+- Revalidating package tests across dependency targets and `BCComponents`
+
+## 2026-02-22 — Stage 2: Code (Resume)
+COMPLETED
+- Added tag summarizer infrastructure to `swift/BCTags` (`TagSummarizer`, per-tag registration/lookup) and integrated summary rendering behavior in `swift/DCBOR`
+- Implemented `BCComponents` tag summarizers for translated component types in `Sources/BCComponents/TagsRegistry.swift`
+- Added/updated tests: `swift/BCTags/Tests/BCTagsTests/TagsTests.swift`, `swift/DCBOR/Tests/DCBORTests/SummaryTests.swift`, `swift/BCComponents/Tests/BCComponentsTests/TagsRegistryTests.swift`
+- Verification passed: `swift test` in `swift/BCTags`, `swift/DCBOR`, and `swift/BCComponents` (`62` BCComponents tests passing)
+- Remaining default-feature gap: SSH signing/key support parity (algorithms, CBOR/UR/text vectors, and related tests)
+
+## 2026-02-22 — Stage 2: Code (Resume)
+STARTED
+- Porting additional Rust non-SSH test parity from `digest.rs`, `signing/mod.rs`, `symmetric/mod.rs`, and `lib.rs` vectors
+- Revalidating package behavior with full `swift test` in `swift/BCComponents`
+
+## 2026-02-22 — Stage 2: Code (Resume)
+COMPLETED
+- Added Rust-parity tests in `DigestTests.swift`, `HKDFRngTests.swift`, `SigningTests.swift`, and `SymmetricTests.swift`
+- Restored signing key UR vector coverage from Rust `lib.rs` (`test_ecdsa_signing_keys` equivalents)
+- Restored deterministic secp256k1 vector coverage from Rust `lib.rs` (`test_ecdsa_signing`)
+- Restored full symmetric module test parity (`6/6`) including CBOR byte-vector and roundtrip checks
+- Verification passed: `swift test` in `swift/BCComponents` (`80` tests passing, `0` failures)
+- Remaining default-feature gap: SSH signing/key support parity (algorithms, CBOR/UR/text vectors, and related tests)

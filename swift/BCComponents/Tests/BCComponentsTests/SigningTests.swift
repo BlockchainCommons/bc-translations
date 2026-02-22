@@ -19,6 +19,30 @@ final class SigningTests: XCTestCase {
         .newEd25519(try! Ed25519PrivateKey(keyData))
     }
 
+    func testLibECDSAAndSchnorrVector() {
+        var rng = makeFakeRandomNumberGenerator()
+        let privateKey = ecdsaNewPrivateKeyUsing(&rng)
+        let message = Data(
+            "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.".utf8
+        )
+
+        let ecdsaPublicKey = ecdsaPublicKeyFromPrivateKey(privateKey)
+        let ecdsaSignature = ecdsaSign(privateKey, message)
+        XCTAssertEqual(
+            hexString(ecdsaSignature),
+            "e75702ed8f645ce7fe510507b2403029e461ef4570d12aa440e4f81385546a13740b7d16878ff0b46b1cbe08bc218ccb0b00937b61c4707de2ca6148508e51fb"
+        )
+        XCTAssertTrue(ecdsaVerify(ecdsaPublicKey, ecdsaSignature, message))
+
+        let schnorrPublicKey = schnorrPublicKeyFromPrivateKey(privateKey)
+        let schnorrSignature = schnorrSignUsing(privateKey, message, &rng)
+        XCTAssertEqual(
+            hexString(schnorrSignature),
+            "df3e33900f0b94e23b6f8685f620ed92705ebfcf885ccb321620acb9927bce1e2218dcfba7cb9c3bba11611446f38774a564f265917899194e82945c8b60a996"
+        )
+        XCTAssertTrue(schnorrVerify(schnorrPublicKey, schnorrSignature, message))
+    }
+
     func testSchnorrSigning() throws {
         let publicKey = try schnorrPrivateKey.publicKey()
         let signature = try schnorrPrivateKey.sign(message)
@@ -97,11 +121,60 @@ final class SigningTests: XCTestCase {
         XCTAssertTrue(publicKey.verify(anotherSignature, message))
     }
 
-    func testSchemeKeypairs() throws {
-        for scheme in [SignatureScheme.default, .ecdsa, .ed25519] {
-            let (privateKey, publicKey) = scheme.keypair()
-            let signature = try privateKey.sign(message)
-            XCTAssertTrue(publicKey.verify(signature, message))
-        }
+    func testSchnorrKeypair() throws {
+        let (privateKey, publicKey) = SignatureScheme.default.keypair()
+        let signature = try privateKey.sign(message)
+        XCTAssertTrue(publicKey.verify(signature, message))
+    }
+
+    func testECDSAKeypair() throws {
+        let (privateKey, publicKey) = SignatureScheme.ecdsa.keypair()
+        let signature = try privateKey.sign(message)
+        XCTAssertTrue(publicKey.verify(signature, message))
+    }
+
+    func testEd25519Keypair() throws {
+        let (privateKey, publicKey) = SignatureScheme.ed25519.keypair()
+        let signature = try privateKey.sign(message)
+        XCTAssertTrue(publicKey.verify(signature, message))
+    }
+
+    func testSigningKeyURVectors() throws {
+        registerTags()
+
+        var rng = makeFakeRandomNumberGenerator()
+
+        let schnorrPrivate = SigningPrivateKey.newSchnorr(ECPrivateKey.newUsing(rng: &rng))
+        let schnorrPrivateUR = schnorrPrivate.urString()
+        XCTAssertEqual(
+            schnorrPrivateUR,
+            "ur:signing-private-key/hdcxkbrehkrkrsjztodseytknecfgewmgdmwfsvdvysbpmghuozsprknfwkpnehydlweynwkrtct"
+        )
+        XCTAssertEqual(try SigningPrivateKey.fromURString(schnorrPrivateUR), schnorrPrivate)
+
+        let ecdsaPrivate = SigningPrivateKey.newEcdsa(ECPrivateKey.newUsing(rng: &rng))
+        let ecdsaPublic = try ecdsaPrivate.publicKey()
+        let ecdsaPublicUR = ecdsaPublic.urString()
+        XCTAssertEqual(
+            ecdsaPublicUR,
+            "ur:signing-public-key/lfadhdclaxbzutckgevlpkmdfnuoemlnvsgllokicfdekesswnfdtibkylrskomwgubaahyntaktbksbdt"
+        )
+        XCTAssertEqual(try SigningPublicKey.fromURString(ecdsaPublicUR), ecdsaPublic)
+
+        let schnorrPublic = try schnorrPrivate.publicKey()
+        let schnorrPublicUR = schnorrPublic.urString()
+        XCTAssertEqual(
+            schnorrPublicUR,
+            "ur:signing-public-key/hdcxjsrhdnidbgosndmobzwntdglzonnidmwoyrnuomdrpsptkcskerhfljssgaoidjewyjymhcp"
+        )
+        XCTAssertEqual(try SigningPublicKey.fromURString(schnorrPublicUR), schnorrPublic)
+
+        let derivedPrivate = SigningPrivateKey.newSchnorr(
+            ECPrivateKey.deriveFromKeyMaterial(Data("password".utf8))
+        )
+        XCTAssertEqual(
+            derivedPrivate.urString(),
+            "ur:signing-private-key/hdcxahsfgobtpkkpahmnhsfmhnjnmkmkzeuraonneshkbysseyjkoeayrlvtvsmndicwkkvattfs"
+        )
     }
 }

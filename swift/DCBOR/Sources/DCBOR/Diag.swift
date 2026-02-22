@@ -7,12 +7,22 @@ public extension CBOR {
     ///   - annotate: If `true`, add additional notes and context.
     ///   - knownTags: If `annotate` is `true`, uses the name of these tags rather than their number.
     func diagnostic(annotate: Bool = true, tags: TagsStoreProtocol? = globalTags) -> String {
-        diagItem(annotate: annotate, knownTags: tags).format(annotate: annotate)
+        diagItem(
+            annotate: annotate,
+            knownTags: tags,
+            summarize: false,
+            flat: false
+        ).format(annotate: annotate)
     }
 
     /// Returns the CBOR value in a single-line diagnostic form.
     var diagnosticFlat: String {
-        diagItem(annotate: false, knownTags: globalTags).flatString()
+        diagItem(
+            annotate: false,
+            knownTags: globalTags,
+            summarize: false,
+            flat: true
+        ).flatString()
     }
 
     /// Returns the CBOR value in annotated diagnostic notation.
@@ -22,7 +32,12 @@ public extension CBOR {
 
     /// Returns a short human-readable summary string.
     var summary: String {
-        diagnosticFlat
+        diagItem(
+            annotate: false,
+            knownTags: globalTags,
+            summarize: true,
+            flat: true
+        ).flatString()
     }
 }
 
@@ -162,20 +177,43 @@ enum DiagItem {
 }
 
 extension CBOR {
-    func diagItem(annotate: Bool = false, knownTags: TagsStoreProtocol?) -> DiagItem {
+    func diagItem(
+        annotate: Bool = false,
+        knownTags: TagsStoreProtocol?,
+        summarize: Bool = false,
+        flat: Bool = false
+    ) -> DiagItem {
         switch self {
         case .unsigned, .negative, .bytes, .text, .simple:
             return .item(description)
         case .tagged(let tag, let item):
+            if summarize, let summarizer = knownTags?.summarizer(for: tag) {
+                do {
+                    return .item(try summarizer(item, flat))
+                } catch {
+                    return .item("<error: \(error)>")
+                }
+            }
+
             let diagItem: DiagItem
             if annotate && tag == 1 {
                 if let n = try? Double(cbor: item) {
                     diagItem = .item(ISO8601DateFormatter().string(from: Date(timeIntervalSince1970: TimeInterval(n))))
                 } else {
-                    diagItem = item.diagItem(annotate: annotate, knownTags: knownTags)
+                    diagItem = item.diagItem(
+                        annotate: annotate,
+                        knownTags: knownTags,
+                        summarize: summarize,
+                        flat: flat
+                    )
                 }
             } else {
-                diagItem = item.diagItem(annotate: annotate, knownTags: knownTags)
+                diagItem = item.diagItem(
+                    annotate: annotate,
+                    knownTags: knownTags,
+                    summarize: summarize,
+                    flat: flat
+                )
             }
             return .group(
                 begin: String(tag.value) + "(",
@@ -188,7 +226,14 @@ extension CBOR {
             return .group(
                 begin: "[",
                 end: "]",
-                items: a.map { $0.diagItem(annotate: annotate, knownTags: knownTags) },
+                items: a.map {
+                    $0.diagItem(
+                        annotate: annotate,
+                        knownTags: knownTags,
+                        summarize: summarize,
+                        flat: flat
+                    )
+                },
                 isPairs: false,
                 comment: nil
             )
@@ -197,8 +242,18 @@ extension CBOR {
                 begin: "{",
                 end: "}",
                 items: m.map { (key, value) in [
-                    key.diagItem(annotate: annotate, knownTags: knownTags),
-                    value.diagItem(annotate: annotate, knownTags: knownTags)
+                    key.diagItem(
+                        annotate: annotate,
+                        knownTags: knownTags,
+                        summarize: summarize,
+                        flat: flat
+                    ),
+                    value.diagItem(
+                        annotate: annotate,
+                        knownTags: knownTags,
+                        summarize: summarize,
+                        flat: flat
+                    )
                 ]}.flatMap { $0 },
                 isPairs: true,
                 comment: nil

@@ -12,6 +12,17 @@ final class HKDFRngTests: XCTestCase {
         XCTAssertEqual(rng.position, 0)
     }
 
+    func testHKDFRngFillBufferBehavior() {
+        var rng = HKDFRng(
+            keyMaterial: Data("key_material".utf8),
+            salt: "salt",
+            pageLength: 16
+        )
+        _ = rng.nextBytes(length: 1)
+        XCTAssertFalse(rng.buffer.isEmpty)
+        XCTAssertEqual(rng.pageIndex, 1)
+    }
+
     func testHKDFRngNextBytes() {
         var rng = HKDFRng(keyMaterial: Data("key_material".utf8), salt: "salt")
         XCTAssertEqual(hexEncode(rng.nextBytes(length: 16)), "1032ac8ffea232a27c79fe381d7eb7e4")
