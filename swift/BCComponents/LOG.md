@@ -101,3 +101,17 @@ COMPLETED
 - Added SSH parity tests to `SigningTests.swift` (keypair, options-required behavior, CBOR roundtrip)
 - Verification passed: `swift test --filter SigningTests` and class-wise full suite run (`85` tests passing, `0` failures)
 - Remaining default-feature gap: Rust SSH parity items not yet ported (DSA/P-521 and related vectors)
+
+## 2026-02-22 — Stage 2: Code (Resume)
+STARTED
+- Aligning `PrivateKeyBase` SSH derivation behavior with Rust deterministic Ed25519 vectors
+- Porting additional Rust SSH parity tests and tightening SSH tag summarizers
+
+## 2026-02-22 — Stage 2: Code (Resume)
+COMPLETED
+- Implemented deterministic OpenSSH Ed25519 key encoding from `PrivateKeyBase` key material (`SSHSupport.swift`) including Rust-equivalent checkint behavior
+- Routed SSH Ed25519 generation through `PrivateKeyBase` in `SignatureScheme` and enabled `keypairUsing` for SSH Ed25519/P-256/P-384
+- Updated SSH tag summarizers to include reference short IDs for private/public keys (Rust parity style)
+- Added tests in `SigningTests.swift`: deterministic Ed25519 vector parity, SSH `keypairUsing` behavior, and explicit DSA parity placeholders (`XCTSkip` on this host)
+- Verification passed: `swift test --filter SigningTests`, `swift test --filter TagsRegistryTests`, and full `swift test` (`89` tests total, `2` skipped, `0` failures)
+- Remaining default-feature gap: Rust SSH DSA parity (algorithm support and DSA-specific vectors)

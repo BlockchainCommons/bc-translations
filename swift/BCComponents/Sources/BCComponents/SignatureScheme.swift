@@ -32,18 +32,21 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
             let privateKey = SigningPrivateKey.newEd25519(Ed25519PrivateKey.new())
             return (privateKey, try! privateKey.publicKey())
         case .sshEd25519:
-            let privateKey = try! SigningPrivateKey.newSSH(
-                SSHPrivateKey.generate(algorithm: .ed25519, comment: comment)
+            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+                .ed25519,
+                comment: comment
             )
             return (privateKey, try! privateKey.publicKey())
         case .sshEcdsaP256:
-            let privateKey = try! SigningPrivateKey.newSSH(
-                SSHPrivateKey.generate(algorithm: .ecdsaP256, comment: comment)
+            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+                .ecdsaP256,
+                comment: comment
             )
             return (privateKey, try! privateKey.publicKey())
         case .sshEcdsaP384:
-            let privateKey = try! SigningPrivateKey.newSSH(
-                SSHPrivateKey.generate(algorithm: .ecdsaP384, comment: comment)
+            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+                .ecdsaP384,
+                comment: comment
             )
             return (privateKey, try! privateKey.publicKey())
         case .mldsa44:
@@ -78,7 +81,25 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
                 Ed25519PrivateKey.newUsing(rng: &rng)
             )
             return (privateKey, try privateKey.publicKey())
-        case .mldsa44, .mldsa65, .mldsa87, .sshEd25519, .sshEcdsaP256, .sshEcdsaP384:
+        case .sshEd25519:
+            let privateKey = try PrivateKeyBase.newUsing(rng: &rng).sshSigningPrivateKey(
+                .ed25519,
+                comment: comment
+            )
+            return (privateKey, try privateKey.publicKey())
+        case .sshEcdsaP256:
+            let privateKey = try PrivateKeyBase.newUsing(rng: &rng).sshSigningPrivateKey(
+                .ecdsaP256,
+                comment: comment
+            )
+            return (privateKey, try privateKey.publicKey())
+        case .sshEcdsaP384:
+            let privateKey = try PrivateKeyBase.newUsing(rng: &rng).sshSigningPrivateKey(
+                .ecdsaP384,
+                comment: comment
+            )
+            return (privateKey, try privateKey.publicKey())
+        case .mldsa44, .mldsa65, .mldsa87:
             throw BCComponentsError.general(
                 "Deterministic keypair generation not supported for this signature scheme"
             )

@@ -10,7 +10,7 @@
 - [x] Symmetric encryption modules translated (`SymmetricKey`, `EncryptedMessage`, `AuthenticationTag`)
 - [x] Key material baseline translated (`Salt`, `Nonce`, `JSON`)
 - [x] `Seed` translated
-- [x] `PrivateKeyBase` translated (including SSH Ed25519/ECDSA P-256/P-384 paths)
+- [x] `PrivateKeyBase` translated (including deterministic SSH Ed25519 and SSH ECDSA P-256/P-384 paths)
 - [x] SSKR wrapper baseline translated (`SSKRShare`, `sskrGenerate`, `sskrGenerateUsing`, `sskrCombine`)
 - [x] Tag registration translated (`registerTagsIn`, `registerTags`)
 - [x] Full Rust tags-registry summarizer behavior translated for non-SSH BC component types
@@ -22,11 +22,11 @@
 - [x] Encrypted-key derivation modules translated (`EncryptedKey`, params, methods)
 - [x] Key aggregates translated (`PrivateKeys`, `PublicKeys`, providers, `keypair*`)
 - [x] Post-quantum modules translated (`MLDSA*`, `MLKEM*`)
-- [ ] SSH-related modules fully translated (remaining: DSA, P-521, and Rust parity vectors)
+- [ ] SSH-related modules fully translated (remaining: DSA parity support and Rust DSA vectors)
 
 ## Tests
 - [x] Rust test inventory fully mapped in `MANIFEST.md`
-- [ ] All translatable behavior tests ported to Swift (`85/97` currently ported)
+- [ ] All translatable behavior tests ported to Swift (`89/97` currently ported; 2 DSA SSH tests currently skipped on this host)
 - [x] Rust metadata/version-sync tests marked N/A with reason in `MANIFEST.md`
 - [x] Ported vector tests match Rust outputs byte-for-byte (digest, x25519, symmetric, signing, hkdf)
 

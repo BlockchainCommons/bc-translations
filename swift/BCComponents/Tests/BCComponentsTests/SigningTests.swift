@@ -205,6 +205,16 @@ final class SigningTests: XCTestCase {
         XCTAssertThrowsError(try privateKey.sign(message))
     }
 
+    func testSSHKeypairUsingSupported() throws {
+        var rng = makeFakeRandomNumberGenerator()
+        let (privateKey, publicKey) = try SignatureScheme.sshEd25519.keypairUsing(&rng)
+        let signature = try privateKey.signWithOptions(
+            message,
+            options: .ssh(namespace: "ssh", hashAlg: .sha512)
+        )
+        XCTAssertTrue(publicKey.verify(signature, message))
+    }
+
     func testSSHCBORRoundtrip() throws {
         let (privateKey, publicKey) = SignatureScheme.sshEd25519.keypairOpt("Key comment.")
         let signature = try privateKey.signWithOptions(
@@ -219,5 +229,48 @@ final class SigningTests: XCTestCase {
         XCTAssertEqual(privateKeyDecoded, privateKey)
         XCTAssertEqual(publicKeyDecoded, publicKey)
         XCTAssertEqual(signatureDecoded, signature)
+    }
+
+    func testSSHEd25519DeterministicVector() throws {
+        let seed = hexData("59f2293a5bce7d4de59e71b4207ac5d2")
+        let privateKey = try PrivateKeyBase.fromData(seed)
+            .sshSigningPrivateKey(.ed25519, comment: "Key comment.")
+        let publicKey = try privateKey.publicKey()
+
+        let expectedPrivate = """
+        -----BEGIN OPENSSH PRIVATE KEY-----
+        b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+        QyNTUxOQAAACBUe4FDGyGIgHf75yVdE4hYl9guj02FdsIadgLC04zObQAAAJA+TyZiPk8m
+        YgAAAAtzc2gtZWQyNTUxOQAAACBUe4FDGyGIgHf75yVdE4hYl9guj02FdsIadgLC04zObQ
+        AAAECsX3CKi3hm5VrrU26ffa2FB2YrFogg45ucOVbIz4FQo1R7gUMbIYiAd/vnJV0TiFiX
+        2C6PTYV2whp2AsLTjM5tAAAADEtleSBjb21tZW50LgE=
+        -----END OPENSSH PRIVATE KEY-----
+        """
+        XCTAssertEqual(privateKey.toSSH()?.openssh, expectedPrivate)
+        XCTAssertEqual(
+            publicKey.toSSH()?.openssh,
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFR7gUMbIYiAd/vnJV0TiFiX2C6PTYV2whp2AsLTjM5t Key comment."
+        )
+
+        let message = Data(
+            "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.".utf8
+        )
+        let signature = try privateKey.signWithOptions(
+            message,
+            options: .ssh(namespace: "test", hashAlg: .sha256)
+        )
+        XCTAssertTrue(publicKey.verify(signature, message))
+    }
+
+    func testSSHDSAKeypair() throws {
+        throw XCTSkip(
+            "Rust parity pending: OpenSSH DSA key support is unavailable on this host's /usr/bin/ssh-keygen"
+        )
+    }
+
+    func testSSHDSASigningVector() throws {
+        throw XCTSkip(
+            "Rust parity pending: OpenSSH DSA key support is unavailable on this host's /usr/bin/ssh-keygen"
+        )
     }
 }

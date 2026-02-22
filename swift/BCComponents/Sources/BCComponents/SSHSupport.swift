@@ -93,6 +93,11 @@ public struct SSHPrivateKey: Equatable, Hashable, Sendable {
         self.publicKey = derivedPublic
     }
 
+    private init(normalizedOpenSSH: String, publicKey: SSHPublicKey) {
+        self.openssh = normalizedOpenSSH
+        self.publicKey = publicKey
+    }
+
     public var algorithm: SSHAlgorithm {
         publicKey.algorithm
     }
@@ -133,6 +138,26 @@ public struct SSHPrivateKey: Equatable, Hashable, Sendable {
         throw BCComponentsError.ssh("SSH key generation requires macOS")
         #endif
     }
+
+    static func generateDeterministicEd25519(
+        keyMaterial: Data,
+        comment: String
+    ) throws(BCComponentsError) -> SSHPrivateKey {
+        let privateSeed = hkdfHmacSHA256(
+            keyMaterial: keyMaterial,
+            salt: Data("ssh-ed25519-0".utf8),
+            keyLength: ed25519PrivateKeySize
+        )
+        let publicKeyBytes = ed25519PublicKeyFromPrivateKey(privateSeed)
+
+        let encoded = encodeOpenSSHEd25519Keypair(
+            privateSeed: privateSeed,
+            publicKey: publicKeyBytes,
+            comment: comment
+        )
+        let publicKey = try SSHPublicKey(openssh: encoded.publicKey)
+        return SSHPrivateKey(normalizedOpenSSH: encoded.privateKey, publicKey: publicKey)
+    }
 }
 
 public struct SSHSignature: Equatable, Hashable, Sendable {
@@ -148,6 +173,18 @@ public struct SSHSignature: Equatable, Hashable, Sendable {
         self.algorithm = parsed.algorithm
         self.namespace = parsed.namespace
         self.hashAlgorithm = parsed.hashAlgorithm
+    }
+}
+
+extension SSHPublicKey: ReferenceProvider {
+    public func reference() -> Reference {
+        try! Reference.fromData(Data(openssh.utf8))
+    }
+}
+
+extension SSHPrivateKey: ReferenceProvider {
+    public func reference() -> Reference {
+        try! Reference.fromData(Data(openssh.utf8))
     }
 }
 
@@ -355,6 +392,95 @@ private func decodePEM(
         throw BCComponentsError.ssh("invalid PEM base64 content")
     }
     return data
+}
+
+private func encodeOpenSSHEd25519Keypair(
+    privateSeed: Data,
+    publicKey: Data,
+    comment: String
+) -> (privateKey: String, publicKey: String) {
+    let keyType = Data("ssh-ed25519".utf8)
+    let keyTypeString = "ssh-ed25519"
+
+    var publicBlob = Data()
+    appendSSHString(keyType, to: &publicBlob)
+    appendSSHString(publicKey, to: &publicBlob)
+
+    let checkint = deterministicSSHCheckint(privateSeed)
+    var privateBlob = Data()
+    appendUInt32BE(checkint, to: &privateBlob)
+    appendUInt32BE(checkint, to: &privateBlob)
+    appendSSHString(keyType, to: &privateBlob)
+    appendSSHString(publicKey, to: &privateBlob)
+    var privateAndPublic = Data()
+    privateAndPublic.append(privateSeed)
+    privateAndPublic.append(publicKey)
+    appendSSHString(privateAndPublic, to: &privateBlob)
+    appendSSHString(Data(comment.utf8), to: &privateBlob)
+
+    let blockSize = 8
+    let remainder = privateBlob.count % blockSize
+    if remainder != 0 {
+        let paddingLength = blockSize - remainder
+        for i in 1...paddingLength {
+            privateBlob.append(UInt8(i))
+        }
+    }
+
+    var keyData = Data("openssh-key-v1\0".utf8)
+    appendSSHString(Data("none".utf8), to: &keyData)
+    appendSSHString(Data("none".utf8), to: &keyData)
+    appendSSHString(Data(), to: &keyData)
+    appendUInt32BE(1, to: &keyData)
+    appendSSHString(publicBlob, to: &keyData)
+    appendSSHString(privateBlob, to: &keyData)
+
+    let privatePEM = encodePEM(
+        keyData,
+        begin: "-----BEGIN OPENSSH PRIVATE KEY-----",
+        end: "-----END OPENSSH PRIVATE KEY-----"
+    )
+    let publicText = "\(keyTypeString) \(publicBlob.base64EncodedString()) \(comment)"
+    return (privatePEM, publicText)
+}
+
+private func deterministicSSHCheckint(_ keyBytes: Data) -> UInt32 {
+    var value: UInt32 = 0
+    var index = 0
+    while index + 4 <= keyBytes.count {
+        value ^= (UInt32(keyBytes[index]) << 24)
+            | (UInt32(keyBytes[index + 1]) << 16)
+            | (UInt32(keyBytes[index + 2]) << 8)
+            | UInt32(keyBytes[index + 3])
+        index += 4
+    }
+    return value
+}
+
+private func appendUInt32BE(_ value: UInt32, to data: inout Data) {
+    data.append(UInt8((value >> 24) & 0xFF))
+    data.append(UInt8((value >> 16) & 0xFF))
+    data.append(UInt8((value >> 8) & 0xFF))
+    data.append(UInt8(value & 0xFF))
+}
+
+private func appendSSHString(_ value: Data, to data: inout Data) {
+    appendUInt32BE(UInt32(value.count), to: &data)
+    data.append(value)
+}
+
+private func encodePEM(_ payload: Data, begin: String, end: String) -> String {
+    let base64 = payload.base64EncodedString()
+    let lineLength = 70
+    var lines: [String] = [begin]
+    var start = base64.startIndex
+    while start < base64.endIndex {
+        let stop = base64.index(start, offsetBy: lineLength, limitedBy: base64.endIndex) ?? base64.endIndex
+        lines.append(String(base64[start..<stop]))
+        start = stop
+    }
+    lines.append(end)
+    return lines.joined(separator: "\n")
 }
 
 private func deriveSSHPublicKeyFromPrivate(_ privateKey: String) throws(BCComponentsError) -> SSHPublicKey {

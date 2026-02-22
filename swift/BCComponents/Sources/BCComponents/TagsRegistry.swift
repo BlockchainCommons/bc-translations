@@ -162,15 +162,15 @@ public func registerTagsIn(_ tagsStore: TagsStore) {
 
     tagsStore.setSummarizer(.sshTextPrivateKey) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
-            _ = try textString(cbor)
-            return "SSHPrivateKey"
+            let key = try SSHPrivateKey(openssh: try textString(cbor))
+            return "SSHPrivateKey(\(key.refHexShort()))"
         }
     }
 
     tagsStore.setSummarizer(.sshTextPublicKey) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
-            _ = try textString(cbor)
-            return "SSHPublicKey"
+            let key = try SSHPublicKey(openssh: try textString(cbor))
+            return "SSHPublicKey(\(key.refHexShort()))"
         }
     }
 
