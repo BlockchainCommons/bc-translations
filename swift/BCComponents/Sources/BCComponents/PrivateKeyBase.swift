@@ -48,6 +48,14 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
         .newEd25519(Ed25519PrivateKey.deriveFromKeyMaterial(data))
     }
 
+    public func sshSigningPrivateKey(
+        _ algorithm: SSHAlgorithm,
+        comment: String
+    ) throws(BCComponentsError) -> SigningPrivateKey {
+        let key = try SSHPrivateKey.generate(algorithm: algorithm, comment: comment)
+        return .newSSH(key)
+    }
+
     public func x25519PrivateKey() -> X25519PrivateKey {
         X25519PrivateKey.deriveFromKeyMaterial(data)
     }
@@ -80,6 +88,28 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
         )
     }
 
+    public func sshPrivateKeys(
+        _ algorithm: SSHAlgorithm,
+        comment: String
+    ) throws(BCComponentsError) -> PrivateKeys {
+        let privateKey = try sshSigningPrivateKey(algorithm, comment: comment)
+        return .withKeys(
+            privateKey,
+            .x25519(x25519PrivateKey())
+        )
+    }
+
+    public func sshPublicKeys(
+        _ algorithm: SSHAlgorithm,
+        comment: String
+    ) throws(BCComponentsError) -> PublicKeys {
+        let privateKey = try sshSigningPrivateKey(algorithm, comment: comment)
+        return try .new(
+            privateKey.publicKey(),
+            .x25519(x25519PrivateKey().publicKey())
+        )
+    }
+
     public func asBytes() -> Data {
         data
     }
@@ -96,7 +126,12 @@ extension PrivateKeyBase: Signer {
 
 extension PrivateKeyBase: Verifier {
     public func verify(_ signature: Signature, _ message: some DataProtocol) -> Bool {
-        schnorrSigningPrivateKey().verify(signature, message)
+        switch signature {
+        case .schnorr:
+            return schnorrSigningPrivateKey().verify(signature, message)
+        case .ecdsa, .ed25519, .ssh, .mldsa:
+            return false
+        }
     }
 }
 

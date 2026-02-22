@@ -7,6 +7,7 @@ public enum SigningPublicKey: Equatable, Hashable, Sendable {
     case schnorr(SchnorrPublicKey)
     case ecdsa(ECPublicKey)
     case ed25519(Ed25519PublicKey)
+    case ssh(SSHPublicKey)
     case mldsa(MLDSAPublicKey)
 
     public static func fromSchnorr(_ key: SchnorrPublicKey) -> SigningPublicKey {
@@ -19,6 +20,10 @@ public enum SigningPublicKey: Equatable, Hashable, Sendable {
 
     public static func fromEd25519(_ key: Ed25519PublicKey) -> SigningPublicKey {
         .ed25519(key)
+    }
+
+    public static func fromSSH(_ key: SSHPublicKey) -> SigningPublicKey {
+        .ssh(key)
     }
 
     public static func fromMLDSA(_ key: MLDSAPublicKey) -> SigningPublicKey {
@@ -41,6 +46,13 @@ public enum SigningPublicKey: Equatable, Hashable, Sendable {
 
     public func toEd25519() -> Ed25519PublicKey? {
         if case .ed25519(let key) = self {
+            return key
+        }
+        return nil
+    }
+
+    public func toSSH() -> SSHPublicKey? {
+        if case .ssh(let key) = self {
             return key
         }
         return nil
@@ -72,6 +84,15 @@ extension SigningPublicKey: Verifier {
                 return false
             }
             return key.verify(ed25519Signature, message)
+        case .ssh(let key):
+            guard case .ssh(let sshSignature) = signature else {
+                return false
+            }
+            return verifySSH(
+                publicKey: key,
+                signature: sshSignature,
+                message: Data(message)
+            )
         case .mldsa(let key):
             guard case .mldsa(let mldsaSignature) = signature else {
                 return false
@@ -98,6 +119,8 @@ extension SigningPublicKey: CBORTaggedEncodable {
             return .array([.unsigned(1), .bytes(key.data)])
         case .ed25519(let key):
             return .array([.unsigned(2), .bytes(key.data)])
+        case .ssh(let key):
+            return .tagged(.sshTextPublicKey, .text(key.openssh))
         case .mldsa(let key):
             return key.cbor
         }
@@ -134,8 +157,10 @@ extension SigningPublicKey: CBORTaggedDecodable {
                     reason: "invalid signing public key discriminator"
                 )
             }
-        case .tagged(let tag, _):
+        case .tagged(let tag, let item):
             switch tag {
+            case .sshTextPublicKey:
+                self = .ssh(try SSHPublicKey(openssh: try textString(item)))
             case .mldsaPublicKey:
                 self = .mldsa(try MLDSAPublicKey(cbor: untaggedCBOR))
             default:
@@ -171,6 +196,8 @@ extension SigningPublicKey: CustomStringConvertible {
             displayKey = key.description
         case .ed25519(let key):
             displayKey = key.description
+        case .ssh(let key):
+            displayKey = "SSHPublicKey(\(hexEncode(Data(key.openssh.utf8).prefix(4))))"
         case .mldsa(let key):
             displayKey = key.description
         }

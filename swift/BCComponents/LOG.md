@@ -88,3 +88,16 @@ COMPLETED
 - Restored full symmetric module test parity (`6/6`) including CBOR byte-vector and roundtrip checks
 - Verification passed: `swift test` in `swift/BCComponents` (`80` tests passing, `0` failures)
 - Remaining default-feature gap: SSH signing/key support parity (algorithms, CBOR/UR/text vectors, and related tests)
+
+## 2026-02-22 — Stage 2: Code (Resume)
+STARTED
+- Implementing Rust SSH signing/key support in Swift without introducing legacy Swift package dependencies
+- Porting SSH CBOR/signing parity tests and revalidating package test suites
+
+## 2026-02-22 — Stage 2: Code (Resume)
+COMPLETED
+- Added SSH key/signature support in `BCComponents` for Ed25519 and ECDSA P-256/P-384 (`SSHSupport.swift`, signing enums, CBOR roundtrips)
+- Added `PrivateKeyBase` SSH key/public-key aggregate helpers (`sshSigningPrivateKey`, `sshPrivateKeys`, `sshPublicKeys`)
+- Added SSH parity tests to `SigningTests.swift` (keypair, options-required behavior, CBOR roundtrip)
+- Verification passed: `swift test --filter SigningTests` and class-wise full suite run (`85` tests passing, `0` failures)
+- Remaining default-feature gap: Rust SSH parity items not yet ported (DSA/P-521 and related vectors)

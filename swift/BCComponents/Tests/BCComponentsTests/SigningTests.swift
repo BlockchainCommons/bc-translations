@@ -19,6 +19,16 @@ final class SigningTests: XCTestCase {
         .newEd25519(try! Ed25519PrivateKey(keyData))
     }
 
+    private func assertSSHKeypair(_ scheme: SignatureScheme) throws {
+        let (privateKey, publicKey) = scheme.keypair()
+        let signature = try privateKey.signWithOptions(
+            message,
+            options: .ssh(namespace: "ssh", hashAlg: .sha512)
+        )
+        XCTAssertTrue(publicKey.verify(signature, message))
+        XCTAssertEqual(signature.scheme(), scheme)
+    }
+
     func testLibECDSAAndSchnorrVector() {
         var rng = makeFakeRandomNumberGenerator()
         let privateKey = ecdsaNewPrivateKeyUsing(&rng)
@@ -176,5 +186,38 @@ final class SigningTests: XCTestCase {
             derivedPrivate.urString(),
             "ur:signing-private-key/hdcxahsfgobtpkkpahmnhsfmhnjnmkmkzeuraonneshkbysseyjkoeayrlvtvsmndicwkkvattfs"
         )
+    }
+
+    func testSSHEd25519Keypair() throws {
+        try assertSSHKeypair(.sshEd25519)
+    }
+
+    func testSSHEcdsaP256Keypair() throws {
+        try assertSSHKeypair(.sshEcdsaP256)
+    }
+
+    func testSSHEcdsaP384Keypair() throws {
+        try assertSSHKeypair(.sshEcdsaP384)
+    }
+
+    func testSSHSignRequiresOptions() throws {
+        let (privateKey, _) = SignatureScheme.sshEd25519.keypair()
+        XCTAssertThrowsError(try privateKey.sign(message))
+    }
+
+    func testSSHCBORRoundtrip() throws {
+        let (privateKey, publicKey) = SignatureScheme.sshEd25519.keypairOpt("Key comment.")
+        let signature = try privateKey.signWithOptions(
+            message,
+            options: .ssh(namespace: "test", hashAlg: .sha256)
+        )
+
+        let privateKeyDecoded = try SigningPrivateKey(cbor: privateKey.cbor)
+        let publicKeyDecoded = try SigningPublicKey(cbor: publicKey.cbor)
+        let signatureDecoded = try Signature(cbor: signature.cbor)
+
+        XCTAssertEqual(privateKeyDecoded, privateKey)
+        XCTAssertEqual(publicKeyDecoded, publicKey)
+        XCTAssertEqual(signatureDecoded, signature)
     }
 }

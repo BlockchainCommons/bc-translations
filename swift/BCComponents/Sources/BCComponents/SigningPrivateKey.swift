@@ -6,12 +6,14 @@ import Foundation
 
 public enum SigningOptions {
     case schnorr(rng: AnyBCRandomNumberGenerator)
+    case ssh(namespace: String, hashAlg: SSHHashAlgorithm)
 }
 
 public enum SigningPrivateKey: Equatable, Hashable, Sendable {
     case schnorr(ECPrivateKey)
     case ecdsa(ECPrivateKey)
     case ed25519(Ed25519PrivateKey)
+    case ssh(SSHPrivateKey)
     case mldsa(MLDSAPrivateKey)
 
     public static func newSchnorr(_ key: ECPrivateKey) -> SigningPrivateKey {
@@ -24,6 +26,10 @@ public enum SigningPrivateKey: Equatable, Hashable, Sendable {
 
     public static func newEd25519(_ key: Ed25519PrivateKey) -> SigningPrivateKey {
         .ed25519(key)
+    }
+
+    public static func newSSH(_ key: SSHPrivateKey) -> SigningPrivateKey {
+        .ssh(key)
     }
 
     public static func newMLDSA(_ key: MLDSAPrivateKey) -> SigningPrivateKey {
@@ -63,6 +69,17 @@ public enum SigningPrivateKey: Equatable, Hashable, Sendable {
         toEd25519() != nil
     }
 
+    public func toSSH() -> SSHPrivateKey? {
+        if case .ssh(let key) = self {
+            return key
+        }
+        return nil
+    }
+
+    public func isSSH() -> Bool {
+        toSSH() != nil
+    }
+
     public func toMLDSA() -> MLDSAPrivateKey? {
         if case .mldsa(let key) = self {
             return key
@@ -82,6 +99,8 @@ public enum SigningPrivateKey: Equatable, Hashable, Sendable {
             return .ecdsa(key.publicKey())
         case .ed25519(let key):
             return .ed25519(key.publicKey())
+        case .ssh(let key):
+            return .ssh(key.publicKey)
         case .mldsa:
             throw BCComponentsError.general("Deriving ML-DSA public key not supported")
         }
@@ -120,6 +139,23 @@ public enum SigningPrivateKey: Equatable, Hashable, Sendable {
         return try .ed25519FromData(key.sign(message))
     }
 
+    private func sshSign(
+        _ message: some DataProtocol,
+        namespace: String,
+        hashAlg: SSHHashAlgorithm
+    ) throws(BCComponentsError) -> Signature {
+        guard let key = toSSH() else {
+            throw BCComponentsError.ssh("Invalid key type for SSH signing")
+        }
+        let signature = try signSSH(
+            privateKey: key,
+            namespace: namespace,
+            hashAlgorithm: hashAlg,
+            message: Data(message)
+        )
+        return .ssh(signature)
+    }
+
     private func mldsaSign(
         _ message: some DataProtocol
     ) throws(BCComponentsError) -> Signature {
@@ -148,6 +184,13 @@ extension SigningPrivateKey: Signer {
             return try ecdsaSign(message)
         case .ed25519:
             return try ed25519Sign(message)
+        case .ssh:
+            if case .some(.ssh(let namespace, let hashAlg)) = options {
+                return try sshSign(message, namespace: namespace, hashAlg: hashAlg)
+            }
+            throw BCComponentsError.ssh(
+                "Missing namespace and hash algorithm for SSH signing"
+            )
         case .mldsa:
             return try mldsaSign(message)
         }
@@ -162,7 +205,7 @@ extension SigningPrivateKey: Verifier {
                 return false
             }
             return key.schnorrPublicKey().schnorrVerify(schnorrSignature, message)
-        case .ecdsa, .ed25519, .mldsa:
+        case .ecdsa, .ed25519, .ssh, .mldsa:
             return false
         }
     }
@@ -181,6 +224,8 @@ extension SigningPrivateKey: CBORTaggedEncodable {
             return .array([.unsigned(1), .bytes(key.data)])
         case .ed25519(let key):
             return .array([.unsigned(2), .bytes(key.data)])
+        case .ssh(let key):
+            return .tagged(.sshTextPrivateKey, .text(key.openssh))
         case .mldsa(let key):
             return key.cbor
         }
@@ -217,8 +262,10 @@ extension SigningPrivateKey: CBORTaggedDecodable {
                     reason: "invalid signing private key discriminator"
                 )
             }
-        case .tagged(let tag, _):
+        case .tagged(let tag, let item):
             switch tag {
+            case .sshTextPrivateKey:
+                self = .ssh(try SSHPrivateKey(openssh: try textString(item)))
             case .mldsaPrivateKey:
                 self = .mldsa(try MLDSAPrivateKey(cbor: untaggedCBOR))
             default:
@@ -260,6 +307,8 @@ extension SigningPrivateKey: CustomStringConvertible {
             displayKey = "ECDSAPrivateKey(\(key.refHexShort()))"
         case .ed25519(let key):
             displayKey = key.description
+        case .ssh(let key):
+            displayKey = "SSHPrivateKey(\(hexEncode(Data(key.openssh.utf8).prefix(4))))"
         case .mldsa(let key):
             displayKey = key.description
         }

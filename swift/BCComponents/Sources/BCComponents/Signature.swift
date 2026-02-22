@@ -8,6 +8,7 @@ public enum Signature: Equatable, Sendable {
     case schnorr(Data)
     case ecdsa(Data)
     case ed25519(Data)
+    case ssh(SSHSignature)
     case mldsa(MLDSASignature)
 
     public static func schnorrFromData(_ data: Data) throws(BCComponentsError) -> Signature {
@@ -71,6 +72,13 @@ public enum Signature: Equatable, Sendable {
         return nil
     }
 
+    public func toSSH() -> SSHSignature? {
+        if case .ssh(let signature) = self {
+            return signature
+        }
+        return nil
+    }
+
     public func scheme() -> SignatureScheme {
         switch self {
         case .schnorr:
@@ -79,6 +87,8 @@ public enum Signature: Equatable, Sendable {
             return .ecdsa
         case .ed25519:
             return .ed25519
+        case .ssh(let signature):
+            return signature.algorithm.signatureScheme
         case .mldsa(let signature):
             switch signature.level() {
             case .mldsa44:
@@ -105,6 +115,8 @@ extension Signature: CBORTaggedEncodable {
             return .array([.unsigned(1), .bytes(signature)])
         case .ed25519(let signature):
             return .array([.unsigned(2), .bytes(signature)])
+        case .ssh(let signature):
+            return .tagged(.sshTextSignature, .text(signature.pem))
         case .mldsa(let signature):
             return signature.cbor
         }
@@ -143,8 +155,10 @@ extension Signature: CBORTaggedDecodable {
                     reason: "invalid signature discriminator"
                 )
             }
-        case .tagged(let tag, _):
+        case .tagged(let tag, let item):
             switch tag {
+            case .sshTextSignature:
+                self = .ssh(try SSHSignature(pem: try textString(item)))
             case .mldsaSignature:
                 self = .mldsa(try MLDSASignature(cbor: untaggedCBOR))
             default:
@@ -173,6 +187,8 @@ extension Signature: CustomDebugStringConvertible {
             return "ECDSA(data: \(hexEncode(signature)))"
         case .ed25519(let signature):
             return "Ed25519(data: \(hexEncode(signature)))"
+        case .ssh(let signature):
+            return "SSH(data: \(hexEncode(Data(signature.pem.utf8))))"
         case .mldsa(let signature):
             return "MLDSA(data: \(hexEncode(signature.asBytes())))"
         }

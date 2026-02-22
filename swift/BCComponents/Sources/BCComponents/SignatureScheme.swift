@@ -5,6 +5,9 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
     case schnorr
     case ecdsa
     case ed25519
+    case sshEd25519
+    case sshEcdsaP256
+    case sshEcdsaP384
     case mldsa44
     case mldsa65
     case mldsa87
@@ -27,6 +30,21 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
             return (privateKey, try! privateKey.publicKey())
         case .ed25519:
             let privateKey = SigningPrivateKey.newEd25519(Ed25519PrivateKey.new())
+            return (privateKey, try! privateKey.publicKey())
+        case .sshEd25519:
+            let privateKey = try! SigningPrivateKey.newSSH(
+                SSHPrivateKey.generate(algorithm: .ed25519, comment: comment)
+            )
+            return (privateKey, try! privateKey.publicKey())
+        case .sshEcdsaP256:
+            let privateKey = try! SigningPrivateKey.newSSH(
+                SSHPrivateKey.generate(algorithm: .ecdsaP256, comment: comment)
+            )
+            return (privateKey, try! privateKey.publicKey())
+        case .sshEcdsaP384:
+            let privateKey = try! SigningPrivateKey.newSSH(
+                SSHPrivateKey.generate(algorithm: .ecdsaP384, comment: comment)
+            )
             return (privateKey, try! privateKey.publicKey())
         case .mldsa44:
             let (privateKey, publicKey) = MLDSA.mldsa44.keypair()
@@ -60,7 +78,7 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
                 Ed25519PrivateKey.newUsing(rng: &rng)
             )
             return (privateKey, try privateKey.publicKey())
-        case .mldsa44, .mldsa65, .mldsa87:
+        case .mldsa44, .mldsa65, .mldsa87, .sshEd25519, .sshEcdsaP256, .sshEcdsaP384:
             throw BCComponentsError.general(
                 "Deterministic keypair generation not supported for this signature scheme"
             )
