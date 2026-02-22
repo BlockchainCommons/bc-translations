@@ -7,12 +7,12 @@ struct ExampleTests {
     @Test func testEncode() throws {
         let cbor: CBOR = [1, 2, 3]
         let ur = try UR("test", cbor)
-        #expect(ur.string == "ur:test/lsadaoaxjygonesw")
+        #expect(ur.urString == "ur:test/lsadaoaxjygonesw")
     }
 
     @Test func testDecode() throws {
-        let ur = try UR.fromURString("ur:test/lsadaoaxjygonesw")
-        #expect(ur.urTypeStr == "test")
+        let ur = try UR(urString:"ur:test/lsadaoaxjygonesw")
+        #expect(ur.urTypeString == "test")
         #expect(ur.cbor == ([1, 2, 3] as CBOR))
     }
 

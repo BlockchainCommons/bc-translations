@@ -37,7 +37,7 @@ public final class MultipartDecoder {
 
         let part: FountainPart
         do {
-            part = try FountainPart.fromCbor(decoded.1)
+            part = try FountainPart(cborBytes: decoded.1)
         } catch let error as FountainError {
             throw URError(fountain: error)
         }
@@ -75,7 +75,7 @@ public final class MultipartDecoder {
             let cbor = try CBOR(Data(messageData))
             return UR(urType, cbor)
         } catch {
-            throw URError.fromCBORError(error)
+            throw URError(cborError: error)
         }
     }
 

@@ -22,7 +22,7 @@ public extension UREncodable {
 
     /// Returns the UR string representation of this value.
     func urString() -> String {
-        ur().string
+        ur().urString
     }
 }
 
@@ -47,7 +47,7 @@ public extension URDecodable {
 
     /// Decodes a value from a UR string.
     static func fromURString(_ urString: String) throws -> Self {
-        try fromUR(UR.fromURString(urString))
+        try fromUR(UR(urString: urString))
     }
 }
 

@@ -8,14 +8,14 @@ struct URTests {
         let cbor: CBOR = [1, 2, 3]
         let ur = try UR("test", cbor)
 
-        #expect(ur.string == "ur:test/lsadaoaxjygonesw")
+        #expect(ur.urString == "ur:test/lsadaoaxjygonesw")
 
-        let decoded = try UR.fromURString(ur.string)
-        #expect(decoded.urTypeStr == "test")
+        let decoded = try UR(urString:ur.urString)
+        #expect(decoded.urTypeString == "test")
         #expect(decoded.cbor == cbor)
 
-        let capsDecoded = try UR.fromURString("UR:TEST/LSADAOAXJYGONESW")
-        #expect(capsDecoded.urTypeStr == "test")
+        let capsDecoded = try UR(urString:"UR:TEST/LSADAOAXJYGONESW")
+        #expect(capsDecoded.urTypeString == "test")
         #expect(capsDecoded.cbor == cbor)
     }
 
@@ -130,7 +130,7 @@ struct URTests {
         var encoder = try FountainEncoder(message: data, maxFragmentLength: 5)
 
         let part = encoder.nextPart()
-        let body = Bytewords.encode(try part.cbor(), style: .minimal)
+        let body = Bytewords.encode(try part.cborEncoded(), style: .minimal)
         let urString = "ur:my-scheme/\(part.sequenceId)/\(body)"
 
         #expect(urString == "ur:my-scheme/1-2/lpadaobkcywkwmhfwnfeghihjtcxiansvomopr")

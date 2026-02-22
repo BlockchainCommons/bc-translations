@@ -24,9 +24,9 @@ struct URCodableTests {
     @Test func testUrCodable() throws {
         let test = TestLeaf("test")
         let ur = test.ur()
-        #expect(ur.string == "ur:leaf/iejyihjkjygupyltla")
+        #expect(ur.urString == "ur:leaf/iejyihjkjygupyltla")
 
-        let decoded = try TestLeaf.fromURString(ur.string)
+        let decoded = try TestLeaf.fromURString(ur.urString)
         #expect(decoded == test)
     }
 }

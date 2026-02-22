@@ -117,12 +117,12 @@ struct BytewordsTests {
     }
 
     @Test func testBytemojiUniqueness() {
-        #expect(BYTEMOJIS.count == 256)
-        #expect(Set(BYTEMOJIS).count == BYTEMOJIS.count)
+        #expect(bytemojis.count == 256)
+        #expect(Set(bytemojis).count == bytemojis.count)
     }
 
     @Test func testBytemojiLengths() {
-        let overLength = BYTEMOJIS.filter { emoji in
+        let overLength = bytemojis.filter { emoji in
             emoji.utf8.count > 4
         }
         #expect(overLength.isEmpty)

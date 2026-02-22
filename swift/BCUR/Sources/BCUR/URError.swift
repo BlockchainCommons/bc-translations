@@ -1,8 +1,5 @@
 import Foundation
 
-/// The result type for BCUR operations.
-public typealias URResult<T> = Result<T, URError>
-
 /// Errors that can occur in BCUR operations.
 public enum URError: Error, Equatable, Sendable {
     /// An error produced by the internal UR codec layer.
@@ -54,9 +51,9 @@ extension URError: LocalizedError {
 }
 
 extension URError {
-    static func fromCBORError(_ error: Error) -> URError {
+    init(cborError error: Error) {
         let message = (error as? LocalizedError)?.errorDescription ?? String(describing: error)
-        return .cbor(message)
+        self = .cbor(message)
     }
 
     init(bytewords error: BytewordsCodecError) {

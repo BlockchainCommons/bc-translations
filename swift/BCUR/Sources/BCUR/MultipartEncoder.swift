@@ -13,7 +13,7 @@ public final class MultipartEncoder {
         } catch let error as FountainError {
             throw URError(fountain: error)
         }
-        self.urType = ur.urTypeStr
+        self.urType = ur.urTypeString
     }
 
     /// Returns the next multipart UR string.
@@ -21,7 +21,7 @@ public final class MultipartEncoder {
         let part = encoder.nextPart()
 
         do {
-            let body = Bytewords.encode(try part.cbor(), style: .minimal)
+            let body = Bytewords.encode(try part.cborEncoded(), style: .minimal)
             return "ur:\(urType)/\(part.sequenceId)/\(body)"
         } catch let error as FountainError {
             throw URError(fountain: error)

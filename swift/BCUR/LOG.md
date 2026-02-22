@@ -78,3 +78,24 @@ STARTED
 COMPLETED
 - Added Swift lesson(s) to `memory/swift.md`
 - Added a generalized Rule One lesson to `memory/translation-lessons.md`
+
+## 2026-02-21 — Stage 4: Review Fluency (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT 5.3 Codex)
+- Reviewing naming conventions, error handling, API design, structure, and documentation
+
+## 2026-02-21 — Stage 4: Review Fluency (Cross-Model)
+COMPLETED
+- Fluency findings: 7 applied
+  - Removed unused `URResult<T>` typealias (Rust-ism)
+  - Renamed `BYTEWORDS`/`BYTEMOJIS` to `bytewords`/`bytemojis` (Swift camelCase convention)
+  - Renamed `urTypeStr` to `urTypeString` (spell out words per Swift guidelines)
+  - Renamed `UR.fromURString(_:)` to `UR(urString:)` (prefer init over static factory)
+  - Renamed `UR.string` to `UR.urString` (more descriptive property name)
+  - Renamed `URError.fromCBORError(_:)` to `URError(cborError:)` (prefer init)
+  - Removed `FountainPart.deepCopy()` (value type, copying is implicit)
+  - Renamed `FountainPart.fromCbor(_:)` to `init(cborBytes:)` and `cbor()` to `cborEncoded()`
+- All API changes propagated through source and tests
+- Verification: `swift test` (42 tests) and `swift test -Xswiftc -warnings-as-errors` both pass
+- No downstream Swift dependents require repair (none translated yet)
+- Verdict: IDIOMATIC

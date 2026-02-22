@@ -17,10 +17,11 @@ public struct UR: Equatable, Sendable {
         self.init(try URType(urType), cbor)
     }
 
-    /// Parses a UR from a UR string.
+    /// Parses a UR from its string representation.
     ///
-    /// Input is normalized to lowercase before decoding to match Rust behavior.
-    public static func fromURString(_ urString: String) throws -> UR {
+    /// Input is normalized to lowercase before decoding to support
+    /// uppercase QR payloads.
+    public init(urString: String) throws {
         let lower = urString.lowercased()
 
         guard let stripScheme = lower.stripPrefix("ur:") else {
@@ -47,20 +48,20 @@ public struct UR: Equatable, Sendable {
 
         do {
             let cbor = try CBOR(Data(decoded.1))
-            return UR(urType, cbor)
+            self.init(urType, cbor)
         } catch {
-            throw URError.fromCBORError(error)
+            throw URError(cborError: error)
         }
     }
 
     /// The UR string representation.
-    public var string: String {
+    public var urString: String {
         UREncoding.encode(Array(value.cborData), urType: typeValue.string)
     }
 
     /// The UR string in uppercase, optimized for QR payload density.
     public var qrString: String {
-        string.uppercased()
+        urString.uppercased()
     }
 
     /// The uppercase QR string as UTF-8 bytes.
@@ -85,8 +86,8 @@ public struct UR: Equatable, Sendable {
         typeValue
     }
 
-    /// The UR type string.
-    public var urTypeStr: String {
+    /// The UR type as a string.
+    public var urTypeString: String {
         typeValue.string
     }
 
@@ -98,7 +99,7 @@ public struct UR: Equatable, Sendable {
 
 extension UR: CustomStringConvertible {
     public var description: String {
-        string
+        urString
     }
 }
 

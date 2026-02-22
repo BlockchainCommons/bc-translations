@@ -104,7 +104,7 @@ internal struct FountainDecoder: Sendable {
             throw FountainError.expectedItem
         }
 
-        decoded[index] = part.deepCopy()
+        decoded[index] = part
         queue.append((index, part))
         try processQueue()
     }
@@ -134,7 +134,7 @@ internal struct FountainDecoder: Sendable {
                     guard let newIndex = newIndexes.first else {
                         throw FountainError.expectedItem
                     }
-                    decoded[newIndex] = part.deepCopy()
+                    decoded[newIndex] = part
                     queue.append((newIndex, part))
                 } else {
                     buffer[newIndexes] = part
@@ -169,7 +169,7 @@ internal struct FountainDecoder: Sendable {
             guard let index = indexes.first else {
                 throw FountainError.expectedItem
             }
-            decoded[index] = part.deepCopy()
+            decoded[index] = part
             queue.append((index, part))
         } else {
             buffer[indexes] = part

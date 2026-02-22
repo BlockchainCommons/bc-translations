@@ -25,11 +25,8 @@ internal struct FountainPart: Equatable, Sendable {
         "\(sequence)-\(sequenceCount)"
     }
 
-    func deepCopy() -> FountainPart {
-        self
-    }
-
-    func cbor() throws -> [UInt8] {
+    /// Encodes this part as a CBOR byte array.
+    func cborEncoded() throws -> [UInt8] {
         let sequence = try u32(sequence)
         let sequenceCount = try u32(sequenceCount)
         let messageLength = try u32(messageLength)
@@ -45,7 +42,17 @@ internal struct FountainPart: Equatable, Sendable {
         return Array(cborArray.cborData)
     }
 
-    static func fromCbor(_ bytes: [UInt8]) throws -> FountainPart {
+    private func u32(_ value: Int) throws -> UInt32 {
+        guard let converted = UInt32(exactly: value) else {
+            throw FountainError.cborEncode("converting usize to u32")
+        }
+        return converted
+    }
+}
+
+extension FountainPart {
+    /// Decodes a fountain part from CBOR bytes.
+    init(cborBytes bytes: [UInt8]) throws {
         do {
             let cbor = try CBOR(Data(bytes))
             guard case .array(let values) = cbor else {
@@ -56,19 +63,11 @@ internal struct FountainPart: Equatable, Sendable {
                 throw FountainError.cborDecode("decode error: invalid CBOR array length")
             }
 
-            let sequence = try intFromU32(values[0])
-            let sequenceCount = try intFromU32(values[1])
-            let messageLength = try intFromU32(values[2])
-            let checksum = try decodeU32(values[3])
-            let data = try decodeBytes(values[4])
-
-            return FountainPart(
-                sequence: sequence,
-                sequenceCount: sequenceCount,
-                messageLength: messageLength,
-                checksum: checksum,
-                data: data
-            )
+            self.sequence = try Self.intFromU32(values[0])
+            self.sequenceCount = try Self.intFromU32(values[1])
+            self.messageLength = try Self.intFromU32(values[2])
+            self.checksum = try Self.decodeU32(values[3])
+            self.data = try Self.decodeBytes(values[4])
         } catch let error as FountainError {
             throw error
         } catch {
@@ -76,13 +75,6 @@ internal struct FountainPart: Equatable, Sendable {
                 (error as? LocalizedError)?.errorDescription ?? String(describing: error)
             )
         }
-    }
-
-    private func u32(_ value: Int) throws -> UInt32 {
-        guard let converted = UInt32(exactly: value) else {
-            throw FountainError.cborEncode("converting usize to u32")
-        }
-        return converted
     }
 
     private static func intFromU32(_ cbor: CBOR) throws -> Int {

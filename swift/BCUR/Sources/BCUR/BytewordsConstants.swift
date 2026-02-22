@@ -1,5 +1,5 @@
 /// The 256-word bytewords table.
-public let BYTEWORDS: [String] = [
+public let bytewords: [String] = [
     "able", "acid", "also", "apex", "aqua", "arch", "atom", "aunt", "away",
     "axis", "back", "bald", "barn", "belt", "beta", "bias", "blue", "body",
     "brag", "brew", "bulb", "buzz", "calm", "cash", "cats", "chef", "city",
@@ -32,7 +32,7 @@ public let BYTEWORDS: [String] = [
 ]
 
 /// See: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2024-008-bytemoji.md
-public let BYTEMOJIS: [String] = [
+public let bytemojis: [String] = [
     "😀", "😂", "😆", "😉", "🙄", "😋", "😎", "😍", "😘", "😭", "🫠", "🥱",
     "🤩", "😶", "🤨", "🫥", "🥵", "🥶", "😳", "🤪", "😵", "😡", "🤢", "😇",
     "🤠", "🤡", "🥳", "🥺", "😬", "🤑", "🙃", "🤯", "😈", "👹", "👺", "💀",
@@ -58,8 +58,8 @@ public let BYTEMOJIS: [String] = [
 ]
 
 internal enum BytewordsConstants {
-    static let words = BYTEWORDS
-    static let bytemojis = BYTEMOJIS
+    static let words = BCUR.bytewords
+    static let bytemojis = BCUR.bytemojis
 
     static let minimals: [String] = words.map { word in
         let first = word.first ?? " "

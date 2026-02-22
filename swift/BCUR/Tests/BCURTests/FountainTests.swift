@@ -146,7 +146,7 @@ struct FountainTests {
 
         #expect(encoder.fragmentCount == (size / maxFragmentLength + 1))
         for expected in expectedParts {
-            #expect(bytesToHex(try encoder.nextPart().cbor()) == expected)
+            #expect(bytesToHex(try encoder.nextPart().cborEncoded()) == expected)
         }
     }
 
@@ -291,68 +291,68 @@ struct FountainTests {
             data: [1, 5, 3, 3, 5]
         )
 
-        let cbor = try part.cbor()
-        let part2 = try FountainPart.fromCbor(cbor)
-        let cbor2 = try part2.cbor()
+        let cbor = try part.cborEncoded()
+        let part2 = try FountainPart(cborBytes:cbor)
+        let cbor2 = try part2.cborEncoded()
         #expect(cbor == cbor2)
     }
 
     @Test func testPartFromCborErrors() {
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([0x18])
+            _ = try FountainPart(cborBytes:[0x18])
         }
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([0x01])
+            _ = try FountainPart(cborBytes:[0x01])
         }
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([0x84, 0x01, 0x02, 0x03, 0x04])
+            _ = try FountainPart(cborBytes:[0x84, 0x01, 0x02, 0x03, 0x04])
         }
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([0x86, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06])
+            _ = try FountainPart(cborBytes:[0x86, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06])
         }
 
         // First four entries must be unsigned integers.
         var cbor: [UInt8] = [0x85, 0x01, 0x02, 0x03, 0x04, 0x41, 0x05]
         for index in 1...4 {
-            #expect((try? FountainPart.fromCbor(cbor)) != nil)
+            #expect((try? FountainPart(cborBytes:cbor)) != nil)
             cbor[index] = 0x41
             #expect(throws: FountainError.self) {
-                _ = try FountainPart.fromCbor(cbor)
+                _ = try FountainPart(cborBytes:cbor)
             }
             cbor[index] = UInt8(index)
         }
 
         // Fifth entry must be bytes.
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([0x85, 0x01, 0x02, 0x03, 0x04, 0x05])
+            _ = try FountainPart(cborBytes:[0x85, 0x01, 0x02, 0x03, 0x04, 0x05])
         }
     }
 
     @Test func testPartFromCborUnsignedTypes() {
         // u8
-        #expect((try? FountainPart.fromCbor([0x85, 0x01, 0x02, 0x03, 0x04, 0x41, 0x05])) != nil)
+        #expect((try? FountainPart(cborBytes:[0x85, 0x01, 0x02, 0x03, 0x04, 0x41, 0x05])) != nil)
 
         // u16
-        #expect((try? FountainPart.fromCbor([
+        #expect((try? FountainPart(cborBytes:[
             0x85, 0x19, 0x01, 0x02, 0x19, 0x03, 0x04, 0x19, 0x05, 0x06, 0x19, 0x07, 0x08, 0x41, 0x05,
         ])) != nil)
 
         // u32
-        #expect((try? FountainPart.fromCbor([
+        #expect((try? FountainPart(cborBytes:[
             0x85, 0x1a, 0x01, 0x02, 0x03, 0x04, 0x1a, 0x05, 0x06, 0x07, 0x08,
             0x1a, 0x09, 0x10, 0x11, 0x12, 0x1a, 0x13, 0x14, 0x15, 0x16, 0x41, 0x05,
         ])) != nil)
 
         // u64 out-of-range for u32 fields.
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([
+            _ = try FountainPart(cborBytes:[
                 0x85, 0x1b, 0x01, 0x02, 0x03, 0x04, 0x0a, 0x0b, 0x0c, 0x0d,
                 0x1a, 0x05, 0x06, 0x07, 0x08, 0x1a, 0x09, 0x10, 0x11, 0x12,
                 0x1a, 0x13, 0x14, 0x15, 0x16, 0x41, 0x05,
             ])
         }
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([
+            _ = try FountainPart(cborBytes:[
                 0x85, 0x1a, 0x01, 0x02, 0x03, 0x04,
                 0x1b, 0x05, 0x06, 0x07, 0x08, 0x0a, 0x0b, 0x0c, 0x0d,
                 0x1a, 0x09, 0x10, 0x11, 0x12, 0x1a, 0x13, 0x14, 0x15, 0x16,
@@ -360,14 +360,14 @@ struct FountainTests {
             ])
         }
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([
+            _ = try FountainPart(cborBytes:[
                 0x85, 0x1a, 0x01, 0x02, 0x03, 0x04, 0x1a, 0x05, 0x06, 0x07, 0x08,
                 0x1b, 0x09, 0x10, 0x11, 0x12, 0x0a, 0x0b, 0x0c, 0x0d,
                 0x1a, 0x13, 0x14, 0x15, 0x16, 0x41, 0x05,
             ])
         }
         #expect(throws: FountainError.self) {
-            _ = try FountainPart.fromCbor([
+            _ = try FountainPart(cborBytes:[
                 0x85, 0x1a, 0x01, 0x02, 0x03, 0x04, 0x1a, 0x05, 0x06, 0x07, 0x08,
                 0x1a, 0x09, 0x10, 0x11, 0x12,
                 0x1b, 0x13, 0x14, 0x15, 0x16, 0x0a, 0x0b, 0x0c, 0x0d,
