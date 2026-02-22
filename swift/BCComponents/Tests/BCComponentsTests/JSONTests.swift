@@ -5,22 +5,22 @@ import XCTest
 final class JSONTests: XCTestCase {
     func testJSONCreation() {
         let json = JSON.fromString(#"{"key": "value"}"#)
-        XCTAssertEqual(json.asString(), #"{"key": "value"}"#)
-        XCTAssertEqual(json.len(), 16)
-        XCTAssertFalse(json.isEmpty())
+        XCTAssertEqual(json.stringValue, #"{"key": "value"}"#)
+        XCTAssertEqual(json.count, 16)
+        XCTAssertFalse(json.isEmpty)
     }
 
     func testJSONFromBytes() {
         let data = Data("[1, 2, 3]".utf8)
-        let json = JSON.fromData(data)
-        XCTAssertEqual(json.asBytes(), data)
-        XCTAssertEqual(json.asString(), "[1, 2, 3]")
+        let json = JSON(data)
+        XCTAssertEqual(json.data, data)
+        XCTAssertEqual(json.stringValue, "[1, 2, 3]")
     }
 
     func testJSONEmpty() {
         let json = JSON.fromString("")
-        XCTAssertTrue(json.isEmpty())
-        XCTAssertEqual(json.len(), 0)
+        XCTAssertTrue(json.isEmpty)
+        XCTAssertEqual(json.count, 0)
     }
 
     func testJSONCBORRoundtrip() throws {
@@ -31,7 +31,7 @@ final class JSONTests: XCTestCase {
 
     func testJSONHexRoundtrip() throws {
         let json = JSON.fromString("test")
-        let decoded = try JSON.fromHex(json.hex())
+        let decoded = try JSON.fromHex(json.hex)
         XCTAssertEqual(json, decoded)
     }
 
@@ -46,8 +46,8 @@ final class JSONTests: XCTestCase {
         XCTAssertEqual(json, copy)
     }
 
-    func testJSONAsBytes() {
+    func testJSONData() {
         let json = JSON.fromString("data")
-        XCTAssertEqual(json.asBytes(), Data("data".utf8))
+        XCTAssertEqual(json.data, Data("data".utf8))
     }
 }

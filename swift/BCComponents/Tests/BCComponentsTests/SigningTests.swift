@@ -26,7 +26,7 @@ final class SigningTests: XCTestCase {
             options: .ssh(namespace: "ssh", hashAlg: .sha512)
         )
         XCTAssertTrue(publicKey.verify(signature, message))
-        XCTAssertEqual(signature.scheme(), scheme)
+        XCTAssertEqual(signature.scheme, scheme)
     }
 
     func testLibECDSAAndSchnorrVector() {
@@ -233,7 +233,7 @@ final class SigningTests: XCTestCase {
 
     func testSSHEd25519DeterministicVector() throws {
         let seed = hexData("59f2293a5bce7d4de59e71b4207ac5d2")
-        let privateKey = try PrivateKeyBase.fromData(seed)
+        let privateKey = try PrivateKeyBase(seed)
             .sshSigningPrivateKey(.ed25519, comment: "Key comment.")
         let publicKey = try privateKey.publicKey()
 
@@ -268,7 +268,7 @@ final class SigningTests: XCTestCase {
 
     func testSSHDSASigningVector() throws {
         let seed = hexData("59f2293a5bce7d4de59e71b4207ac5d2")
-        let privateKey = try PrivateKeyBase.fromData(seed)
+        let privateKey = try PrivateKeyBase(seed)
             .sshSigningPrivateKey(.dsa, comment: "Key comment.")
         let publicKey = try privateKey.publicKey()
 

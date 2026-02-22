@@ -17,10 +17,6 @@ public struct XID: Equatable, Hashable, Comparable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> XID {
-        try XID(value)
-    }
-
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> XID {
         try XID(parseHex(hex))
     }
@@ -39,15 +35,11 @@ public struct XID: Equatable, Hashable, Comparable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func toHex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
-    public func shortDescription() -> String {
+    public var shortDescription: String {
         refHexShort()
     }
 
@@ -78,13 +70,13 @@ extension XID: ReferenceProvider {
 
 extension XID: CustomStringConvertible {
     public var description: String {
-        "XID(\(shortDescription()))"
+        "XID(\(shortDescription))"
     }
 }
 
 extension XID: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "XID(\(toHex()))"
+        "XID(\(hex))"
     }
 }
 

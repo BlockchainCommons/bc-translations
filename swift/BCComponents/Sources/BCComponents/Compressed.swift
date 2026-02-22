@@ -55,15 +55,15 @@ public struct Compressed: Equatable, Sendable {
         }
     }
 
-    public func checksum() -> UInt32 {
+    public var checksum: UInt32 {
         checksumValue
     }
 
-    public func decompressedSize() -> Int {
+    public var decompressedSize: Int {
         decompressedSizeValue
     }
 
-    public func compressedData() -> Data {
+    public var compressedData: Data {
         compressedDataValue
     }
 
@@ -81,19 +81,19 @@ public struct Compressed: Equatable, Sendable {
         return decompressed
     }
 
-    public func compressedSize() -> Int {
+    public var compressedSize: Int {
         compressedDataValue.count
     }
 
-    public func compressionRatio() -> Double {
-        Double(compressedSize()) / Double(decompressedSizeValue)
+    public var compressionRatio: Double {
+        Double(compressedSize) / Double(decompressedSizeValue)
     }
 
-    public func digestOpt() -> Digest? {
+    public var digestOpt: Digest? {
         digestValue
     }
 
-    public func hasDigest() -> Bool {
+    public var hasDigest: Bool {
         digestValue != nil
     }
 }
@@ -112,10 +112,10 @@ extension Compressed: CustomStringConvertible {
 
 extension Compressed: CustomDebugStringConvertible {
     public var debugDescription: String {
-        let ratio = compressionRatio()
+        let ratio = compressionRatio
         let ratioText = ratio.isNaN ? "NaN" : String(format: "%.2f", ratio)
-        let digestText = digestOpt()?.shortDescription() ?? "None"
-        return "Compressed(checksum: \(hexEncode(checksumValue.bigEndianData)), size: \(compressedSize())/\(decompressedSizeValue), ratio: \(ratioText), digest: \(digestText))"
+        let digestText = digestOpt?.shortDescription ?? "None"
+        return "Compressed(checksum: \(hexEncode(checksumValue.bigEndianData)), size: \(compressedSize)/\(decompressedSizeValue), ratio: \(ratioText), digest: \(digestText))"
     }
 }
 

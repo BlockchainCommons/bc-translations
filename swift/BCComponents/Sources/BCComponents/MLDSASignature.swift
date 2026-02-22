@@ -27,15 +27,15 @@ public struct MLDSASignature: Equatable, Hashable, Sendable {
         self.signatureData = bytes
     }
 
-    public func level() -> MLDSA {
+    public var level: MLDSA {
         levelValue
     }
 
-    public func size() -> Int {
+    public var size: Int {
         levelValue.signatureSize()
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         signatureData
     }
 }

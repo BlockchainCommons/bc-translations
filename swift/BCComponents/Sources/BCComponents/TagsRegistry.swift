@@ -22,21 +22,21 @@ public func registerTagsIn(_ tagsStore: TagsStore) {
     tagsStore.setSummarizer(.digest) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
             let digest = try Digest(untaggedCBOR: cbor)
-            return "Digest(\(digest.shortDescription()))"
+            return "Digest(\(digest.shortDescription))"
         }
     }
 
     tagsStore.setSummarizer(.arid) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
             let arid = try ARID(untaggedCBOR: cbor)
-            return "ARID(\(arid.shortDescription()))"
+            return "ARID(\(arid.shortDescription))"
         }
     }
 
     tagsStore.setSummarizer(.xid) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
             let xid = try XID(untaggedCBOR: cbor)
-            return "XID(\(xid.shortDescription()))"
+            return "XID(\(xid.shortDescription))"
         }
     }
 
@@ -71,7 +71,7 @@ public func registerTagsIn(_ tagsStore: TagsStore) {
     tagsStore.setSummarizer(.json) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
             let json = try JSON(untaggedCBOR: cbor)
-            return "JSON(\(json.asString()))"
+            return "JSON(\(json.stringValue))"
         }
     }
 
@@ -134,7 +134,7 @@ public func registerTagsIn(_ tagsStore: TagsStore) {
     tagsStore.setSummarizer(.signature) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
             let signature = try Signature(untaggedCBOR: cbor)
-            let scheme = signature.scheme()
+            let scheme = signature.scheme
             if scheme == .default {
                 return "Signature"
             }
@@ -145,7 +145,7 @@ public func registerTagsIn(_ tagsStore: TagsStore) {
     tagsStore.setSummarizer(.sealedMessage) { payload, _ in
         try withUntaggedCBOR(payload) { cbor in
             let sealedMessage = try SealedMessage(untaggedCBOR: cbor)
-            let scheme = sealedMessage.encapsulationScheme()
+            let scheme = sealedMessage.encapsulationScheme
             if scheme == .default {
                 return "SealedMessage"
             }

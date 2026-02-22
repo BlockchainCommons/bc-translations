@@ -5,10 +5,8 @@ import BCUR
 import DCBOR
 import Foundation
 
-public let ECDSA_PRIVATE_KEY_SIZE = ecdsaPrivateKeySize
-
 public struct ECPrivateKey: Equatable, Hashable, Sendable {
-    public static let keySize = ECDSA_PRIVATE_KEY_SIZE
+    public static let keySize = ecdsaPrivateKeySize
 
     private let value: Data
 
@@ -17,25 +15,15 @@ public struct ECPrivateKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func new() -> ECPrivateKey {
+    public init() {
         var rng = SecureRandomNumberGenerator()
-        return newUsing(rng: &rng)
+        self = ECPrivateKey.newUsing(rng: &rng)
     }
 
     public static func newUsing<G: BCRandomNumberGenerator>(
         rng: inout G
     ) -> ECPrivateKey {
         try! ECPrivateKey(ecdsaNewPrivateKeyUsing(&rng))
-    }
-
-    public static func fromData(_ data: Data) throws(BCComponentsError) -> ECPrivateKey {
-        try ECPrivateKey(data)
-    }
-
-    public static func fromDataRef(
-        _ data: some DataProtocol
-    ) throws(BCComponentsError) -> ECPrivateKey {
-        try ECPrivateKey(Data(data))
     }
 
     public static func deriveFromKeyMaterial(
@@ -48,8 +36,8 @@ public struct ECPrivateKey: Equatable, Hashable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
+    public var hex: String {
+        hexEncode(value)
     }
 
     public func schnorrPublicKey() -> SchnorrPublicKey {
@@ -134,6 +122,6 @@ extension ECPrivateKey: CustomStringConvertible {
 
 extension ECPrivateKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "ECPrivateKey(\(hex()))"
+        "ECPrivateKey(\(hex))"
     }
 }

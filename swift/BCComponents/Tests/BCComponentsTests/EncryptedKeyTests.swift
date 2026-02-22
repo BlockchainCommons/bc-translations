@@ -7,7 +7,7 @@ final class EncryptedKeyTests: XCTestCase {
     private let wrongSecret = Data("wrong secret".utf8)
 
     private func contentKey() -> SymmetricKey {
-        SymmetricKey.new()
+        SymmetricKey()
     }
 
     private func assertRoundtrip(
@@ -84,7 +84,7 @@ final class EncryptedKeyTests: XCTestCase {
                 secret: secret,
                 contentKey: contentKey()
             )
-            let aad = try encrypted.aadCBOR()
+            let aad = try encrypted.aadCBOR
             guard case .array(let elements) = aad else {
                 XCTFail("Expected AAD to decode to array")
                 return

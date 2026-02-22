@@ -29,15 +29,15 @@ public struct MLDSAPublicKey: Equatable, Hashable, Sendable {
         self.keyData = bytes
     }
 
-    public func level() -> MLDSA {
+    public var level: MLDSA {
         levelValue
     }
 
-    public func size() -> Int {
+    public var size: Int {
         levelValue.publicKeySize()
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         keyData
     }
 
@@ -45,7 +45,7 @@ public struct MLDSAPublicKey: Equatable, Hashable, Sendable {
         _ signature: MLDSASignature,
         _ message: some DataProtocol
     ) throws(BCComponentsError) -> Bool {
-        guard signature.level() == levelValue else {
+        guard signature.level == levelValue else {
             throw .levelMismatch
         }
         do {

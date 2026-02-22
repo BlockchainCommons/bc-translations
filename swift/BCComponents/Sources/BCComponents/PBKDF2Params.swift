@@ -18,7 +18,7 @@ public struct PBKDF2Params: Equatable, Sendable {
     }
 
     public static func new() -> PBKDF2Params {
-        PBKDF2Params.newOpt(try! Salt.newWithLen(SALT_LEN), 100_000, .sha256)
+        PBKDF2Params.newOpt(try! Salt.newWithLen(saltLength), 100_000, .sha256)
     }
 
     public static func newOpt(
@@ -50,7 +50,7 @@ extension PBKDF2Params: KeyDerivation {
         secret: some DataProtocol
     ) throws(BCComponentsError) -> EncryptedMessage {
         let secretData = Data(secret)
-        let saltData = salt.asBytes()
+        let saltData = salt.data
         let derivedData: Data
         switch hashType {
         case .sha256:
@@ -68,8 +68,8 @@ extension PBKDF2Params: KeyDerivation {
                 keyLength: SymmetricKey.symmetricKeySize
             )
         }
-        let derivedKey = try SymmetricKey.fromData(derivedData)
-        return derivedKey.encrypt(contentKey.asBytes(), aad: cborData, nonce: nil)
+        let derivedKey = try SymmetricKey(derivedData)
+        return derivedKey.encrypt(contentKey.data, aad: cborData, nonce: nil)
     }
 
     public func unlock(
@@ -77,7 +77,7 @@ extension PBKDF2Params: KeyDerivation {
         secret: some DataProtocol
     ) throws(BCComponentsError) -> SymmetricKey {
         let secretData = Data(secret)
-        let saltData = salt.asBytes()
+        let saltData = salt.data
         let derivedData: Data
         switch hashType {
         case .sha256:
@@ -95,9 +95,9 @@ extension PBKDF2Params: KeyDerivation {
                 keyLength: SymmetricKey.symmetricKeySize
             )
         }
-        let derivedKey = try SymmetricKey.fromData(derivedData)
+        let derivedKey = try SymmetricKey(derivedData)
         let contentKeyData = try derivedKey.decrypt(encryptedMessage)
-        return try SymmetricKey.fromData(contentKeyData)
+        return try SymmetricKey(contentKeyData)
     }
 }
 

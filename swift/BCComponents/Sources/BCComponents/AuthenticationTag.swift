@@ -11,15 +11,7 @@ public struct AuthenticationTag: Equatable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> AuthenticationTag {
-        try AuthenticationTag(value)
-    }
-
     public var data: Data {
-        value
-    }
-
-    public func asBytes() -> Data {
         value
     }
 }

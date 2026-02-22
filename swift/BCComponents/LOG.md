@@ -128,3 +128,19 @@ COMPLETED
 - Replaced DSA `XCTSkip` placeholders with active tests: `testSSHDSAKeypair` and `testSSHDSASigningVector` (including exact Rust OpenSSH private/public text vectors)
 - Verification passed: `swift test --filter SigningTests` and full `swift test` in `swift/BCComponents` (`89` tests, `0` failures, `0` skips)
 - Default-feature SSH parity gap closed for supported algorithms (DSA, Ed25519, ECDSA P-256/P-384)
+
+## 2026-02-22 — Stage 4: Cross-Model Fluency Review
+STARTED
+- Cross-model fluency check: original translator GPT 5.3 Codex, reviewer Claude Opus 4.6
+- Reviewing all Swift BCComponents source and test files for target-language idiomaticness
+
+## 2026-02-22 — Stage 4: Cross-Model Fluency Review
+COMPLETED
+- Applied 20 findings across MUST FIX (6), SHOULD FIX (11), NICE TO HAVE (3) categories
+- Key changes: zero-arg methods to computed properties throughout, `new()` factory methods to `init()`, `fromData()`/`fromDataRef()` to `init()`, `asBytes()` to `data` property, SCREAMING_SNAKE constants to camelCase, typo method removal (`enapsulationPrivateKey`/`enapsulationPublicKey`)
+- Protocol updates: `Encrypter`/`Decrypter` methods to properties, `ECKeyBase.hex` method to property with default `fromHex` using `init` requirement
+- Simplified `EncryptedKey.unlock` from 4 repeated do/catch blocks to single switch
+- Removed all `fromDataRef` static methods (EC, Ed25519 key types) — redundant with `init(_ data:)`
+- Updated 40+ source files and 10 test files
+- Verification: `swift build` clean, `swift test` 89/89 passing, 0 failures
+- No downstream Swift dependents to repair (KnownValues, BCEnvelope not yet started)

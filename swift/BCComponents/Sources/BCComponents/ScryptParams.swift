@@ -20,7 +20,7 @@ public struct ScryptParams: Equatable, Sendable {
     }
 
     public static func new() -> ScryptParams {
-        ScryptParams.newOpt(try! Salt.newWithLen(SALT_LEN), 15, 8, 1)
+        ScryptParams.newOpt(try! Salt.newWithLen(saltLength), 15, 8, 1)
     }
 
     public static func newOpt(
@@ -58,14 +58,14 @@ extension ScryptParams: KeyDerivation {
     ) throws(BCComponentsError) -> EncryptedMessage {
         let derivedData = scrypt(
             password: Data(secret),
-            salt: salt.asBytes(),
+            salt: salt.data,
             outputLength: SymmetricKey.symmetricKeySize,
             logN: logN,
             r: r,
             p: p
         )
-        let derivedKey = try SymmetricKey.fromData(derivedData)
-        return derivedKey.encrypt(contentKey.asBytes(), aad: cborData, nonce: nil)
+        let derivedKey = try SymmetricKey(derivedData)
+        return derivedKey.encrypt(contentKey.data, aad: cborData, nonce: nil)
     }
 
     public func unlock(
@@ -74,15 +74,15 @@ extension ScryptParams: KeyDerivation {
     ) throws(BCComponentsError) -> SymmetricKey {
         let derivedData = scrypt(
             password: Data(secret),
-            salt: salt.asBytes(),
+            salt: salt.data,
             outputLength: SymmetricKey.symmetricKeySize,
             logN: logN,
             r: r,
             p: p
         )
-        let derivedKey = try SymmetricKey.fromData(derivedData)
+        let derivedKey = try SymmetricKey(derivedData)
         let contentKeyData = try derivedKey.decrypt(encryptedMessage)
-        return try SymmetricKey.fromData(contentKeyData)
+        return try SymmetricKey(contentKeyData)
     }
 }
 

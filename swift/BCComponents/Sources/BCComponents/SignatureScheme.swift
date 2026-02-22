@@ -24,34 +24,34 @@ public enum SignatureScheme: Equatable, Hashable, Sendable {
     public func keypairOpt(_ comment: String) -> (SigningPrivateKey, SigningPublicKey) {
         switch self {
         case .schnorr:
-            let privateKey = SigningPrivateKey.newSchnorr(ECPrivateKey.new())
+            let privateKey = SigningPrivateKey.newSchnorr(ECPrivateKey())
             return (privateKey, try! privateKey.publicKey())
         case .ecdsa:
-            let privateKey = SigningPrivateKey.newEcdsa(ECPrivateKey.new())
+            let privateKey = SigningPrivateKey.newEcdsa(ECPrivateKey())
             return (privateKey, try! privateKey.publicKey())
         case .ed25519:
-            let privateKey = SigningPrivateKey.newEd25519(Ed25519PrivateKey.new())
+            let privateKey = SigningPrivateKey.newEd25519(Ed25519PrivateKey())
             return (privateKey, try! privateKey.publicKey())
         case .sshDsa:
-            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+            let privateKey = try! PrivateKeyBase().sshSigningPrivateKey(
                 .dsa,
                 comment: comment
             )
             return (privateKey, try! privateKey.publicKey())
         case .sshEd25519:
-            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+            let privateKey = try! PrivateKeyBase().sshSigningPrivateKey(
                 .ed25519,
                 comment: comment
             )
             return (privateKey, try! privateKey.publicKey())
         case .sshEcdsaP256:
-            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+            let privateKey = try! PrivateKeyBase().sshSigningPrivateKey(
                 .ecdsaP256,
                 comment: comment
             )
             return (privateKey, try! privateKey.publicKey())
         case .sshEcdsaP384:
-            let privateKey = try! PrivateKeyBase.new().sshSigningPrivateKey(
+            let privateKey = try! PrivateKeyBase().sshSigningPrivateKey(
                 .ecdsaP384,
                 comment: comment
             )

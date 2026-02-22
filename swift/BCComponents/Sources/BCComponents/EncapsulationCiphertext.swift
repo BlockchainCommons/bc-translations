@@ -24,26 +24,26 @@ public enum EncapsulationCiphertext: Equatable, Sendable {
         }
     }
 
-    public func isX25519() -> Bool {
+    public var isX25519: Bool {
         if case .x25519 = self {
             return true
         }
         return false
     }
 
-    public func isMLKEM() -> Bool {
+    public var isMLKEM: Bool {
         if case .mlkem = self {
             return true
         }
         return false
     }
 
-    public func encapsulationScheme() -> EncapsulationScheme {
+    public var encapsulationScheme: EncapsulationScheme {
         switch self {
         case .x25519:
             return .x25519
         case .mlkem(let ciphertext):
-            switch ciphertext.level() {
+            switch ciphertext.level {
             case .mlkem512:
                 return .mlkem512
             case .mlkem768:

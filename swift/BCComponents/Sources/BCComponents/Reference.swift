@@ -39,10 +39,6 @@ public struct Reference: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> Reference {
-        try Reference(value)
-    }
-
     public static func fromDigest(_ digest: Digest) -> Reference {
         try! Reference(digest.data)
     }
@@ -52,10 +48,6 @@ public struct Reference: Equatable, Hashable, Sendable {
     }
 
     public var data: Data {
-        value
-    }
-
-    public func asBytes() -> Data {
         value
     }
 

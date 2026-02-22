@@ -14,12 +14,8 @@ public struct ARID: Equatable, Hashable, Comparable, Sendable {
         self.value = value
     }
 
-    public static func new() -> ARID {
-        try! ARID(randomData(count: Self.aridSize))
-    }
-
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> ARID {
-        try ARID(value)
+    public init() {
+        self = try! ARID(randomData(count: Self.aridSize))
     }
 
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> ARID {
@@ -30,15 +26,11 @@ public struct ARID: Equatable, Hashable, Comparable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
-    public func shortDescription() -> String {
+    public var shortDescription: String {
         hexEncode(value.prefix(4))
     }
 
@@ -49,7 +41,7 @@ public struct ARID: Equatable, Hashable, Comparable, Sendable {
 
 extension ARID: CustomStringConvertible {
     public var description: String {
-        "ARID(\(hex()))"
+        "ARID(\(hex))"
     }
 }
 

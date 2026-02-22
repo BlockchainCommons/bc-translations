@@ -55,8 +55,8 @@ public struct SealedMessage: Equatable, Sendable {
         return try sharedKey.decrypt(message)
     }
 
-    public func encapsulationScheme() -> EncapsulationScheme {
-        encapsulatedKey.encapsulationScheme()
+    public var encapsulationScheme: EncapsulationScheme {
+        encapsulatedKey.encapsulationScheme
     }
 }
 

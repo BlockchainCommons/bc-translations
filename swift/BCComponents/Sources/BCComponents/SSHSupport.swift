@@ -232,13 +232,13 @@ public struct SSHSignature: Equatable, Hashable, Sendable {
 
 extension SSHPublicKey: ReferenceProvider {
     public func reference() -> Reference {
-        try! Reference.fromData(Data(openssh.utf8))
+        try! Reference(Data(openssh.utf8))
     }
 }
 
 extension SSHPrivateKey: ReferenceProvider {
     public func reference() -> Reference {
-        try! Reference.fromData(Data(openssh.utf8))
+        try! Reference(Data(openssh.utf8))
     }
 }
 

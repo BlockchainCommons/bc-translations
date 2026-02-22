@@ -4,48 +4,48 @@ import DCBOR
 import Foundation
 
 public struct PrivateKeyBase: Equatable, Hashable, Sendable {
-    private let data: Data
+    private let keyData: Data
 
-    public static func new() -> PrivateKeyBase {
+    public init() {
         var rng = SecureRandomNumberGenerator()
-        return newUsing(rng: &rng)
+        self = PrivateKeyBase.newUsing(rng: &rng)
     }
 
-    public static func fromData(_ data: some DataProtocol) -> PrivateKeyBase {
-        PrivateKeyBase(data: Data(data))
+    public init(_ data: some DataProtocol) {
+        self.keyData = Data(data)
     }
 
     public static func fromOptionalData(
         _ data: (some DataProtocol)?
     ) -> PrivateKeyBase {
         if let data {
-            return fromData(data)
+            return PrivateKeyBase(data)
         }
-        return new()
+        return PrivateKeyBase()
     }
 
     public static func newUsing<G: BCRandomNumberGenerator>(
         rng: inout G
     ) -> PrivateKeyBase {
-        PrivateKeyBase(data: rngRandomData(&rng, count: 32))
+        PrivateKeyBase(rngRandomData(&rng, count: 32))
     }
 
     public static func newWithProvider(
         _ provider: some PrivateKeyDataProvider
     ) -> PrivateKeyBase {
-        fromData(provider.privateKeyData())
+        PrivateKeyBase(provider.privateKeyData())
     }
 
     public func ecdsaSigningPrivateKey() -> SigningPrivateKey {
-        .newEcdsa(ECPrivateKey.deriveFromKeyMaterial(data))
+        .newEcdsa(ECPrivateKey.deriveFromKeyMaterial(keyData))
     }
 
     public func schnorrSigningPrivateKey() -> SigningPrivateKey {
-        .newSchnorr(ECPrivateKey.deriveFromKeyMaterial(data))
+        .newSchnorr(ECPrivateKey.deriveFromKeyMaterial(keyData))
     }
 
     public func ed25519SigningPrivateKey() -> SigningPrivateKey {
-        .newEd25519(Ed25519PrivateKey.deriveFromKeyMaterial(data))
+        .newEd25519(Ed25519PrivateKey.deriveFromKeyMaterial(keyData))
     }
 
     public func sshSigningPrivateKey(
@@ -56,12 +56,12 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
         switch algorithm {
         case .dsa:
             key = SSHPrivateKey.generateDeterministicDsa(
-                keyMaterial: data,
+                keyMaterial: keyData,
                 comment: comment
             )
         case .ed25519:
             key = try SSHPrivateKey.generateDeterministicEd25519(
-                keyMaterial: data,
+                keyMaterial: keyData,
                 comment: comment
             )
         case .ecdsaP256, .ecdsaP384:
@@ -71,7 +71,7 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
     }
 
     public func x25519PrivateKey() -> X25519PrivateKey {
-        X25519PrivateKey.deriveFromKeyMaterial(data)
+        X25519PrivateKey.deriveFromKeyMaterial(keyData)
     }
 
     public func schnorrPrivateKeys() -> PrivateKeys {
@@ -82,7 +82,7 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
     }
 
     public func schnorrPublicKeys() -> PublicKeys {
-        .new(
+        .withKeys(
             try! schnorrSigningPrivateKey().publicKey(),
             .x25519(x25519PrivateKey().publicKey())
         )
@@ -96,7 +96,7 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
     }
 
     public func ecdsaPublicKeys() -> PublicKeys {
-        .new(
+        .withKeys(
             try! ecdsaSigningPrivateKey().publicKey(),
             .x25519(x25519PrivateKey().publicKey())
         )
@@ -118,14 +118,14 @@ public struct PrivateKeyBase: Equatable, Hashable, Sendable {
         comment: String
     ) throws(BCComponentsError) -> PublicKeys {
         let privateKey = try sshSigningPrivateKey(algorithm, comment: comment)
-        return try .new(
+        return try .withKeys(
             privateKey.publicKey(),
             .x25519(x25519PrivateKey().publicKey())
         )
     }
 
-    public func asBytes() -> Data {
-        data
+    public var data: Data {
+        keyData
     }
 }
 
@@ -150,7 +150,7 @@ extension PrivateKeyBase: Verifier {
 }
 
 extension PrivateKeyBase: Decrypter {
-    public func encapsulationPrivateKey() -> EncapsulationPrivateKey {
+    public var encapsulationPrivateKey: EncapsulationPrivateKey {
         .x25519(x25519PrivateKey())
     }
 }
@@ -176,13 +176,13 @@ extension PrivateKeyBase: CBORTaggedEncodable {
     }
 
     public var untaggedCBOR: CBOR {
-        .bytes(data)
+        .bytes(keyData)
     }
 }
 
 extension PrivateKeyBase: CBORTaggedDecodable {
     public init(untaggedCBOR: CBOR) throws {
-        self = .fromData(try byteString(untaggedCBOR))
+        self.init(try byteString(untaggedCBOR))
     }
 }
 

@@ -7,19 +7,19 @@ public protocol ECKeyBase:
     CustomDebugStringConvertible
 {
     static var keySize: Int { get }
-    static func fromDataRef(_ data: some DataProtocol) throws(BCComponentsError) -> Self
+    init(_ data: Data) throws(BCComponentsError)
     var data: Data { get }
-    func hex() -> String
+    var hex: String { get }
     static func fromHex(_ hex: String) throws(BCComponentsError) -> Self
 }
 
 public extension ECKeyBase {
-    func hex() -> String {
+    var hex: String {
         hexEncode(data)
     }
 
     static func fromHex(_ hex: String) throws(BCComponentsError) -> Self {
-        try fromDataRef(parseHex(hex))
+        try Self(parseHex(hex))
     }
 }
 

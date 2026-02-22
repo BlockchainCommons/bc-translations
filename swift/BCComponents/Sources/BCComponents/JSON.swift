@@ -10,10 +10,6 @@ public struct JSON: Equatable, Sendable {
         self.bytes = bytes
     }
 
-    public static func fromData(_ data: Data) -> JSON {
-        JSON(data)
-    }
-
     public static func fromString(_ string: String) -> JSON {
         JSON(Data(string.utf8))
     }
@@ -22,34 +18,30 @@ public struct JSON: Equatable, Sendable {
         JSON(try parseHex(hex))
     }
 
+    public var data: Data {
+        bytes
+    }
+
     public var count: Int {
         bytes.count
     }
 
-    public func len() -> Int {
-        bytes.count
-    }
-
-    public func isEmpty() -> Bool {
+    public var isEmpty: Bool {
         bytes.isEmpty
     }
 
-    public func asBytes() -> Data {
-        bytes
-    }
-
-    public func asString() -> String {
+    public var stringValue: String {
         String(data: bytes, encoding: .utf8)!
     }
 
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(bytes)
     }
 }
 
 extension JSON: CustomStringConvertible {
     public var description: String {
-        "JSON(\(asString()))"
+        "JSON(\(stringValue))"
     }
 }
 

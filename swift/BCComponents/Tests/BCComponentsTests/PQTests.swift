@@ -17,9 +17,9 @@ final class PQTests: XCTestCase {
         let (privateKey, publicKey) = level.keypair()
         let (sharedSecretA, ciphertext) = publicKey.encapsulateNewSharedSecret()
 
-        XCTAssertEqual(privateKey.size(), expectedPrivateKeySize)
-        XCTAssertEqual(publicKey.size(), expectedPublicKeySize)
-        XCTAssertEqual(ciphertext.size(), expectedCiphertextSize)
+        XCTAssertEqual(privateKey.size, expectedPrivateKeySize)
+        XCTAssertEqual(publicKey.size, expectedPublicKeySize)
+        XCTAssertEqual(ciphertext.size, expectedCiphertextSize)
 
         let sharedSecretB = try privateKey.decapsulateSharedSecret(ciphertext)
         XCTAssertEqual(sharedSecretA, sharedSecretB)
@@ -94,8 +94,8 @@ final class PQTests: XCTestCase {
             XCTFail("Expected MLDSA signature")
             return
         }
-        XCTAssertEqual(mldsaSignature.level(), .mldsa65)
-        XCTAssertEqual(signature.scheme(), .mldsa65)
+        XCTAssertEqual(mldsaSignature.level, .mldsa65)
+        XCTAssertEqual(signature.scheme, .mldsa65)
         XCTAssertTrue(signingPublic.verify(signature, message))
     }
 

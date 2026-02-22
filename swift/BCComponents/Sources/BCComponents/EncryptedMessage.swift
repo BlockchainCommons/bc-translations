@@ -21,44 +21,44 @@ public struct EncryptedMessage: Equatable, Sendable {
         self.authValue = auth
     }
 
-    public func ciphertext() -> Data {
+    public var ciphertext: Data {
         ciphertextBytes
     }
 
-    public func aad() -> Data {
+    public var aad: Data {
         aadBytes
     }
 
-    public func nonce() -> Nonce {
+    public var nonce: Nonce {
         nonceValue
     }
 
-    public func authenticationTag() -> AuthenticationTag {
+    public var authenticationTag: AuthenticationTag {
         authValue
     }
 
-    public func aadCBOR() -> CBOR? {
+    public var aadCBOR: CBOR? {
         if aadBytes.isEmpty {
             return nil
         }
         return try? CBOR(aadBytes)
     }
 
-    public func aadDigest() -> Digest? {
-        guard let cbor = aadCBOR() else {
+    public var aadDigest: Digest? {
+        guard let cbor = aadCBOR else {
             return nil
         }
         return try? Digest(cbor: cbor)
     }
 
-    public func hasDigest() -> Bool {
-        aadDigest() != nil
+    public var hasDigest: Bool {
+        aadDigest != nil
     }
 }
 
 extension EncryptedMessage: DigestProvider {
     public func digest() -> Digest {
-        aadDigest()!
+        aadDigest!
     }
 }
 

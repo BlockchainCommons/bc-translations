@@ -27,15 +27,15 @@ public struct MLKEMCiphertext: Equatable, Hashable, Sendable {
         self.ciphertextData = bytes
     }
 
-    public func level() -> MLKEM {
+    public var level: MLKEM {
         levelValue
     }
 
-    public func size() -> Int {
+    public var size: Int {
         levelValue.ciphertextSize()
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         ciphertextData
     }
 }

@@ -6,12 +6,12 @@ public enum EncapsulationPrivateKey: Equatable, Hashable, Sendable {
     case x25519(X25519PrivateKey)
     case mlkem(MLKEMPrivateKey)
 
-    public func encapsulationScheme() -> EncapsulationScheme {
+    public var encapsulationScheme: EncapsulationScheme {
         switch self {
         case .x25519:
             return .x25519
         case .mlkem(let privateKey):
-            switch privateKey.level() {
+            switch privateKey.level {
             case .mlkem512:
                 return .mlkem512
             case .mlkem768:
@@ -32,7 +32,7 @@ public enum EncapsulationPrivateKey: Equatable, Hashable, Sendable {
             return try privateKey.decapsulateSharedSecret(ciphertext)
         default:
             throw BCComponentsError.crypto(
-                "Mismatched key encapsulation types. private key: \(encapsulationScheme()), ciphertext: \(ciphertext.encapsulationScheme())"
+                "Mismatched key encapsulation types. private key: \(encapsulationScheme), ciphertext: \(ciphertext.encapsulationScheme)"
             )
         }
     }
@@ -48,7 +48,7 @@ public enum EncapsulationPrivateKey: Equatable, Hashable, Sendable {
 }
 
 extension EncapsulationPrivateKey: Decrypter {
-    public func encapsulationPrivateKey() -> EncapsulationPrivateKey {
+    public var encapsulationPrivateKey: EncapsulationPrivateKey {
         self
     }
 }

@@ -10,7 +10,7 @@ final class KeyContainersTests: XCTestCase {
     func testPrivateKeyBaseVectors() throws {
         BCTags.registerTags()
 
-        let privateKeyBase = PrivateKeyBase.fromData(seed)
+        let privateKeyBase = PrivateKeyBase(seed)
 
         XCTAssertEqual(
             privateKeyBase.ecdsaSigningPrivateKey().toEcdsa()?.data,
@@ -40,7 +40,7 @@ final class KeyContainersTests: XCTestCase {
     func testPrivateKeysRoundtripAndVectors() throws {
         BCTags.registerTags()
 
-        let privateKeys = PrivateKeyBase.fromData(seed).privateKeys()
+        let privateKeys = PrivateKeyBase(seed).privateKeys()
 
         let cbor = privateKeys.cbor
         let decoded = try PrivateKeys(cbor: cbor)
@@ -67,7 +67,7 @@ final class KeyContainersTests: XCTestCase {
     func testPublicKeysRoundtripAndVectors() throws {
         BCTags.registerTags()
 
-        let publicKeys = PrivateKeyBase.fromData(seed).publicKeys()
+        let publicKeys = PrivateKeyBase(seed).publicKeys()
 
         let cbor = publicKeys.cbor
         let decoded = try PublicKeys(cbor: cbor)

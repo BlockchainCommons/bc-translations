@@ -15,17 +15,13 @@ public struct SymmetricKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func new() -> SymmetricKey {
+    public init() {
         var rng = SecureRandomNumberGenerator()
-        return newUsing(rng: &rng)
+        self = SymmetricKey.newUsing(rng: &rng)
     }
 
     public static func newUsing<G: BCRandomNumberGenerator>(rng: inout G) -> SymmetricKey {
         try! SymmetricKey(rng.randomData(count: Self.symmetricKeySize))
-    }
-
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> SymmetricKey {
-        try SymmetricKey(value)
     }
 
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> SymmetricKey {
@@ -36,11 +32,7 @@ public struct SymmetricKey: Equatable, Hashable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
@@ -49,7 +41,7 @@ public struct SymmetricKey: Equatable, Hashable, Sendable {
         aad: (some DataProtocol)? = nil,
         nonce: Nonce? = nil
     ) -> EncryptedMessage {
-        let nonce = nonce ?? .new()
+        let nonce = nonce ?? Nonce()
         let aadBytes = aad.map { Data($0) } ?? Data()
         let encrypted = aeadChaCha20Poly1305Encrypt(
             Data(plaintext),
@@ -76,11 +68,11 @@ public struct SymmetricKey: Equatable, Hashable, Sendable {
     public func decrypt(_ message: EncryptedMessage) throws(BCComponentsError) -> Data {
         do {
             return try aeadChaCha20Poly1305Decrypt(
-                message.ciphertext(),
+                message.ciphertext,
                 key: value,
-                nonce: message.nonce().data,
-                aad: message.aad(),
-                tag: message.authenticationTag().data
+                nonce: message.nonce.data,
+                aad: message.aad,
+                tag: message.authenticationTag.data
             )
         } catch {
             throw .crypto(error.localizedDescription)
@@ -102,7 +94,7 @@ extension SymmetricKey: CustomStringConvertible {
 
 extension SymmetricKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "SymmetricKey(\(hex()))"
+        "SymmetricKey(\(hex))"
     }
 }
 

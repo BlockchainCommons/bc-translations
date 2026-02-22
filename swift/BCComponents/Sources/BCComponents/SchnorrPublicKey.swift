@@ -1,10 +1,8 @@
 import BCCrypto
 import Foundation
 
-public let SCHNORR_PUBLIC_KEY_SIZE = schnorrPublicKeySize
-
 public struct SchnorrPublicKey: Equatable, Hashable, Sendable {
-    public static let keySize = SCHNORR_PUBLIC_KEY_SIZE
+    public static let keySize = schnorrPublicKeySize
 
     private let value: Data
 
@@ -13,21 +11,7 @@ public struct SchnorrPublicKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ data: Data) throws(BCComponentsError) -> SchnorrPublicKey {
-        try SchnorrPublicKey(data)
-    }
-
-    public static func fromDataRef(
-        _ data: some DataProtocol
-    ) throws(BCComponentsError) -> SchnorrPublicKey {
-        try SchnorrPublicKey(Data(data))
-    }
-
     public var data: Data {
-        value
-    }
-
-    public func asBytes() -> Data {
         value
     }
 
@@ -55,6 +39,6 @@ extension SchnorrPublicKey: CustomStringConvertible {
 
 extension SchnorrPublicKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "SchnorrPublicKey(\(hex()))"
+        "SchnorrPublicKey(\(hex))"
     }
 }

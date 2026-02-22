@@ -29,28 +29,28 @@ public struct MLKEMPrivateKey: Equatable, Hashable, Sendable {
         self.keyData = bytes
     }
 
-    public func level() -> MLKEM {
+    public var level: MLKEM {
         levelValue
     }
 
-    public func size() -> Int {
+    public var size: Int {
         levelValue.privateKeySize()
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         keyData
     }
 
     public func decapsulateSharedSecret(
         _ ciphertext: MLKEMCiphertext
     ) throws(BCComponentsError) -> SymmetricKey {
-        guard ciphertext.level() == levelValue else {
+        guard ciphertext.level == levelValue else {
             throw BCComponentsError.crypto("MLKEM level mismatch")
         }
         do {
             let key = try DecapsulationKey(keyBytes: Array(keyData))
             let secret = try key.Decapsulate(ct: ciphertext.bytesArray)
-            return try SymmetricKey.fromData(Data(secret))
+            return try SymmetricKey(Data(secret))
         } catch {
             throw postQuantumError(error)
         }
@@ -58,7 +58,7 @@ public struct MLKEMPrivateKey: Equatable, Hashable, Sendable {
 }
 
 extension MLKEMPrivateKey: Decrypter {
-    public func encapsulationPrivateKey() -> EncapsulationPrivateKey {
+    public var encapsulationPrivateKey: EncapsulationPrivateKey {
         .mlkem(self)
     }
 }

@@ -6,12 +6,12 @@ public enum EncapsulationPublicKey: Equatable, Hashable, Sendable {
     case x25519(X25519PublicKey)
     case mlkem(MLKEMPublicKey)
 
-    public func encapsulationScheme() -> EncapsulationScheme {
+    public var encapsulationScheme: EncapsulationScheme {
         switch self {
         case .x25519:
             return .x25519
         case .mlkem(let publicKey):
-            switch publicKey.level() {
+            switch publicKey.level {
             case .mlkem512:
                 return .mlkem512
             case .mlkem768:
@@ -25,7 +25,7 @@ public enum EncapsulationPublicKey: Equatable, Hashable, Sendable {
     public func encapsulateNewSharedSecret() -> (SymmetricKey, EncapsulationCiphertext) {
         switch self {
         case .x25519(let publicKey):
-            let ephemeralSender = PrivateKeyBase.new()
+            let ephemeralSender = PrivateKeyBase()
             let ephemeralPrivateKey = ephemeralSender.x25519PrivateKey()
             let ephemeralPublicKey = ephemeralPrivateKey.publicKey()
             let sharedKey = ephemeralPrivateKey.sharedKey(with: publicKey)
@@ -38,7 +38,7 @@ public enum EncapsulationPublicKey: Equatable, Hashable, Sendable {
 }
 
 extension EncapsulationPublicKey: Encrypter {
-    public func encapsulationPublicKey() -> EncapsulationPublicKey {
+    public var encapsulationPublicKey: EncapsulationPublicKey {
         self
     }
 }

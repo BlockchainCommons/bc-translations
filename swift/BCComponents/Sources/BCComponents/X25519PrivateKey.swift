@@ -15,13 +15,13 @@ public struct X25519PrivateKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func new() -> X25519PrivateKey {
+    public init() {
         var rng = SecureRandomNumberGenerator()
-        return newUsing(rng: &rng)
+        self = X25519PrivateKey.newUsing(rng: &rng)
     }
 
     public static func keypair() -> (X25519PrivateKey, X25519PublicKey) {
-        let privateKey = new()
+        let privateKey = X25519PrivateKey()
         return (privateKey, privateKey.publicKey())
     }
 
@@ -38,10 +38,6 @@ public struct X25519PrivateKey: Equatable, Hashable, Sendable {
         try! X25519PrivateKey(x25519NewPrivateKeyUsing(&rng))
     }
 
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> X25519PrivateKey {
-        try X25519PrivateKey(value)
-    }
-
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> X25519PrivateKey {
         try X25519PrivateKey(parseHex(hex))
     }
@@ -50,11 +46,7 @@ public struct X25519PrivateKey: Equatable, Hashable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
@@ -85,7 +77,7 @@ extension X25519PrivateKey: CustomStringConvertible {
 
 extension X25519PrivateKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "X25519PrivateKey(\(hex()))"
+        "X25519PrivateKey(\(hex))"
     }
 }
 

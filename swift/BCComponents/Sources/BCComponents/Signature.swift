@@ -79,7 +79,7 @@ public enum Signature: Equatable, Sendable {
         return nil
     }
 
-    public func scheme() -> SignatureScheme {
+    public var scheme: SignatureScheme {
         switch self {
         case .schnorr:
             return .schnorr
@@ -90,7 +90,7 @@ public enum Signature: Equatable, Sendable {
         case .ssh(let signature):
             return signature.algorithm.signatureScheme
         case .mldsa(let signature):
-            switch signature.level() {
+            switch signature.level {
             case .mldsa44:
                 return .mldsa44
             case .mldsa65:
@@ -190,7 +190,7 @@ extension Signature: CustomDebugStringConvertible {
         case .ssh(let signature):
             return "SSH(data: \(hexEncode(Data(signature.pem.utf8))))"
         case .mldsa(let signature):
-            return "MLDSA(data: \(hexEncode(signature.asBytes())))"
+            return "MLDSA(data: \(hexEncode(signature.data)))"
         }
     }
 }

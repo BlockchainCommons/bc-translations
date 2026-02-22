@@ -6,14 +6,14 @@ final class XIDTests: XCTestCase {
     func testXIDBasic() throws {
         registerTags()
 
-        let xid = try XID.fromData(
+        let xid = try XID(
             hexData("de2853684ae55803a08b36dd7f4e566649970601927330299fd333f33fecc037")
         )
         XCTAssertEqual(
-            xid.toHex(),
+            xid.hex,
             "de2853684ae55803a08b36dd7f4e566649970601927330299fd333f33fecc037"
         )
-        XCTAssertEqual(xid.shortDescription(), "de285368")
+        XCTAssertEqual(xid.shortDescription, "de285368")
         XCTAssertEqual(
             xid.urString(),
             "ur:xid/hdcxuedeguisgevwhdaxnbluenutlbglhfiygamsamadmojkdydtneteeowffhwprtemcaatledk"
@@ -46,7 +46,7 @@ final class XIDTests: XCTestCase {
 
         let xid = XID.new(genesisKey: publicKey)
         XCTAssertEqual(
-            xid.toHex(),
+            xid.hex,
             "d40e0602674df1b732f5e025d04c45f2e74ed1652c5ae1740f6a5502dbbdcd47"
         )
         XCTAssertTrue(xid.validate(genesisKey: publicKey))

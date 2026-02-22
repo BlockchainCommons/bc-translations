@@ -16,20 +16,16 @@ public struct PrivateKeys: Equatable, Hashable, Sendable {
         )
     }
 
-    public func signingPrivateKey() -> SigningPrivateKey {
+    public var signingPrivateKey: SigningPrivateKey {
         signingPrivateKeyValue
     }
 
-    public func encapsulationPrivateKey() -> EncapsulationPrivateKey {
-        encapsulationPrivateKeyValue
-    }
-
-    public func enapsulationPrivateKey() -> EncapsulationPrivateKey {
+    public var encapsulationPrivateKey: EncapsulationPrivateKey {
         encapsulationPrivateKeyValue
     }
 
     public func publicKeys() throws(BCComponentsError) -> PublicKeys {
-        try PublicKeys.new(
+        try PublicKeys.withKeys(
             signingPrivateKeyValue.publicKey(),
             encapsulationPrivateKeyValue.publicKey()
         )
@@ -98,6 +94,7 @@ extension PrivateKeys: Signer {
 }
 
 extension PrivateKeys: Decrypter {
+    // encapsulationPrivateKey property is already defined above
 }
 
 extension PrivateKeys: CustomStringConvertible {

@@ -14,10 +14,6 @@ public struct X25519PublicKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> X25519PublicKey {
-        try X25519PublicKey(value)
-    }
-
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> X25519PublicKey {
         try X25519PublicKey(parseHex(hex))
     }
@@ -26,11 +22,7 @@ public struct X25519PublicKey: Equatable, Hashable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 }
@@ -49,7 +41,7 @@ extension X25519PublicKey: CustomStringConvertible {
 
 extension X25519PublicKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "X25519PublicKey(\(hex()))"
+        "X25519PublicKey(\(hex))"
     }
 }
 

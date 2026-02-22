@@ -11,19 +11,15 @@ public struct Salt: Equatable, Sendable {
         self.value = value
     }
 
-    public func len() -> Int {
+    public var count: Int {
         value.count
     }
 
-    public func isEmpty() -> Bool {
+    public var isEmpty: Bool {
         value.isEmpty
     }
 
-    public static func fromData(_ value: Data) -> Salt {
-        Salt(value)
-    }
-
-    public func asBytes() -> Data {
+    public var data: Data {
         value
     }
 
@@ -80,14 +76,14 @@ public struct Salt: Equatable, Sendable {
         Salt(try parseHex(hex))
     }
 
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 }
 
 extension Salt: CustomStringConvertible {
     public var description: String {
-        "Salt(\(len()))"
+        "Salt(\(count))"
     }
 }
 

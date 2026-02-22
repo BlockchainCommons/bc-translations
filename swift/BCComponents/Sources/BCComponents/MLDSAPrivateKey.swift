@@ -29,15 +29,15 @@ public struct MLDSAPrivateKey: Equatable, Hashable, Sendable {
         self.keyData = bytes
     }
 
-    public func level() -> MLDSA {
+    public var level: MLDSA {
         levelValue
     }
 
-    public func size() -> Int {
+    public var size: Int {
         levelValue.privateKeySize()
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         keyData
     }
 

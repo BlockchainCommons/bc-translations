@@ -3,7 +3,7 @@ import BCTags
 import DCBOR
 import Foundation
 
-public let SALT_LEN = 16
+public let saltLength = 16
 
 public struct EncryptedKey: Equatable, Sendable {
     private let params: KeyDerivationParams
@@ -32,105 +32,77 @@ public struct EncryptedKey: Equatable, Sendable {
         switch method {
         case .hkdf:
             return try lockOpt(
-                params: .hkdf(.new()),
+                params: .hkdf(HKDFParams()),
                 secret: secret,
                 contentKey: contentKey
             )
         case .pbkdf2:
             return try lockOpt(
-                params: .pbkdf2(.new()),
+                params: .pbkdf2(PBKDF2Params()),
                 secret: secret,
                 contentKey: contentKey
             )
         case .scrypt:
             return try lockOpt(
-                params: .scrypt(.new()),
+                params: .scrypt(ScryptParams()),
                 secret: secret,
                 contentKey: contentKey
             )
         case .argon2id:
             return try lockOpt(
-                params: .argon2id(.new()),
+                params: .argon2id(Argon2idParams()),
                 secret: secret,
                 contentKey: contentKey
             )
         }
     }
 
-    public func encryptedMessageValue() -> EncryptedMessage {
+    public var encryptedMessageValue: EncryptedMessage {
         encryptedMessage
     }
 
-    public func aadCBOR() throws(BCComponentsError) -> CBOR {
-        guard let cbor = encryptedMessage.aadCBOR() else {
-            throw BCComponentsError.general("Missing AAD CBOR in EncryptedMessage")
+    public var aadCBOR: CBOR {
+        get throws(BCComponentsError) {
+            guard let cbor = encryptedMessage.aadCBOR else {
+                throw BCComponentsError.general("Missing AAD CBOR in EncryptedMessage")
+            }
+            return cbor
         }
-        return cbor
     }
 
     public func unlock(
         secret: some DataProtocol
     ) throws(BCComponentsError) -> SymmetricKey {
-        let cbor = try aadCBOR()
+        let cbor = try aadCBOR
         guard case .array(let array) = cbor,
               let first = array.first
         else {
             throw BCComponentsError.general("Missing method")
         }
 
-        let method: KeyDerivationMethod
         do {
-            method = try KeyDerivationMethod(cbor: first)
+            let method = try KeyDerivationMethod(cbor: first)
+            switch method {
+            case .hkdf:
+                return try HKDFParams(cbor: cbor).unlock(encryptedMessage, secret: secret)
+            case .pbkdf2:
+                return try PBKDF2Params(cbor: cbor).unlock(encryptedMessage, secret: secret)
+            case .scrypt:
+                return try ScryptParams(cbor: cbor).unlock(encryptedMessage, secret: secret)
+            case .argon2id:
+                return try Argon2idParams(cbor: cbor).unlock(encryptedMessage, secret: secret)
+            }
         } catch {
             throw encryptedKeyError(error as any Swift.Error)
         }
-
-        switch method {
-        case .hkdf:
-            do {
-                return try HKDFParams(cbor: cbor).unlock(
-                    encryptedMessage,
-                    secret: secret
-                )
-            } catch {
-                throw encryptedKeyError(error as any Swift.Error)
-            }
-        case .pbkdf2:
-            do {
-                return try PBKDF2Params(cbor: cbor).unlock(
-                    encryptedMessage,
-                    secret: secret
-                )
-            } catch {
-                throw encryptedKeyError(error as any Swift.Error)
-            }
-        case .scrypt:
-            do {
-                return try ScryptParams(cbor: cbor).unlock(
-                    encryptedMessage,
-                    secret: secret
-                )
-            } catch {
-                throw encryptedKeyError(error as any Swift.Error)
-            }
-        case .argon2id:
-            do {
-                return try Argon2idParams(cbor: cbor).unlock(
-                    encryptedMessage,
-                    secret: secret
-                )
-            } catch {
-                throw encryptedKeyError(error as any Swift.Error)
-            }
-        }
     }
 
-    public func isPasswordBased() -> Bool {
-        params.isPasswordBased()
+    public var isPasswordBased: Bool {
+        params.isPasswordBased
     }
 
-    public func isSSHAgent() -> Bool {
-        params.isSSHAgent()
+    public var isSSHAgent: Bool {
+        params.isSSHAgent
     }
 }
 
@@ -153,7 +125,7 @@ extension EncryptedKey: CBORTaggedEncodable {
 extension EncryptedKey: CBORTaggedDecodable {
     public init(untaggedCBOR: CBOR) throws {
         let encryptedMessage = try EncryptedMessage(cbor: untaggedCBOR)
-        let aadData = encryptedMessage.aad()
+        let aadData = encryptedMessage.aad
         let paramsCBOR = try CBOR(aadData)
         let params = try KeyDerivationParams(cbor: paramsCBOR)
         self.init(params: params, encryptedMessage: encryptedMessage)

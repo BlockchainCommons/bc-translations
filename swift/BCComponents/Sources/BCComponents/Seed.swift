@@ -33,8 +33,8 @@ public struct Seed: Equatable, Hashable, Sendable {
         self.creationDateValue = creationDate
     }
 
-    public static func new() -> Seed {
-        try! newWithLen(Self.minSeedLength)
+    public init() {
+        try! self.init(data: randomData(count: Self.minSeedLength))
     }
 
     public static func newWithLen(_ count: Int) throws(BCComponentsError) -> Seed {
@@ -63,32 +63,23 @@ public struct Seed: Equatable, Hashable, Sendable {
         )
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         bytes
     }
 
-    public func name() -> String {
-        nameValue
+    public var name: String {
+        get { nameValue }
+        set { nameValue = newValue }
     }
 
-    public mutating func setName(_ name: String) {
-        nameValue = name
+    public var note: String {
+        get { noteValue }
+        set { noteValue = newValue }
     }
 
-    public func note() -> String {
-        noteValue
-    }
-
-    public mutating func setNote(_ note: String) {
-        noteValue = note
-    }
-
-    public func creationDate() -> Date? {
-        creationDateValue
-    }
-
-    public mutating func setCreationDate(_ creationDate: Date?) {
-        creationDateValue = creationDate
+    public var creationDate: Date? {
+        get { creationDateValue }
+        set { creationDateValue = newValue }
     }
 }
 

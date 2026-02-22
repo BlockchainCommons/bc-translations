@@ -29,22 +29,22 @@ public struct MLKEMPublicKey: Equatable, Hashable, Sendable {
         self.keyData = bytes
     }
 
-    public func level() -> MLKEM {
+    public var level: MLKEM {
         levelValue
     }
 
-    public func size() -> Int {
+    public var size: Int {
         levelValue.publicKeySize()
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         keyData
     }
 
     public func encapsulateNewSharedSecret() -> (SymmetricKey, MLKEMCiphertext) {
         let key = try! EncapsulationKey(keyBytes: Array(keyData))
         let encapsulated = key.Encapsulate()
-        let sharedSecret = try! SymmetricKey.fromData(Data(encapsulated.K))
+        let sharedSecret = try! SymmetricKey(Data(encapsulated.K))
         let ciphertext = try! MLKEMCiphertext.fromBytes(
             levelValue,
             Data(encapsulated.ct)

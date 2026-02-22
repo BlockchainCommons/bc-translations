@@ -9,7 +9,7 @@ final class TagsRegistryTests: XCTestCase {
         let digest = Digest.fromImage(Data("hello".utf8))
         XCTAssertEqual(
             digest.cbor.summary,
-            "Digest(\(digest.shortDescription()))"
+            "Digest(\(digest.shortDescription))"
         )
     }
 

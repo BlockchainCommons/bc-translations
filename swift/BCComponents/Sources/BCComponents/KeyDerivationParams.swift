@@ -7,7 +7,7 @@ public enum KeyDerivationParams: Equatable, Sendable {
     case scrypt(ScryptParams)
     case argon2id(Argon2idParams)
 
-    public func method() -> KeyDerivationMethod {
+    public var method: KeyDerivationMethod {
         switch self {
         case .hkdf:
             return .hkdf
@@ -20,7 +20,7 @@ public enum KeyDerivationParams: Equatable, Sendable {
         }
     }
 
-    public func isPasswordBased() -> Bool {
+    public var isPasswordBased: Bool {
         switch self {
         case .hkdf:
             return false
@@ -29,7 +29,7 @@ public enum KeyDerivationParams: Equatable, Sendable {
         }
     }
 
-    public func isSSHAgent() -> Bool {
+    public var isSSHAgent: Bool {
         false
     }
 

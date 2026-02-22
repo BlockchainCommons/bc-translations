@@ -2,10 +2,8 @@ import BCCrypto
 import BCRand
 import Foundation
 
-public let ED25519_PRIVATE_KEY_SIZE = ed25519PrivateKeySize
-
 public struct Ed25519PrivateKey: Equatable, Hashable, Sendable {
-    public static let keySize = ED25519_PRIVATE_KEY_SIZE
+    public static let keySize = ed25519PrivateKeySize
 
     private let value: Data
 
@@ -14,25 +12,15 @@ public struct Ed25519PrivateKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func new() -> Ed25519PrivateKey {
+    public init() {
         var rng = SecureRandomNumberGenerator()
-        return newUsing(rng: &rng)
+        self = Ed25519PrivateKey.newUsing(rng: &rng)
     }
 
     public static func newUsing<G: BCRandomNumberGenerator>(
         rng: inout G
     ) -> Ed25519PrivateKey {
         try! Ed25519PrivateKey(ed25519NewPrivateKeyUsing(&rng))
-    }
-
-    public static func fromData(_ data: Data) throws(BCComponentsError) -> Ed25519PrivateKey {
-        try Ed25519PrivateKey(data)
-    }
-
-    public static func fromDataRef(
-        _ data: some DataProtocol
-    ) throws(BCComponentsError) -> Ed25519PrivateKey {
-        try Ed25519PrivateKey(Data(data))
     }
 
     public static func deriveFromKeyMaterial(
@@ -45,11 +33,7 @@ public struct Ed25519PrivateKey: Equatable, Hashable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
@@ -80,6 +64,6 @@ extension Ed25519PrivateKey: CustomStringConvertible {
 
 extension Ed25519PrivateKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "Ed25519PrivateKey(\(hex()))"
+        "Ed25519PrivateKey(\(hex))"
     }
 }

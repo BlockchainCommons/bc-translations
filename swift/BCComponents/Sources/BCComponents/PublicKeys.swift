@@ -6,7 +6,7 @@ public struct PublicKeys: Equatable, Hashable, Sendable {
     private let signingPublicKeyValue: SigningPublicKey
     private let encapsulationPublicKeyValue: EncapsulationPublicKey
 
-    public static func new(
+    public static func withKeys(
         _ signingPublicKey: SigningPublicKey,
         _ encapsulationPublicKey: EncapsulationPublicKey
     ) -> PublicKeys {
@@ -16,15 +16,11 @@ public struct PublicKeys: Equatable, Hashable, Sendable {
         )
     }
 
-    public func signingPublicKey() -> SigningPublicKey {
+    public var signingPublicKey: SigningPublicKey {
         signingPublicKeyValue
     }
 
-    public func encapsulationPublicKey() -> EncapsulationPublicKey {
-        encapsulationPublicKeyValue
-    }
-
-    public func enapsulationPublicKey() -> EncapsulationPublicKey {
+    public var encapsulationPublicKey: EncapsulationPublicKey {
         encapsulationPublicKeyValue
     }
 }
@@ -75,7 +71,7 @@ extension PublicKeys: CBORTaggedDecodable {
 
         let signingPublicKey = try SigningPublicKey(cbor: elements[0])
         let encapsulationPublicKey = try EncapsulationPublicKey(cbor: elements[1])
-        self = .new(signingPublicKey, encapsulationPublicKey)
+        self = .withKeys(signingPublicKey, encapsulationPublicKey)
     }
 }
 

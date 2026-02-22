@@ -1,10 +1,8 @@
 import BCCrypto
 import Foundation
 
-public let ED25519_PUBLIC_KEY_SIZE = ed25519PublicKeySize
-
 public struct Ed25519PublicKey: Equatable, Hashable, Sendable {
-    public static let keySize = ED25519_PUBLIC_KEY_SIZE
+    public static let keySize = ed25519PublicKeySize
 
     private let value: Data
 
@@ -13,25 +11,11 @@ public struct Ed25519PublicKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ data: Data) throws(BCComponentsError) -> Ed25519PublicKey {
-        try Ed25519PublicKey(data)
-    }
-
-    public static func fromDataRef(
-        _ data: some DataProtocol
-    ) throws(BCComponentsError) -> Ed25519PublicKey {
-        try Ed25519PublicKey(Data(data))
-    }
-
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> Ed25519PublicKey {
         try Ed25519PublicKey(parseHex(hex))
     }
 
     public var data: Data {
-        value
-    }
-
-    public func asBytes() -> Data {
         value
     }
 

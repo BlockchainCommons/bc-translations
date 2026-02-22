@@ -14,7 +14,7 @@ public struct Argon2idParams: Equatable, Sendable {
     }
 
     public static func new() -> Argon2idParams {
-        Argon2idParams.newOpt(try! Salt.newWithLen(SALT_LEN))
+        Argon2idParams.newOpt(try! Salt.newWithLen(saltLength))
     }
 
     public static func newOpt(_ salt: Salt) -> Argon2idParams {
@@ -35,11 +35,11 @@ extension Argon2idParams: KeyDerivation {
     ) throws(BCComponentsError) -> EncryptedMessage {
         let derivedData = argon2id(
             password: Data(secret),
-            salt: salt.asBytes(),
+            salt: salt.data,
             outputLength: SymmetricKey.symmetricKeySize
         )
-        let derivedKey = try SymmetricKey.fromData(derivedData)
-        return derivedKey.encrypt(contentKey.asBytes(), aad: cborData, nonce: nil)
+        let derivedKey = try SymmetricKey(derivedData)
+        return derivedKey.encrypt(contentKey.data, aad: cborData, nonce: nil)
     }
 
     public func unlock(
@@ -48,12 +48,12 @@ extension Argon2idParams: KeyDerivation {
     ) throws(BCComponentsError) -> SymmetricKey {
         let derivedData = argon2id(
             password: Data(secret),
-            salt: salt.asBytes(),
+            salt: salt.data,
             outputLength: SymmetricKey.symmetricKeySize
         )
-        let derivedKey = try SymmetricKey.fromData(derivedData)
+        let derivedKey = try SymmetricKey(derivedData)
         let contentKeyData = try derivedKey.decrypt(encryptedMessage)
-        return try SymmetricKey.fromData(contentKeyData)
+        return try SymmetricKey(contentKeyData)
     }
 }
 

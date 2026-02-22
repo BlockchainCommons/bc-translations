@@ -4,10 +4,8 @@ import BCUR
 import DCBOR
 import Foundation
 
-public let ECDSA_PUBLIC_KEY_SIZE = ecdsaPublicKeySize
-
 public struct ECPublicKey: Equatable, Hashable, Sendable {
-    public static let keySize = ECDSA_PUBLIC_KEY_SIZE
+    public static let keySize = ecdsaPublicKeySize
 
     private let value: Data
 
@@ -16,21 +14,7 @@ public struct ECPublicKey: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ data: Data) throws(BCComponentsError) -> ECPublicKey {
-        try ECPublicKey(data)
-    }
-
-    public static func fromDataRef(
-        _ data: some DataProtocol
-    ) throws(BCComponentsError) -> ECPublicKey {
-        try ECPublicKey(Data(data))
-    }
-
     public var data: Data {
-        value
-    }
-
-    public func asBytes() -> Data {
         value
     }
 
@@ -99,6 +83,6 @@ extension ECPublicKey: CustomStringConvertible {
 
 extension ECPublicKey: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "ECPublicKey(\(hex()))"
+        "ECPublicKey(\(hex))"
     }
 }

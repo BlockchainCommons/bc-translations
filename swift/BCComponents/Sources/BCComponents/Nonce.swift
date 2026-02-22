@@ -14,12 +14,8 @@ public struct Nonce: Equatable, Sendable {
         self.value = value
     }
 
-    public static func new() -> Nonce {
-        try! Nonce(randomData(count: Self.nonceSize))
-    }
-
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> Nonce {
-        try Nonce(value)
+    public init() {
+        self = try! Nonce(randomData(count: Self.nonceSize))
     }
 
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> Nonce {
@@ -30,18 +26,14 @@ public struct Nonce: Equatable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 }
 
 extension Nonce: CustomStringConvertible {
     public var description: String {
-        "Nonce(\(hex()))"
+        "Nonce(\(hex))"
     }
 }
 

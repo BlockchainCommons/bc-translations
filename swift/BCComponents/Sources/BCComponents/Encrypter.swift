@@ -1,18 +1,18 @@
 import Foundation
 
 public protocol Encrypter {
-    func encapsulationPublicKey() -> EncapsulationPublicKey
+    var encapsulationPublicKey: EncapsulationPublicKey { get }
     func encapsulateNewSharedSecret() -> (SymmetricKey, EncapsulationCiphertext)
 }
 
 public extension Encrypter {
     func encapsulateNewSharedSecret() -> (SymmetricKey, EncapsulationCiphertext) {
-        encapsulationPublicKey().encapsulateNewSharedSecret()
+        encapsulationPublicKey.encapsulateNewSharedSecret()
     }
 }
 
 public protocol Decrypter {
-    func encapsulationPrivateKey() -> EncapsulationPrivateKey
+    var encapsulationPrivateKey: EncapsulationPrivateKey { get }
     func decapsulateSharedSecret(
         _ ciphertext: EncapsulationCiphertext
     ) throws(BCComponentsError) -> SymmetricKey
@@ -22,6 +22,6 @@ public extension Decrypter {
     func decapsulateSharedSecret(
         _ ciphertext: EncapsulationCiphertext
     ) throws(BCComponentsError) -> SymmetricKey {
-        try encapsulationPrivateKey().decapsulateSharedSecret(ciphertext)
+        try encapsulationPrivateKey.decapsulateSharedSecret(ciphertext)
     }
 }

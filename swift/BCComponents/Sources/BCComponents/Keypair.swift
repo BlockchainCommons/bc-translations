@@ -28,7 +28,7 @@ public func keypairOpt(
         signingPrivateKey,
         encapsulationPrivateKey
     )
-    let publicKeys = PublicKeys.new(
+    let publicKeys = PublicKeys.withKeys(
         signingPublicKey,
         encapsulationPublicKey
     )
@@ -52,7 +52,7 @@ public func keypairOptUsing<G: BCRandomNumberGenerator>(
         signingPrivateKey,
         encapsulationPrivateKey
     )
-    let publicKeys = PublicKeys.new(
+    let publicKeys = PublicKeys.withKeys(
         signingPublicKey,
         encapsulationPublicKey
     )

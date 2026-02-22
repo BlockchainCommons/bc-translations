@@ -17,47 +17,43 @@ public struct SSKRShare: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ value: Data) -> SSKRShare {
-        SSKRShare(value)
-    }
-
     public static func fromHex(_ hex: String) throws(BCComponentsError) -> SSKRShare {
         SSKRShare(try parseHex(hex))
     }
 
-    public func asBytes() -> Data {
+    public var data: Data {
         value
     }
 
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
-    public func identifier() -> UInt16 {
+    public var identifier: UInt16 {
         (UInt16(value[0]) << 8) | UInt16(value[1])
     }
 
-    public func identifierHex() -> String {
+    public var identifierHex: String {
         hexEncode(value.prefix(2))
     }
 
-    public func groupThreshold() -> Int {
+    public var groupThreshold: Int {
         Int(value[2] >> 4) + 1
     }
 
-    public func groupCount() -> Int {
+    public var groupCount: Int {
         Int(value[2] & 0x0f) + 1
     }
 
-    public func groupIndex() -> Int {
+    public var groupIndex: Int {
         Int(value[3] >> 4)
     }
 
-    public func memberThreshold() -> Int {
+    public var memberThreshold: Int {
         Int(value[3] & 0x0f) + 1
     }
 
-    public func memberIndex() -> Int {
+    public var memberIndex: Int {
         Int(value[4] & 0x0f)
     }
 }
@@ -112,5 +108,5 @@ public func sskrGenerateUsing<G: BCRandomNumberGenerator>(
 public func sskrCombine(
     _ shares: [SSKRShare]
 ) throws(SSKRError) -> SSKRSecret {
-    try sskrCombine(shares: shares.map { Array($0.asBytes()) })
+    try sskrCombine(shares: shares.map { Array($0.data) })
 }

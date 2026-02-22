@@ -14,10 +14,6 @@ public struct Digest: Equatable, Hashable, Sendable {
         self.value = value
     }
 
-    public static func fromData(_ value: Data) throws(BCComponentsError) -> Digest {
-        try Digest(value)
-    }
-
     public static func fromImage(_ image: some DataProtocol) -> Digest {
         try! Digest(sha256(Data(image)))
     }
@@ -46,19 +42,15 @@ public struct Digest: Equatable, Hashable, Sendable {
         value
     }
 
-    public func asBytes() -> Data {
-        value
-    }
-
     public func validate(_ image: some DataProtocol) -> Bool {
         self == Digest.fromImage(image)
     }
 
-    public func hex() -> String {
+    public var hex: String {
         hexEncode(value)
     }
 
-    public func shortDescription() -> String {
+    public var shortDescription: String {
         hexEncode(value.prefix(4))
     }
 
@@ -81,7 +73,7 @@ extension Digest: DigestProvider {
 
 extension Digest: CustomStringConvertible {
     public var description: String {
-        "Digest(\(hex()))"
+        "Digest(\(hex))"
     }
 }
 
