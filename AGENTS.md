@@ -2,6 +2,8 @@
 
 The goal of this project is to provide a set of native translations of the reference Rust implementations of the Blockchains Common libraries. Each of the target languages has its own directory. The goal of each translation is to provide 100% of the functionality of the reference Rust implementation, including at *least* 100% test coverage, while still being completely idiomatic in the target language.
 
+**The Rust crates are always the source of truth.** The Rust code is the reference implementation. The translations are only re-implementations of the Rust code. The translations should not be used as primary references for correctness, API design decisions, test coverage, or documentation. When in doubt, refer back to the Rust source. If while performing a translation you find that one of the previous translations is incorrect or incomplete, fix the dependency translation to match the Rust source; do not shim the translation you are performing to patch the missing functionality.
+
 ## Status Markers
 
 The following status markers are used to indicate the current state of each translation:
@@ -27,7 +29,7 @@ The following model markers indicate which AI model was used for each translatio
 | ✅ bc-shamir       | 0.13.0  | ✅📖 BCShamir     | ✅🎻 bcshamir     | ✅📖 bc-shamir     | ✅📖 bc-shamir     | ✅🎻 BCShamir     | ✅🎻 @bc/shamir        |
 | ✅ dcbor           | 0.25.1  | ✅🎻 DCbor        | ✅📖 dcbor        | ✅🎻 dcbor         | ✅🎻 dcbor         | ✅📖 DCBOR        | ✅📖 @bc/dcbor         |
 | ✅ bc-tags        | 0.12.0  | ✅📖 BCTags       | ✅🎻 bctags        | ✅📖 bc-tags       | ✅📖 bc-tags       | ✅🎻 BCTags      | ✅🎻 @bc/tags          |
-| 🚧 bc-ur           | 0.19.0  | ✅🎻 BCUR          | ⏳ bcur           | 🚧🎻 bc-ur         | ⏳ bc-ur           | ⏳ BCUR           | ⏳ @bc/ur              |
+| 🚧 bc-ur           | 0.19.0  | ✅🎻 BCUR          | ⏳ bcur           | ✅🎻 bc-ur          | 🚧🎻 bc-ur         | ⏳ BCUR           | ⏳ @bc/ur              |
 | ⏳ sskr            | 0.12.0  | ⏳ SSKR           | ⏳ sskr           | ⏳ sskr            | ⏳ sskr            | ⏳ SSKR           | ⏳ @bc/sskr            |
 | ⏳ bc-components   | 0.31.1  | ⏳ BCComponents   | ⏳ bccomponents   | ⏳ bc-components   | ⏳ bc-components   | ⏳ BCComponents   | ⏳ @bc/components      |
 | ⏳ known-values    | 0.15.4  | ⏳ KnownValues    | ⏳ knownvalues    | ⏳ known-values    | ⏳ known-values    | ⏳ KnownValues    | ⏳ @bc/known-values    |
