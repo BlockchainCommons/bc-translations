@@ -48,3 +48,13 @@ COMPLETED
 - 9 SHOULD FIX: URDecoder→DecoderError rename, URType/UR→data class, UInt.toBytesBigEndian() extraction, Array→List for constants, case validation consistency, FountainPart copy→deepCopy + properties, MultipartDecoder lowercase
 - 13 NICE TO HAVE: Global ExperimentalStdlibApi opt-in, @throws KDoc, require messages, ArrayDeque for queue, partsCount→partCount, test helper rename
 - All 24 findings addressed, all 30 tests pass
+
+## 2026-02-22 — Stage 4: Critique
+STARTED
+- Cross-model fluency pass (GPT Codex) for Kotlin idiomaticness and API ergonomics
+
+## 2026-02-22 — Stage 4: Critique
+COMPLETED
+- Cross-model review found no additional must/should/nice fluency changes to apply
+- Re-ran all tests for `kotlin/bc-ur`; suite passed
+- No translated Kotlin dependents exist yet for `bc-ur`, so no downstream repair was required

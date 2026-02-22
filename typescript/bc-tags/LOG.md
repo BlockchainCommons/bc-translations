@@ -32,3 +32,14 @@ COMPLETED
 - @deprecated JSDoc tags properly applied to all V1 constants
 - Section dividers and JSDoc style consistent with @bc/dcbor conventions
 - All 12 tests still pass after fixes
+
+## 2026-02-21 — Stage 4: Fluency
+STARTED
+- Ran cross-model fluency pass (Codex) for TypeScript bc-tags
+- Reviewed TypeScript source/tests for idiomatic API, naming, docs, and test style
+
+## 2026-02-21 — Stage 4: Fluency
+COMPLETED
+- Cross-model fluency review found 0 issues; verdict: IDIOMATIC
+- No API changes required; no downstream TypeScript dependents needed repair
+- Verification: npm run build and npm test both pass (12/12 tests)
