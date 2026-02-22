@@ -17,3 +17,4 @@
 - For crates with macro-generated APIs, script symbol extraction from Rust source and run count-based parity checks before completion to avoid manual transcription drift.
 - For macro-heavy Rust crates (for example large `const_*` registries), generate translated constant tables from source declarations and verify counts against the registration list before finalizing completeness.
 - For Python packages layered on `dcbor`, initialize the global tags store with `with_tags(lambda _: None)` before calling `with_tags_mut(...)`; otherwise first-use registration can deadlock on the current non-reentrant lock path.
+- For Swift targets, always run both `swift test` and `swift test -Xswiftc -warnings-as-errors` before completion; strict builds catch symbol ambiguities and API-surface warnings that normal test runs can miss.
