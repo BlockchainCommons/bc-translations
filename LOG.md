@@ -141,3 +141,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-23 | bc-envelope | 0.43.0 | Kotlin | bc-envelope | 📖 GPT 5.3 Codex | Fluency |
 | 2026-02-23 | provenance-mark | 0.23.0 | Kotlin | provenance-mark | 📖 GPT 5.3 Codex | Translation |
 | 2026-02-23 | provenance-mark | 0.23.0 | Kotlin | provenance-mark | 📖 GPT 5.3 Codex | Fluency |
+| 2026-02-23 | provenance-mark | 0.23.0 | Swift | ProvenanceMark | 🎻 Claude Opus 4.6 | Translation |

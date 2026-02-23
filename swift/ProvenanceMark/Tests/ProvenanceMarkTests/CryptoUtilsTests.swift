@@ -1,0 +1,37 @@
+import Testing
+@testable import ProvenanceMark
+
+struct CryptoUtilsTests {
+    @Test func sha256() {
+        let data = Array("Hello World".utf8)
+        let expected: [UInt8] = [
+            0xa5, 0x91, 0xa6, 0xd4, 0x0b, 0xf4, 0x20, 0x40,
+            0x4a, 0x01, 0x17, 0x33, 0xcf, 0xb7, 0xb1, 0x90,
+            0xd6, 0x2c, 0x65, 0xbf, 0x0b, 0xcd, 0xa3, 0x2b,
+            0x57, 0xb2, 0x77, 0xd9, 0xad, 0x9f, 0x14, 0x6e,
+        ]
+        #expect(CryptoUtils.sha256(data) == expected)
+    }
+
+    @Test func extendKey() {
+        let data = Array("Hello World".utf8)
+        let expected: [UInt8] = [
+            0x81, 0x30, 0x85, 0xa5, 0x08, 0xd5, 0xfe, 0xc6,
+            0x45, 0xab, 0xe5, 0xa1, 0xfb, 0x9a, 0x23, 0xc2,
+            0xa6, 0xac, 0x6b, 0xef, 0x0a, 0x99, 0x65, 0x00,
+            0x17, 0xb3, 0xef, 0x50, 0x53, 0x8d, 0xba, 0x39,
+        ]
+        #expect(CryptoUtils.extendKey(data) == expected)
+    }
+
+    @Test func obfuscate() {
+        let key = Array("Hello".utf8)
+        let message = Array("World".utf8)
+        let obfuscated = CryptoUtils.obfuscate(key: key, message: message)
+        let expected: [UInt8] = [0xc4, 0x38, 0x89, 0xaa, 0xfa]
+        #expect(obfuscated == expected)
+
+        let deobfuscated = CryptoUtils.obfuscate(key: key, message: obfuscated)
+        #expect(deobfuscated == message)
+    }
+}
