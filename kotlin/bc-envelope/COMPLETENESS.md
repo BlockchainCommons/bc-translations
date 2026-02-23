@@ -161,7 +161,7 @@
 - [x] `addSalt()`
 - [x] `addSaltInstance(salt)`
 - [x] `addSaltUsing(rng)` — deterministic testing variant
-- [x] `addSaltWithLen(count)`
+- [x] `addSaltWithLength(count)`
 - [x] `addSaltInRange(range)`
 
 #### Signature Extension
@@ -244,7 +244,7 @@
 - [x] `fromUr(ur)`, `fromUrString(urString)`
 
 ### Constants
-- [x] Well-known functions: ADD, SUB, MUL, DIV, NEG, FN_LT, FN_LE, FN_GT, FN_GE, FN_EQ, FN_NE, FN_AND, FN_OR, FN_XOR, FN_NOT
+- [x] Well-known functions: ADD, SUB, MUL, DIV, NEG, LT, LE, GT, GE, EQ, NE, AND, OR, XOR, NOT
 - [x] Well-known parameters: BLANK, LHS, RHS
 
 ### Global State
@@ -353,8 +353,8 @@ No mismatches found. All public API signatures are semantically equivalent to th
 | Missing Derives | 0 |
 | Doc Coverage | All public items documented |
 
-### Remaining Gaps (SSH-dependent, blocked by upstream)
+### Remaining Gaps (blocked by upstream)
 - 2 SSH tests require SSH signing scheme support not yet in Kotlin bc-components
-- 1 SSH inline test (sskr.rs) merged with integration test
+- 1 inline `sskr.rs` test merged with integration coverage (`SSKRTest.kt`)
 
 **VERDICT: COMPLETE** — All non-SSH API items and tests are translated. SSH gaps are blocked by upstream bc-components SSH agent support.

@@ -93,3 +93,32 @@ COMPLETED
 - [naming] Fixed parameter name mismatch in `FormatContext.summarizer()` override (compiler warning)
 - All 155 tests passing after fixes
 - VERDICT: IDIOMATIC
+
+## 2026-02-23 — Stage 3: Check
+STARTED
+- Running cross-model completeness check for Kotlin bc-envelope
+- Verifying `MANIFEST.md` catalogs against translated API, tests, and Rust source-of-truth
+- Re-running Gradle test suite and reconciling `COMPLETENESS.md` with current Kotlin API names
+
+## 2026-02-23 — Stage 3: Check
+COMPLETED
+- API Coverage: 200/200 items (100%)
+- Test Coverage: 155/158 tests (98%); 2 SSH tests blocked by upstream `bc-components` SSH implementation, and 1 inline `sskr.rs` test merged with integration coverage
+- Signature Mismatches: 0
+- Missing Derives/Protocols: 0
+- Doc Coverage: All public items documented
+- Updated `COMPLETENESS.md` to match current fluent Kotlin API names (`addSaltWithLength`, `LT/LE/…` constants)
+- VERDICT: COMPLETE (with upstream SSH blockers unchanged)
+
+## 2026-02-23 — Stage 4: Fluency
+STARTED
+- Running cross-model fluency review (GPT Codex) for Kotlin bc-envelope
+- Reviewing naming, API ergonomics, error handling, test style, and documentation in target-language code only
+
+## 2026-02-23 — Stage 4: Fluency
+COMPLETED
+- 0 issues found, 0 fixed
+- Existing Kotlin API remains idiomatic after prior fluency improvements
+- All 155 executable tests passing (0 failures)
+- SSH-dependent gaps remain upstream-blocked in Kotlin `bc-components`
+- VERDICT: IDIOMATIC
