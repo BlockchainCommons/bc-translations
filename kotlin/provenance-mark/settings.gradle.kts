@@ -1,0 +1,11 @@
+rootProject.name = "provenance-mark"
+includeBuild("../bc-rand")
+includeBuild("../dcbor")
+includeBuild("../bc-ur")
+includeBuild("../bc-tags")
+includeBuild("../bc-envelope")
+includeBuild("../bc-crypto")
+includeBuild("../bc-shamir")
+includeBuild("../sskr")
+includeBuild("../bc-components")
+includeBuild("../known-values")

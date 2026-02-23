@@ -24,3 +24,4 @@
 - For Rust APIs that serialize `u64` identifiers in JSON, preserve full unsigned range in translations by parsing into a bigint type first and validating bounds before converting to language-native unsigned integers.
 - For Swift translations with global registry bootstrapping, make setup helpers actor-isolated and idempotent (`@MainActor` + one-time guard) before running parallel Swift Testing suites.
 - If legacy fixture naming differs from current KnownValues registry names, use a crate-local mutable copy of `KnownValuesStore.shared` in formatting context to preserve expected rendered output without mutating upstream shared state.
+- For Kotlin multi-module libraries, if a crate’s public API references dependency types, export that dependency with `api(...)` (and `java-library`) rather than `implementation(...)`; otherwise dependent crates can fail to compile even when tests in the dependency itself pass.

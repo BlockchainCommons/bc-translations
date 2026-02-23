@@ -122,3 +122,15 @@ COMPLETED
 - All 155 executable tests passing (0 failures)
 - SSH-dependent gaps remain upstream-blocked in Kotlin `bc-components`
 - VERDICT: IDIOMATIC
+
+## 2026-02-23 — Stage 4: Fluency
+STARTED
+- Re-running fluency/check pass after dependency-boundary issue discovered from Kotlin `provenance-mark` integration.
+- Verifying transitive API exposure for public `DigestProvider`/`Envelope` signatures.
+
+## 2026-02-23 — Stage 4: Fluency
+COMPLETED
+- 1 issue found, 1 fixed
+- Exported `bc-components` as API dependency (`java-library` + `api(...)`) so consumers of `bc-envelope` resolve public BCComponents types transitively.
+- Re-ran `./gradlew test --no-daemon`: all bc-envelope tests passing.
+- VERDICT: IDIOMATIC

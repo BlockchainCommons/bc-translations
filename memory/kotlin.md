@@ -7,3 +7,4 @@
 - For Rust crates with test-local fake RNGs, mirror that exact fake RNG behavior in Kotlin tests instead of reusing shared helper RNGs from dependencies.
 - For Rust `u64` fields parsed from JSON in Kotlin, decode into `BigInteger` and enforce `0..2^64-1` bounds before converting to `ULong`; avoid `Long` DTO fields that truncate valid unsigned values.
 - Do not assume transitive `implementation` dependencies from sibling Kotlin modules are importable; if a symbol is needed, add a direct dependency or use a crate-local constant/value.
+- For Kotlin library modules that expose dependency types in public API, use the `java-library` plugin and `api(...)` dependencies; `implementation(...)` can hide required types from downstream consumers and break compilation.
