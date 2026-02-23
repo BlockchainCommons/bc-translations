@@ -12,16 +12,16 @@ import com.blockchaincommons.dcbor.Cbor
 sealed class KeyDerivationParams {
 
     /** HKDF-based key derivation. */
-    data class HKDF(val params: HKDFParams) : KeyDerivationParams()
+    class HKDF(val params: HKDFParams) : KeyDerivationParams()
 
     /** PBKDF2-based key derivation. */
-    data class PBKDF2(val params: PBKDF2Params) : KeyDerivationParams()
+    class PBKDF2(val params: PBKDF2Params) : KeyDerivationParams()
 
     /** Scrypt-based key derivation. */
-    data class Scrypt(val params: ScryptParams) : KeyDerivationParams()
+    class Scrypt(val params: ScryptParams) : KeyDerivationParams()
 
     /** Argon2id-based key derivation. */
-    data class Argon2id(val params: Argon2idParams) : KeyDerivationParams()
+    class Argon2id(val params: Argon2idParams) : KeyDerivationParams()
 
     /** Returns the [KeyDerivationMethod] associated with these parameters. */
     fun method(): KeyDerivationMethod = when (this) {
@@ -36,6 +36,9 @@ sealed class KeyDerivationParams {
         is PBKDF2, is Scrypt, is Argon2id -> true
         else -> false
     }
+
+    /** Returns `true` if the derivation method is SSH agent-based. */
+    fun isSshAgent(): Boolean = false
 
     /**
      * Derives a key from [secret] and encrypts [contentKey] with it.

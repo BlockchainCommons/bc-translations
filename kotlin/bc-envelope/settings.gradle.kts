@@ -1,0 +1,10 @@
+rootProject.name = "bc-envelope"
+includeBuild("../bc-rand")
+includeBuild("../bc-crypto")
+includeBuild("../dcbor")
+includeBuild("../bc-tags")
+includeBuild("../bc-ur")
+includeBuild("../bc-components")
+includeBuild("../known-values")
+includeBuild("../bc-shamir")
+includeBuild("../sskr")

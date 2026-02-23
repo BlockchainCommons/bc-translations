@@ -39,6 +39,9 @@ class EncryptedKey private constructor(
     /** Returns `true` if the derivation method is password-based. */
     fun isPasswordBased(): Boolean = params.isPasswordBased()
 
+    /** Returns `true` if the derivation method is SSH agent-based. */
+    fun isSshAgent(): Boolean = params.isSshAgent()
+
     /**
      * Decrypts this encrypted key using the given [secret] to recover the
      * original content key.
