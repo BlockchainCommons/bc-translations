@@ -166,10 +166,11 @@ public struct DirectoryConfig: Sendable {
 
     /// Returns the default directory: `~/.known-values/`
     ///
-    /// Falls back to `./.known-values/` if the home directory cannot be
-    /// determined.
+    /// On macOS this is the user's home directory. On iOS/tvOS/watchOS
+    /// it resolves to the app's sandbox root (the directory won't normally
+    /// exist, so the loader gracefully returns no values).
     public static func defaultDirectory() -> URL {
-        FileManager.default.homeDirectoryForCurrentUser
+        URL(fileURLWithPath: NSHomeDirectory())
             .appendingPathComponent(".known-values")
     }
 
