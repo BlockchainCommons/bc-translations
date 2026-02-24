@@ -10,6 +10,13 @@ public enum ObscureAction {
     case compress
 }
 
+// Identifies obscuration state when filtering envelope elements.
+public enum ObscureType {
+    case elided
+    case encrypted
+    case compressed
+}
+
 public extension Envelope {
     /// Returns the elided variant of this envelope.
     ///
@@ -190,5 +197,216 @@ public extension Envelope {
             throw EnvelopeError.invalidDigest
         }
         return envelope
+    }
+}
+
+// MARK: - Walk-Based Obscuration Utilities
+
+public extension Envelope {
+    /// Returns the set of digests of nodes matching the specified criteria.
+    ///
+    /// - Parameters:
+    ///   - targetDigests: Optional set of digests to filter by. If `nil`, all nodes are considered.
+    ///   - obscureTypes: Obscuration types to match. If empty, all matching target nodes are returned.
+    func nodesMatching(_ targetDigests: Swift.Set<Digest>? = nil, _ obscureTypes: [ObscureType] = []) -> Swift.Set<Digest> {
+        var result: Swift.Set<Digest> = []
+        collectNodesMatching(into: &result, targetDigests: targetDigests, obscureTypes: obscureTypes)
+        return result
+    }
+    
+    /// Returns this envelope with elided nodes restored from the provided envelopes.
+    func walkUnelide(_ envelopes: [Envelope]) -> Envelope {
+        var envelopeMap: [Digest: Envelope] = [:]
+        for envelope in envelopes {
+            envelopeMap[envelope.digest] = envelope
+        }
+        return walkUnelide(with: envelopeMap)
+    }
+    
+    /// Returns this envelope with nodes in `target` replaced by `replacement`.
+    ///
+    /// - Throws: `EnvelopeError.invalidFormat` if replacement would produce an invalid assertions array.
+    func walkReplace(_ target: Swift.Set<Digest>, with replacement: Envelope) throws -> Envelope {
+        if target.contains(digest) {
+            return replacement
+        }
+        
+        switch self {
+        case .node(let subject, let assertions, _):
+            let newSubject = try subject.walkReplace(target, with: replacement)
+            let newAssertions = try assertions.map { try $0.walkReplace(target, with: replacement) }
+            let subjectUnchanged = newSubject.isIdentical(to: subject)
+            let assertionsUnchanged = zip(newAssertions, assertions).allSatisfy { $0.isIdentical(to: $1) }
+            if subjectUnchanged && assertionsUnchanged {
+                return self
+            }
+            return try Envelope(subject: newSubject, assertions: newAssertions)
+        case .wrapped(let envelope, _):
+            let newEnvelope = try envelope.walkReplace(target, with: replacement)
+            if newEnvelope.isIdentical(to: envelope) {
+                return self
+            }
+            return Envelope(wrapped: newEnvelope)
+        case .assertion(let assertion):
+            let newPredicate = try assertion.predicate.walkReplace(target, with: replacement)
+            let newObject = try assertion.object.walkReplace(target, with: replacement)
+            if newPredicate.isIdentical(to: assertion.predicate) && newObject.isIdentical(to: assertion.object) {
+                return self
+            }
+            return Envelope(assertion: Assertion(predicate: newPredicate, object: newObject))
+        default:
+            return self
+        }
+    }
+    
+    /// Returns this envelope with decryptable encrypted nodes decrypted using `keys`.
+    func walkDecrypt(_ keys: [SymmetricKey]) -> Envelope {
+        switch self {
+        case .encrypted:
+            for key in keys {
+                if let decrypted = try? decryptSubject(with: key) {
+                    return decrypted.walkDecrypt(keys)
+                }
+            }
+            return self
+        case .node(let subject, let assertions, _):
+            let newSubject = subject.walkDecrypt(keys)
+            let newAssertions = assertions.map { $0.walkDecrypt(keys) }
+            let subjectUnchanged = newSubject.isIdentical(to: subject)
+            let assertionsUnchanged = zip(newAssertions, assertions).allSatisfy { $0.isIdentical(to: $1) }
+            if subjectUnchanged && assertionsUnchanged {
+                return self
+            }
+            return Envelope(subject: newSubject, uncheckedAssertions: newAssertions)
+        case .wrapped(let envelope, _):
+            let newEnvelope = envelope.walkDecrypt(keys)
+            if newEnvelope.isIdentical(to: envelope) {
+                return self
+            }
+            return Envelope(wrapped: newEnvelope)
+        case .assertion(let assertion):
+            let newPredicate = assertion.predicate.walkDecrypt(keys)
+            let newObject = assertion.object.walkDecrypt(keys)
+            if newPredicate.isIdentical(to: assertion.predicate) && newObject.isIdentical(to: assertion.object) {
+                return self
+            }
+            return Envelope(assertion: Assertion(predicate: newPredicate, object: newObject))
+        default:
+            return self
+        }
+    }
+    
+    /// Returns this envelope with compressed nodes decompressed.
+    ///
+    /// - Parameter targetDigests: Optional set of digests to filter by. If `nil`, all compressed nodes are considered.
+    func walkDecompress(_ targetDigests: Swift.Set<Digest>? = nil) -> Envelope {
+        switch self {
+        case .compressed:
+            let matchesTarget = targetDigests?.contains(digest) ?? true
+            if matchesTarget, let decompressed = try? uncompress() {
+                return decompressed.walkDecompress(targetDigests)
+            }
+            return self
+        case .node(let subject, let assertions, _):
+            let newSubject = subject.walkDecompress(targetDigests)
+            let newAssertions = assertions.map { $0.walkDecompress(targetDigests) }
+            let subjectUnchanged = newSubject.isIdentical(to: subject)
+            let assertionsUnchanged = zip(newAssertions, assertions).allSatisfy { $0.isIdentical(to: $1) }
+            if subjectUnchanged && assertionsUnchanged {
+                return self
+            }
+            return Envelope(subject: newSubject, uncheckedAssertions: newAssertions)
+        case .wrapped(let envelope, _):
+            let newEnvelope = envelope.walkDecompress(targetDigests)
+            if newEnvelope.isIdentical(to: envelope) {
+                return self
+            }
+            return Envelope(wrapped: newEnvelope)
+        case .assertion(let assertion):
+            let newPredicate = assertion.predicate.walkDecompress(targetDigests)
+            let newObject = assertion.object.walkDecompress(targetDigests)
+            if newPredicate.isIdentical(to: assertion.predicate) && newObject.isIdentical(to: assertion.object) {
+                return self
+            }
+            return Envelope(assertion: Assertion(predicate: newPredicate, object: newObject))
+        default:
+            return self
+        }
+    }
+}
+
+private extension Envelope {
+    func collectNodesMatching(
+        into result: inout Swift.Set<Digest>,
+        targetDigests: Swift.Set<Digest>?,
+        obscureTypes: [ObscureType]
+    ) {
+        let digestMatches = targetDigests?.contains(digest) ?? true
+        if digestMatches {
+            if obscureTypes.isEmpty {
+                result.insert(digest)
+            } else if obscureTypes.contains(where: { matches(obscureType: $0) }) {
+                result.insert(digest)
+            }
+        }
+        
+        switch self {
+        case .node(let subject, let assertions, _):
+            subject.collectNodesMatching(into: &result, targetDigests: targetDigests, obscureTypes: obscureTypes)
+            for assertion in assertions {
+                assertion.collectNodesMatching(into: &result, targetDigests: targetDigests, obscureTypes: obscureTypes)
+            }
+        case .wrapped(let envelope, _):
+            envelope.collectNodesMatching(into: &result, targetDigests: targetDigests, obscureTypes: obscureTypes)
+        case .assertion(let assertion):
+            assertion.predicate.collectNodesMatching(into: &result, targetDigests: targetDigests, obscureTypes: obscureTypes)
+            assertion.object.collectNodesMatching(into: &result, targetDigests: targetDigests, obscureTypes: obscureTypes)
+        default:
+            break
+        }
+    }
+    
+    func walkUnelide(with envelopeMap: [Digest: Envelope]) -> Envelope {
+        switch self {
+        case .elided:
+            return envelopeMap[digest] ?? self
+        case .node(let subject, let assertions, _):
+            let newSubject = subject.walkUnelide(with: envelopeMap)
+            let newAssertions = assertions.map { $0.walkUnelide(with: envelopeMap) }
+            let subjectUnchanged = newSubject.isIdentical(to: subject)
+            let assertionsUnchanged = zip(newAssertions, assertions).allSatisfy { $0.isIdentical(to: $1) }
+            if subjectUnchanged && assertionsUnchanged {
+                return self
+            }
+            return Envelope(subject: newSubject, uncheckedAssertions: newAssertions)
+        case .wrapped(let envelope, _):
+            let newEnvelope = envelope.walkUnelide(with: envelopeMap)
+            if newEnvelope.isIdentical(to: envelope) {
+                return self
+            }
+            return Envelope(wrapped: newEnvelope)
+        case .assertion(let assertion):
+            let newPredicate = assertion.predicate.walkUnelide(with: envelopeMap)
+            let newObject = assertion.object.walkUnelide(with: envelopeMap)
+            if newPredicate.isIdentical(to: assertion.predicate) && newObject.isIdentical(to: assertion.object) {
+                return self
+            }
+            return Envelope(assertion: Assertion(predicate: newPredicate, object: newObject))
+        default:
+            return self
+        }
+    }
+    
+    func matches(obscureType: ObscureType) -> Bool {
+        switch (obscureType, self) {
+        case (.elided, .elided):
+            return true
+        case (.encrypted, .encrypted):
+            return true
+        case (.compressed, .compressed):
+            return true
+        default:
+            return false
+        }
     }
 }

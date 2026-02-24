@@ -301,4 +301,97 @@ struct CoreTests {
         """
         )
     }
+    
+    @Test func testUnknownLeaf() throws {
+        let unknownUR = "ur:envelope/tpsotaaodnoyadgdjlssmkcklgoskseodnyteofwwfylkiftaydpdsjz"
+        let e = try Envelope(urString: unknownUR)
+        #expect(e.format() == "555(Map)")
+    }
+    
+    @Test func testTrue() throws {
+        let e = try Envelope(true).checkEncoding()
+        #expect(e.isBool)
+        #expect(e.isTrue)
+        #expect(!e.isFalse)
+        #expect(e.isIdentical(to: Envelope.true()))
+        #expect(e.format() ==
+        """
+        true
+        """
+        )
+    }
+    
+    @Test func testFalse() throws {
+        let e = try Envelope(false).checkEncoding()
+        #expect(e.isBool)
+        #expect(!e.isTrue)
+        #expect(e.isFalse)
+        #expect(e.isIdentical(to: Envelope.false()))
+        #expect(e.format() ==
+        """
+        false
+        """
+        )
+    }
+    
+    @Test func testUnit() throws {
+        var e = try Envelope.unit().checkEncoding()
+        #expect(e.isSubjectUnit)
+        #expect(e.format() ==
+        """
+        ''
+        """
+        )
+        
+        e = e.addAssertion("foo", "bar")
+        #expect(e.isSubjectUnit)
+        #expect(e.format() ==
+        """
+        '' [
+            "foo": "bar"
+        ]
+        """
+        )
+        
+        let subject = try e.extractSubject(KnownValue.self)
+        #expect(subject == .unit)
+    }
+    
+    @Test func testPosition() throws {
+        var e = Envelope("Hello")
+        
+        #expect(throws: (any Swift.Error).self) {
+            _ = try e.position()
+        }
+        
+        e = try e.setPosition(42)
+        #expect(try e.position() == 42)
+        #expect(e.format() ==
+        """
+        "Hello" [
+            'position': 42
+        ]
+        """
+        )
+        
+        e = try e.setPosition(0)
+        #expect(try e.position() == 0)
+        #expect(e.format() ==
+        """
+        "Hello" [
+            'position': 0
+        ]
+        """
+        )
+        
+        e = try e.removePosition()
+        #expect(throws: (any Swift.Error).self) {
+            _ = try e.position()
+        }
+        #expect(e.format() ==
+        """
+        "Hello"
+        """
+        )
+    }
 }

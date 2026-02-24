@@ -51,16 +51,20 @@
 - [x] SSH tests translated (`ssh_tests.rs`: 1)
 - [x] SSKR tests translated (`sskr_tests.rs`: 1)
 - [x] Seal inline tests translated (`seal.rs`: 2)
-- [ ] Remaining inventory gap: 21 tests not yet represented one-to-one against Rust (primarily inline-unit parity plus count deltas in previously merged Swift suites)
+- [x] Core parity additions translated (`test_unknown_leaf`, `test_true`, `test_false`, `test_unit`, `test_position`)
+- [x] Type parity additions translated (`test_fake_random_data`, `test_fake_numbers`)
+- [x] Elision parity additions translated (`walk_replace_*` tests)
+- [x] Obscuring parity additions translated (`test_nodes_matching`, `test_walk_unelide`, `test_walk_decrypt`, `test_walk_decompress`, `test_mixed_obscuration_operations`)
+- [ ] Remaining inventory gap: 1 test not yet represented one-to-one against Rust (inline-unit inventory delta)
 
 ## Coverage Summary
-- Swift tests currently in package: 137 (25 suites)
+- Swift tests currently in package: 157 (25 suites)
 - Rust inventory baseline: 158
-- Current parity coverage signal: 137/158 (87%)
-- Remaining gap: 21 tests
+- Current parity coverage signal: 157/158 (99%)
+- Remaining gap: 1 test
 
 ## Build & Config
 - [x] .gitignore
 - [x] Package.swift
 - [x] Swift package builds successfully
-- [x] `swift test -Xswiftc -warnings-as-errors` passes (137 tests)
+- [x] `swift test -Xswiftc -warnings-as-errors` passes (157 tests)

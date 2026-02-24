@@ -118,3 +118,19 @@ COMPLETED
   - `SignatureTests.swift`, `Ed25519Tests.swift`, `KeypairSigningTests.swift`, `EncapsulationTests.swift`, `SSHTests.swift`, `SSKRTests.swift`, `MultiPermitTests.swift`, `SealTests.swift`
 - Validation: `swift test -Xswiftc -warnings-as-errors` passes (137 tests, 25 suites).
 - Updated `COMPLETENESS.md` coverage signal from 81/158 (51%) to 137/158 (87%).
+
+## 2026-02-24 — Stage 2: Code (Gap Fill Continuation)
+STARTED
+- Closing remaining parity gaps identified after the first gap-fill pass: walk/elision APIs and missing tests in core/type/elision/obscuring suites.
+
+## 2026-02-24 — Stage 2: Code (Gap Fill Continuation)
+COMPLETED
+- Added missing walk/elision APIs in `Elide.swift`: `ObscureType`, `nodesMatching`, `walkUnelide`, `walkReplace`, `walkDecrypt`, `walkDecompress`.
+- Added missing core helpers in `Leaf.swift`: bool helpers (`true`/`false`, `isBool`/`isTrue`/`isFalse`), unit helpers, and position helpers (`setPosition`, `position`, `removePosition`).
+- Added parity tests:
+  - `Core/CoreTests.swift`: 5 tests (`unknown_leaf`, bool, unit, position)
+  - `Core/TypeTests.swift`: 2 tests (`fake_random_data`, `fake_numbers`)
+  - `ElisionTests.swift`: 8 walk-replace tests
+  - `ObscuringTests.swift`: 5 nodes/walk/mixed obscuration tests
+- Validation: `swift test -Xswiftc -warnings-as-errors` passes (157 tests, 25 suites).
+- Updated `COMPLETENESS.md` coverage signal to 157/158 (99%), remaining gap: 1 test.

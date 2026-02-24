@@ -444,4 +444,255 @@ struct ElisionTests {
         // Structurally different
         #expect(!e1.isIdentical(to: e3))
     }
+    
+    @Test func testWalkReplaceBasic() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let charlie = Envelope("Charlie")
+        
+        let envelope = alice
+            .addAssertion("knows", bob)
+            .addAssertion("likes", bob)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "knows": "Bob"
+            "likes": "Bob"
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [bob.digest]
+        let modified = try envelope.walkReplace(target, with: charlie)
+        
+        #expect(modified.format() ==
+        """
+        "Alice" [
+            "knows": "Charlie"
+            "likes": "Charlie"
+        ]
+        """
+        )
+        
+        #expect(!modified.isEquivalent(to: envelope))
+    }
+    
+    @Test func testWalkReplaceSubject() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let carol = Envelope("Carol")
+        
+        let envelope = alice.addAssertion("knows", bob)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "knows": "Bob"
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [alice.digest]
+        let modified = try envelope.walkReplace(target, with: carol)
+        
+        #expect(modified.format() ==
+        """
+        "Carol" [
+            "knows": "Bob"
+        ]
+        """
+        )
+    }
+    
+    @Test func testWalkReplaceNested() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let charlie = Envelope("Charlie")
+        
+        let inner = bob.addAssertion("friend", bob)
+        let envelope = alice.addAssertion("knows", inner)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "knows": "Bob" [
+                "friend": "Bob"
+            ]
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [bob.digest]
+        let modified = try envelope.walkReplace(target, with: charlie)
+        
+        #expect(modified.format() ==
+        """
+        "Alice" [
+            "knows": "Charlie" [
+                "friend": "Charlie"
+            ]
+        ]
+        """
+        )
+    }
+    
+    @Test func testWalkReplaceWrapped() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let charlie = Envelope("Charlie")
+        
+        let wrapped = bob.wrap()
+        let envelope = alice.addAssertion("data", wrapped)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "data": {
+                "Bob"
+            }
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [bob.digest]
+        let modified = try envelope.walkReplace(target, with: charlie)
+        
+        #expect(modified.format() ==
+        """
+        "Alice" [
+            "data": {
+                "Charlie"
+            }
+        ]
+        """
+        )
+    }
+    
+    @Test func testWalkReplaceNoMatch() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let charlie = Envelope("Charlie")
+        let dave = Envelope("Dave")
+        
+        let envelope = alice.addAssertion("knows", bob)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "knows": "Bob"
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [dave.digest]
+        let modified = try envelope.walkReplace(target, with: charlie)
+        
+        #expect(modified.format() ==
+        """
+        "Alice" [
+            "knows": "Bob"
+        ]
+        """
+        )
+        
+        #expect(modified.isIdentical(to: envelope))
+    }
+    
+    @Test func testWalkReplaceMultipleTargets() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let carol = Envelope("Carol")
+        let replacement = Envelope("REDACTED")
+        
+        let envelope = alice
+            .addAssertion("knows", bob)
+            .addAssertion("likes", carol)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "knows": "Bob"
+            "likes": "Carol"
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [bob.digest, carol.digest]
+        let modified = try envelope.walkReplace(target, with: replacement)
+        
+        #expect(modified.format() ==
+        """
+        "Alice" [
+            "knows": "REDACTED"
+            "likes": "REDACTED"
+        ]
+        """
+        )
+    }
+    
+    @Test func testWalkReplaceElided() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let charlie = Envelope("Charlie")
+        
+        let envelope = alice
+            .addAssertion("knows", bob)
+            .addAssertion("likes", bob)
+        
+        #expect(envelope.format() ==
+        """
+        "Alice" [
+            "knows": "Bob"
+            "likes": "Bob"
+        ]
+        """
+        )
+        
+        let elided = envelope.elideRemoving(bob)
+        
+        #expect(elided.format() ==
+        """
+        "Alice" [
+            "knows": ELIDED
+            "likes": ELIDED
+        ]
+        """
+        )
+        
+        let target: Swift.Set<Digest> = [bob.digest]
+        let modified = try elided.walkReplace(target, with: charlie)
+        
+        #expect(modified.format() ==
+        """
+        "Alice" [
+            "knows": "Charlie"
+            "likes": "Charlie"
+        ]
+        """
+        )
+        
+        #expect(!modified.isEquivalent(to: envelope))
+        #expect(!modified.isEquivalent(to: elided))
+    }
+    
+    @Test func testWalkReplaceAssertionWithNonAssertionFails() throws {
+        let alice = Envelope("Alice")
+        let bob = Envelope("Bob")
+        let charlie = Envelope("Charlie")
+        
+        let envelope = alice.addAssertion("knows", bob)
+        
+        let knowsAssertion = try envelope.assertion(withPredicate: "knows")
+        let target: Swift.Set<Digest> = [knowsAssertion.digest]
+        
+        var threw = false
+        do {
+            _ = try envelope.walkReplace(target, with: charlie)
+        } catch {
+            threw = true
+            #expect(String(describing: error) == EnvelopeError.invalidFormat.description)
+        }
+        #expect(threw)
+    }
 }
