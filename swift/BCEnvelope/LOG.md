@@ -132,5 +132,7 @@ COMPLETED
   - `Core/TypeTests.swift`: 2 tests (`fake_random_data`, `fake_numbers`)
   - `ElisionTests.swift`: 8 walk-replace tests
   - `ObscuringTests.swift`: 5 nodes/walk/mixed obscuration tests
-- Validation: `swift test -Xswiftc -warnings-as-errors` passes (157 tests, 25 suites).
-- Updated `COMPLETENESS.md` coverage signal to 157/158 (99%), remaining gap: 1 test.
+- Added inline parity test:
+  - `Core/CoreEncodingTests.swift`: `testAnyEnvelope` (`base/envelope.rs` inline parity)
+- Validation: `swift test -Xswiftc -warnings-as-errors` passes (158 tests, 25 suites).
+- Updated `COMPLETENESS.md` coverage signal to 158/158 (100%), remaining gap: 0 tests.

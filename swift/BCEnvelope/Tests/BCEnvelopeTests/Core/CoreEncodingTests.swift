@@ -11,6 +11,13 @@ struct CoreEncodingTests {
     @Test func testDigest() throws {
         try Envelope(Digest("Hello.")).checkEncoding()
     }
+    
+    @Test func testAnyEnvelope() {
+        let e1 = Envelope("Hello")
+        let e2 = Envelope("Hello")
+        #expect(e1.format() == e2.format())
+        #expect(e1.digest == e2.digest)
+    }
 
     @Test func test1() throws {
         let e = try Envelope(plaintextHello).checkEncoding()

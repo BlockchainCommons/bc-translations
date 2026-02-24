@@ -55,16 +55,16 @@
 - [x] Type parity additions translated (`test_fake_random_data`, `test_fake_numbers`)
 - [x] Elision parity additions translated (`walk_replace_*` tests)
 - [x] Obscuring parity additions translated (`test_nodes_matching`, `test_walk_unelide`, `test_walk_decrypt`, `test_walk_decompress`, `test_mixed_obscuration_operations`)
-- [ ] Remaining inventory gap: 1 test not yet represented one-to-one against Rust (inline-unit inventory delta)
+- [x] Inline envelope parity addition translated (`test_any_envelope`)
 
 ## Coverage Summary
-- Swift tests currently in package: 157 (25 suites)
+- Swift tests currently in package: 158 (25 suites)
 - Rust inventory baseline: 158
-- Current parity coverage signal: 157/158 (99%)
-- Remaining gap: 1 test
+- Current parity coverage signal: 158/158 (100%)
+- Remaining gap: 0 tests
 
 ## Build & Config
 - [x] .gitignore
 - [x] Package.swift
 - [x] Swift package builds successfully
-- [x] `swift test -Xswiftc -warnings-as-errors` passes (157 tests)
+- [x] `swift test -Xswiftc -warnings-as-errors` passes (158 tests)
