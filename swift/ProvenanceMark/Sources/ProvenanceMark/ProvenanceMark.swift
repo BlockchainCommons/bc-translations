@@ -80,7 +80,7 @@ public extension ProvenanceMark {
     ///   - info: Optional CBOR-encodable info to embed in the mark.
     /// - Throws: `ProvenanceMarkError` if any field has an invalid length.
     init(
-        res resolution: ProvenanceMarkResolution,
+        resolution: ProvenanceMarkResolution,
         key: [UInt8],
         nextKey: [UInt8],
         chainId: [UInt8],
@@ -142,7 +142,7 @@ public extension ProvenanceMark {
     ///   - message: The full message bytes (key + obfuscated payload).
     /// - Throws: `ProvenanceMarkError` if the message is too short or contains
     ///   invalid data.
-    init(res resolution: ProvenanceMarkResolution, message: [UInt8]) throws {
+    init(resolution: ProvenanceMarkResolution, message: [UInt8]) throws {
         guard message.count >= resolution.fixedLength else {
             throw ProvenanceMarkError.invalidMessageLength(
                 expected: resolution.fixedLength, actual: message.count)
@@ -366,7 +366,7 @@ public extension ProvenanceMark {
         } catch {
             throw ProvenanceMarkError.bytewords(String(describing: error))
         }
-        try self.init(res: resolution, message: decoded)
+        try self.init(resolution: resolution, message: decoded)
     }
 }
 
@@ -501,7 +501,7 @@ extension ProvenanceMark: CBORTaggedCodable {
         let resolution = try ProvenanceMarkResolution(cbor: elements[0])
         let messageData = try Data(cbor: elements[1])
         do {
-            try self.init(res: resolution, message: Array(messageData))
+            try self.init(resolution: resolution, message: Array(messageData))
         } catch {
             throw CBORError.invalidFormat
         }

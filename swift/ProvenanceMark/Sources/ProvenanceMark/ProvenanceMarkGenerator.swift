@@ -80,7 +80,7 @@ public struct ProvenanceMarkGenerator: Sendable, Equatable, Codable {
     /// - Throws: `ProvenanceMarkError.invalidChainIdLength` if `chainId.count`
     ///   does not equal `resolution.linkLength`.
     public init(
-        res resolution: ProvenanceMarkResolution,
+        resolution: ProvenanceMarkResolution,
         seed: ProvenanceSeed,
         chainId: [UInt8],
         nextSeq: UInt32,
@@ -104,13 +104,13 @@ public struct ProvenanceMarkGenerator: Sendable, Equatable, Codable {
     /// - Parameters:
     ///   - resolution: The mark resolution.
     ///   - seed: The provenance seed.
-    public init(res resolution: ProvenanceMarkResolution, seed: ProvenanceSeed) {
+    public init(resolution: ProvenanceMarkResolution, seed: ProvenanceSeed) {
         let digest1 = CryptoUtils.sha256(seed.bytes)
         let chainId = Array(digest1.prefix(resolution.linkLength))
         let digest2 = CryptoUtils.sha256(digest1)
         // The chain ID length is guaranteed to match resolution.linkLength.
         try! self.init(
-            res: resolution,
+            resolution: resolution,
             seed: seed,
             chainId: chainId,
             nextSeq: 0,
@@ -125,9 +125,9 @@ public struct ProvenanceMarkGenerator: Sendable, Equatable, Codable {
     /// - Parameters:
     ///   - resolution: The mark resolution.
     ///   - passphrase: A passphrase string.
-    public init(res resolution: ProvenanceMarkResolution, passphrase: String) {
+    public init(resolution: ProvenanceMarkResolution, passphrase: String) {
         let seed = ProvenanceSeed(passphrase: passphrase)
-        self.init(res: resolution, seed: seed)
+        self.init(resolution: resolution, seed: seed)
     }
 
     /// Creates a new generator using the given random number generator.
@@ -135,17 +135,17 @@ public struct ProvenanceMarkGenerator: Sendable, Equatable, Codable {
     /// - Parameters:
     ///   - resolution: The mark resolution.
     ///   - rng: A random number generator conforming to `BCRandomNumberGenerator`.
-    public init(res resolution: ProvenanceMarkResolution, using rng: inout some BCRandomNumberGenerator) {
+    public init(resolution: ProvenanceMarkResolution, using rng: inout some BCRandomNumberGenerator) {
         let seed = ProvenanceSeed(using: &rng)
-        self.init(res: resolution, seed: seed)
+        self.init(resolution: resolution, seed: seed)
     }
 
     /// Creates a new generator with a cryptographically random seed.
     ///
     /// - Parameter resolution: The mark resolution.
-    public init(res resolution: ProvenanceMarkResolution) {
+    public init(resolution: ProvenanceMarkResolution) {
         let seed = ProvenanceSeed()
-        self.init(res: resolution, seed: seed)
+        self.init(resolution: resolution, seed: seed)
     }
 
     // MARK: - Mark generation
@@ -180,7 +180,7 @@ public struct ProvenanceMarkGenerator: Sendable, Equatable, Codable {
         let nextKey = nextRng.nextBytes(count: resolution.linkLength)
 
         return try! ProvenanceMark(
-            res: resolution,
+            resolution: resolution,
             key: key,
             nextKey: nextKey,
             chainId: chainId,
@@ -248,7 +248,7 @@ public extension ProvenanceMarkGenerator {
             let rngState = try RngState(cbor: rngStateCBOR)
 
             try self.init(
-                res: resolution,
+                resolution: resolution,
                 seed: seed,
                 chainId: chainId,
                 nextSeq: nextSeq,

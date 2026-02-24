@@ -67,3 +67,33 @@ COMPLETED
   - Fixed `nonisolated(unsafe)` warning on Sendable type
   - Simplified `hasIssues` with `contains(where:)`
 - All 43 tests pass, zero warnings
+
+## 2026-02-23 — Stage 3: Check
+STARTED
+- Cross-model completeness check (GPT Codex) against `MANIFEST.md` and Rust reference exports.
+
+## 2026-02-23 — Stage 3: Check
+COMPLETED
+- API Coverage: 100% (manifest items present and mapped)
+- Test Coverage: 100% (38/38 Rust tests translated + 5 Swift-specific tests)
+- Signature Mismatches: 0
+- Derives/Protocols: 0 missing conformances
+- Documentation: no new doc coverage gaps identified
+- VERDICT: COMPLETE
+
+## 2026-02-23 — Stage 4: Critique (Cross-Model Fluency)
+STARTED
+- Reviewing Swift API surface and tests for idiomatic naming and warning-free builds.
+
+## 2026-02-23 — Stage 4: Critique (Cross-Model Fluency)
+COMPLETED
+- Issues found: 2
+  - Non-idiomatic abbreviated public initializer label `res`
+  - Unused test locals producing compiler warnings
+- Issues fixed: 2
+  - Renamed public initializer labels/call sites from `res` to `resolution` in `ProvenanceMark` and `ProvenanceMarkGenerator`
+  - Removed unused `json` locals from `ValidateTests.swift`
+- Blocked by completeness gaps: 0
+- Downstream Swift dependents requiring repair: none (provenance-mark is a leaf crate)
+- Verification: `swift test -Xswiftc -warnings-as-errors` passed (43 tests, 0 failures)
+- VERDICT: IDIOMATIC

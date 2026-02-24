@@ -30,3 +30,10 @@
 - Public API coverage: 100% (all types, functions, constants)
 - Test coverage: 100% (38/38 Rust tests translated, plus 5 Swift-specific)
 - Source files: 13 files, ~2,800 lines
+
+## Verification (2026-02-23, Cross-Model)
+- Re-checked manifest coverage against Swift sources and Rust public exports
+- API coverage: 100% (all manifest types/functions/constants/protocol mappings present)
+- Signature mismatches: 0
+- Test coverage: 100% (38/38 Rust tests translated, plus 5 Swift-specific)
+- `swift test -Xswiftc -warnings-as-errors`: 43/43 tests passing

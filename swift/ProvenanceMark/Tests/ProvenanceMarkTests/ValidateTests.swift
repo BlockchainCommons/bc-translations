@@ -19,7 +19,7 @@ struct ValidateTests {
         BCTags.registerTags()
 
         var generator = ProvenanceMarkGenerator(
-            res: resolution,
+            resolution: resolution,
             passphrase: passphrase
         )
 
@@ -382,7 +382,7 @@ struct ValidateTests {
         let date = utcDate(year: 2023, month: 6, day: 22, hour: 12)
 
         let badMark = try ProvenanceMark(
-            res: mark1.resolution,
+            resolution: mark1.resolution,
             key: mark1.key,
             nextKey: mark0.hash, // Wrong! Should be mark1's actual next key
             chainId: mark1.chainId,
@@ -489,7 +489,7 @@ struct ValidateTests {
         BCTags.registerTags()
 
         var generator = ProvenanceMarkGenerator(
-            res: .low,
+            resolution: .low,
             passphrase: "test"
         )
 
@@ -605,15 +605,13 @@ struct ValidateTests {
         // To test date ordering, we need to create mark1 with the correct key
         // from generator but with an earlier date
         var generator = ProvenanceMarkGenerator(
-            res: .low,
+            resolution: .low,
             passphrase: "test"
         )
         let _ = generator.next(date: mark0.date) // skip first
         let mark1BadDate = generator.next(date: earlierDate)
 
         let report = ProvenanceMark.validate([mark0, mark1BadDate])
-
-        let json = report.format(.jsonPretty)
 
         // Verify the report contains the date ordering issue
         #expect(report.hasIssues)
@@ -638,7 +636,7 @@ struct ValidateTests {
         let date = utcDate(year: 2023, month: 6, day: 21, hour: 12)
 
         let badMark = try ProvenanceMark(
-            res: mark1.resolution,
+            resolution: mark1.resolution,
             key: mark1.key,
             nextKey: mark1.hash,
             chainId: mark1.chainId,
@@ -647,8 +645,6 @@ struct ValidateTests {
         )
 
         let report = ProvenanceMark.validate([mark0, badMark])
-
-        let json = report.format(.jsonPretty)
 
         // Verify the report detects the NonGenesisAtZero issue
         #expect(report.hasIssues)
@@ -676,7 +672,7 @@ struct ValidateTests {
         let date = utcDate(year: 2023, month: 6, day: 21, hour: 12)
 
         let badMark = try ProvenanceMark(
-            res: mark1.resolution,
+            resolution: mark1.resolution,
             key: mark1.chainId, // key == chain_id (not allowed at seq > 0)
             nextKey: mark1.hash,
             chainId: mark1.chainId,
@@ -685,8 +681,6 @@ struct ValidateTests {
         )
 
         let report = ProvenanceMark.validate([mark0, badMark])
-
-        let json = report.format(.jsonPretty)
 
         // Verify the report detects the InvalidGenesisKey issue
         #expect(report.hasIssues)

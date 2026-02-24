@@ -25,7 +25,7 @@ struct MarkTests {
 
         let count = 10
         let provenanceGen = ProvenanceMarkGenerator(
-            res: resolution,
+            resolution: resolution,
             passphrase: "Wolf"
         )
 
