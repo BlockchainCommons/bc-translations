@@ -39,11 +39,9 @@ class RngState private constructor(private val bytes: ByteArray) {
             return RngState(bytes.copyOf())
         }
 
-        fun fromSlice(bytes: ByteArray): RngState = fromBytes(bytes)
-
         fun fromCbor(cbor: Cbor): RngState {
             return try {
-                fromSlice(cbor.tryByteStringData())
+                fromBytes(cbor.tryByteStringData())
             } catch (e: ProvenanceMarkException) {
                 throw ProvenanceMarkException.Cbor(e.message ?: "invalid rng-state cbor")
             } catch (e: Exception) {
@@ -51,7 +49,7 @@ class RngState private constructor(private val bytes: ByteArray) {
             }
         }
 
-        fun fromBase64(value: String): RngState = fromSlice(value.fromBase64())
+        fun fromBase64(value: String): RngState = fromBytes(value.fromBase64())
 
         fun fromJson(json: String): RngState {
             val value = JsonSupport.mapper.readValue(json, String::class.java)

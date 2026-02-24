@@ -55,16 +55,9 @@ class ProvenanceSeed private constructor(private val bytes: ByteArray) {
             return ProvenanceSeed(bytes.copyOf())
         }
 
-        fun fromSlice(bytes: ByteArray): ProvenanceSeed {
-            if (bytes.size != PROVENANCE_SEED_LENGTH) {
-                throw ProvenanceMarkException.InvalidSeedLength(bytes.size)
-            }
-            return fromBytes(bytes)
-        }
-
         fun fromCbor(cbor: Cbor): ProvenanceSeed {
             return try {
-                fromSlice(cbor.tryByteStringData())
+                fromBytes(cbor.tryByteStringData())
             } catch (e: ProvenanceMarkException) {
                 throw ProvenanceMarkException.Cbor(e.message ?: "invalid seed cbor")
             } catch (e: Exception) {
@@ -73,7 +66,7 @@ class ProvenanceSeed private constructor(private val bytes: ByteArray) {
         }
 
         fun fromBase64(value: String): ProvenanceSeed {
-            return fromSlice(value.fromBase64())
+            return fromBytes(value.fromBase64())
         }
 
         fun fromJson(json: String): ProvenanceSeed {

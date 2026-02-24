@@ -73,5 +73,3 @@ sealed class ProvenanceMarkException(message: String, cause: Throwable? = null) 
     class Validation(val issue: ValidationIssue) :
         ProvenanceMarkException("validation error: $issue")
 }
-
-typealias Result<T> = kotlin.Result<T>

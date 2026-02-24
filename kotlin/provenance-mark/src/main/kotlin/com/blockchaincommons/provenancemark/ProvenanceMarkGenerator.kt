@@ -5,6 +5,7 @@ import com.blockchaincommons.bcenvelope.addType
 import com.blockchaincommons.bcenvelope.checkType
 import com.blockchaincommons.bcrand.RandomNumberGenerator
 import com.blockchaincommons.dcbor.Cbor
+import com.blockchaincommons.dcbor.CborDate
 
 class ProvenanceMarkGenerator private constructor(
     private val res: ProvenanceMarkResolution,
@@ -29,7 +30,7 @@ class ProvenanceMarkGenerator private constructor(
 
     fun rngState(): RngState = rngState
 
-    fun next(date: com.blockchaincommons.dcbor.CborDate, info: Any? = null): ProvenanceMark {
+    fun next(date: CborDate, info: Any? = null): ProvenanceMark {
         val rng = Xoshiro256StarStar.fromData(rngState.toBytes())
 
         val seq = nextSeq

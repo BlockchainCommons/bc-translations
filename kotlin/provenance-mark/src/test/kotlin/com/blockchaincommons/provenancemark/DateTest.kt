@@ -70,6 +70,4 @@ class DateTest {
         val invalidSerialized = hex("e5940a78a800")
         assertFails { deserialize6Bytes(invalidSerialized) }
     }
-
-    private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it.toInt() and 0xff) }
 }

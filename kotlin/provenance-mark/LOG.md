@@ -69,3 +69,35 @@ COMPLETED
 ## 2026-02-23 — Stage 6: Capture Lessons (Rule One)
 COMPLETED
 - Recorded Kotlin/transitive-dependency export lesson in `memory/kotlin.md` and `memory/translation-lessons.md`.
+
+## 2026-02-23 — Stage 3: Check Completeness (Cross-Model)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original: GPT 5.3 Codex)
+- Independently verifying Kotlin translation against Rust source and MANIFEST.md
+
+## 2026-02-23 — Stage 3: Check Completeness (Cross-Model)
+COMPLETED
+- API coverage: 100% — all public types, functions, constants verified present
+- Test coverage: 100% — all 39 manifest-listed integration tests translated
+- Signature mismatches: 0
+- Verdict: COMPLETE
+
+## 2026-02-23 — Stage 4: Review Fluency (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original: GPT 5.3 Codex)
+- Reviewing Kotlin idiomaticness without reference to Rust source
+
+## 2026-02-23 — Stage 4: Review Fluency (Cross-Model)
+COMPLETED
+- Issues found: 6
+- Issues fixed: 6
+  - Removed redundant `ProvenanceSeed.fromSlice()` (duplicated `fromBytes()`)
+  - Removed redundant `RngState.fromSlice()` (duplicated `fromBytes()`)
+  - Removed useless `typealias Result<T> = kotlin.Result<T>` from ProvenanceMarkException.kt
+  - Removed unnecessary `@Suppress("EnumEntryName")` from ProvenanceMarkResolution
+  - Changed `data class ChainBin` to `class ChainBin` (ByteArray breaks data class semantics)
+  - Cleaned up fully-qualified CborDate references with proper imports
+  - Removed duplicate `toHex()` extension from DateTest.kt
+- Issues blocked by completeness gaps: 0
+- All tests pass after fixes
+- Verdict: IDIOMATIC

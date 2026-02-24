@@ -3,7 +3,6 @@ package com.blockchaincommons.provenancemark
 import com.blockchaincommons.dcbor.Cbor
 import com.blockchaincommons.dcbor.CborDate
 
-@Suppress("EnumEntryName")
 enum class ProvenanceMarkResolution(val code: Int) {
     Low(0),
     Medium(1),

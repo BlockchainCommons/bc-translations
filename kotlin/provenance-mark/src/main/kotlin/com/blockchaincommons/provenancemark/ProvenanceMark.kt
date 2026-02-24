@@ -10,6 +10,7 @@ import com.blockchaincommons.bcur.URException
 import com.blockchaincommons.bctags.TAG_NAME_PROVENANCE_MARK
 import com.blockchaincommons.bctags.TAG_PROVENANCE_MARK
 import com.blockchaincommons.dcbor.Cbor
+import com.blockchaincommons.dcbor.CborDate
 import com.blockchaincommons.dcbor.CborTaggedEncodable
 import com.blockchaincommons.dcbor.CborTaggedUtils
 import com.blockchaincommons.dcbor.Tag
@@ -26,7 +27,7 @@ class ProvenanceMark private constructor(
     private val dateBytes: ByteArray,
     private val infoBytes: ByteArray,
     private val seq: UInt,
-    private val date: com.blockchaincommons.dcbor.CborDate,
+    private val date: CborDate,
 ) : CborTaggedEncodable, UREncodable {
 
     fun res(): ProvenanceMarkResolution = res
@@ -43,7 +44,7 @@ class ProvenanceMark private constructor(
 
     fun seq(): UInt = seq
 
-    fun date(): com.blockchaincommons.dcbor.CborDate = date
+    fun date(): CborDate = date
 
     fun message(): ByteArray {
         val payload = chainId + hash + seqBytes + dateBytes + infoBytes
@@ -258,7 +259,7 @@ class ProvenanceMark private constructor(
             nextKey: ByteArray,
             chainId: ByteArray,
             seq: UInt,
-            date: com.blockchaincommons.dcbor.CborDate,
+            date: CborDate,
             info: Any? = null,
         ): ProvenanceMark {
             if (key.size != res.linkLength()) {

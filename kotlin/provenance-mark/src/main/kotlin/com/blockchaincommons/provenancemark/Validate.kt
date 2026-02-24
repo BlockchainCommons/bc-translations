@@ -283,7 +283,7 @@ class ValidationReport private constructor(
         }
     }
 
-    private data class ChainBin(
+    private class ChainBin(
         val chainId: ByteArray,
         val marks: MutableList<ProvenanceMark>,
     )
