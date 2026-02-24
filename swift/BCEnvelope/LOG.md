@@ -99,3 +99,22 @@ COMPLETED
 - Updated all source code, doc comments, and test expected-output strings across 10 files.
 - No downstream Swift dependents exist (ProvenanceMark not yet translated).
 - Validation: `swift test -Xswiftc -warnings-as-errors` passes (81 tests, 16 suites, 0 warnings).
+
+## 2026-02-24 — Stage 2: Code (Gap Fill)
+STARTED
+- Resuming incomplete Swift BCEnvelope items from `COMPLETENESS.md`.
+- Implementing missing API modules (`edge`, `secret`, `seal`, signature metadata/metadata-verify) and translating missing Rust test files.
+
+## 2026-02-24 — Stage 2: Code (Gap Fill)
+COMPLETED
+- Added missing source modules and compatibility surfaces:
+  - `Edge.swift` (`Edges`, `Edgeable`, edge validation/access/filter APIs)
+  - `Secret.swift` (`addSecret`, `lock`, `unlock`, `lockSubject`, `unlockSubject`)
+  - `Seal.swift` (`seal`, `sealOpt`, `unseal`)
+  - `SignatureMetadata.swift` + `SignatureCompat.swift` (metadata-aware signature APIs)
+  - Recipient/encryption/SSKR compatibility wrappers (`RecipientCompat.swift`, `EncryptCompat.swift`, `SSKRCompat.swift`)
+- Added missing test suites:
+  - `EdgeTests.swift` (44 tests)
+  - `SignatureTests.swift`, `Ed25519Tests.swift`, `KeypairSigningTests.swift`, `EncapsulationTests.swift`, `SSHTests.swift`, `SSKRTests.swift`, `MultiPermitTests.swift`, `SealTests.swift`
+- Validation: `swift test -Xswiftc -warnings-as-errors` passes (137 tests, 25 suites).
+- Updated `COMPLETENESS.md` coverage signal from 81/158 (51%) to 137/158 (87%).

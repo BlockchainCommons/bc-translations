@@ -6,59 +6,61 @@
 ## Public API
 - [x] Public exports translated (base, format, extension modules)
 - [x] Envelope core type and assertion model translated
-- [x] Error model translated (partial — missing edge error cases)
+- [x] Error model translated
 - [x] Envelope encoding/decoding traits and CBOR mappings translated
 - [x] Formatting APIs translated (notation, tree, diagnostic, hex, mermaid)
 - [x] Extension: attachment translated
-- [ ] Extension: edge — NOT translated (Edges container, Edgeable protocol, validate_edge, edge accessors, edges_matching, add_edge_envelope all missing)
+- [x] Extension: edge translated (`Edges`, `Edgeable`, `validateEdge`, `edgeIsA/source/target/subject`, `edgesMatching`, `addEdgeEnvelope`)
 - [x] Extension: compress translated
 - [x] Extension: encrypt translated
 - [x] Extension: expression translated
 - [x] Extension: proof translated
-- [x] Extension: recipient translated
+- [x] Extension: recipient translated (including Rust-compat convenience wrappers)
 - [x] Extension: salt translated
-- [ ] Extension: secret — NOT translated (add_secret, lock, unlock, lock_subject, unlock_subject all missing)
-- [x] Extension: signature translated (partial — missing SignatureMetadata, verify_returning_metadata, add_signature_opt with metadata)
-- [x] Extension: sskr translated
+- [x] Extension: secret translated (`addSecret`, `lock`, `unlock`, `lockSubject`, `unlockSubject`)
+- [x] Extension: signature translated (`SignatureMetadata`, `addSignatureOpt` with metadata, `verifyReturningMetadata`, metadata-aware verify helpers)
+- [x] Extension: sskr translated (including Rust-compat split/join wrappers)
 - [x] Extension: types translated
-- [ ] Seal module — NOT translated (seal, seal_opt, unseal all missing)
+- [x] Seal module translated (`seal`, `sealOpt`, `unseal`)
 
 ## Error Cases
 - [x] Base error cases (AlreadyElided, AmbiguousPredicate, InvalidDigest, InvalidFormat, MissingDigest, etc.)
-- [ ] Edge error cases missing: EdgeMissingIsA, EdgeMissingSource, EdgeMissingTarget, EdgeDuplicateIsA, EdgeDuplicateSource, EdgeDuplicateTarget, EdgeUnexpectedAssertion, NonexistentEdge, AmbiguousEdge
-- [ ] Secret error case missing: UnknownSecret
+- [x] Edge error cases translated: EdgeMissingIsA, EdgeMissingSource, EdgeMissingTarget, EdgeDuplicateIsA, EdgeDuplicateSource, EdgeDuplicateTarget, EdgeUnexpectedAssertion, NonexistentEdge, AmbiguousEdge
+- [x] Secret error case translated: UnknownSecret
 
 ## Tests
 - [x] Rust unit and integration tests inventoried in `MANIFEST.md` (158 total)
-- [x] Core tests translated (core_tests: 17, core_encoding_tests: 4, core_nesting_tests: 6)
-- [x] Format/output tests translated (format_tests: 12)
-- [x] Crypto/encryption tests translated (crypto_tests: 10)
-- [x] Elision tests translated (elision_tests: 16)
-- [x] Proof tests translated (proof_tests: 3)
-- [x] Obscuring tests translated (obscuring_tests: 6)
-- [x] Non-correlation tests translated (non_correlation_tests: 3)
-- [x] Compression tests translated (compression_tests: 2)
-- [x] Encrypted tests translated (encrypted_tests: 1)
-- [x] Attachment tests translated (attachment_tests: 1)
-- [x] Type tests translated (type_tests: 4)
-- [x] Expression/function tests translated (expression + function tests)
-- [ ] Edge tests NOT translated (edge_tests: 44 tests)
-- [ ] Signature tests NOT translated (signature_tests: 3 tests)
-- [ ] Ed25519 tests NOT translated (ed25519_tests: 1 test)
-- [ ] Keypair signing tests NOT translated (keypair_signing_tests: 2 tests)
-- [ ] Encapsulation tests NOT translated (encapsulation_tests: 1 test)
-- [ ] Multi-permit tests NOT translated (multi_permit_tests: 1 test)
-- [ ] SSH tests NOT translated (ssh_tests: 1 test)
-- [ ] SSKR tests NOT translated (sskr_tests: 1 test)
-- [ ] Seal inline tests NOT translated (seal.rs: 2 tests)
-- [ ] Inline unit tests NOT translated (envelope.rs: 6, expression.rs: 2, request.rs: 3, response.rs: 4, event.rs: 1, sskr.rs: 1)
+- [x] Core tests translated
+- [x] Format/output tests translated
+- [x] Crypto/encryption tests translated
+- [x] Elision tests translated
+- [x] Proof tests translated
+- [x] Obscuring tests translated
+- [x] Non-correlation tests translated
+- [x] Compression tests translated
+- [x] Encrypted tests translated
+- [x] Attachment tests translated
+- [x] Type tests translated
+- [x] Expression/function tests translated
+- [x] Edge tests translated (`edge_tests.rs`: 44)
+- [x] Signature tests translated (`signature_tests.rs`: 3)
+- [x] Ed25519 tests translated (`ed25519_tests.rs`: 1)
+- [x] Keypair signing tests translated (`keypair_signing_tests.rs`: 2)
+- [x] Encapsulation tests translated (`encapsulation_tests.rs`: 1)
+- [x] Multi-permit tests translated (`multi_permit_tests.rs`: 1)
+- [x] SSH tests translated (`ssh_tests.rs`: 1)
+- [x] SSKR tests translated (`sskr_tests.rs`: 1)
+- [x] Seal inline tests translated (`seal.rs`: 2)
+- [ ] Remaining inventory gap: 21 tests not yet represented one-to-one against Rust (primarily inline-unit parity plus count deltas in previously merged Swift suites)
 
 ## Coverage Summary
-- Translated tests: 81 out of 158 Rust tests (51%)
-- Missing: 77 tests across 8 untranslated test files + inline tests
+- Swift tests currently in package: 137 (25 suites)
+- Rust inventory baseline: 158
+- Current parity coverage signal: 137/158 (87%)
+- Remaining gap: 21 tests
 
 ## Build & Config
 - [x] .gitignore
 - [x] Package.swift
 - [x] Swift package builds successfully
-- [x] All 81 translated Swift tests pass
+- [x] `swift test -Xswiftc -warnings-as-errors` passes (137 tests)
