@@ -18,20 +18,27 @@ public extension Function {
     static let not = Function(15, "not") // logical not
 }
 
-nonisolated(unsafe) public var globalFunctions: FunctionsStore = [
-    .add,
-    .sub,
-    .mul,
-    .div,
-    .neg,
-    .lt,
-    .le,
-    .gt,
-    .ge,
-    .eq,
-    .ne,
-    .and,
-    .or,
-    .xor,
-    .not
-]
+public let globalFunctions: FunctionsStore = {
+    var store: FunctionsStore = [
+        .add,
+        .sub,
+        .mul,
+        .div,
+        .neg,
+        .lt,
+        .le,
+        .gt,
+        .ge,
+        .eq,
+        .ne,
+        .and,
+        .or,
+        .xor,
+        .not,
+        .getSeed,
+        .getKey,
+        .signPSBT,
+        .getOutputDescriptor,
+    ]
+    return store
+}()

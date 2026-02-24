@@ -527,29 +527,29 @@ public extension Envelope {
     }
     
     
-    func extractString(forPredicte predicate: Envelope) throws -> String {
+    func extractString(forPredicate predicate: Envelope) throws -> String {
         try extractObject(String.self, forPredicate: predicate)
     }
     
-    func extractString(forPredicte predicate: CBOREncodable) throws -> String {
+    func extractString(forPredicate predicate: CBOREncodable) throws -> String {
         try extractObject(String.self, forPredicate: predicate)
     }
     
-    func extractString(forPredicte predicate: KnownValue) throws -> String {
+    func extractString(forPredicate predicate: KnownValue) throws -> String {
         try extractObject(String.self, forPredicate: predicate)
     }
     
     
     func extractNonemptyString(forPredicate predicate: Envelope) throws -> String {
-        try validateNonemptyString(extractString(forPredicte: predicate))!
+        try validateNonemptyString(extractString(forPredicate: predicate))!
     }
     
     func extractNonemptyString(forPredicate predicate: CBOREncodable) throws -> String {
-        try validateNonemptyString(extractString(forPredicte: predicate))!
+        try validateNonemptyString(extractString(forPredicate: predicate))!
     }
     
     func extractNonemptyString(forPredicate predicate: KnownValue) throws -> String {
-        try validateNonemptyString(extractString(forPredicte: predicate))!
+        try validateNonemptyString(extractString(forPredicate: predicate))!
     }
     
     

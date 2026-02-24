@@ -43,7 +43,7 @@ struct CryptoTests {
         let expectedFormat =
         """
         "Hello." [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(envelope.format() == expectedFormat)
@@ -82,8 +82,8 @@ struct CryptoTests {
         let expectedFormat =
         """
         "Hello." [
-            'verifiedBy': Signature
-            'verifiedBy': Signature
+            'signed': Signature
+            'signed': Signature
         ]
         """
         #expect(envelope.format() == expectedFormat)
@@ -244,7 +244,7 @@ struct CryptoTests {
         let expectedFormat =
         """
         ENCRYPTED [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(envelope.format() == expectedFormat)
@@ -323,7 +323,7 @@ struct CryptoTests {
         ENCRYPTED [
             'hasRecipient': SealedMessage
             'hasRecipient': SealedMessage
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(envelope.format() == expectedFormat)

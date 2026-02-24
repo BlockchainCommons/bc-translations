@@ -73,3 +73,29 @@ COMPLETED
 COMPLETED
 - Added Swift lessons to `memory/swift.md` (actor-isolated idempotent registry setup; mutable local KnownValues store for legacy naming).
 - Added cross-language lessons to `memory/translation-lessons.md` for Swift registry/setup patterns.
+
+## 2026-02-22 — Cross-Model Fluency: Completeness Check
+STARTED
+- Cross-model fluency pass by Claude Opus (original translation by GPT 5.3 Codex).
+- Verifying completeness of translated Swift BCEnvelope against Rust bc-envelope v0.43.0 manifest.
+
+## 2026-02-22 — Cross-Model Fluency: Completeness Check
+COMPLETED
+- Confirmed 81/158 tests translated (51% coverage).
+- Updated COMPLETENESS.md with accurate gap analysis: edge extension (44 tests), secret/lock extension, seal module, SignatureMetadata, plus inline tests all NOT translated.
+- Missing API surface documented: edge module, secret/lock extension, seal module, 9 edge error cases, UnknownSecret error.
+
+## 2026-02-22 — Cross-Model Fluency: Fluency Review
+STARTED
+- Reviewing naming, API correctness, and Swift idiomaticness for cross-model fluency pass.
+
+## 2026-02-22 — Cross-Model Fluency: Fluency Review
+COMPLETED
+- Fixed typo: `forPredicte` -> `forPredicate` in Queries.swift (3 declarations + 3 call sites).
+- Fixed typo: "Returs" -> "Returns" in Compress.swift doc comment.
+- Eliminated `nonisolated(unsafe)` mutable globals: converted `globalFunctions` and `globalParameters` from `var` to `let` constants with all values included upfront.
+- Removed unnecessary `addKnownFunctionExtensions()` mutable registration function.
+- Aligned known value names with Rust source of truth: removed `verifiedBy` alias (-> `signed`), removed `hasName` alias (-> `name`).
+- Updated all source code, doc comments, and test expected-output strings across 10 files.
+- No downstream Swift dependents exist (ProvenanceMark not yet translated).
+- Validation: `swift test -Xswiftc -warnings-as-errors` passes (81 tests, 16 suites, 0 warnings).

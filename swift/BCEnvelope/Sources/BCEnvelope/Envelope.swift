@@ -109,12 +109,12 @@ public extension Envelope {
     /// This is a convenience constructor for ``KnownValue`` subjects.
     ///
     /// ```swift
-    /// let e = Envelope(.verifiedBy)
+    /// let e = Envelope(.signed)
     /// print(e.format)
     /// ```
     ///
     /// ```
-    /// verifiedBy
+    /// signed
     /// ```
     /// - Parameter knownValue: The envelope's subject, a ``KnownValue``.
     init(_ knownValue: KnownValue) {

@@ -21,37 +21,6 @@ public extension Parameter {
     static let challenge = Parameter(207, "challenge")
 }
 
-public func addKnownFunctionExtensions() {
-    let fns: [Function] = [
-        .getSeed,
-        .getKey,
-        .signPSBT,
-        .getOutputDescriptor,
-    ]
-    
-    fns.forEach {
-        globalFunctions.insert($0)
-    }
-
-    let params: [Parameter] = [
-        .seedDigest,
-        .derivationPath,
-        .isPrivate,
-        .useInfo,
-        .isDerivable,
-        .psbt,
-        .name,
-        .challenge,
-    ]
-    
-    params.forEach {
-        globalParameters.insert($0)
-    }
-}
-
-//addKnownTags()
-//addKnownFunctionExtensions()
-
 public let globalFormatContext = FormatContext(
         tags: globalTags,
         knownValues: globalKnownValues,

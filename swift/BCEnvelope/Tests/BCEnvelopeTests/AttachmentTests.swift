@@ -27,7 +27,7 @@ struct AttachmentTests {
                 'conformsTo': "https://example.com/seed-attachment/v2"
                 'vendor': "com.example"
             ]
-            'hasName': "Alice's Seed"
+            'name': "Alice's Seed"
             'note': "This is the note."
         ]
         """)

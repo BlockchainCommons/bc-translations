@@ -31,7 +31,7 @@ extension Seed {
             .addAssertion(.date, creationDate)
         
         if !name.isEmpty {
-            e = e.addAssertion(.hasName, name)
+            e = e.addAssertion(.name, name)
         }
 
         if !note.isEmpty {
@@ -52,7 +52,7 @@ extension Seed {
         }
 
         let data = try envelope.extractSubject(Data.self)
-        let name = try envelope.extractOptionalObject(String.self, forPredicate: .hasName) ?? ""
+        let name = try envelope.extractOptionalObject(String.self, forPredicate: .name) ?? ""
         let note = try envelope.extractOptionalObject(String.self, forPredicate: .note) ?? ""
         let creationDate = try? envelope.extractObject(Date.self, forPredicate: .date)
         guard let result = Self.init(data: data, name: name, note: note, creationDate: creationDate) else {

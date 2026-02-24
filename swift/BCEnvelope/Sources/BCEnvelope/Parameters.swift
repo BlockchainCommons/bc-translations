@@ -6,8 +6,19 @@ public extension Parameter {
     static let rhs = Parameter(3, "rhs")
 }
 
-nonisolated(unsafe) public var globalParameters: ParametersStore = [
-    .blank,
-    .lhs,
-    .rhs,
-]
+public let globalParameters: ParametersStore = {
+    var store: ParametersStore = [
+        .blank,
+        .lhs,
+        .rhs,
+        .seedDigest,
+        .derivationPath,
+        .isPrivate,
+        .useInfo,
+        .isDerivable,
+        .psbt,
+        .name,
+        .challenge,
+    ]
+    return store
+}()

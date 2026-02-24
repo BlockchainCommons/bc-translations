@@ -7,7 +7,7 @@ extension EnvelopeError {
 }
 
 public extension Envelope {
-    /// Creates a signature for the envelope's subject and returns a new envelope with a `verifiedBy: Signature` assertion.
+    /// Creates a signature for the envelope's subject and returns a new envelope with a `signed: Signature` assertion.
     ///
     /// - Parameters:
     ///   - privateKeys: The signer's `PrivateKeyBase`
@@ -25,7 +25,7 @@ public extension Envelope {
         return try! sign(with: privateKeys, uncoveredAssertions: assertions, using: &rng)
     }
     
-    /// Creates a signature for the envelope's subject and returns a new envelope with a `verifiedBy: Signature` assertion.
+    /// Creates a signature for the envelope's subject and returns a new envelope with a `signed: Signature` assertion.
     ///
     /// - Parameters:
     ///   - privateKeys: The signer's `PrivateKeyBase`
@@ -37,7 +37,7 @@ public extension Envelope {
         return sign(with: privateKeys, note: note, using: &rng)
     }
     
-    /// Creates several signatures for the envelope's subject and returns a new envelope with additional `verifiedBy: Signature` assertions.
+    /// Creates several signatures for the envelope's subject and returns a new envelope with additional `signed: Signature` assertions.
     ///
     /// - Parameters:
     ///   - privateKeys: An array of signers' `PrivateKeyBase`s.
@@ -52,7 +52,7 @@ public extension Envelope {
         }
     }
     
-    /// Creates several signatures for the envelope's subject and returns a new envelope with additional `verifiedBy: Signature` assertions.
+    /// Creates several signatures for the envelope's subject and returns a new envelope with additional `signed: Signature` assertions.
     ///
     /// - Parameters:
     ///   - privateKeys: An array of signers' `PrivateKeyBase`s.
@@ -63,7 +63,7 @@ public extension Envelope {
         return sign(with: privateKeys, using: &rng)
     }
 
-    /// Creates a signature for the envelope's subject and returns a new envelope with a `verifiedBy: Signature` assertion.
+    /// Creates a signature for the envelope's subject and returns a new envelope with a `signed: Signature` assertion.
     ///
     /// - Parameters:
     ///   - privateKeys: The signer's `PrivateKeyBase`
@@ -76,10 +76,10 @@ public extension Envelope {
     {
         let signature = try Envelope(privateKeys.signingPrivateKey.secp256k1SchnorrSign(subject.digest, using: &rng))
             .addAssertions(uncoveredAssertions)
-        return try addAssertion(Envelope(.verifiedBy, signature))
+        return try addAssertion(Envelope(.signed, signature))
     }
 
-    /// Creates a signature for the envelope's subject and returns a new envelope with a `verifiedBy: Signature` assertion.
+    /// Creates a signature for the envelope's subject and returns a new envelope with a `signed: Signature` assertion.
     ///
     /// - Parameters:
     ///   - privateKeys: The signer's `PrivateKeyBase`
@@ -93,16 +93,16 @@ public extension Envelope {
 }
 
 public extension Envelope {
-    /// Convenience constructor for a `verifiedBy: Signature` assertion envelope.
+    /// Convenience constructor for a `signed: Signature` assertion envelope.
     ///
     /// - Parameters:
     ///   - signature: The `Signature` for the object.
     ///   - note: An optional note to be added to the `Signature`.
     ///
     /// - Returns: The new assertion envelope.
-    static func verifiedBy(signature: Signature, note: String? = nil) -> Envelope {
+    static func signedBy(signature: Signature, note: String? = nil) -> Envelope {
         Envelope(
-            .verifiedBy,
+            .signed,
             Envelope(signature)
                 .addAssertion(if: note != nil, .note, note!)
         )
@@ -110,13 +110,13 @@ public extension Envelope {
 }
 
 public extension Envelope {
-    /// An array of signatures from all of the envelope's `verifiedBy` predicates.
+    /// An array of signatures from all of the envelope's `signed` predicates.
     ///
-    /// - Throws: Throws an exception if any `verifiedBy` assertion doesn't contain a
+    /// - Throws: Throws an exception if any `signed` assertion doesn't contain a
     /// valid `Signature` as its object.
     var signatures: [Signature] {
         get throws {
-            try assertions(withPredicate: .verifiedBy)
+            try assertions(withPredicate: .signed)
                 .map { try $0.object!.extractSubject(Signature.self) }
         }
     }
@@ -156,7 +156,7 @@ public extension Envelope {
     ///
     /// - Returns: `true` if the signature is valid for this envelope's subject, `false` otherwise.
     ///
-    /// - Throws: Throws an exception if any `verifiedBy` assertion doesn't contain a
+    /// - Throws: Throws an exception if any `signed` assertion doesn't contain a
     /// valid `Signature` as its object.
     func hasVerifiedSignature(from publicKeys: PublicKeyBase) throws -> Bool {
         try hasVerifiedSignature(key: publicKeys.signingPublicKey)
@@ -189,7 +189,7 @@ public extension Envelope {
     ///
     /// - Returns: `true` if the threshold of valid signatures is met, `false` otherwise.
     ///
-    /// - Throws: Throws an exception if any `verifiedBy` assertion doesn't contain a
+    /// - Throws: Throws an exception if any `signed` assertion doesn't contain a
     /// valid `Signature` as its object.
     func hasVerifiedSignatures(from publicKeysArray: [PublicKeyBase], threshold: Int? = nil) throws -> Bool {
         try hasVerifiedSignatures(with: publicKeysArray.map { $0.signingPublicKey }, threshold: threshold)

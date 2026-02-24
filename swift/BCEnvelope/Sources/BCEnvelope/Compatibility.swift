@@ -21,19 +21,12 @@ public extension Swift.Set where Element == Digest {
     }
 }
 
-public let globalKnownValues: KnownValuesStore = {
-    var knownValues = KnownValuesStore.shared
-    knownValues.insert(.verifiedBy)
-    knownValues.insert(.hasName)
-    return knownValues
-}()
+public let globalKnownValues: KnownValuesStore = KnownValuesStore.shared
 
 public extension KnownValue {
-    // Legacy aliases used by older Swift envelope tests.
+    // Convenience aliases for backward-compatible test code.
     static let OK = KnownValue.okValue
     static let unknown = KnownValue.unknownValue
-    static let verifiedBy = KnownValue(value: KnownValue.signed.value, name: "verifiedBy")
-    static let hasName = KnownValue(value: KnownValue.name.value, name: "hasName")
     static let Seed = KnownValue.seedType
 }
 
@@ -139,6 +132,5 @@ public func addKnownTags() async {
     }
 
     BCTags.registerTags()
-    addKnownFunctionExtensions()
     knownTagsAdded = true
 }

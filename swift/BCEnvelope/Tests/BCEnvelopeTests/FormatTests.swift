@@ -41,7 +41,7 @@ struct FormatTests {
         #expect(envelope.format() ==
         """
         "Hello." [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """)
         #expect(envelope.treeFormat() ==
@@ -49,14 +49,14 @@ struct FormatTests {
         949a991e NODE
             8cc96cdb subj "Hello."
             fcb4e2be ASSERTION
-                d0e39e78 pred 'verifiedBy'
+                d0e39e78 pred 'signed'
                 b8bb043f obj Signature
         """)
         #expect(envelope.treeFormat(hideNodes: true) ==
         """
         "Hello."
             ASSERTION
-                'verifiedBy'
+                'signed'
                 Signature
         """)
         #expect(envelope.elementsCount == envelope.treeFormat().split(separator: "\n").count)
@@ -66,7 +66,7 @@ struct FormatTests {
             1(("949a991e<br/>NODE"))
             2["8cc96cdb<br/>#quot;Hello.#quot;"]
             3(["fcb4e2be<br/>ASSERTION"])
-            4[/"d0e39e78<br/>'verifiedBy'"/]
+            4[/"d0e39e78<br/>'signed'"/]
             5["b8bb043f<br/>Signature"]
             1 -->|subj| 2
             1 --> 3
@@ -87,7 +87,7 @@ struct FormatTests {
         graph LR
             1["#quot;Hello.#quot;"]
             2(["ASSERTION"])
-            3[/"'verifiedBy'"/]
+            3[/"'signed'"/]
             4["Signature"]
             1 --> 2
             2 --> 3
@@ -298,7 +298,7 @@ struct FormatTests {
         "Alice" [
             "knows": "Bob"
             "knows": "Carol"
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """)
         #expect(envelope.treeFormat() ==
@@ -306,7 +306,7 @@ struct FormatTests {
         d595106e NODE
             13941b48 subj "Alice"
             399c974c ASSERTION
-                d0e39e78 pred 'verifiedBy'
+                d0e39e78 pred 'signed'
                 ff10427c obj Signature
             4012caf2 ASSERTION
                 db7dd21c pred "knows"
@@ -319,7 +319,7 @@ struct FormatTests {
         """
         "Alice"
             ASSERTION
-                'verifiedBy'
+                'signed'
                 Signature
             ASSERTION
                 "knows"
@@ -335,7 +335,7 @@ struct FormatTests {
             1(("d595106e<br/>NODE"))
             2["13941b48<br/>#quot;Alice#quot;"]
             3(["399c974c<br/>ASSERTION"])
-            4[/"d0e39e78<br/>'verifiedBy'"/]
+            4[/"d0e39e78<br/>'signed'"/]
             5["ff10427c<br/>Signature"]
             6(["4012caf2<br/>ASSERTION"])
             7["db7dd21c<br/>#quot;knows#quot;"]
@@ -380,7 +380,7 @@ struct FormatTests {
         graph LR
             1["#quot;Alice#quot;"]
             2(["ASSERTION"])
-            3[/"'verifiedBy'"/]
+            3[/"'signed'"/]
             4["Signature"]
             5(["ASSERTION"])
             6["#quot;knows#quot;"]
@@ -502,7 +502,7 @@ struct FormatTests {
                 "knows": "Carol"
             ]
         } [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """)
         #expect(envelope.treeFormat() ==
@@ -518,7 +518,7 @@ struct FormatTests {
                         db7dd21c pred "knows"
                         13b74194 obj "Bob"
             f13623da ASSERTION
-                d0e39e78 pred 'verifiedBy'
+                d0e39e78 pred 'signed'
                 e30a727c obj Signature
         """)
         #expect(envelope.treeFormat(hideNodes: true) ==
@@ -532,7 +532,7 @@ struct FormatTests {
                     "knows"
                     "Bob"
             ASSERTION
-                'verifiedBy'
+                'signed'
                 Signature
         """)
         #expect(envelope.elementsCount == envelope.treeFormat().split(separator: "\n").count)
@@ -550,7 +550,7 @@ struct FormatTests {
             9["db7dd21c<br/>#quot;knows#quot;"]
             10["13b74194<br/>#quot;Bob#quot;"]
             11(["f13623da<br/>ASSERTION"])
-            12[/"d0e39e78<br/>'verifiedBy'"/]
+            12[/"d0e39e78<br/>'signed'"/]
             13["e30a727c<br/>Signature"]
             1 -->|subj| 2
             2 -->|subj| 3
@@ -602,7 +602,7 @@ struct FormatTests {
             7["#quot;knows#quot;"]
             8["#quot;Bob#quot;"]
             9(["ASSERTION"])
-            10[/"'verifiedBy'"/]
+            10[/"'signed'"/]
             11["Signature"]
             1 --> 2
             2 --> 3
@@ -892,7 +892,7 @@ struct FormatTests {
         // resolved. In other words, the referent of an ARID is mutable.
         let author = try Envelope(try! ARID(‡"9c747ace78a4c826392510dd6285551e7df4e5164729a1b36198e56e017666c8"))
             .addAssertion(.dereferenceVia, "LibraryOfCongress")
-            .addAssertion(.hasName, "Ayn Rand")
+            .addAssertion(.name, "Ayn Rand")
             .checkEncoding()
 
         // Assertions made on a literal value are considered part of the same set of
@@ -908,8 +908,8 @@ struct FormatTests {
             .addAssertion("isbn", "9780451191144")
             .addAssertion("author", author)
             .addAssertion(.dereferenceVia, "LibraryOfCongress")
-            .addAssertion(.hasName, name_en)
-            .addAssertion(.hasName, name_es)
+            .addAssertion(.name, name_en)
+            .addAssertion(.name, name_es)
             .checkEncoding()
 
         let bookData = "This is the entire book “Atlas Shrugged” in EPUB format."
@@ -929,14 +929,14 @@ struct FormatTests {
                 'isA': "novel"
                 "author": ARID(9c747ace) [
                     'dereferenceVia': "LibraryOfCongress"
-                    'hasName': "Ayn Rand"
+                    'name': "Ayn Rand"
                 ]
                 "isbn": "9780451191144"
                 'dereferenceVia': "LibraryOfCongress"
-                'hasName': "Atlas Shrugged" [
+                'name': "Atlas Shrugged" [
                     'language': "en"
                 ]
-                'hasName': "La rebelión de Atlas" [
+                'name': "La rebelión de Atlas" [
                     'language': "es"
                 ]
             ]
@@ -964,7 +964,7 @@ struct FormatTests {
                         2be2d79b pred 'isA'
                         6d7c7189 obj "novel"
                     63cd143a ASSERTION
-                        14ff9eac pred 'hasName'
+                        14ff9eac pred 'name'
                         29fa40b1 obj NODE
                             5e825721 subj "La rebelión de Atlas"
                             c8db157b ASSERTION
@@ -978,13 +978,13 @@ struct FormatTests {
                                 cdb6a696 pred 'dereferenceVia'
                                 34a04547 obj "LibraryOfCongress"
                             bff8435a ASSERTION
-                                14ff9eac pred 'hasName'
+                                14ff9eac pred 'name'
                                 98985bd5 obj "Ayn Rand"
                     9c10d60f ASSERTION
                         cdb6a696 pred 'dereferenceVia'
                         34a04547 obj "LibraryOfCongress"
                     b722c07c ASSERTION
-                        14ff9eac pred 'hasName'
+                        14ff9eac pred 'name'
                         0cfacc06 obj NODE
                             e84c3091 subj "Atlas Shrugged"
                             b80d3b05 ASSERTION
@@ -1010,7 +1010,7 @@ struct FormatTests {
                         'isA'
                         "novel"
                     ASSERTION
-                        'hasName'
+                        'name'
                         "La rebelión de Atlas"
                             ASSERTION
                                 'language'
@@ -1022,13 +1022,13 @@ struct FormatTests {
                                 'dereferenceVia'
                                 "LibraryOfCongress"
                             ASSERTION
-                                'hasName'
+                                'name'
                                 "Ayn Rand"
                     ASSERTION
                         'dereferenceVia'
                         "LibraryOfCongress"
                     ASSERTION
-                        'hasName'
+                        'name'
                         "Atlas Shrugged"
                             ASSERTION
                                 'language'
@@ -1057,7 +1057,7 @@ struct FormatTests {
             17[/"2be2d79b<br/>'isA'"/]
             18["6d7c7189<br/>#quot;novel#quot;"]
             19(["63cd143a<br/>ASSERTION"])
-            20[/"14ff9eac<br/>'hasName'"/]
+            20[/"14ff9eac<br/>'name'"/]
             21(("29fa40b1<br/>NODE"))
             22["5e825721<br/>#quot;La rebelión de Atlas#quot;"]
             23(["c8db157b<br/>ASSERTION"])
@@ -1071,13 +1071,13 @@ struct FormatTests {
             31[/"cdb6a696<br/>'dereferenceVia'"/]
             32["34a04547<br/>#quot;LibraryOfCongress#quot;"]
             33(["bff8435a<br/>ASSERTION"])
-            34[/"14ff9eac<br/>'hasName'"/]
+            34[/"14ff9eac<br/>'name'"/]
             35["98985bd5<br/>#quot;Ayn Rand#quot;"]
             36(["9c10d60f<br/>ASSERTION"])
             37[/"cdb6a696<br/>'dereferenceVia'"/]
             38["34a04547<br/>#quot;LibraryOfCongress#quot;"]
             39(["b722c07c<br/>ASSERTION"])
-            40[/"14ff9eac<br/>'hasName'"/]
+            40[/"14ff9eac<br/>'name'"/]
             41(("0cfacc06<br/>NODE"))
             42["e84c3091<br/>#quot;Atlas Shrugged#quot;"]
             43(["b80d3b05<br/>ASSERTION"])
@@ -1237,7 +1237,7 @@ struct FormatTests {
             15[/"'isA'"/]
             16["#quot;novel#quot;"]
             17(["ASSERTION"])
-            18[/"'hasName'"/]
+            18[/"'name'"/]
             19["#quot;La rebelión de Atlas#quot;"]
             20(["ASSERTION"])
             21[/"'language'"/]
@@ -1249,13 +1249,13 @@ struct FormatTests {
             27[/"'dereferenceVia'"/]
             28["#quot;LibraryOfCongress#quot;"]
             29(["ASSERTION"])
-            30[/"'hasName'"/]
+            30[/"'name'"/]
             31["#quot;Ayn Rand#quot;"]
             32(["ASSERTION"])
             33[/"'dereferenceVia'"/]
             34["#quot;LibraryOfCongress#quot;"]
             35(["ASSERTION"])
-            36[/"'hasName'"/]
+            36[/"'name'"/]
             37["#quot;Atlas Shrugged#quot;"]
             38(["ASSERTION"])
             39[/"'language'"/]
@@ -1424,7 +1424,7 @@ struct FormatTests {
             ]
         } [
             'note': "Signed by Example Electrical Engineering Board"
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """)
         #expect(Self.credential.treeFormat() ==
@@ -1473,7 +1473,7 @@ struct FormatTests {
                         6dd16ba3 pred 'issuer'
                         f8489ac1 obj "Example Electrical Engineering Board"
             46a02aaf ASSERTION
-                d0e39e78 pred 'verifiedBy'
+                d0e39e78 pred 'signed'
                 34c14941 obj Signature
             e6d7fca0 ASSERTION
                 0fcd6a39 pred 'note'
@@ -1523,7 +1523,7 @@ struct FormatTests {
                     'issuer'
                     "Example Electrical Engineering Board"
             ASSERTION
-                'verifiedBy'
+                'signed'
                 Signature
             ASSERTION
                 'note'
@@ -1577,7 +1577,7 @@ struct FormatTests {
             42[/"6dd16ba3<br/>'issuer'"/]
             43["f8489ac1<br/>#quot;Example Electrical Engineering Board#quot;"]
             44(["46a02aaf<br/>ASSERTION"])
-            45[/"d0e39e78<br/>'verifiedBy'"/]
+            45[/"d0e39e78<br/>'signed'"/]
             46["34c14941<br/>Signature"]
             47(["e6d7fca0<br/>ASSERTION"])
             48[/"0fcd6a39<br/>'note'"/]
@@ -1773,7 +1773,7 @@ struct FormatTests {
             40[/"'issuer'"/]
             41["#quot;Example Electrical Engineering Board#quot;"]
             42(["ASSERTION"])
-            43[/"'verifiedBy'"/]
+            43[/"'signed'"/]
             44["Signature"]
             45(["ASSERTION"])
             46[/"'note'"/]
@@ -1963,7 +1963,7 @@ struct FormatTests {
                     ]
                 } [
                     'note': "Signed by Example Electrical Engineering Board"
-                    'verifiedBy': Signature
+                    'signed': Signature
                 ]
             } [
                 "employeeHiredDate": 2022-01-01
@@ -1971,7 +1971,7 @@ struct FormatTests {
             ]
         } [
             'note': "Signed by Employer Corp."
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """)
         #expect(warranty.treeFormat() ==
@@ -2010,7 +2010,7 @@ struct FormatTests {
                                         6dd16ba3 pred 'issuer'
                                         f8489ac1 obj "Example Electrical Engineering Board"
                             46a02aaf ASSERTION
-                                d0e39e78 pred 'verifiedBy'
+                                d0e39e78 pred 'signed'
                                 34c14941 obj Signature
                             e6d7fca0 ASSERTION
                                 0fcd6a39 pred 'note'
@@ -2025,7 +2025,7 @@ struct FormatTests {
                 0fcd6a39 pred 'note'
                 f59806d2 obj "Signed by Employer Corp."
             d21d2033 ASSERTION
-                d0e39e78 pred 'verifiedBy'
+                d0e39e78 pred 'signed'
                 5ba600c9 obj Signature
         """)
         #expect(warranty.treeFormat(hideNodes: true) ==
@@ -2060,7 +2060,7 @@ struct FormatTests {
                             'issuer'
                             "Example Electrical Engineering Board"
                     ASSERTION
-                        'verifiedBy'
+                        'signed'
                         Signature
                     ASSERTION
                         'note'
@@ -2075,7 +2075,7 @@ struct FormatTests {
                 'note'
                 "Signed by Employer Corp."
             ASSERTION
-                'verifiedBy'
+                'signed'
                 Signature
         """)
         #expect(warranty.elementsCount == warranty.treeFormat().split(separator: "\n").count)
@@ -2116,7 +2116,7 @@ struct FormatTests {
             32[/"6dd16ba3<br/>'issuer'"/]
             33["f8489ac1<br/>#quot;Example Electrical Engineering Board#quot;"]
             34(["46a02aaf<br/>ASSERTION"])
-            35[/"d0e39e78<br/>'verifiedBy'"/]
+            35[/"d0e39e78<br/>'signed'"/]
             36["34c14941<br/>Signature"]
             37(["e6d7fca0<br/>ASSERTION"])
             38[/"0fcd6a39<br/>'note'"/]
@@ -2131,7 +2131,7 @@ struct FormatTests {
             47[/"0fcd6a39<br/>'note'"/]
             48["f59806d2<br/>#quot;Signed by Employer Corp.#quot;"]
             49(["d21d2033<br/>ASSERTION"])
-            50[/"d0e39e78<br/>'verifiedBy'"/]
+            50[/"d0e39e78<br/>'signed'"/]
             51["5ba600c9<br/>Signature"]
             1 -->|subj| 2
             2 -->|subj| 3
@@ -2318,7 +2318,7 @@ struct FormatTests {
             28[/"'issuer'"/]
             29["#quot;Example Electrical Engineering Board#quot;"]
             30(["ASSERTION"])
-            31[/"'verifiedBy'"/]
+            31[/"'signed'"/]
             32["Signature"]
             33(["ASSERTION"])
             34[/"'note'"/]
@@ -2333,7 +2333,7 @@ struct FormatTests {
             43[/"'note'"/]
             44["#quot;Signed by Employer Corp.#quot;"]
             45(["ASSERTION"])
-            46[/"'verifiedBy'"/]
+            46[/"'signed'"/]
             47["Signature"]
             1 --> 2
             2 --> 3

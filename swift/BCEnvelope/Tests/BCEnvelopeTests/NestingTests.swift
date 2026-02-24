@@ -12,7 +12,7 @@ struct NestingTests {
         let expectedFormat =
         """
         "Hello." [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(envelope.format() == expectedFormat)
@@ -23,7 +23,7 @@ struct NestingTests {
         let expectedElidedFormat =
         """
         ELIDED [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(elidedEnvelope.format() == expectedElidedFormat)
@@ -40,7 +40,7 @@ struct NestingTests {
         {
             "Hello."
         } [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(envelope.format() == expectedFormat)
@@ -54,7 +54,7 @@ struct NestingTests {
         {
             ELIDED
         } [
-            'verifiedBy': Signature
+            'signed': Signature
         ]
         """
         #expect(elidedEnvelope.format() == expectedElidedFormat)
@@ -84,7 +84,7 @@ struct NestingTests {
         """
         {
             "Hello." [
-                'verifiedBy': Signature
+                'signed': Signature
             ]
         }
         """

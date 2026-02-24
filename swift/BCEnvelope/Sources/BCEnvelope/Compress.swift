@@ -54,7 +54,7 @@ public extension Envelope {
         return replaceSubject(with: try subject.compress())
     }
     
-    /// Returs this envelope with its subject uncompressed.
+    /// Returns this envelope with its subject uncompressed.
     ///
     /// Returns the same envelope if its subject is already uncompressed.
     func uncompressSubject() throws -> Envelope {
