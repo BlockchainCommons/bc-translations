@@ -136,3 +136,32 @@ COMPLETED
   - `Core/CoreEncodingTests.swift`: `testAnyEnvelope` (`base/envelope.rs` inline parity)
 - Validation: `swift test -Xswiftc -warnings-as-errors` passes (158 tests, 25 suites).
 - Updated `COMPLETENESS.md` coverage signal to 158/158 (100%), remaining gap: 0 tests.
+
+## 2026-02-23 — Cross-Model Fluency: Completeness Check
+STARTED
+- Cross-model fluency pass by Claude Opus (original translation by GPT 5.3 Codex).
+- Verifying completeness of gap-filled Swift BCEnvelope against Rust bc-envelope v0.43.0 manifest.
+
+## 2026-02-23 — Cross-Model Fluency: Completeness Check
+COMPLETED
+- Confirmed 158/158 tests translated (100% coverage).
+- All API surface items from MANIFEST.md present: core, format, extensions (edge, secret, seal, signature metadata, walk/elision, attachment, compress, encrypt, expression, proof, recipient, salt, SSKR, types).
+- Build passes: `swift test -Xswiftc -warnings-as-errors` (158 tests, 25 suites).
+
+## 2026-02-23 — Cross-Model Fluency: Fluency Review
+STARTED
+- Reviewing naming, API correctness, and Swift idiomaticness for cross-model fluency pass on gap-filled code.
+
+## 2026-02-23 — Cross-Model Fluency: Fluency Review
+COMPLETED
+- Renamed Rust-leaking API names in `Edges`:
+  - `isEmpty()` -> `isEmpty` (property)
+  - `len()` -> `count` (property)
+  - `iter()` -> `sortedEntries` (property)
+  - `tryFromEnvelope(_:)` -> `init(envelope:)` (Swift initializer)
+- Renamed `Edgeable.hasEdges()` -> `var hasEdges: Bool` (property).
+- Fixed filename typo: `KnownValueExensions.swift` -> `KnownValueExtensions.swift`.
+- Fixed doc comment typo: "assertino" -> "assertion" in Assertion.swift.
+- Updated all test call sites in EdgeTests.swift (18 replacements).
+- Verified downstream Swift dependent (ProvenanceMark): 43 tests pass, no breakage.
+- Validation: `swift test -Xswiftc -warnings-as-errors` passes (158 tests, 25 suites, 0 warnings).

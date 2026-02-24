@@ -188,7 +188,7 @@ public extension Envelope {
     /// If the condition is met, returns a new ``Envelope`` with the given assertion
     /// added, otherwise returns the same envelope.
     ///
-    /// The expression passed for `assertino` is lazily evaluated only if `condition` is `true`.
+    /// The expression passed for `assertion` is lazily evaluated only if `condition` is `true`.
     ///
     /// See ``addAssertion(_:salted:)`` for more information.
     func addAssertion(if condition: Bool, _ assertion: @autoclosure () -> Envelope?, salted: Bool = false) throws -> Envelope {

@@ -38,31 +38,31 @@ public struct Edges: Sendable {
         envelopes.removeAll()
     }
 
-    public func isEmpty() -> Bool {
+    public var isEmpty: Bool {
         envelopes.isEmpty
     }
 
-    public func len() -> Int {
+    public var count: Int {
         envelopes.count
     }
 
-    public func iter() -> [(Digest, Envelope)] {
+    public var sortedEntries: [(Digest, Envelope)] {
         envelopes.map { ($0.key, $0.value) }.sorted { $0.0 < $1.0 }
     }
 
     public func addToEnvelope(_ envelope: Envelope) -> Envelope {
-        iter().reduce(envelope) { partial, item in
+        sortedEntries.reduce(envelope) { partial, item in
             partial.addAssertion(.edge, item.1)
         }
     }
 
-    public static func tryFromEnvelope(_ envelope: Envelope) throws -> Edges {
+    public init(envelope: Envelope) throws {
         let edgeEnvelopes = try envelope.edges()
         var result = Edges()
         edgeEnvelopes.forEach { edge in
             result.envelopes[edge.digest] = edge
         }
-        return result
+        self = result
     }
 }
 
@@ -89,8 +89,8 @@ public extension Edgeable {
         edges.clear()
     }
 
-    func hasEdges() -> Bool {
-        !edges.isEmpty()
+    var hasEdges: Bool {
+        !edges.isEmpty
     }
 }
 

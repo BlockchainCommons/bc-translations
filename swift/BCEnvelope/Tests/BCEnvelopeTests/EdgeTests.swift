@@ -260,8 +260,8 @@ struct EdgeTests {
 
     @Test func testEdgesContainerNewIsEmpty() {
         let edges = Edges()
-        #expect(edges.isEmpty())
-        #expect(edges.len() == 0)
+        #expect(edges.isEmpty)
+        #expect(edges.count == 0)
     }
 
     @Test func testEdgesContainerAddAndGet() {
@@ -272,8 +272,8 @@ struct EdgeTests {
         var edges = Edges()
         edges.add(edge)
 
-        #expect(!edges.isEmpty())
-        #expect(edges.len() == 1)
+        #expect(!edges.isEmpty)
+        #expect(edges.count == 1)
         #expect(edges.get(digest) != nil)
         #expect(edges.get(digest)!.isEquivalent(to: edge))
     }
@@ -288,7 +288,7 @@ struct EdgeTests {
 
         let removed = edges.remove(digest)
         #expect(removed != nil)
-        #expect(edges.isEmpty())
+        #expect(edges.isEmpty)
     }
 
     @Test func testEdgesContainerRemoveNonexistent() {
@@ -308,11 +308,11 @@ struct EdgeTests {
         var edges = Edges()
         edges.add(edge1)
         edges.add(edge2)
-        #expect(edges.len() == 2)
+        #expect(edges.count == 2)
 
         edges.clear()
-        #expect(edges.isEmpty())
-        #expect(edges.len() == 0)
+        #expect(edges.isEmpty)
+        #expect(edges.count == 0)
     }
 
     @Test func testEdgesContainerIter() {
@@ -324,7 +324,7 @@ struct EdgeTests {
         edges.add(edge1)
         edges.add(edge2)
 
-        #expect(edges.iter().count == 2)
+        #expect(edges.sortedEntries.count == 2)
     }
 
     // MARK: - Edges container round-trip
@@ -339,8 +339,8 @@ struct EdgeTests {
         edges.add(edge2)
 
         let docWithEdges = edges.addToEnvelope(Envelope("Alice"))
-        let recovered = try Edges.tryFromEnvelope(docWithEdges)
-        #expect(recovered.len() == 2)
+        let recovered = try Edges(envelope:docWithEdges)
+        #expect(recovered.count == 2)
         #expect(recovered.get(edge1.digest) != nil)
         #expect(recovered.get(edge2.digest) != nil)
     }
@@ -348,8 +348,8 @@ struct EdgeTests {
     @Test func testEdgesContainerRoundtripEmpty() throws {
         let edges = Edges()
         let docWithEdges = edges.addToEnvelope(Envelope("Alice"))
-        let recovered = try Edges.tryFromEnvelope(docWithEdges)
-        #expect(recovered.isEmpty())
+        let recovered = try Edges(envelope:docWithEdges)
+        #expect(recovered.isEmpty)
     }
 
     @Test func testEdgesContainerRoundtripPreservesFormat() throws {
@@ -372,8 +372,8 @@ struct EdgeTests {
         ]
         """)
 
-        let recovered = try Edges.tryFromEnvelope(doc)
-        #expect(recovered.len() == 1)
+        let recovered = try Edges(envelope:doc)
+        #expect(recovered.count == 1)
     }
 
     // MARK: - Edgeable trait
@@ -386,13 +386,13 @@ struct EdgeTests {
         var edges = Edges()
         edges.add(edge)
 
-        #expect(!edges.isEmpty())
-        #expect(edges.len() == 1)
+        #expect(!edges.isEmpty)
+        #expect(edges.count == 1)
         #expect(edges.get(digest) != nil)
 
         let removed = edges.remove(digest)
         #expect(removed != nil)
-        #expect(edges.isEmpty())
+        #expect(edges.isEmpty)
     }
 
     // MARK: - edgesMatching
