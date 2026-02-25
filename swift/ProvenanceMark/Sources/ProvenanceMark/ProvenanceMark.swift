@@ -218,7 +218,7 @@ public extension ProvenanceMark {
     /// - Parameter prefix: If `true`, prepends the provenance emoji prefix.
     func bytewordsIdentifier(prefix: Bool) -> String {
         let s = Bytewords.identifier(Array(_hash.prefix(4))).uppercased()
-        return prefix ? "\u{1F171} \(s)" : s
+        return prefix ? "\u{1F15F} \(s)" : s
     }
 
     /// The first four bytes of the hash as Bytemoji.
@@ -226,7 +226,7 @@ public extension ProvenanceMark {
     /// - Parameter prefix: If `true`, prepends the provenance emoji prefix.
     func bytemojiIdentifier(prefix: Bool) -> String {
         let s = Bytewords.bytemojiIdentifier(Array(_hash.prefix(4))).uppercased()
-        return prefix ? "\u{1F171} \(s)" : s
+        return prefix ? "\u{1F15F} \(s)" : s
     }
 
     /// A compact 8-letter identifier derived from ByteWords.
@@ -265,7 +265,7 @@ public extension ProvenanceMark {
             }
         }
 
-        return prefix ? "\u{1F171} \(out)" : out
+        return prefix ? "\u{1F15F} \(out)" : out
     }
 }
 
