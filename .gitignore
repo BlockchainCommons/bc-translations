@@ -1,2 +1,5 @@
 rust
 rust/
+
+# Kotlin build output
+kotlin/**/bin/
