@@ -170,7 +170,7 @@ fun loadFromDirectory(path: Path): List<KnownValue> {
         Files.newDirectoryStream(path).use { entries ->
             for (entry in entries) {
                 if (isJsonFile(entry)) {
-                    val content = Files.readString(entry)
+                    val content = entry.toFile().readText()
                     val registry = try {
                         parseRegistryFile(content)
                     } catch (e: Exception) {
@@ -292,7 +292,7 @@ private fun loadFromDirectoryTolerant(
 
 private fun loadSingleFile(path: Path): List<KnownValue> {
     val content = try {
-        Files.readString(path)
+        path.toFile().readText()
     } catch (error: IOException) {
         throw LoadError.Io(error)
     }
