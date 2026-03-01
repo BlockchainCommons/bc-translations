@@ -305,7 +305,7 @@ struct CoreTests {
     @Test func testUnknownLeaf() throws {
         let unknownUR = "ur:envelope/tpsotaaodnoyadgdjlssmkcklgoskseodnyteofwwfylkiftaydpdsjz"
         let e = try Envelope(urString: unknownUR)
-        #expect(e.format() == "555(Map)")
+        #expect(e.format() == "555({1: h'6fc4981e8da778332bf93342f3f77d3a'})")
     }
     
     @Test func testTrue() throws {

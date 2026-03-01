@@ -97,8 +97,8 @@ extension CBOR {
                 return (string.count > maxLength ? string.prefix(count: maxLength).trim() + "…" : string)
                     .replacingOccurrences(of: "\n", with: "\\n")
                     .flanked(.quote)
-            case .array(let elements):
-                return elements.map { $0.envelopeSummary(maxLength: maxLength, context: context) }.joined(separator: ", ").flanked("[", "]")
+            case .array, .map:
+                return self.summary
             case CBOR.tagged(let tag, let cbor):
                 switch tag {
                 case Envelope.cborTag:
@@ -153,8 +153,6 @@ extension CBOR {
                     let name = name(for: tag, knownTags: context)
                     return "\(name)(\(cbor.envelopeSummary(maxLength: maxLength, context: context)))"
                 }
-            case .map:
-                return "Map"
             case .simple(let v):
                 return v.description
             }
