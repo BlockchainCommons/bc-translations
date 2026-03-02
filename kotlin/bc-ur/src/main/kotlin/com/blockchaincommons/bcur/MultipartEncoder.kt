@@ -4,15 +4,21 @@ package com.blockchaincommons.bcur
 class MultipartEncoder(ur: UR, maxFragmentLen: Int) {
     private val encoder: FountainEncoder
     private val urType: String = ur.urTypeStr
+    private val messageData: ByteArray
 
     init {
         val data = ur.cbor.toCborData()
+        messageData = data
         encoder = FountainEncoder(data, maxFragmentLen)
     }
 
-    /** Emits the next UR part string. */
+    /** Emits the next UR part string. Single-part URs use the simple
+     *  `ur:type/payload` format; multi-part URs use `ur:type/seq-total/payload`. */
     fun nextPart(): String {
         val part = encoder.nextPart()
+        if (partCount == 1) {
+            return UREncoding.encode(messageData, urType)
+        }
         val body = Bytewords.encode(part.toCbor(), BytewordsStyle.Minimal)
         return "ur:$urType/${part.sequenceId}/$body"
     }
