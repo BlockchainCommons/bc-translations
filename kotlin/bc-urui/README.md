@@ -15,6 +15,7 @@ A Jetpack Compose component library for displaying and scanning [Uniform Resourc
 - CameraX (camera-core, camera2, camera-lifecycle, camera-view)
 - ML Kit Barcode Scanning
 - ZXing Core (QR code generation)
+- AndroidSVG (SVG rendering for logo overlay)
 
 ## Features
 
@@ -22,7 +23,8 @@ A Jetpack Compose component library for displaying and scanning [Uniform Resourc
 Animated multi-part QR code display using fountain codes.
 
 - **`URDisplayState`** — Compose-observable state machine that drives animated UR display. Wraps `MultipartEncoder`, cycles through fountain-coded parts on a configurable timer (`framesPerSecond`), and exposes the current QR data and fragment states.
-- **`URQRCode`** — Composable that renders a QR code from `ByteArray`, with configurable foreground/background colors.
+- **`URQRCode`** — Composable that renders a QR code from `ByteArray`, with configurable foreground/background colors and optional logo overlay.
+- **`QRLogo`** — A logo image to superimpose on the center of a QR code. Can be created from SVG data/string or a `Bitmap`. When a logo is present, error correction is automatically raised to Level Q (Quartile) to ensure scannability.
 
 ### UR Scanning (Camera)
 Real-time QR code scanning via the device camera.
@@ -47,7 +49,8 @@ Software-only scan simulation for environments without camera hardware.
 ### Utilities
 
 - **`QRCorrectionLevel`** — Enum wrapping ZXing error correction levels (Low, Medium, Quartile, High).
-- **`makeQRCodeBitmap()`** — Generates an Android `Bitmap` QR code from byte data.
+- **`QRLogo`** — Logo image for QR code overlay, with `fromSVG()` and `fromBitmap()` factory methods.
+- **`makeQRCodeBitmap()`** — Generates an Android `Bitmap` QR code from byte data, with optional logo overlay.
 - **`URScanResult`** — Sealed class for scan outcomes: `Ur`, `Other`, `Progress`, `Reject`, `Failure`.
 - **`URScanProgress`** — Data class holding completion percentage and fragment states.
 
@@ -123,3 +126,26 @@ val bitmap: Bitmap = makeQRCodeBitmap(
     backgroundColor = Color.TRANSPARENT
 )
 ```
+
+### Logo Overlay
+
+Superimpose an SVG or bitmap logo on the center of a QR code. Error correction is automatically raised to Level Q when a logo is present.
+
+```kotlin
+// From SVG data:
+val logo = QRLogo.fromSVG(svgBytes, fraction = 0.25f)
+
+// From an SVG string:
+val logo = QRLogo.fromSVG(svgString, fraction = 0.25f)
+
+// From a Bitmap:
+val logo = QRLogo.fromBitmap(myBitmap, fraction = 0.25f)
+
+// Use with URQRCode composable:
+URQRCode(data = displayState.part, logo = logo)
+
+// Use with standalone generation:
+val bitmap = makeQRCodeBitmap(message = data, logo = logo)
+```
+
+The `fraction` parameter controls the logo width as a fraction of the QR code width (default 0.25). The logo area is capped so that the cleared region never exceeds 40% of the QR width, keeping the covered area under ~16% for reliable scanning.

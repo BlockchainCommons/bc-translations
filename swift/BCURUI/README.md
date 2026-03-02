@@ -14,7 +14,8 @@ A SwiftUI component library for displaying and scanning [Uniform Resources (URs)
 Animated multi-part QR code display using fountain codes.
 
 - **`URDisplayState`** — Observable state machine that drives animated UR display. Wraps `MultipartEncoder`, cycles through fountain-coded parts on a configurable timer (`framesPerSecond`), and exposes the current QR data and fragment states.
-- **`URQRCode`** — SwiftUI view that renders a QR code from `Data`, with configurable foreground/background colors.
+- **`URQRCode`** — SwiftUI view that renders a QR code from `Data`, with configurable foreground/background colors and optional logo overlay.
+- **`QRLogo`** — A logo image to superimpose on the center of a QR code. Can be created from SVG data or a `UIImage`. When a logo is present, error correction is automatically raised to Level Q (Quartile) to ensure scannability.
 
 ### UR Scanning (Camera)
 Real-time QR code scanning via the device camera.
@@ -104,3 +105,24 @@ let image: Image = makeQRCode(data, correctionLevel: .low)
 let uiImage: UIImage = makeQRCodeImage(data, correctionLevel: .medium,
     foregroundColor: .black, backgroundColor: .white)
 ```
+
+### Logo Overlay
+
+Superimpose an SVG or image logo on the center of a QR code. Error correction is automatically raised to Level Q when a logo is present.
+
+```swift
+// From SVG data:
+let logo = QRLogo(svgData: mySVGData, fraction: 0.25)
+
+// From a UIImage:
+let logo = QRLogo(image: myUIImage, fraction: 0.25)
+
+// Use with URQRCode view:
+URQRCode(data: $displayState.part, logo: logo)
+
+// Use with standalone generation:
+let image: Image = makeQRCode(data, logo: logo)
+let uiImage: UIImage = makeQRCodeImage(data, logo: logo)
+```
+
+The `fraction` parameter controls the logo width as a fraction of the QR code width (default 0.25). The logo area is capped so that the cleared region never exceeds 40% of the QR width, keeping the covered area under ~16% for reliable scanning.

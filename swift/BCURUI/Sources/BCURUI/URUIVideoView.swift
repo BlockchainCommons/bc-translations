@@ -41,10 +41,21 @@ public class URUIVideoView: UIView {
             return
         }
         previewLayer.frame = bounds
-        if let connection = videoSession.captureSession?.connections.last,
-           connection.isVideoOrientationSupported {
-            let orientation = window?.windowScene?.interfaceOrientation ?? .portrait
-            connection.videoOrientation = AVCaptureVideoOrientation(rawValue: orientation.rawValue) ?? .portrait
+        if let connection = videoSession.captureSession?.connections.last {
+            let angle = rotationAngle(for: window?.windowScene?.interfaceOrientation ?? .portrait)
+            if connection.isVideoRotationAngleSupported(angle) {
+                connection.videoRotationAngle = angle
+            }
+        }
+    }
+
+    private func rotationAngle(for orientation: UIInterfaceOrientation) -> CGFloat {
+        switch orientation {
+        case .portrait:           return 90
+        case .portraitUpsideDown: return 270
+        case .landscapeLeft:      return 180
+        case .landscapeRight:     return 0
+        default:                  return 90
         }
     }
 }
