@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 
-/** Displays a (possibly animated) QR code. */
+/** Displays a (possibly animated) QR code. Empty data renders nothing. */
 @Composable
 fun URQRCode(
     data: ByteArray,
@@ -19,6 +19,8 @@ fun URQRCode(
     foregroundColor: Color = Color.Black,
     backgroundColor: Color = Color.Transparent
 ) {
+    if (data.isEmpty()) return
+
     val bitmap = remember(data, foregroundColor, backgroundColor) {
         makeQRCodeBitmap(
             message = data,
