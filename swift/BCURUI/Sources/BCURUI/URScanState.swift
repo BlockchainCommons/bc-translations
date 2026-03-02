@@ -100,7 +100,6 @@ public final class URScanState: URCodesReceiver {
             if decoder.isComplete {
                 if let ur = try decoder.message() {
                     lastResult = .ur(ur)
-                    restart()
                 }
             } else {
                 lastResult = .progress(progress)

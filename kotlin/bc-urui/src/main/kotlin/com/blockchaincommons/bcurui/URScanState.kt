@@ -83,7 +83,6 @@ class URScanState {
                 val ur = decoder.message()
                 if (ur != null) {
                     lastResult = URScanResult.Ur(ur)
-                    restart()
                 }
             } else {
                 lastResult = URScanResult.Progress(progress)

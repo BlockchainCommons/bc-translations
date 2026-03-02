@@ -20,7 +20,7 @@ public struct URVideoSessionError: LocalizedError, Sendable {
 @MainActor
 @Observable
 public final class URVideoSession {
-    let isSupported: Bool
+    public let isSupported: Bool
     public weak var codesReceiver: (any URCodesReceiver)?
 
     public private(set) var captureDevices: [AVCaptureDevice] = []
