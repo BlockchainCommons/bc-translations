@@ -36,3 +36,6 @@
 - [x] tsconfig.json
 - [x] vitest.config.ts
 - [x] .gitignore
+
+## Checker Passes
+- [x] 2026-03-03 (GPT Codex cross-check): API/signatures/tests/docs reviewed against `MANIFEST.md` and `rust/sskr` (8/8 translated behavioral tests, no gaps)

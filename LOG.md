@@ -146,3 +146,4 @@ Chronological record of all translation activity in this repository.
 | 2026-02-23 | provenance-mark | 0.23.0 | Kotlin | provenance-mark | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-02-23 | bc-envelope | 0.43.0 | Swift | BCEnvelope | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-03 | sskr        | 0.12.0 | TypeScript | @bc/sskr | 🎻 Claude Opus 4.6 | Translation |
+| 2026-03-03 | sskr        | 0.12.0 | TypeScript | @bc/sskr | 📖 GPT Codex        | Fluency |

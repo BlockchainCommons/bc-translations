@@ -43,3 +43,27 @@ COMPLETED
 - Fixed: removed unused `bytesToHex` import in test file
 - All 8 tests still pass after fixes
 - Code follows TypeScript idioms: ES private fields, static factory methods, getter properties, `Uint8Array` for binary data, proper JSDoc
+
+## 2026-03-03 — Stage 3: Check Completeness
+STARTED
+- Cross-model completeness pass (GPT Codex) against `MANIFEST.md` and `rust/sskr` source.
+
+## 2026-03-03 — Stage 3: Check Completeness
+COMPLETED
+- API coverage: 13/13 manifest top-level public items (4 types, 3 functions, 6 constants) — 100%
+- Signature compatibility: 0 mismatches
+- Test coverage: 8/8 translated behavioral tests present with matching vectors — 100%
+- Derive/protocol and documentation equivalence: verified for all manifest-tracked items
+- Verdict: COMPLETE (no gaps)
+
+## 2026-03-03 — Stage 4: Review Fluency
+STARTED
+- Cross-model TypeScript idiomaticness pass (GPT Codex) over `src/` and `tests/`.
+
+## 2026-03-03 — Stage 4: Review Fluency
+COMPLETED
+- Issues found: 0
+- Issues fixed: 0
+- Blocked by completeness gaps: 0
+- Verification: `npm run build` and `npm test` both pass (8/8 tests)
+- Verdict: IDIOMATIC
