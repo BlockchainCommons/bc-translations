@@ -1,0 +1,30 @@
+{
+  "name": "@bc/sskr",
+  "version": "0.12.0",
+  "description": "Sharded Secret Key Reconstruction (SSKR) for TypeScript.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bc/rand": "file:../bc-rand",
+    "@bc/shamir": "file:../bc-shamir"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
