@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SSKR.Tests/SSKR.Tests.csproj" />
+  <Project Path="SSKR/SSKR.csproj" />
+</Solution>
