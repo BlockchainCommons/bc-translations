@@ -23,7 +23,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun URSimulatedScan(
     state: URSimulatedScanState,
-    modifier: Modifier = Modifier
+    showFragmentBar: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -48,16 +49,18 @@ fun URSimulatedScan(
             )
         }
 
-        URFragmentBar(states = state.fragmentStates)
+        if (showFragmentBar) {
+            URFragmentBar(states = state.fragmentStates)
 
-        Text(
-            text = "Simulated Scan",
-            fontSize = 12.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-        )
+            Text(
+                text = "Simulated Scan",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+            )
+        }
     }
 }

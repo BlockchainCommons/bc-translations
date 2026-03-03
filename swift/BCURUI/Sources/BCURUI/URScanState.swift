@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import BCUR
 import Observation
 
@@ -29,14 +30,26 @@ public struct URScanProgress: Sendable {
 @Observable
 public final class URScanState: URCodesReceiver {
     public private(set) var lastResult: URScanResult?
+    public let hapticFeedback: Bool
 
     private var decoder: MultipartDecoder
     private var expectedFragmentCount: Int?
     private var receivedCount: Int = 0
     private var hasReceivedFirstPart: Bool = false
 
-    public init() {
+    private let impactGenerator: UIImpactFeedbackGenerator?
+    private let notificationGenerator: UINotificationFeedbackGenerator?
+
+    public init(hapticFeedback: Bool = true) {
+        self.hapticFeedback = hapticFeedback
         self.decoder = MultipartDecoder()
+        if hapticFeedback {
+            self.impactGenerator = UIImpactFeedbackGenerator(style: .light)
+            self.notificationGenerator = UINotificationFeedbackGenerator()
+        } else {
+            self.impactGenerator = nil
+            self.notificationGenerator = nil
+        }
     }
 
     public func restart() {
@@ -45,6 +58,10 @@ public final class URScanState: URCodesReceiver {
         receivedCount = 0
         hasReceivedFirstPart = false
         lastResult = nil
+        if hapticFeedback {
+            impactGenerator?.prepare()
+            notificationGenerator?.prepare()
+        }
     }
 
     public func receiveCodes(_ codes: Swift.Set<String>) {
@@ -55,6 +72,9 @@ public final class URScanState: URCodesReceiver {
 
     public func receiveError(_ error: Error) {
         lastResult = .failure(error)
+        if hapticFeedback {
+            notificationGenerator?.notificationOccurred(.error)
+        }
     }
 
     private var progress: URScanProgress {
@@ -85,6 +105,9 @@ public final class URScanState: URCodesReceiver {
             if isSinglePartUR(trimmed) {
                 let ur = try UR(urString: trimmed)
                 lastResult = .ur(ur)
+                if hapticFeedback {
+                    notificationGenerator?.notificationOccurred(.success)
+                }
                 return
             }
 
@@ -100,15 +123,24 @@ public final class URScanState: URCodesReceiver {
             if decoder.isComplete {
                 if let ur = try decoder.message() {
                     lastResult = .ur(ur)
+                    if hapticFeedback {
+                        notificationGenerator?.notificationOccurred(.success)
+                    }
                 }
             } else {
                 lastResult = .progress(progress)
+                if hapticFeedback && hasReceivedFirstPart {
+                    impactGenerator?.impactOccurred()
+                }
             }
         } catch {
             if hasReceivedFirstPart {
                 lastResult = .reject
             } else {
                 lastResult = .failure(error)
+                if hapticFeedback {
+                    notificationGenerator?.notificationOccurred(.error)
+                }
                 restart()
             }
         }

@@ -5,6 +5,9 @@ import com.blockchaincommons.bcur.UR
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Tracks and reports state of ongoing multi-part UR capture.
@@ -12,10 +15,15 @@ import androidx.compose.runtime.setValue
  * Feed scanned QR code strings via [receiveCodes]. Observe [lastResult]
  * for decoded URs, progress updates, or errors.
  */
-class URScanState {
+class URScanState(
+    val hapticFeedback: Boolean = true,
+) {
     /** The most recent scan result. */
     var lastResult: URScanResult? by mutableStateOf(null)
         private set
+
+    private val _hapticEvents = MutableSharedFlow<URHapticEvent>(extraBufferCapacity = 64)
+    val hapticEvents: SharedFlow<URHapticEvent> = _hapticEvents.asSharedFlow()
 
     private var decoder = MultipartDecoder()
     private var expectedFragmentCount: Int? = null
@@ -38,6 +46,9 @@ class URScanState {
 
     fun receiveError(error: Throwable) {
         lastResult = URScanResult.Failure(error)
+        if (hapticFeedback) {
+            _hapticEvents.tryEmit(URHapticEvent.Failure)
+        }
     }
 
     private val progress: URScanProgress
@@ -67,6 +78,9 @@ class URScanState {
             if (isSinglePartUR(trimmed)) {
                 val ur = UR.fromUrString(trimmed)
                 lastResult = URScanResult.Ur(ur)
+                if (hapticFeedback) {
+                    _hapticEvents.tryEmit(URHapticEvent.Success)
+                }
                 return
             }
 
@@ -83,15 +97,24 @@ class URScanState {
                 val ur = decoder.message()
                 if (ur != null) {
                     lastResult = URScanResult.Ur(ur)
+                    if (hapticFeedback) {
+                        _hapticEvents.tryEmit(URHapticEvent.Success)
+                    }
                 }
             } else {
                 lastResult = URScanResult.Progress(progress)
+                if (hapticFeedback && hasReceivedFirstPart) {
+                    _hapticEvents.tryEmit(URHapticEvent.Progress)
+                }
             }
         } catch (e: Exception) {
             if (hasReceivedFirstPart) {
                 lastResult = URScanResult.Reject
             } else {
                 lastResult = URScanResult.Failure(e)
+                if (hapticFeedback) {
+                    _hapticEvents.tryEmit(URHapticEvent.Failure)
+                }
                 restart()
             }
         }
