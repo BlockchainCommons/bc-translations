@@ -129,7 +129,7 @@ public func makeQRCodeImage(
 
         // 1. Draw QR scaled up with nearest-neighbor interpolation (crisp modules)
         context.interpolationQuality = .none
-        context.draw(cgImage, in: CGRect(origin: .zero, size: size))
+        UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: size))
 
         // 2. Clear center area
         let clearColor = backgroundColorForClearing(backgroundColor)
