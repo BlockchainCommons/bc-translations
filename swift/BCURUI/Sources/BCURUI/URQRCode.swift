@@ -10,6 +10,7 @@ public struct URQRCode: View {
     let foregroundColor: Color
     let backgroundColor: Color
     let logo: QRLogo?
+    @Environment(\.colorScheme) private var colorScheme
 
     public init(
         data: Binding<Data>,
