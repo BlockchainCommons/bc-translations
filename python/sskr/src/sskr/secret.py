@@ -34,23 +34,22 @@ class Secret:
             raise SecretLengthNotEvenError()
         return cls(data_bytes)
 
-    def len(self) -> int:
-        """Return the secret length in bytes."""
-        return len(self._data)
-
-    def is_empty(self) -> bool:
-        """Return ``True`` if the secret is empty."""
-        return self.len() == 0
-
+    @property
     def data(self) -> bytes:
-        """Return the underlying secret bytes."""
+        """The underlying secret bytes."""
         return self._data
 
     def __bytes__(self) -> bytes:
         return self._data
 
     def __len__(self) -> int:
-        return self.len()
+        return len(self._data)
+
+    def __bool__(self) -> bool:
+        return len(self._data) > 0
+
+    def __hash__(self) -> int:
+        return hash(self._data)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Secret):

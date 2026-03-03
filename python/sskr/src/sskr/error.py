@@ -78,10 +78,9 @@ class ShareSetInvalidError(Error):
 
 
 class ShamirError(Error):
-    """Wrap an upstream bc_shamir error."""
+    """Wraps an upstream ``bc_shamir`` error."""
 
     def __init__(self, cause: Exception) -> None:
-        self.cause = cause
         super().__init__(f"SSKR Shamir error: {cause}")
 
 

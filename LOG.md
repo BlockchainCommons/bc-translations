@@ -154,5 +154,8 @@ Chronological record of all translation activity in this repository.
 | 2026-03-03 | sskr        | 0.12.0 | Go         | sskr         | 📖 GPT 5.3 Codex   | Fluency     |
 | 2026-03-03 | sskr        | 0.12.0 | C# | SSKR | 📖 GPT Codex | Translation |
 | 2026-03-03 | sskr        | 0.12.0 | C# | SSKR | 📖 GPT Codex | Fluency |
+| 2026-03-03 | sskr        | 0.12.0 | C# | SSKR | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-03 | sskr        | 0.12.0 | Python     | sskr         | 📖 GPT Codex       | Translation |
 | 2026-03-03 | sskr        | 0.12.0 | Python     | sskr         | 📖 GPT Codex       | Fluency |
+| 2026-03-03 | sskr        | 0.12.0 | Python     | sskr         | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-03 | sskr        | 0.12.0 | Go         | sskr         | 🎻 Claude Opus 4.6 | Fluency |

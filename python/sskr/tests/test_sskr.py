@@ -56,7 +56,7 @@ def test_split_3_5() -> None:
     assert len(flattened_shares) == 5
 
     for share in flattened_shares:
-        assert len(share) == METADATA_SIZE_BYTES + secret.len()
+        assert len(share) == METADATA_SIZE_BYTES + len(secret)
 
     recovered_share_indexes = [1, 2, 4]
     recovered_shares = [flattened_shares[index] for index in recovered_share_indexes]
@@ -83,7 +83,7 @@ def test_split_2_7() -> None:
     assert len(flattened_shares) == 7
 
     for share in flattened_shares:
-        assert len(share) == METADATA_SIZE_BYTES + secret.len()
+        assert len(share) == METADATA_SIZE_BYTES + len(secret)
 
     recovered_share_indexes = [3, 4]
     recovered_shares = [flattened_shares[index] for index in recovered_share_indexes]
@@ -112,7 +112,7 @@ def test_split_2_3_2_3() -> None:
     assert len(flattened_shares) == 6
 
     for share in flattened_shares:
-        assert len(share) == METADATA_SIZE_BYTES + secret.len()
+        assert len(share) == METADATA_SIZE_BYTES + len(secret)
 
     recovered_share_indexes = [0, 1, 3, 5]
     recovered_shares = [flattened_shares[index] for index in recovered_share_indexes]
@@ -258,16 +258,16 @@ class RecoverSpec:
         shares: list[list[bytes]],
         rng: RandomNumberGenerator,
     ) -> "RecoverSpec":
-        group_indexes = list(range(spec.group_count()))
+        group_indexes = list(range(spec.group_count))
         fisher_yates_shuffle(group_indexes, rng)
-        recovered_group_indexes = group_indexes[: spec.group_threshold()]
+        recovered_group_indexes = group_indexes[: spec.group_threshold]
 
         recovered_member_indexes: list[list[int]] = []
         for group_index in recovered_group_indexes:
-            group = spec.groups()[group_index]
-            member_indexes = list(range(group.member_count()))
+            group = spec.groups[group_index]
+            member_indexes = list(range(group.member_count))
             fisher_yates_shuffle(member_indexes, rng)
-            recovered_member_indexes.append(member_indexes[: group.member_threshold()])
+            recovered_member_indexes.append(member_indexes[: group.member_threshold])
 
         recovered_shares: list[bytes] = []
         for i, recovered_group_index in enumerate(recovered_group_indexes):
@@ -298,7 +298,7 @@ class RecoverSpec:
             raise AssertionError(
                 "recovery failed",
                 {
-                    "secret": self.secret.data().hex(),
+                    "secret": self.secret.data.hex(),
                     "spec": self.spec,
                     "shares": self.shares,
                     "recovered_group_indexes": self.recovered_group_indexes,
@@ -369,9 +369,9 @@ def test_example_encode_3() -> None:
         flattened_shares = [share for group_shares in shares for share in group_shares]
         return sskr_combine(flattened_shares)
 
-    assert roundtrip(2, 3).data().decode("utf-8") == text
-    assert roundtrip(1, 1).data().decode("utf-8") == text
-    assert roundtrip(1, 3).data().decode("utf-8") == text
+    assert roundtrip(2, 3).data.decode("utf-8") == text
+    assert roundtrip(1, 1).data.decode("utf-8") == text
+    assert roundtrip(1, 3).data.decode("utf-8") == text
 
 
 def test_example_encode_4() -> None:
@@ -386,4 +386,4 @@ def test_example_encode_4() -> None:
     recovered_shares = [flattened_shares[index] for index in recovered_share_indexes]
 
     recovered_secret = sskr_combine(recovered_shares)
-    assert recovered_secret.data().decode("utf-8") == text
+    assert recovered_secret.data.decode("utf-8") == text

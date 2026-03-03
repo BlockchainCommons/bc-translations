@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import dataclass, field
 
 from bc_rand import RandomNumberGenerator, SecureRandomNumberGenerator
 from bc_shamir import ShamirError as BCShamirError
@@ -25,14 +26,12 @@ from .share import SSKRShare
 from .spec import Spec
 
 
+@dataclass
 class _Group:
-    __slots__ = ("group_index", "member_threshold", "member_indexes", "member_shares")
-
-    def __init__(self, group_index: int, member_threshold: int) -> None:
-        self.group_index = group_index
-        self.member_threshold = member_threshold
-        self.member_indexes: list[int] = []
-        self.member_shares: list[Secret] = []
+    group_index: int
+    member_threshold: int
+    member_indexes: list[int] = field(default_factory=list)
+    member_shares: list[Secret] = field(default_factory=list)
 
 
 def sskr_generate(spec: Spec, master_secret: Secret) -> list[list[bytes]]:
@@ -58,20 +57,20 @@ def sskr_combine(shares: Sequence[bytes | bytearray | memoryview]) -> Secret:
 
 
 def _serialize_share(share: SSKRShare) -> bytes:
-    result = bytearray(share.value().len() + METADATA_SIZE_BYTES)
-    identifier = share.identifier()
-    group_threshold = (share.group_threshold() - 1) & 0xF
-    group_count = (share.group_count() - 1) & 0xF
-    group_index = share.group_index() & 0xF
-    member_threshold = (share.member_threshold() - 1) & 0xF
-    member_index = share.member_index() & 0xF
+    result = bytearray(len(share.value) + METADATA_SIZE_BYTES)
+    identifier = share.identifier
+    group_threshold = (share.group_threshold - 1) & 0xF
+    group_count = (share.group_count - 1) & 0xF
+    group_index = share.group_index & 0xF
+    member_threshold = (share.member_threshold - 1) & 0xF
+    member_index = share.member_index & 0xF
 
     result[0] = (identifier >> 8) & 0xFF
     result[1] = identifier & 0xFF
     result[2] = ((group_threshold << 4) | group_count) & 0xFF
     result[3] = ((group_index << 4) | member_threshold) & 0xFF
     result[4] = member_index & 0xFF
-    result[METADATA_SIZE_BYTES:] = share.value().data()
+    result[METADATA_SIZE_BYTES:] = share.value.data
     return bytes(result)
 
 
@@ -118,21 +117,21 @@ def _generate_shares(
 
     try:
         group_secrets = split_secret(
-            spec.group_threshold(),
-            spec.group_count(),
-            master_secret.data(),
+            spec.group_threshold,
+            spec.group_count,
+            master_secret.data,
             random_generator,
         )
     except BCShamirError as exc:
         raise ShamirError(exc) from exc
 
     groups_shares: list[list[SSKRShare]] = []
-    for group_index, group in enumerate(spec.groups()):
+    for group_index, group in enumerate(spec.groups):
         group_secret = group_secrets[group_index]
         try:
             member_secrets = split_secret(
-                group.member_threshold(),
-                group.member_count(),
+                group.member_threshold,
+                group.member_count,
                 group_secret,
                 random_generator,
             )
@@ -146,10 +145,10 @@ def _generate_shares(
                 SSKRShare(
                     identifier=identifier,
                     group_index=group_index,
-                    group_threshold=spec.group_threshold(),
-                    group_count=spec.group_count(),
+                    group_threshold=spec.group_threshold,
+                    group_count=spec.group_count,
                     member_index=member_index,
-                    member_threshold=group.member_threshold(),
+                    member_threshold=group.member_threshold,
                     value=secret,
                 )
             )
@@ -158,7 +157,7 @@ def _generate_shares(
     return groups_shares
 
 
-def _combine_shares(shares: Sequence[SSKRShare]) -> Secret:
+def _combine_shares(shares: list[SSKRShare]) -> Secret:
     if not shares:
         raise SharesEmptyError()
 
@@ -172,36 +171,36 @@ def _combine_shares(shares: Sequence[SSKRShare]) -> Secret:
 
     for index, share in enumerate(shares):
         if index == 0:
-            identifier = share.identifier()
-            group_threshold = share.group_threshold()
-            group_count = share.group_count()
-            secret_len = share.value().len()
+            identifier = share.identifier
+            group_threshold = share.group_threshold
+            group_count = share.group_count
+            secret_len = len(share.value)
         else:
             if (
-                share.identifier() != identifier
-                or share.group_threshold() != group_threshold
-                or share.group_count() != group_count
-                or share.value().len() != secret_len
+                share.identifier != identifier
+                or share.group_threshold != group_threshold
+                or share.group_count != group_count
+                or len(share.value) != secret_len
             ):
                 raise ShareSetInvalidError()
 
         group_found = False
         for group in groups:
-            if share.group_index() == group.group_index:
+            if share.group_index == group.group_index:
                 group_found = True
-                if share.member_threshold() != group.member_threshold:
+                if share.member_threshold != group.member_threshold:
                     raise MemberThresholdInvalidError()
-                if share.member_index() in group.member_indexes:
+                if share.member_index in group.member_indexes:
                     raise DuplicateMemberIndexError()
                 if len(group.member_indexes) < group.member_threshold:
-                    group.member_indexes.append(share.member_index())
-                    group.member_shares.append(share.value())
+                    group.member_indexes.append(share.member_index)
+                    group.member_shares.append(share.value)
 
         if not group_found:
-            group = _Group(share.group_index(), share.member_threshold())
-            group.member_indexes.append(share.member_index())
-            group.member_shares.append(share.value())
-            groups.append(group)
+            new_group = _Group(share.group_index, share.member_threshold)
+            new_group.member_indexes.append(share.member_index)
+            new_group.member_shares.append(share.value)
+            groups.append(new_group)
             next_group += 1
 
     if next_group < group_threshold:
@@ -217,7 +216,7 @@ def _combine_shares(shares: Sequence[SSKRShare]) -> Secret:
         try:
             group_secret = recover_secret(
                 group.member_indexes,
-                [member_share.data() for member_share in group.member_shares],
+                [member_share.data for member_share in group.member_shares],
             )
         except BCShamirError:
             continue

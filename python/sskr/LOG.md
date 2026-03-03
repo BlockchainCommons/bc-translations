@@ -74,3 +74,38 @@ STARTED
 COMPLETED
 - Added Python environment lesson to `memory/python.md` and `memory/translation-lessons.md`.
 - Lesson captured: run Python translation tests in an environment that includes `bc_crypto` runtime deps when `bc_shamir` is imported.
+
+## 2026-03-03 — Stage 3: Check Completeness (Cross-Check)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translation by GPT Codex).
+- Compare Python translation against `MANIFEST.md` and Rust source for API, signatures, tests, and docs.
+
+## 2026-03-03 — Stage 3: Check Completeness (Cross-Check)
+COMPLETED
+- API coverage: complete. All 5 public types, 3 public functions, 6 public constants present.
+- Signature compatibility: 0 mismatches.
+- Test coverage: 8/8 behavioral tests present with matching vectors and assertions.
+- Documentation: complete for all public documented items.
+- Verdict: COMPLETE.
+
+## 2026-03-03 — Stage 4: Review Fluency (Cross-Check)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6.
+- Review Python sskr code for idiomaticness without reading Rust source.
+
+## 2026-03-03 — Stage 4: Review Fluency (Cross-Check)
+COMPLETED
+- Issues found: 8
+- Issues fixed: 8
+  - Converted `Secret.data()` method to `@property` (Pythonic attribute access)
+  - Removed `Secret.len()` and `Secret.is_empty()` methods; rely on `__len__` and added `__bool__`
+  - Added `Secret.__hash__` for hashability (immutable value type)
+  - Converted all `SSKRShare` accessor methods to `@property` (7 properties)
+  - Converted all `Spec` accessor methods to `@property` (4 properties)
+  - Converted all `GroupSpec` accessor methods to `@property` (2 properties)
+  - Removed redundant `ShamirError.cause` attribute (exception chaining via `__cause__` suffices)
+  - Converted internal `_Group` class from manual `__slots__`/`__init__` to `@dataclass`
+- Updated all call sites in `encoding.py` and `tests/test_sskr.py` for property-based API.
+- Issues blocked by completeness gaps: 0
+- Verification: 8/8 tests pass.
+- Verdict: IDIOMATIC.

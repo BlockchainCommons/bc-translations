@@ -34,21 +34,25 @@ class Spec:
             raise GroupCountInvalidError()
         return cls(group_threshold, tuple(groups))
 
+    @property
     def group_threshold(self) -> int:
-        """Return the group threshold."""
+        """The group threshold."""
         return self._group_threshold
 
+    @property
     def groups(self) -> tuple["GroupSpec", ...]:
-        """Return the configured groups."""
+        """The configured groups."""
         return self._groups
 
+    @property
     def group_count(self) -> int:
-        """Return the number of groups."""
+        """The number of groups."""
         return len(self._groups)
 
+    @property
     def share_count(self) -> int:
-        """Return the total number of shares across groups."""
-        return sum(group.member_count() for group in self._groups)
+        """The total number of shares across groups."""
+        return sum(group.member_count for group in self._groups)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Spec):
@@ -81,17 +85,19 @@ class GroupSpec:
             raise MemberThresholdInvalidError()
         return cls(member_threshold, member_count)
 
+    @property
     def member_threshold(self) -> int:
-        """Return the member threshold for this group."""
+        """The member threshold for this group."""
         return self._member_threshold
 
+    @property
     def member_count(self) -> int:
-        """Return the member share count for this group."""
+        """The member share count for this group."""
         return self._member_count
 
     @classmethod
     def parse(cls, source: str) -> "GroupSpec":
-        """Parse a group specification in `M-of-N` format."""
+        """Parse a group specification in ``M-of-N`` format."""
         parts = source.split("-")
         if len(parts) != 3:
             raise GroupSpecInvalidError()

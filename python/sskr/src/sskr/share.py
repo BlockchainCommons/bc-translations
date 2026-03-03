@@ -36,23 +36,37 @@ class SSKRShare:
         self._member_threshold = member_threshold
         self._value = value
 
+    @property
     def identifier(self) -> int:
+        """The 16-bit share set identifier."""
         return self._identifier
 
+    @property
     def group_index(self) -> int:
+        """The group index for this share."""
         return self._group_index
 
+    @property
     def group_threshold(self) -> int:
+        """The group threshold for recovery."""
         return self._group_threshold
 
+    @property
     def group_count(self) -> int:
+        """The total number of groups."""
         return self._group_count
 
+    @property
     def member_index(self) -> int:
+        """The member index within the group."""
         return self._member_index
 
+    @property
     def member_threshold(self) -> int:
+        """The member threshold for the group."""
         return self._member_threshold
 
+    @property
     def value(self) -> Secret:
+        """The share's secret value."""
         return self._value
