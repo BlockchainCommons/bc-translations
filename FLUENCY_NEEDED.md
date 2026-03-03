@@ -9,9 +9,9 @@ Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 - Targets with cross-model fluency complete: 52
 - Targets still needing cross-model fluency: 1
 
-| Crate | Language | Package | Translation Model | Needs Fluency By |
-|-------|----------|---------|-------------------|------------------|
-| sskr  | TypeScript | @bc/sskr | 🎻 Claude Opus 4.6 | 📖 GPT Codex |
+| Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
+|-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
+| sskr | 0.12.0 | TypeScript | @bc/sskr | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
 
 ## Update Rule
 
