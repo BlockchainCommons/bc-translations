@@ -24,14 +24,18 @@ public struct URFragmentBar: View {
         .clipShape(Capsule())
     }
 
+    // iOS system blue (#007AFF) desaturated by blending toward white.
+    private static let highlightColor = Color(red: 128.0/255, green: 189.0/255, blue: 1.0) // #80BDFF
+    private static let onColor = Color(red: 64.0/255, green: 156.0/255, blue: 1.0)         // #409CFF
+
     private func view(for state: FragmentState) -> AnyView {
         switch state {
         case .off:
             return AnyView(Color.blue)
         case .on:
-            return AnyView(Color.blue.brightness(0.2))
+            return AnyView(Self.onColor)
         case .highlighted:
-            return AnyView(Color.blue.brightness(0.4))
+            return AnyView(Self.highlightColor)
         }
     }
 }

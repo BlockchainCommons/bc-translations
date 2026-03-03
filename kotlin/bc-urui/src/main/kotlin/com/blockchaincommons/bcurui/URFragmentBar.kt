@@ -35,8 +35,9 @@ fun URFragmentBar(
     }
 }
 
+// Colors match iOS system blue (#007AFF) desaturated by blending toward white.
 private fun colorForState(state: FragmentState): Color = when (state) {
-    FragmentState.Off -> Color(0xFF0000FF) // Blue
-    FragmentState.On -> Color(0xFF3366CC)  // Lighter blue
-    FragmentState.Highlighted -> Color(0xFF66AAFF) // Light blue
+    FragmentState.Off -> Color(0xFF007AFF)  // iOS system blue
+    FragmentState.On -> Color(0xFF409CFF)   // 25% toward white
+    FragmentState.Highlighted -> Color(0xFF80BDFF) // 50% toward white
 }
