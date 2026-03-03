@@ -81,3 +81,33 @@ COMPLETED
 ## 2026-03-03 — Stage 7: Next
 COMPLETED
 - Next eligible Go target: `bc-components` (`go/bccomponents`)
+
+## 2026-03-03 — Stage 3: Cross-Check Completeness (Claude Opus 4.6)
+STARTED
+- Verifying translation against MANIFEST.md and Rust source independently
+
+## 2026-03-03 — Stage 3: Cross-Check Completeness (Claude Opus 4.6)
+COMPLETED
+- API coverage: 13/13 manifest items verified (4 type families, 3 public functions, 6 constants)
+- Test coverage: 8/8 behavioral tests verified against Rust source
+- Error model: 15/15 error variants present with correct messages
+- Serialization: bit-packing layout matches Rust byte-for-byte
+- Combine logic: grouping, duplicate detection, threshold recovery, error tolerance all correct
+- VERDICT: COMPLETE
+
+## 2026-03-03 — Stage 4: Cross-Check Fluency (Claude Opus 4.6)
+STARTED
+- Reviewing Go code for idiomaticness without reading Rust source
+
+## 2026-03-03 — Stage 4: Cross-Check Fluency (Claude Opus 4.6)
+COMPLETED
+- Issues found: 5
+- Issues fixed: 5
+  - MUST FIX: `Secret.Data()` now returns defensive copy (security: prevents mutation of internal secret data); added internal `bytes()` accessor for package-internal performance paths
+  - SHOULD FIX: Removed unreachable nil-receiver guards on `ShamirError.Error()` and `Unwrap()`
+  - SHOULD FIX: Replaced `slices.Concat` (Go 1.22+) with local `flattenShares` helper to match declared `go 1.21` module version; `go vet` now clean
+  - NICE TO HAVE: Standardized byte-copy idiom to `make/copy` across `NewSecret`, `Clone`, `Data` for consistency
+  - NICE TO HAVE: Simplified single-import to non-parenthesized form in errors.go; added "returns a copy" doc to `Groups()` method
+- No downstream Go dependents exist (bc-components not yet translated)
+- All 8 tests passing, `go vet` clean
+- VERDICT: IDIOMATIC

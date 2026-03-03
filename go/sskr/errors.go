@@ -1,8 +1,6 @@
 package sskr
 
-import (
-	"errors"
-)
+import "errors"
 
 var (
 	// ErrDuplicateMemberIndex indicates duplicate member index within a group.
@@ -53,19 +51,13 @@ type ShamirError struct {
 	cause error
 }
 
-// Error returns the formatted SSKR shim error message.
+// Error returns the formatted SSKR Shamir error message.
 func (e *ShamirError) Error() string {
-	if e == nil || e.cause == nil {
-		return "SSKR Shamir error: <nil>"
-	}
 	return "SSKR Shamir error: " + e.cause.Error()
 }
 
 // Unwrap returns the underlying bc-shamir error.
 func (e *ShamirError) Unwrap() error {
-	if e == nil {
-		return nil
-	}
 	return e.cause
 }
 

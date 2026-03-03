@@ -8,6 +8,16 @@ import (
 	bcrand "github.com/nickel-blockchaincommons/bcrand-go"
 )
 
+// flattenShares concatenates a slice of share groups into a single flat slice.
+// Replaces slices.Concat (Go 1.22+) to keep the module compatible with Go 1.21.
+func flattenShares(groups [][][]byte) [][]byte {
+	var result [][]byte
+	for _, group := range groups {
+		result = append(result, group...)
+	}
+	return result
+}
+
 type fakeRandomNumberGenerator struct{}
 
 func (r *fakeRandomNumberGenerator) NextU64() uint64 {
@@ -60,7 +70,7 @@ func TestSplit35(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SSKRGenerateUsing failed: %v", err)
 	}
-	flattenedShares := slices.Concat(shares...)
+	flattenedShares := flattenShares(shares)
 	if len(flattenedShares) != 5 {
 		t.Fatalf("flattened share count = %d, want 5", len(flattenedShares))
 	}
@@ -109,7 +119,7 @@ func TestSplit27(t *testing.T) {
 	if len(shares[0]) != 7 {
 		t.Fatalf("shares[0] count = %d, want 7", len(shares[0]))
 	}
-	flattenedShares := slices.Concat(shares...)
+	flattenedShares := flattenShares(shares)
 	if len(flattenedShares) != 7 {
 		t.Fatalf("flattened share count = %d, want 7", len(flattenedShares))
 	}
@@ -165,7 +175,7 @@ func TestSplit2323(t *testing.T) {
 		t.Fatalf("shares[1] count = %d, want 3", len(shares[1]))
 	}
 
-	flattenedShares := slices.Concat(shares...)
+	flattenedShares := flattenShares(shares)
 	if len(flattenedShares) != 6 {
 		t.Fatalf("flattened share count = %d, want 6", len(flattenedShares))
 	}
@@ -396,7 +406,7 @@ func TestExampleEncode3(t *testing.T) {
 		if err != nil {
 			return Secret{}, err
 		}
-		flattened := slices.Concat(shares...)
+		flattened := flattenShares(shares)
 		return SSKRCombine(flattened)
 	}
 
@@ -458,7 +468,7 @@ func TestExampleEncode4(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SSKRGenerate failed: %v", err)
 	}
-	flattenedShares := slices.Concat(groupedShares...)
+	flattenedShares := flattenShares(groupedShares)
 
 	// The group threshold is 1, but we're providing an additional share
 	// from the second group. The correct behavior is to ignore any group

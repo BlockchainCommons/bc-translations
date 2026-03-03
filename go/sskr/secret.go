@@ -19,7 +19,8 @@ func NewSecret(data []byte) (Secret, error) {
 	if length&1 != 0 {
 		return Secret{}, ErrSecretLengthNotEven
 	}
-	copied := append([]byte(nil), data...)
+	copied := make([]byte, len(data))
+	copy(copied, data)
 	return Secret{data: copied}, nil
 }
 
@@ -33,14 +34,23 @@ func (s Secret) IsEmpty() bool {
 	return s.Len() == 0
 }
 
-// Data returns the secret bytes.
+// Data returns a copy of the secret bytes.
 func (s Secret) Data() []byte {
+	copied := make([]byte, len(s.data))
+	copy(copied, s.data)
+	return copied
+}
+
+// bytes returns the underlying byte slice without copying.
+// Internal use only; callers must not modify the returned slice.
+func (s Secret) bytes() []byte {
 	return s.data
 }
 
 // Clone returns a deep copy of the secret.
 func (s Secret) Clone() Secret {
-	copied := append([]byte(nil), s.data...)
+	copied := make([]byte, len(s.data))
+	copy(copied, s.data)
 	return Secret{data: copied}
 }
 

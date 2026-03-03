@@ -32,7 +32,7 @@ func (s Spec) GroupThreshold() int {
 	return s.groupThreshold
 }
 
-// Groups returns the group specifications.
+// Groups returns a copy of the group specifications.
 func (s Spec) Groups() []GroupSpec {
 	return append([]GroupSpec(nil), s.groups...)
 }

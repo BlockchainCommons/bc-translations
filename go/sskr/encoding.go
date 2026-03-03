@@ -75,7 +75,7 @@ func serializeShare(share sskrShare) []byte {
 		byte((gi<<4)|mt),
 		byte(mi),
 	)
-	result = append(result, share.value.Data()...)
+	result = append(result, share.value.bytes()...)
 
 	return result
 }
@@ -128,7 +128,7 @@ func generateShares(
 	groupSecrets, err := bcshamir.SplitSecret(
 		spec.GroupThreshold(),
 		spec.GroupCount(),
-		masterSecret.Data(),
+		masterSecret.bytes(),
 		randomGenerator,
 	)
 	if err != nil {
@@ -255,7 +255,7 @@ func combineShares(shares []sskrShare) (Secret, error) {
 
 		memberShares := make([][]byte, len(group.memberShares))
 		for i := range group.memberShares {
-			memberShares[i] = group.memberShares[i].Data()
+			memberShares[i] = group.memberShares[i].bytes()
 		}
 
 		groupSecret, err := bcshamir.RecoverSecret(group.memberIndexes, memberShares)
