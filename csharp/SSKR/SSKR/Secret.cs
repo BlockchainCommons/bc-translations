@@ -1,11 +1,9 @@
-using System.Collections;
-
 namespace BlockchainCommons.SSKR;
 
 /// <summary>
 /// A secret to be split into shares.
 /// </summary>
-public sealed class Secret : IEquatable<Secret>, IEnumerable<byte>
+public sealed class Secret : IEquatable<Secret>
 {
     private readonly byte[] _data;
 
@@ -79,16 +77,6 @@ public sealed class Secret : IEquatable<Secret>, IEnumerable<byte>
     public override string ToString()
     {
         return $"Secret({Convert.ToHexString(_data).ToLowerInvariant()})";
-    }
-
-    public IEnumerator<byte> GetEnumerator()
-    {
-        return ((IEnumerable<byte>)_data).GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _data.GetEnumerator();
     }
 
     internal byte[] DataRef => _data;

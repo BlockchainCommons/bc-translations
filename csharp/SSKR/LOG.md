@@ -60,3 +60,28 @@ COMPLETED
 ## 2026-03-03 — Stage 6: Capture Lessons (Rule One)
 COMPLETED
 - Added C# and cross-language lessons to `memory/csharp.md` and `memory/translation-lessons.md`
+
+## 2026-03-03 — Stage 3: Cross-Check Completeness (Claude Opus 4.6)
+STARTED
+- Verifying C# SSKR translation against Rust source and MANIFEST.md
+
+## 2026-03-03 — Stage 3: Cross-Check Completeness (Claude Opus 4.6)
+COMPLETED
+- API coverage: 14/14 (5 types + 3 functions + 6 constants)
+- Constants: 6/6 with correct upstream references
+- Error variants: 15/15 (14 + ShamirError wrapping)
+- Validation semantics: verified GroupSpec/Spec boundary checks match Rust (including member_threshold == 0 allowance)
+- Tests: 8/8 behavioral, 2 Rust-only omitted correctly
+- Verdict: COMPLETE
+
+## 2026-03-03 — Stage 4: Cross-Check Fluency (Claude Opus 4.6)
+STARTED
+- Reviewing C# idiomaticness without consulting Rust source
+
+## 2026-03-03 — Stage 4: Cross-Check Fluency (Claude Opus 4.6)
+COMPLETED
+- Issues found: 2 (1 MUST FIX, 1 NICE TO HAVE), fixed: 2
+- Removed `IEnumerable<byte>` from `Secret` — not present in Rust source, risks accidental secret data leakage through LINQ chains; `Data` and `ToArray()` provide sufficient access
+- Converted `SSKRShare` to use primary constructor — reduces boilerplate for internal data carrier type
+- Verification: `dotnet test csharp/SSKR/SSKR.slnx` passed (8/8)
+- Verdict: IDIOMATIC
