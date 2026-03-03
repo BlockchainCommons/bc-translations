@@ -20,7 +20,8 @@ public struct URFragmentBar: View {
                 view(for: states[i])
             }
         }
-        .frame(height: 20)
+        .frame(height: 14)
+        .clipShape(Capsule())
     }
 
     private func view(for state: FragmentState) -> AnyView {
@@ -30,7 +31,7 @@ public struct URFragmentBar: View {
         case .on:
             return AnyView(Color.blue.brightness(0.2))
         case .highlighted:
-            return AnyView(Color.white)
+            return AnyView(Color.blue.brightness(0.4))
         }
     }
 }

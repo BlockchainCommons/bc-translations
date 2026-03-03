@@ -13,7 +13,7 @@ public final class URDisplayState {
     public var seqNum: Int { currentSequence }
     public var seqLen: Int { partsCount }
 
-    public var framesPerSecond: Double = 10.0 {
+    public var framesPerSecond: Double = 8.0 {
         didSet { interval = 1.0 / framesPerSecond }
     }
     public private(set) var part: Data = Data()
@@ -23,7 +23,7 @@ public final class URDisplayState {
     private var partsCount: Int = 0
     private var currentSequence: Int = 0
     private var timerTask: Task<Void, Never>?
-    private var interval: TimeInterval = 1.0 / 10
+    private var interval: TimeInterval = 1.0 / 8
 
     public init(ur: UR, maxFragmentLen: Int) {
         self.ur = ur

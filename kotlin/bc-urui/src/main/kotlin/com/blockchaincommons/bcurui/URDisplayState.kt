@@ -20,7 +20,7 @@ class URDisplayState(
     val ur: UR,
     val maxFragmentLen: Int
 ) {
-    var framesPerSecond: Double = 10.0
+    var framesPerSecond: Double = 8.0
 
     /** The current QR part as uppercase UTF-8 bytes (suitable for QR rendering). */
     var part: ByteArray by mutableStateOf(ByteArray(0))
