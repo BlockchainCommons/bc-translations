@@ -7,6 +7,8 @@ internal class FountainEncoder(message: ByteArray, maxFragmentLength: Int) {
     private val checksum: UInt = Crc32.checksum(message)
     var currentSequence: Int = 0
         private set
+    var lastFragmentIndexes: List<Int> = emptyList()
+        private set
 
     init {
         require(message.isNotEmpty()) { "expected non-empty message" }
@@ -25,6 +27,7 @@ internal class FountainEncoder(message: ByteArray, maxFragmentLength: Int) {
     fun nextPart(): FountainPart {
         currentSequence++
         val indexes = FountainUtils.chooseFragments(currentSequence, parts.size, checksum)
+        lastFragmentIndexes = indexes
         val mixed = ByteArray(parts[0].size)
         for (index in indexes) {
             FountainUtils.xorInPlace(mixed, parts[index])

@@ -60,17 +60,9 @@ public final class URDisplayState {
         currentSequence = encoder.currentIndex
         part = partString.uppercased().utf8Data
 
-        // For sequences 1..partsCount, the fountain encoder produces simple
-        // (single-fragment) parts where fragment index = sequence - 1.
-        // For sequences > partsCount, mixed parts are emitted; we show all
-        // fragments as "on" since the exact mix indexes are internal to BCUR.
-        if currentSequence <= partsCount {
-            let fragmentIndex = currentSequence - 1
-            fragmentStates = (0..<partsCount).map { i in
-                i == fragmentIndex ? .on : .off
-            }
-        } else {
-            fragmentStates = Array(repeating: .on, count: partsCount)
+        let indexes = encoder.lastFragmentIndexes
+        fragmentStates = (0..<partsCount).map { i in
+            indexes.contains(i) ? .highlighted : .off
         }
     }
 }

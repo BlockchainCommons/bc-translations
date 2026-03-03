@@ -28,4 +28,7 @@ class MultipartEncoder(ur: UR, maxFragmentLen: Int) {
 
     /** The number of fragments the message was split into. */
     val partCount: Int get() = encoder.fragmentCount
+
+    /** The fragment indexes included in the most recently emitted part. */
+    val lastFragmentIndexes: List<Int> get() = encoder.lastFragmentIndexes
 }

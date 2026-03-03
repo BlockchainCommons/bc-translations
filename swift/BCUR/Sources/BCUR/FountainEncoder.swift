@@ -4,6 +4,7 @@ internal struct FountainEncoder: Sendable {
     private let messageLength: Int
     private let checksum: UInt32
     private(set) var currentSequence: Int = 0
+    private(set) var lastFragmentIndexes: [Int] = []
 
     init(message: [UInt8], maxFragmentLength: Int) throws {
         guard !message.isEmpty else {
@@ -38,6 +39,7 @@ internal struct FountainEncoder: Sendable {
             fragmentCount: parts.count,
             checksum: checksum
         )
+        lastFragmentIndexes = indexes
 
         var mixed = Array(repeating: UInt8(0), count: parts[0].count)
         for index in indexes {

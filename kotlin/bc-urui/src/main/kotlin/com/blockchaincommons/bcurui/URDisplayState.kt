@@ -72,17 +72,9 @@ class URDisplayState(
         currentSequence = encoder.currentIndex
         part = partString.uppercase().toByteArray(Charsets.UTF_8)
 
-        // For sequences 1..partsCount, the fountain encoder produces simple
-        // (single-fragment) parts where fragment index = sequence - 1.
-        // For sequences > partsCount, mixed parts are emitted; we show all
-        // fragments as "on" since the exact mix indexes are internal to bc-ur.
-        fragmentStates = if (currentSequence <= partsCount) {
-            val fragmentIndex = currentSequence - 1
-            (0 until partsCount).map { i ->
-                if (i == fragmentIndex) FragmentState.On else FragmentState.Off
-            }
-        } else {
-            List(partsCount) { FragmentState.On }
+        val indexes = encoder.lastFragmentIndexes
+        fragmentStates = (0 until partsCount).map { i ->
+            if (i in indexes) FragmentState.Highlighted else FragmentState.Off
         }
     }
 }

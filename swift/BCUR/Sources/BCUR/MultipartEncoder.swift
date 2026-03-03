@@ -45,4 +45,9 @@ public final class MultipartEncoder {
     public var partsCount: Int {
         encoder.fragmentCount
     }
+
+    /// The fragment indexes included in the most recently emitted part.
+    public var lastFragmentIndexes: [Int] {
+        encoder.lastFragmentIndexes
+    }
 }
