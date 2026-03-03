@@ -1,0 +1,34 @@
+{
+  "name": "@bc/components",
+  "version": "0.31.1",
+  "description": "Secure Components for TypeScript.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bc/crypto": "file:../bc-crypto",
+    "@bc/dcbor": "file:../dcbor",
+    "@bc/rand": "file:../bc-rand",
+    "@bc/sskr": "file:../sskr",
+    "@bc/tags": "file:../bc-tags",
+    "@bc/ur": "file:../bc-ur"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
