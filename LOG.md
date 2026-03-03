@@ -161,3 +161,6 @@ Chronological record of all translation activity in this repository.
 | 2026-03-03 | sskr        | 0.12.0 | Go         | sskr         | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-03 | known-values | 0.15.4 | TypeScript | @bc/known-values | 🎻 Claude Opus 4.6 | Translation |
 | 2026-03-03 | known-values | 0.15.4 | TypeScript | @bc/known-values | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-03 | known-values | 0.15.4 | TypeScript | @bc/known-values | 📖 GPT Codex | Fluency |
+| 2026-03-03 | bc-components | 0.31.1 | Python | bc-components | 🎻 Claude Opus 4.6 | Translation |
+| 2026-03-03 | bc-components | 0.31.1 | C# | BCComponents | 🎻 Claude Opus 4.6 | Translation |
