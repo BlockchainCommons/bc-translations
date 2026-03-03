@@ -1,6 +1,14 @@
 import Foundation
 import UIKit
 
+/// Shape of the cleared module area around the logo.
+public enum QRLogoClearShape: Sendable {
+    /// Rectangular (square) clearing — the default.
+    case square
+    /// Circular clearing — modules are cleared only if their center falls within the circle.
+    case circle
+}
+
 /// A logo image to overlay on the center of a QR code.
 ///
 /// The logo is pre-rendered at construction time and cached as a `UIImage`.
@@ -12,6 +20,12 @@ public struct QRLogo: Sendable {
     /// The desired logo width as a fraction of the QR code width (0.0...1.0).
     public let requestedFraction: CGFloat
 
+    /// Number of clear modules around the logo (0...5). Default 1.
+    public let clearBorder: Int
+
+    /// Shape of the cleared area around the logo.
+    public let clearShape: QRLogoClearShape
+
     /// Create a logo from SVG data.
     ///
     /// The SVG is rasterized once at 512x512 and cached for reuse across QR frames.
@@ -19,8 +33,12 @@ public struct QRLogo: Sendable {
     /// - Parameters:
     ///   - svgData: Raw SVG file data.
     ///   - fraction: Desired logo width as a fraction of the QR code width. Default 0.25.
-    public init(svgData: Data, fraction: CGFloat = 0.25) {
+    ///   - clearBorder: Number of clear modules around the logo (0...5). Default 1.
+    ///   - clearShape: Shape of cleared area. Default `.square`.
+    public init(svgData: Data, fraction: CGFloat = 0.25, clearBorder: Int = 1, clearShape: QRLogoClearShape = .square) {
         self.requestedFraction = fraction.clamped(to: 0.01...0.99)
+        self.clearBorder = clearBorder.clamped(to: 0...5)
+        self.clearShape = clearShape
         self.image = Self.renderSVG(svgData, size: 512)
     }
 
@@ -29,8 +47,12 @@ public struct QRLogo: Sendable {
     /// - Parameters:
     ///   - image: A `UIImage` to use as the logo.
     ///   - fraction: Desired logo width as a fraction of the QR code width. Default 0.25.
-    public init(image: UIImage, fraction: CGFloat = 0.25) {
+    ///   - clearBorder: Number of clear modules around the logo (0...5). Default 1.
+    ///   - clearShape: Shape of cleared area. Default `.square`.
+    public init(image: UIImage, fraction: CGFloat = 0.25, clearBorder: Int = 1, clearShape: QRLogoClearShape = .square) {
         self.requestedFraction = fraction.clamped(to: 0.01...0.99)
+        self.clearBorder = clearBorder.clamped(to: 0...5)
+        self.clearShape = clearShape
         self.image = image
     }
 

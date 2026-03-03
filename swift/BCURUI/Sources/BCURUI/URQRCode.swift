@@ -107,7 +107,7 @@ public func makeQRCodeImage(
 
     // With logo: composite at module-aligned resolution
     let moduleCount = Int(output.extent.width)
-    let logoLayout = LogoLayout(moduleCount: moduleCount, requestedFraction: logo.requestedFraction)
+    let logoLayout = LogoLayout(moduleCount: moduleCount, requestedFraction: logo.requestedFraction, clearBorder: logo.clearBorder)
 
     guard logoLayout.logoModules >= 3 else {
         // QR too small for a logo — return without overlay
@@ -131,15 +131,35 @@ public func makeQRCodeImage(
         context.interpolationQuality = .none
         context.draw(cgImage, in: CGRect(origin: .zero, size: size))
 
-        // 2. Clear center area (logo + 1-module border on each side)
-        let clearPixels = CGFloat(logoLayout.clearedModules * pixelsPerModule)
-        let clearOrigin = (CGFloat(compositingSize) - clearPixels) / 2
-        let clearRect = CGRect(x: clearOrigin, y: clearOrigin, width: clearPixels, height: clearPixels)
-
-        // Use background color for clearing; default to white if transparent
+        // 2. Clear center area
         let clearColor = backgroundColorForClearing(backgroundColor)
         context.setFillColor(clearColor.cgColor)
-        context.fill(clearRect)
+        let centerModule = CGFloat(moduleCount) / 2.0
+
+        switch logo.clearShape {
+        case .square:
+            let clearPixels = CGFloat(logoLayout.clearedModules * pixelsPerModule)
+            let clearOrigin = (CGFloat(compositingSize) - clearPixels) / 2
+            let clearRect = CGRect(x: clearOrigin, y: clearOrigin, width: clearPixels, height: clearPixels)
+            context.fill(clearRect)
+
+        case .circle:
+            let radius = CGFloat(logoLayout.clearedModules) / 2.0
+            let startModule = (moduleCount - logoLayout.clearedModules) / 2
+            for row in 0..<logoLayout.clearedModules {
+                for col in 0..<logoLayout.clearedModules {
+                    let mx = CGFloat(startModule + col) + 0.5
+                    let my = CGFloat(startModule + row) + 0.5
+                    let dx = mx - centerModule
+                    let dy = my - centerModule
+                    if dx * dx + dy * dy <= radius * radius {
+                        let px = CGFloat((startModule + col) * pixelsPerModule)
+                        let py = CGFloat((startModule + row) * pixelsPerModule)
+                        context.fill(CGRect(x: px, y: py, width: CGFloat(pixelsPerModule), height: CGFloat(pixelsPerModule)))
+                    }
+                }
+            }
+        }
 
         // 3. Draw logo centered within the cleared area
         let logoPixels = CGFloat(logoLayout.logoModules * pixelsPerModule)
@@ -157,18 +177,18 @@ struct LogoLayout {
     let logoModules: Int
     let clearedModules: Int
 
-    init(moduleCount: Int, requestedFraction: CGFloat) {
+    init(moduleCount: Int, requestedFraction: CGFloat, clearBorder: Int) {
         // Calculate logo size in modules
         var logo = Int((CGFloat(moduleCount) * requestedFraction).rounded())
         // Make odd for symmetry
         if logo % 2 == 0 { logo += 1 }
-        // Add 1-module border on each side
-        var cleared = logo + 2
+        // Add clearBorder modules on each side
+        var cleared = logo + 2 * clearBorder
         // Cap: cleared area must not exceed 40% of QR width
         let maxCleared = Int(floor(Double(moduleCount) * 0.40))
         if cleared > maxCleared {
             cleared = maxCleared
-            logo = cleared - 2
+            logo = cleared - 2 * clearBorder
         }
         // Ensure logo has odd module count
         if logo % 2 == 0 { logo -= 1 }

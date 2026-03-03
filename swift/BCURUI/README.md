@@ -15,7 +15,7 @@ Animated multi-part QR code display using fountain codes.
 
 - **`URDisplayState`** — Observable state machine that drives animated UR display. Wraps `MultipartEncoder`, cycles through fountain-coded parts on a configurable timer (`framesPerSecond`), and exposes the current QR data and fragment states.
 - **`URQRCode`** — SwiftUI view that renders a QR code from `Data`, with configurable foreground/background colors and optional logo overlay.
-- **`QRLogo`** — A logo image to superimpose on the center of a QR code. Can be created from SVG data or a `UIImage`. When a logo is present, error correction is automatically raised to Level Q (Quartile) to ensure scannability.
+- **`QRLogo`** — A logo image to superimpose on the center of a QR code. Can be created from SVG data or a `UIImage`. Supports configurable clear-module border width (0–5) and square or circular clearing shape. When a logo is present, error correction is automatically raised to Level Q (Quartile) to ensure scannability.
 
 ### UR Scanning (Camera)
 Real-time QR code scanning via the device camera.
@@ -117,6 +117,9 @@ let logo = QRLogo(svgData: mySVGData, fraction: 0.25)
 // From a UIImage:
 let logo = QRLogo(image: myUIImage, fraction: 0.25)
 
+// With custom clear border and circular mask:
+let logo = QRLogo(image: myUIImage, clearBorder: 2, clearShape: .circle)
+
 // Use with URQRCode view:
 URQRCode(data: $displayState.part, logo: logo)
 
@@ -125,4 +128,8 @@ let image: Image = makeQRCode(data, logo: logo)
 let uiImage: UIImage = makeQRCodeImage(data, logo: logo)
 ```
 
-The `fraction` parameter controls the logo width as a fraction of the QR code width (default 0.25). The logo area is capped so that the cleared region never exceeds 40% of the QR width, keeping the covered area under ~16% for reliable scanning.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `fraction` | `CGFloat` | `0.25` | Logo width as a fraction of the QR code width. Clamped to 0.01...0.99. The logo area is capped so the cleared region never exceeds 40% of the QR width. |
+| `clearBorder` | `Int` | `1` | Number of clear modules around the logo (0...5). |
+| `clearShape` | `QRLogoClearShape` | `.square` | Shape of the cleared area: `.square` (rectangular) or `.circle` (circular module-level mask — a module is cleared only if its center falls within the circle radius). |

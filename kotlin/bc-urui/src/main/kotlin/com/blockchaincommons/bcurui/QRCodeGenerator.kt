@@ -73,7 +73,7 @@ fun makeQRCodeBitmap(
     }
 
     // Composite logo onto QR code
-    val layout = LogoLayout(moduleCount, logo.requestedFraction)
+    val layout = LogoLayout(moduleCount, logo.requestedFraction, logo.clearBorder)
     if (layout.logoModules < 3) {
         return if (compositingSize != size) {
             Bitmap.createScaledBitmap(bitmap, size, size, false)
@@ -85,18 +85,47 @@ fun makeQRCodeBitmap(
     val pixelsPerModule = max(1, compositingSize / moduleCount)
     val canvas = Canvas(bitmap)
 
-    // 1. Clear center area (logo + 1-module border on each side)
-    val clearPixels = layout.clearedModules * pixelsPerModule
-    val clearOrigin = (compositingSize - clearPixels) / 2
+    // 1. Clear center area
     val clearColor = if (Color.alpha(backgroundColor) < 3) Color.WHITE else backgroundColor
     val clearPaint = Paint().apply { color = clearColor; style = Paint.Style.FILL }
-    canvas.drawRect(
-        clearOrigin.toFloat(),
-        clearOrigin.toFloat(),
-        (clearOrigin + clearPixels).toFloat(),
-        (clearOrigin + clearPixels).toFloat(),
-        clearPaint
-    )
+    val centerModule = moduleCount / 2.0f
+
+    when (logo.clearShape) {
+        QRLogoClearShape.Square -> {
+            val clearPixels = layout.clearedModules * pixelsPerModule
+            val clearOrigin = (compositingSize - clearPixels) / 2
+            canvas.drawRect(
+                clearOrigin.toFloat(),
+                clearOrigin.toFloat(),
+                (clearOrigin + clearPixels).toFloat(),
+                (clearOrigin + clearPixels).toFloat(),
+                clearPaint
+            )
+        }
+        QRLogoClearShape.Circle -> {
+            val radius = layout.clearedModules / 2.0f
+            val startModule = (moduleCount - layout.clearedModules) / 2
+            for (row in 0 until layout.clearedModules) {
+                for (col in 0 until layout.clearedModules) {
+                    val mx = startModule + col + 0.5f
+                    val my = startModule + row + 0.5f
+                    val dx = mx - centerModule
+                    val dy = my - centerModule
+                    if (dx * dx + dy * dy <= radius * radius) {
+                        val px = (startModule + col) * pixelsPerModule
+                        val py = (startModule + row) * pixelsPerModule
+                        canvas.drawRect(
+                            px.toFloat(),
+                            py.toFloat(),
+                            (px + pixelsPerModule).toFloat(),
+                            (py + pixelsPerModule).toFloat(),
+                            clearPaint
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     // 2. Draw logo centered within the cleared area
     val logoPixels = layout.logoModules * pixelsPerModule
@@ -115,7 +144,7 @@ fun makeQRCodeBitmap(
 }
 
 /** Calculates logo and clearing dimensions in QR modules. */
-internal class LogoLayout(moduleCount: Int, requestedFraction: Float) {
+internal class LogoLayout(moduleCount: Int, requestedFraction: Float, clearBorder: Int) {
     val logoModules: Int
     val clearedModules: Int
 
@@ -124,13 +153,13 @@ internal class LogoLayout(moduleCount: Int, requestedFraction: Float) {
         var logo = (moduleCount * requestedFraction).roundToInt()
         // Make odd for symmetry
         if (logo % 2 == 0) logo++
-        // Add 1-module border on each side
-        var cleared = logo + 2
+        // Add clearBorder modules on each side
+        var cleared = logo + 2 * clearBorder
         // Cap: cleared area must not exceed 40% of QR width
         val maxCleared = floor(moduleCount * 0.40).toInt()
         if (cleared > maxCleared) {
             cleared = maxCleared
-            logo = cleared - 2
+            logo = cleared - 2 * clearBorder
         }
         // Ensure logo has odd module count
         if (logo % 2 == 0) logo--
