@@ -140,6 +140,8 @@ class URVideoSession(
                                     box.right / imageWidth,
                                     box.bottom / imageHeight
                                 )
+                                // Skip absurdly large blocks (> 20% of frame in either dimension).
+                                if (normalizedBox.width() > 0.2f || normalizedBox.height() > 0.2f) return@mapNotNull null
                                 val displayBox = transformToDisplay(normalizedBox, extraRotation)
                                 URRecognizedText(
                                     text = block.text,
