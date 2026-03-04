@@ -1,0 +1,113 @@
+# Completeness: bc-components → C# (BCComponents)
+
+## Source Files (63 files)
+- [x] Digest.cs — SHA-256 digest type
+- [x] Nonce.cs — cryptographic nonce
+- [x] SymmetricKey.cs — symmetric encryption key (IDisposable)
+- [x] EncryptedMessage.cs — IETF-ChaCha20-Poly1305 encrypted message
+- [x] AuthenticationTag.cs — Poly1305 authentication tag
+- [x] Salt.cs — cryptographic salt with factory methods
+- [x] Seed.cs — BIP-39 compatible seed
+- [x] Reference.cs — content-based unique identifier
+- [x] Compressed.cs — zlib-compressed data with optional digest
+- [x] Json.cs — CBOR-encoded JSON wrapper
+- [x] ARID.cs — anonymous random identifier
+- [x] UUID.cs — RFC 4122 UUID
+- [x] XID.cs — extended identifier
+- [x] URI.cs — URI wrapper
+- [x] ECPrivateKey.cs — secp256k1 private key (IDisposable)
+- [x] ECPublicKey.cs — secp256k1 compressed public key
+- [x] ECUncompressedPublicKey.cs — secp256k1 uncompressed public key
+- [x] SchnorrPublicKey.cs — Schnorr (x-only) public key
+- [x] Ed25519PrivateKey.cs — Ed25519 private key (IDisposable)
+- [x] Ed25519PublicKey.cs — Ed25519 public key
+- [x] X25519PrivateKey.cs — X25519 private key (IDisposable)
+- [x] X25519PublicKey.cs — X25519 public key
+- [x] Signature.cs — multi-scheme signature (Schnorr/ECDSA/Ed25519/MLDSA)
+- [x] SignatureScheme.cs — signature scheme enum
+- [x] SigningPrivateKey.cs — multi-scheme signing private key
+- [x] SigningPublicKey.cs — multi-scheme signing public key
+- [x] ISigner.cs — signer interface
+- [x] IEncrypter.cs — encrypter interface
+- [x] IDigestProvider.cs — digest provider interface (GetDigest)
+- [x] IPrivateKeyDataProvider.cs — private key data provider interface
+- [x] IPrivateKeysProvider.cs — private keys provider interface
+- [x] IPublicKeysProvider.cs — public keys provider interface
+- [x] MLDSALevel.cs — ML-DSA security level enum
+- [x] MLDSAPrivateKey.cs — ML-DSA private key
+- [x] MLDSAPublicKey.cs — ML-DSA public key
+- [x] MLDSASignature.cs — ML-DSA signature
+- [x] MLKEMLevel.cs — ML-KEM security level enum
+- [x] MLKEMPrivateKey.cs — ML-KEM private key
+- [x] MLKEMPublicKey.cs — ML-KEM public key
+- [x] MLKEMCiphertext.cs — ML-KEM ciphertext
+- [x] EncapsulationScheme.cs — encapsulation scheme enum
+- [x] EncapsulationPrivateKey.cs — multi-scheme encapsulation private key
+- [x] EncapsulationPublicKey.cs — multi-scheme encapsulation public key
+- [x] EncapsulationCiphertext.cs — multi-scheme encapsulation ciphertext
+- [x] SealedMessage.cs — sealed (encrypted + signed) message
+- [x] EncryptedKey.cs — encrypted symmetric key with KDF params
+- [x] HashType.cs — hash type enum for KDF
+- [x] IKeyDerivation.cs — key derivation interface
+- [x] KeyDerivationMethod.cs — key derivation method enum
+- [x] KeyDerivationParams.cs — variant wrapper for KDF params
+- [x] HKDFParams.cs — HKDF key derivation parameters
+- [x] PBKDF2Params.cs — PBKDF2 key derivation parameters
+- [x] ScryptParams.cs — Scrypt key derivation parameters
+- [x] Argon2idParams.cs — Argon2id key derivation parameters
+- [x] HKDFRng.cs — HKDF-based deterministic RNG
+- [x] Keypair.cs — generic key pair holder
+- [x] PrivateKeyBase.cs — composite private key container
+- [x] PrivateKeys.cs — private key collection
+- [x] PublicKeys.cs — public key collection
+- [x] SSKRShare.cs — SSKR share with CBOR serialization
+- [x] SshKeyHelper.cs — SSH key format helpers
+- [x] TagsRegistry.cs — CBOR tag registration
+- [x] BCComponentsException.cs — sealed exception class
+
+## Tests (19 files, 132 tests)
+- [x] DigestTests.cs — digest creation, hex, validation, CBOR roundtrip
+- [x] NonceTests.cs — nonce creation, size validation, CBOR roundtrip
+- [x] SymmetricKeyTests.cs — key creation, encrypt/decrypt roundtrip
+- [x] ECKeyTests.cs — EC key generation, signing, CBOR roundtrip
+- [x] X25519Tests.cs — X25519 key agreement, CBOR roundtrip
+- [x] SigningTests.cs — Schnorr, ECDSA, Ed25519 signing/verification
+- [x] MLDSATests.cs — ML-DSA 44/65/87 signing/verification
+- [x] MLKEMTests.cs — ML-KEM 512/768/1024 encapsulate/decapsulate
+- [x] EncapsulationTests.cs — X25519 and ML-KEM encapsulation roundtrips
+- [x] CompressedTests.cs — compress/decompress, CBOR roundtrip, digest
+- [x] EncryptedKeyTests.cs — HKDF/PBKDF2/Scrypt/Argon2id lock/unlock, wrong-secret
+- [x] HKDFRngTests.cs — deterministic RNG output matching test vectors
+- [x] JsonTests.cs — JSON-to-CBOR roundtrip
+- [x] PrivateKeyBaseTests.cs — composite key container
+- [x] SSKRShareTests.cs — SSKR share CBOR roundtrip
+- [x] ARIDTests.cs — ARID creation, equality, CBOR roundtrip
+- [x] UUIDTests.cs — UUID creation, parsing, CBOR roundtrip
+- [x] XIDTests.cs — XID creation, CBOR roundtrip
+- [x] URITests.cs — URI creation, CBOR roundtrip
+
+## Build & Config
+- [x] BCComponents.csproj — .NET 10, BouncyCastle 2.5.1
+- [x] BCComponents.Tests.csproj — xUnit 2.9.3
+- [x] BCComponents.sln — solution file
+- [x] .gitignore
+
+## Fluency Review
+- [x] MUST FIX: Sealed BCComponentsException
+- [x] MUST FIX: Removed all FromDataRef duplicates
+- [x] MUST FIX: Renamed Salt factories (CreateWithLength, CreateInRange, CreateForSize)
+- [x] MUST FIX: Renamed Seed factories (Create, CreateWithLength)
+- [x] MUST FIX: Added IDisposable to key types (SymmetricKey, X25519PrivateKey, Ed25519PrivateKey, ECPrivateKey)
+- [x] MUST FIX: Converted Hex() methods to Hex properties
+- [x] SHOULD FIX: Renamed size constants to Size/MinSize
+- [x] SHOULD FIX: Made Seed properties init-only
+- [x] SHOULD FIX: Made Compressed constructor internal
+- [x] SHOULD FIX: Renamed DigestOpt to Digest
+- [x] SHOULD FIX: Renamed IDigestProvider.Digest() to GetDigest()
+- [x] SHOULD FIX: Split EncryptedKey.cs mega-file into 9 files
+- [x] SHOULD FIX: Removed fully qualified names
+- [x] SHOULD FIX: Renamed sealed_ test variable to sealedMessage
+- [x] NICE TO HAVE: Simplified Data property copies to Clone()
+- [x] NICE TO HAVE: Sealed all test classes
+- [x] NICE TO HAVE: File-scoped namespaces (already done)
+- [x] NICE TO HAVE: Consistent XML doc comments (already done)

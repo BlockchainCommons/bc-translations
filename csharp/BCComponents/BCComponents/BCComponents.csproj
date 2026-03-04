@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BlockchainCommons.BCComponents</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Cryptographic components, identifiers, and serialization types for Blockchain Commons.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BCComponents.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BCRand\BCRand\BCRand.csproj" />
+    <ProjectReference Include="..\..\BCCrypto\BCCrypto\BCCrypto.csproj" />
+    <ProjectReference Include="..\..\DCbor\DCbor\DCbor.csproj" />
+    <ProjectReference Include="..\..\BCTags\BCTags\BCTags.csproj" />
+    <ProjectReference Include="..\..\BCUR\BCUR\BCUR.csproj" />
+    <ProjectReference Include="..\..\SSKR\SSKR\SSKR.csproj" />
+  </ItemGroup>
+
+</Project>
