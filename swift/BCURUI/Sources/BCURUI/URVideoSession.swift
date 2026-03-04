@@ -223,6 +223,7 @@ public final class URVideoSession {
                 let request = VNRecognizeTextRequest()
                 request.recognitionLevel = .fast
                 request.usesLanguageCorrection = false
+                request.minimumTextHeight = 0.01
 
                 let handler = VNImageRequestHandler(
                     cvPixelBuffer: pixelBuffer,
@@ -239,6 +240,7 @@ public final class URVideoSession {
 
                 let texts = observations.compactMap { observation -> URRecognizedText? in
                     guard let candidate = observation.topCandidates(1).first else { return nil }
+                    guard candidate.confidence >= 0.5 else { return nil }
                     // Vision uses bottom-left origin; flip to top-left origin.
                     let visionBox = observation.boundingBox
                     let flippedBox = CGRect(

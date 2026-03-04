@@ -130,6 +130,10 @@ class URVideoSession(
                         if (visionText.textBlocks.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
                             val texts = visionText.textBlocks.mapNotNull { block ->
                                 val box = block.boundingBox ?: return@mapNotNull null
+                                val blockConfidence = block.lines
+                                    .mapNotNull { line -> line.confidence?.takeIf { it > 0f } }
+                                    .minOrNull() ?: 1.0f
+                                if (blockConfidence < 0.5f) return@mapNotNull null
                                 val normalizedBox = RectF(
                                     box.left / imageWidth,
                                     box.top / imageHeight,
@@ -140,7 +144,7 @@ class URVideoSession(
                                 URRecognizedText(
                                     text = block.text,
                                     boundingBox = displayBox,
-                                    confidence = 1.0f,
+                                    confidence = blockConfidence,
                                     rotation = extraRotation
                                 )
                             }
