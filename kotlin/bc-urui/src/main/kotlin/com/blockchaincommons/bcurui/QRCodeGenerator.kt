@@ -13,36 +13,45 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-/** Generates a QR code bitmap from the given data bytes, optionally with a logo overlay. */
+/**
+ * Generates a QR code bitmap from the given data bytes, optionally with a logo overlay.
+ *
+ * @param maxModules If non-null, throws [QRGenerationException.QRCodeTooDense] when the
+ *   QR code exceeds this module count.
+ */
 fun makeQRCodeBitmap(
     message: ByteArray,
     correctionLevel: QRCorrectionLevel = QRCorrectionLevel.Medium,
     size: Int = 512,
     foregroundColor: Int = Color.BLACK,
     backgroundColor: Int = Color.TRANSPARENT,
-    logo: QRLogo? = null
+    logo: QRLogo? = null,
+    maxModules: Int? = null
 ): Bitmap {
-    val effectiveCorrection = if (logo != null) QRCorrectionLevel.Quartile else correctionLevel
+    val effectiveCorrection = if (logo != null) QRCorrectionLevel.High else correctionLevel
 
     val hints = mapOf(
         EncodeHintType.ERROR_CORRECTION to effectiveCorrection.zxing,
         EncodeHintType.MARGIN to 0
     )
 
-    // Get module count from ZXing's Encoder for logo sizing calculations
-    val moduleCount = if (logo != null) {
+    // Get module count from ZXing's Encoder for logo sizing and density check
+    val moduleCount = run {
         val qrCode = Encoder.encode(
             String(message, Charsets.UTF_8),
             effectiveCorrection.zxing,
             hints
         )
         qrCode.matrix.width
-    } else {
-        0
+    }
+
+    // Check density if a limit was specified.
+    if (maxModules != null) {
+        checkQRDensity(moduleCount, maxModules)
     }
 
     // Calculate module-aligned compositing size when logo is present
-    val compositingSize = if (logo != null && moduleCount > 0) {
+    val compositingSize = if (logo != null) {
         val pixelsPerModule = max(1, size / moduleCount)
         moduleCount * pixelsPerModule
     } else {
@@ -64,7 +73,7 @@ fun makeQRCodeBitmap(
         }
     }
 
-    if (logo == null || moduleCount == 0) {
+    if (logo == null) {
         return if (compositingSize != size) {
             Bitmap.createScaledBitmap(bitmap, size, size, false)
         } else {

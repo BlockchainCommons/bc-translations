@@ -27,9 +27,10 @@ public struct URQRCode: View {
     public var body: some View {
         if let logo {
             // Baked-in colors, no template rendering (logo needs real colors)
-            makeQRCode(
+            // maxModules is nil here so this won't throw.
+            try! makeQRCode(
                 data,
-                correctionLevel: .quartile,
+                correctionLevel: .high,
                 foregroundColor: UIColor(foregroundColor),
                 backgroundColor: UIColor(backgroundColor),
                 logo: logo
@@ -37,7 +38,7 @@ public struct URQRCode: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
         } else {
-            makeQRCode(data, correctionLevel: .low)
+            try! makeQRCode(data, correctionLevel: .low)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .background(backgroundColor)
@@ -54,20 +55,25 @@ public enum QRCorrectionLevel: String {
 }
 
 /// Create a SwiftUI `Image` from data, optionally with a logo overlay.
+///
+/// - Parameter maxModules: If non-nil, throws ``QRGenerationError/qrCodeTooDense(moduleCount:maxModules:)``
+///   when the QR code exceeds this module count.
 public func makeQRCode(
     _ message: Data,
     correctionLevel: QRCorrectionLevel = .medium,
     foregroundColor: UIColor? = nil,
     backgroundColor: UIColor? = nil,
-    logo: QRLogo? = nil
-) -> Image {
-    let effectiveCorrection = logo != nil ? .quartile : correctionLevel
-    let uiImage = makeQRCodeImage(
+    logo: QRLogo? = nil,
+    maxModules: Int? = nil
+) throws -> Image {
+    let effectiveCorrection = logo != nil ? .high : correctionLevel
+    let uiImage = try makeQRCodeImage(
         message,
         correctionLevel: effectiveCorrection,
         foregroundColor: foregroundColor ?? .black,
         backgroundColor: backgroundColor ?? .clear,
-        logo: logo
+        logo: logo,
+        maxModules: maxModules
     )
     if logo != nil {
         // Baked-in colors: no template rendering
@@ -81,13 +87,17 @@ public func makeQRCode(
 }
 
 /// Generate a `UIImage` QR code, optionally with a logo composited over the center.
+///
+/// - Parameter maxModules: If non-nil, throws ``QRGenerationError/qrCodeTooDense(moduleCount:maxModules:)``
+///   when the QR code exceeds this module count.
 public func makeQRCodeImage(
     _ message: Data,
     correctionLevel: QRCorrectionLevel = .medium,
     foregroundColor: UIColor = .black,
     backgroundColor: UIColor = .clear,
-    logo: QRLogo? = nil
-) -> UIImage {
+    logo: QRLogo? = nil,
+    maxModules: Int? = nil
+) throws -> UIImage {
     let qrCodeGenerator = CIFilter.qrCodeGenerator()
     qrCodeGenerator.correctionLevel = correctionLevel.rawValue
     qrCodeGenerator.message = message
@@ -98,6 +108,12 @@ public func makeQRCodeImage(
     falseColor.color1 = backgroundColor.ciColorValue
 
     let output = falseColor.outputImage!
+
+    // Check density if a limit was specified.
+    if let maxModules {
+        let moduleCount = Int(output.extent.width)
+        try checkQRDensity(moduleCount: moduleCount, maxModules: maxModules)
+    }
 
     guard let logo else {
         // No logo: return the QR image directly (original behavior)
