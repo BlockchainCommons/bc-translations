@@ -274,11 +274,14 @@ public final class URVideoSession {
                         box: flippedBox,
                         rotation: extraRotation
                     )
+                    // extraRotation is how much we rotated the *image*;
+                    // the physical display angle is its inverse.
+                    let displayRotation = (360 - extraRotation) % 360
                     return URRecognizedText(
                         text: candidate.string,
                         boundingBox: displayBox,
                         confidence: candidate.confidence,
-                        rotation: extraRotation
+                        rotation: displayRotation
                     )
                 }
 

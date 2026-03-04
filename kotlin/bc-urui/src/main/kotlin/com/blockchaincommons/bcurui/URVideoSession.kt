@@ -156,11 +156,14 @@ class URVideoSession(
                                     box.bottom / imageHeight
                                 )
                                 val displayBox = transformToDisplay(normalizedBox, extraRotation)
+                                // extraRotation is how much we rotated the *image*;
+                                // the physical display angle is its inverse.
+                                val displayRotation = (360 - extraRotation) % 360
                                 URRecognizedText(
                                     text = block.text,
                                     boundingBox = displayBox,
                                     confidence = blockConfidence,
-                                    rotation = extraRotation
+                                    rotation = displayRotation
                                 )
                             }
                             synchronized(allTexts) {
