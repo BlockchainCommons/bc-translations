@@ -62,6 +62,7 @@ public final class URVideoSession {
             captureSession.addInput(newInput)
             captureSession.commitConfiguration()
             currentCaptureDevice = newDevice
+            Self.configureAutofocus(for: newDevice)
         } catch {
             logger.error("⛔️ \(error.localizedDescription)")
         }
@@ -76,18 +77,26 @@ public final class URVideoSession {
         isSupported = true
 
         do {
+            // Prefer virtual multi-camera devices that include the ultra-wide
+            // lens for automatic macro switching at close range. Fall back to
+            // the plain wide-angle camera on older devices.
             discoverySession = .init(
-                deviceTypes: [.builtInWideAngleCamera],
+                deviceTypes: [
+                    .builtInTripleCamera,
+                    .builtInDualWideCamera,
+                    .builtInWideAngleCamera,
+                ],
                 mediaType: .video,
-                position: .unspecified
+                position: .back
             )
             captureDevices = discoverySession.devices
 
-            guard let currentCaptureDevice = AVCaptureDevice.default(for: .video) else {
+            guard let currentCaptureDevice = discoverySession.devices.first else {
                 throw URVideoSessionError("Could not open video capture device.")
             }
 
             self.currentCaptureDevice = currentCaptureDevice
+            Self.configureAutofocus(for: currentCaptureDevice)
 
             let videoInput = try AVCaptureDeviceInput(device: currentCaptureDevice)
             captureSession = AVCaptureSession()
@@ -122,6 +131,23 @@ public final class URVideoSession {
             logger.error("⛔️ \(error.localizedDescription)")
         }
         #endif
+    }
+
+    /// Configures continuous autofocus biased toward near (macro) distances
+    /// for reliable QR code and text scanning at close range.
+    private static func configureAutofocus(for device: AVCaptureDevice) {
+        do {
+            try device.lockForConfiguration()
+            if device.isFocusModeSupported(.continuousAutoFocus) {
+                device.focusMode = .continuousAutoFocus
+            }
+            if device.isAutoFocusRangeRestrictionSupported {
+                device.autoFocusRangeRestriction = .near
+            }
+            device.unlockForConfiguration()
+        } catch {
+            logger.error("⛔️ Failed to configure autofocus: \(error.localizedDescription)")
+        }
     }
 
     func startRunning() {

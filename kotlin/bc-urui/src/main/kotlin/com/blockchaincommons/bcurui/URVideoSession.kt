@@ -3,6 +3,9 @@ package com.blockchaincommons.bcurui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.RectF
+import android.hardware.camera2.CameraMetadata
+import android.hardware.camera2.CaptureRequest
+import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -43,6 +46,7 @@ class URVideoSession(
      *
      * Returns a [PreviewView] to be placed in the view hierarchy.
      */
+    @SuppressLint("UnsafeOptInUsageError", "RestrictedApi")
     fun bind(
         context: Context,
         lifecycleOwner: LifecycleOwner
@@ -53,13 +57,24 @@ class URVideoSession(
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
-            val preview = Preview.Builder().build().also {
+            val previewBuilder = Preview.Builder()
+            Camera2Interop.Extender(previewBuilder)
+                .setCaptureRequestOption(
+                    CaptureRequest.CONTROL_AF_MODE,
+                    CameraMetadata.CONTROL_AF_MODE_MACRO
+                )
+            val preview = previewBuilder.build().also {
                 it.surfaceProvider = previewView.surfaceProvider
             }
 
-            val analysis = ImageAnalysis.Builder()
+            val analysisBuilder = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
+            Camera2Interop.Extender(analysisBuilder)
+                .setCaptureRequestOption(
+                    CaptureRequest.CONTROL_AF_MODE,
+                    CameraMetadata.CONTROL_AF_MODE_MACRO
+                )
+            val analysis = analysisBuilder.build()
 
             analysis.setAnalyzer(executor) { imageProxy ->
                 processImage(imageProxy)
@@ -77,7 +92,7 @@ class URVideoSession(
         return previewView
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
+    @SuppressLint("UnsafeOptInUsageError", "RestrictedApi")
     private fun processImage(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         if (mediaImage == null) {
