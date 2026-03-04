@@ -51,6 +51,30 @@ class URScanState(
         }
     }
 
+    /**
+     * Signals a successful non-QR scan result (e.g., text recognition match).
+     *
+     * Emits success haptic feedback but does not set [lastResult] — the host
+     * manages its own result state for non-QR outcomes.
+     */
+    fun completeWithSuccess() {
+        if (hapticFeedback) {
+            _hapticEvents.tryEmit(URHapticEvent.Success)
+        }
+    }
+
+    /**
+     * Signals a failed non-QR scan result.
+     *
+     * Sets [lastResult] to [URScanResult.Failure] and emits failure haptic feedback.
+     */
+    fun completeWithFailure(error: Throwable) {
+        lastResult = URScanResult.Failure(error)
+        if (hapticFeedback) {
+            _hapticEvents.tryEmit(URHapticEvent.Failure)
+        }
+    }
+
     private val progress: URScanProgress
         get() {
             val count = expectedFragmentCount ?: 1

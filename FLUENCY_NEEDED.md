@@ -6,13 +6,12 @@ Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-03-03
 - Targets translated: 60
-- Targets with cross-model fluency complete: 58
-- Targets still needing cross-model fluency: 2
+- Targets with cross-model fluency complete: 59
+- Targets still needing cross-model fluency: 1
 
 | Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
 |-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
 | bc-components | 0.31.1 | C# | BCComponents | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
-| bc-components | 0.31.1 | Python | bc-components | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
 
 ## Update Rule
 

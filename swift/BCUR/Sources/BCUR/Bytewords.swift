@@ -47,6 +47,11 @@ public enum Bytewords {
         return data.map { BytewordsConstants.bytemojis[Int($0)] }.joined(separator: " ")
     }
 
+    /// Returns `true` if `word` (lowercase) is a valid byteword.
+    public static func isValidWord(_ word: String) -> Bool {
+        BytewordsConstants.wordIndexes[word] != nil
+    }
+
     static func decodeRaw(_ encoded: String, style: BytewordsStyle) throws -> [UInt8] {
         guard encoded.isASCII else {
             throw BytewordsCodecError.nonAscii

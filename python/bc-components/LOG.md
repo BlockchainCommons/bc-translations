@@ -74,3 +74,27 @@ COMPLETED
   - N6/N7: Replaced is_empty with __bool__
   - N11: Changed has_digest() to @property
 - 157 tests still pass after all fixes
+
+## 2026-03-03 — Stage 3: Check
+STARTED
+- Running cross-model completeness audit (Codex) against MANIFEST.md, exported API, docs, and tests
+
+## 2026-03-03 — Stage 3: Check
+COMPLETED
+- API coverage: 69/69 manifest-mapped source files confirmed present
+- Signature compatibility: 0 mismatches found in reviewed public constructors/method families
+- Test coverage: 157 passed, 2 skipped (expected ignored equivalents)
+- Documentation coverage: 106/106 exported callables/types expose docstrings
+- Verdict: COMPLETE (no gaps added to COMPLETENESS.md)
+
+## 2026-03-03 — Stage 4: Critique
+STARTED
+- Running cross-model Python fluency review (naming, errors, APIs, structure, tests, docs)
+
+## 2026-03-03 — Stage 4: Critique
+COMPLETED
+- Findings: 0 blocking, 0 non-blocking
+- Fixes applied: none required
+- Completeness blockers affecting fluency: none
+- Fluency verdict: IDIOMATIC
+- Verification: 157 passed, 2 skipped

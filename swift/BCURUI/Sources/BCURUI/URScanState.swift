@@ -77,6 +77,26 @@ public final class URScanState: URCodesReceiver {
         }
     }
 
+    /// Signals a successful non-QR scan result (e.g., text recognition match).
+    ///
+    /// Fires success haptic feedback but does not set `lastResult` — the host
+    /// manages its own result state for non-QR outcomes.
+    public func completeWithSuccess() {
+        if hapticFeedback {
+            notificationGenerator?.notificationOccurred(.success)
+        }
+    }
+
+    /// Signals a failed non-QR scan result.
+    ///
+    /// Sets `lastResult` to `.failure(error)` and fires error haptic feedback.
+    public func completeWithFailure(_ error: Error) {
+        lastResult = .failure(error)
+        if hapticFeedback {
+            notificationGenerator?.notificationOccurred(.error)
+        }
+    }
+
     private var progress: URScanProgress {
         let count = expectedFragmentCount ?? 1
         let percent = count > 0 ? min(Double(receivedCount) / Double(count), 1.0) : 0.0

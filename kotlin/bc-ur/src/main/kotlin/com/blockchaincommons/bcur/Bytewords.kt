@@ -82,6 +82,10 @@ object Bytewords {
             .joinToString(" ")
     }
 
+    /** Returns `true` if [word] (lowercase) is a valid byteword. */
+    fun isValidWord(word: String): Boolean =
+        BytewordsConstants.WORD_INDEXES.containsKey(word)
+
     private fun decodeMinimal(encoded: String): ByteArray {
         if (encoded.length % 2 != 0) {
             throw URException.BytewordsError("invalid length")

@@ -1,5 +1,6 @@
 import UIKit
 import AVFoundation
+import ImageIO
 
 /// A UIKit view that shows video preview, intended to be wrapped by `URVideo`.
 public class URUIVideoView: UIView {
@@ -41,12 +42,14 @@ public class URUIVideoView: UIView {
             return
         }
         previewLayer.frame = bounds
+        let orientation = window?.windowScene?.interfaceOrientation ?? .portrait
         if let connection = videoSession.captureSession?.connections.last {
-            let angle = rotationAngle(for: window?.windowScene?.interfaceOrientation ?? .portrait)
+            let angle = rotationAngle(for: orientation)
             if connection.isVideoRotationAngleSupported(angle) {
                 connection.videoRotationAngle = angle
             }
         }
+        videoSession.updateTextRecognitionOrientation(cgImageOrientation(for: orientation))
     }
 
     private func rotationAngle(for orientation: UIInterfaceOrientation) -> CGFloat {
@@ -56,6 +59,16 @@ public class URUIVideoView: UIView {
         case .landscapeLeft:      return 180
         case .landscapeRight:     return 0
         default:                  return 90
+        }
+    }
+
+    private func cgImageOrientation(for orientation: UIInterfaceOrientation) -> CGImagePropertyOrientation {
+        switch orientation {
+        case .portrait:           return .right
+        case .portraitUpsideDown: return .left
+        case .landscapeLeft:      return .down
+        case .landscapeRight:     return .up
+        default:                  return .right
         }
     }
 }

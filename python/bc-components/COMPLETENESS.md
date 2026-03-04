@@ -1,6 +1,6 @@
 # Completeness: bc-components → Python (bc-components)
 
-Checked: 2026-03-03
+Checked: 2026-03-03 (cross-check by GPT Codex)
 Result: **157 tests pass, 2 skipped** (matching Rust `#[ignore]`)
 
 ## Build & Config
