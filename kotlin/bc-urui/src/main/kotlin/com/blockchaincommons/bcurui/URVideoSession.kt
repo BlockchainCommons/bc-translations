@@ -28,6 +28,7 @@ import java.util.concurrent.Executors
  */
 class URVideoSession(
     private val onTextRecognized: ((List<URRecognizedText>) -> Unit)? = null,
+    private val textRecognitionRotations: Set<Int> = setOf(0),
     private val onCodesScanned: (Set<String>) -> Unit
 ) {
     private val executor = Executors.newSingleThreadExecutor()
@@ -84,12 +85,10 @@ class URVideoSession(
             return
         }
 
-        val inputImage = InputImage.fromMediaImage(
-            mediaImage,
-            imageProxy.imageInfo.rotationDegrees
-        )
+        val baseDegrees = imageProxy.imageInfo.rotationDegrees
+        val baseInputImage = InputImage.fromMediaImage(mediaImage, baseDegrees)
 
-        val barcodeTask = scanner.process(inputImage)
+        val barcodeTask = scanner.process(baseInputImage)
             .addOnSuccessListener { barcodes ->
                 val codes = barcodes
                     .filter { it.format == Barcode.FORMAT_QR_CODE }
@@ -104,37 +103,75 @@ class URVideoSession(
 
         val recognizer = textRecognizer
         if (recognizer != null) {
-            val imageWidth = inputImage.width.toFloat()
-            val imageHeight = inputImage.height.toFloat()
+            val allTexts = mutableListOf<URRecognizedText>()
+            val textTasks = textRecognitionRotations.map { extraRotation ->
+                val totalRotation = (baseDegrees + extraRotation) % 360
+                val rotatedInput = InputImage.fromMediaImage(mediaImage, totalRotation)
+                val imageWidth = rotatedInput.width.toFloat()
+                val imageHeight = rotatedInput.height.toFloat()
 
-            val textTask = recognizer.process(inputImage)
-                .addOnSuccessListener { visionText ->
-                    if (visionText.textBlocks.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
-                        val texts = visionText.textBlocks.mapNotNull { block ->
-                            val box = block.boundingBox ?: return@mapNotNull null
-                            URRecognizedText(
-                                text = block.text,
-                                boundingBox = RectF(
+                recognizer.process(rotatedInput)
+                    .addOnSuccessListener { visionText ->
+                        if (visionText.textBlocks.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
+                            val texts = visionText.textBlocks.mapNotNull { block ->
+                                val box = block.boundingBox ?: return@mapNotNull null
+                                val normalizedBox = RectF(
                                     box.left / imageWidth,
                                     box.top / imageHeight,
                                     box.right / imageWidth,
                                     box.bottom / imageHeight
-                                ),
-                                confidence = 1.0f // ML Kit doesn't expose block-level confidence
-                            )
-                        }
-                        if (texts.isNotEmpty()) {
-                            onTextRecognized?.invoke(texts)
+                                )
+                                val displayBox = transformToDisplay(normalizedBox, extraRotation)
+                                URRecognizedText(
+                                    text = block.text,
+                                    boundingBox = displayBox,
+                                    confidence = 1.0f,
+                                    rotation = extraRotation
+                                )
+                            }
+                            synchronized(allTexts) {
+                                allTexts.addAll(texts)
+                            }
                         }
                     }
-                }
+            }
 
-            // Close the proxy only after both tasks complete.
-            Tasks.whenAllComplete(barcodeTask, textTask)
-                .addOnCompleteListener { imageProxy.close() }
+            // Close the proxy only after barcode + all text tasks complete.
+            Tasks.whenAllComplete(listOf(barcodeTask) + textTasks)
+                .addOnCompleteListener {
+                    imageProxy.close()
+                    val snapshot = synchronized(allTexts) { allTexts.toList() }
+                    if (snapshot.isNotEmpty()) {
+                        onTextRecognized?.invoke(snapshot)
+                    }
+                }
         } else {
             // Text recognition not requested — close after barcode completes.
             barcodeTask.addOnCompleteListener { imageProxy.close() }
+        }
+    }
+
+    companion object {
+        /**
+         * Transforms a normalized bounding box from a rotated coordinate space
+         * back to display coordinates.
+         *
+         * ML Kit returns bounding boxes relative to the (rotated) image.
+         * This maps them back so they overlay correctly on the camera preview.
+         */
+        fun transformToDisplay(box: RectF, rotation: Int): RectF {
+            val vx = box.left
+            val vy = box.top
+            val vw = box.right - box.left
+            val vh = box.bottom - box.top
+
+            return when (((rotation % 360) + 360) % 360) {
+                0 -> box
+                90 -> RectF(vy, 1f - vx - vw, vy + vh, 1f - vx)
+                180 -> RectF(1f - vx - vw, 1f - vy - vh, 1f - vx, 1f - vy)
+                270 -> RectF(1f - vy - vh, vx, 1f - vy, vx + vw)
+                else -> box
+            }
         }
     }
 }

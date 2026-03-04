@@ -31,6 +31,14 @@ public final class URVideoSession {
         }
     }
 
+    /// The set of rotation angles (in degrees: 0, 90, 180, 270) at which text
+    /// recognition should be attempted each frame. Defaults to `[0]` (upright only).
+    public var textRecognitionRotations: Set<Int> = [0] {
+        didSet {
+            videoDataDelegate?.textRecognitionRotations = textRecognitionRotations
+        }
+    }
+
     public private(set) var captureDevices: [AVCaptureDevice] = []
     public private(set) var currentCaptureDevice: AVCaptureDevice?
 
@@ -100,6 +108,7 @@ public final class URVideoSession {
             metadataOutput.setMetadataObjectsDelegate(metadataObjectsDelegate, queue: queue)
 
             videoDataDelegate = VideoDataDelegate(videoSession: self)
+            videoDataDelegate.textRecognitionRotations = textRecognitionRotations
             let videoDataOutput = AVCaptureVideoDataOutput()
             videoDataOutput.setSampleBufferDelegate(videoDataDelegate, queue: videoDataQueue)
             videoDataOutput.alwaysDiscardsLateVideoFrames = true
@@ -153,6 +162,7 @@ public final class URVideoSession {
         /// processes one extra frame.
         nonisolated(unsafe) var isEnabled: Bool = false
         nonisolated(unsafe) var imageOrientation: CGImagePropertyOrientation = .right
+        nonisolated(unsafe) var textRecognitionRotations: Set<Int> = [0]
         private var lastProcessTime: CFAbsoluteTime = 0
         /// Process at ~6-7 fps to keep CPU usage low.
         private let minInterval: CFAbsoluteTime = 0.15
@@ -176,40 +186,119 @@ public final class URVideoSession {
 
             guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
-            let request = VNRecognizeTextRequest()
-            request.recognitionLevel = .fast
-            request.usesLanguageCorrection = false
+            var allTexts: [URRecognizedText] = []
 
-            let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: imageOrientation, options: [:])
-            do {
-                try handler.perform([request])
-            } catch {
-                return
+            for extraRotation in textRecognitionRotations {
+                let composedOrientation = Self.composeOrientation(
+                    base: imageOrientation,
+                    extraRotation: extraRotation
+                )
+
+                let request = VNRecognizeTextRequest()
+                request.recognitionLevel = .fast
+                request.usesLanguageCorrection = false
+
+                let handler = VNImageRequestHandler(
+                    cvPixelBuffer: pixelBuffer,
+                    orientation: composedOrientation,
+                    options: [:]
+                )
+                do {
+                    try handler.perform([request])
+                } catch {
+                    continue
+                }
+
+                guard let observations = request.results, !observations.isEmpty else { continue }
+
+                let texts = observations.compactMap { observation -> URRecognizedText? in
+                    guard let candidate = observation.topCandidates(1).first else { return nil }
+                    // Vision uses bottom-left origin; flip to top-left origin.
+                    let visionBox = observation.boundingBox
+                    let flippedBox = CGRect(
+                        x: visionBox.origin.x,
+                        y: 1.0 - visionBox.origin.y - visionBox.height,
+                        width: visionBox.width,
+                        height: visionBox.height
+                    )
+                    let displayBox = Self.transformToDisplay(
+                        box: flippedBox,
+                        rotation: extraRotation
+                    )
+                    return URRecognizedText(
+                        text: candidate.string,
+                        boundingBox: displayBox,
+                        confidence: candidate.confidence,
+                        rotation: extraRotation
+                    )
+                }
+
+                allTexts.append(contentsOf: texts)
             }
 
-            guard let observations = request.results, !observations.isEmpty else { return }
-
-            let texts = observations.compactMap { observation -> URRecognizedText? in
-                guard let candidate = observation.topCandidates(1).first else { return nil }
-                // Vision uses bottom-left origin; flip to top-left origin.
-                let visionBox = observation.boundingBox
-                let flippedBox = CGRect(
-                    x: visionBox.origin.x,
-                    y: 1.0 - visionBox.origin.y - visionBox.height,
-                    width: visionBox.width,
-                    height: visionBox.height
-                )
-                return URRecognizedText(
-                    text: candidate.string,
-                    boundingBox: flippedBox,
-                    confidence: candidate.confidence
-                )
-            }
-
-            guard !texts.isEmpty else { return }
+            guard !allTexts.isEmpty else { return }
             let session = videoSession
             Task { @MainActor in
-                session?.textReceiver?.receiveRecognizedText(texts)
+                session?.textReceiver?.receiveRecognizedText(allTexts)
+            }
+        }
+
+        // MARK: - Orientation Helpers
+
+        /// Maps a `CGImagePropertyOrientation` to degrees (0, 90, 180, 270).
+        private static func orientationToDegrees(_ orientation: CGImagePropertyOrientation) -> Int {
+            switch orientation {
+            case .up:    return 0
+            case .right: return 90
+            case .down:  return 180
+            case .left:  return 270
+            default:     return 0
+            }
+        }
+
+        /// Maps degrees (0, 90, 180, 270) to a `CGImagePropertyOrientation`.
+        private static func degreesToOrientation(_ degrees: Int) -> CGImagePropertyOrientation {
+            switch ((degrees % 360) + 360) % 360 {
+            case 0:   return .up
+            case 90:  return .right
+            case 180: return .down
+            case 270: return .left
+            default:  return .up
+            }
+        }
+
+        /// Composes the base device orientation with an extra rotation (0/90/180/270°).
+        static func composeOrientation(
+            base: CGImagePropertyOrientation,
+            extraRotation: Int
+        ) -> CGImagePropertyOrientation {
+            let baseDegrees = orientationToDegrees(base)
+            let total = (baseDegrees + extraRotation) % 360
+            return degreesToOrientation(total)
+        }
+
+        /// Transforms a normalized bounding box from a rotated coordinate space
+        /// back to display coordinates.
+        ///
+        /// Vision returns bounding boxes relative to the (rotated) image.
+        /// This maps them back so they overlay correctly on the camera preview.
+        static func transformToDisplay(box: CGRect, rotation: Int) -> CGRect {
+            let vx = box.origin.x
+            let vy = box.origin.y
+            let vw = box.width
+            let vh = box.height
+
+            switch ((rotation % 360) + 360) % 360 {
+            case 0:
+                return box
+            case 90:
+                return CGRect(x: vy, y: 1 - vx - vw, width: vh, height: vw)
+            case 180:
+                return CGRect(x: 1 - vx - vw, y: 1 - vy - vh, width: vw, height: vh)
+            case 270:
+                return CGRect(x: 1 - vy - vh, y: vx, width: vh, height: vw)
+            default:
+                return box
             }
         }
     }

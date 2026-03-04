@@ -15,5 +15,8 @@ data class URRecognizedText(
     val boundingBox: RectF,
 
     /** Recognition confidence (0-1). */
-    val confidence: Float
+    val confidence: Float,
+
+    /** The rotation (in degrees, 0/90/180/270) at which the text was detected. */
+    val rotation: Int = 0
 )

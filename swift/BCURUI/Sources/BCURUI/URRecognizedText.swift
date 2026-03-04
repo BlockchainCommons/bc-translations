@@ -14,9 +14,13 @@ public struct URRecognizedText: Sendable {
     /// Recognition confidence (0-1).
     public let confidence: Float
 
-    public init(text: String, boundingBox: CGRect, confidence: Float) {
+    /// The rotation (in degrees, 0/90/180/270) at which the text was detected.
+    public let rotation: Int
+
+    public init(text: String, boundingBox: CGRect, confidence: Float, rotation: Int = 0) {
         self.text = text
         self.boundingBox = boundingBox
         self.confidence = confidence
+        self.rotation = rotation
     }
 }
