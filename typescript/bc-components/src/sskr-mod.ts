@@ -1,6 +1,6 @@
 import type { RandomNumberGenerator } from '@bc/rand';
 import { SecureRandomNumberGenerator } from '@bc/rand';
-import { type Cbor, createTag, toByteString } from '@bc/dcbor';
+import { type Cbor, bytesToHex, createTag, hexToBytes, toByteString } from '@bc/dcbor';
 import {
     TAG_SSKR_SHARE,
     TAG_SSKR_SHARE_V1,
@@ -39,11 +39,11 @@ export class SSKRShare {
     }
 
     static fromHex(hex: string): SSKRShare {
-        return new SSKRShare(Uint8Array.from(Buffer.from(hex, 'hex')));
+        return new SSKRShare(hexToBytes(hex));
     }
 
     hex(): string {
-        return Buffer.from(this.#data).toString('hex');
+        return bytesToHex(this.#data);
     }
 
     identifier(): number {
@@ -51,7 +51,7 @@ export class SSKRShare {
     }
 
     identifierHex(): string {
-        return Buffer.from(this.#data.slice(0, 2)).toString('hex');
+        return bytesToHex(this.#data.slice(0, 2));
     }
 
     groupThreshold(): number {

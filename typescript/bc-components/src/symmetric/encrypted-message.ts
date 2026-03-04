@@ -11,6 +11,7 @@ import type { Tag } from '@bc/dcbor';
 import { decodeTaggedCbor, defaultTaggedCbor, defaultTaggedCborData, fromTaggedUrString, toUrString } from '../cbor-ur.js';
 import { Digest } from '../digest.js';
 import { type DigestProvider } from '../digest-provider.js';
+import { BCComponentsError } from '../error.js';
 import { bytesEqual, hexEncode } from '../utils.js';
 import { AuthenticationTag } from './authentication-tag.js';
 import { Nonce } from '../nonce.js';
@@ -144,7 +145,10 @@ export class EncryptedMessage implements DigestProvider {
     static fromUntaggedCbor(cbor: Cbor): EncryptedMessage {
         const arr = cbor.toArray();
         if (arr.length < 3) {
-            throw new Error('EncryptedMessage must have at least 3 elements');
+            throw BCComponentsError.invalidData(
+                'EncryptedMessage',
+                'must have at least 3 elements',
+            );
         }
         const ciphertext = arr[0]!.toByteString();
         const nonce = Nonce.fromData(arr[1]!.toByteString());

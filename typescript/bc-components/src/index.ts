@@ -38,6 +38,7 @@ export { HKDFParams } from './encrypted-key/hkdf-params.js';
 export { PBKDF2Params } from './encrypted-key/pbkdf2-params.js';
 export { ScryptParams } from './encrypted-key/scrypt-params.js';
 export { Argon2idParams } from './encrypted-key/argon2id-params.js';
+export type { KeyDerivation } from './encrypted-key/key-derivation.js';
 export { KeyDerivationParams } from './encrypted-key/key-derivation-params.js';
 export { EncryptedKey } from './encrypted-key/encrypted-key.js';
 

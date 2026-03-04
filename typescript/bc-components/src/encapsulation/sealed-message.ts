@@ -7,6 +7,7 @@ import { TAG_SEALED_MESSAGE } from '@bc/tags';
 import type { Tag } from '@bc/dcbor';
 
 import { decodeTaggedCbor, defaultTaggedCbor, defaultTaggedCborData } from '../cbor-ur.js';
+import { BCComponentsError } from '../error.js';
 import type { Decrypter, Encrypter } from '../encrypter.js';
 import { EncryptedMessage } from '../symmetric/encrypted-message.js';
 import { Nonce } from '../nonce.js';
@@ -87,7 +88,10 @@ export class SealedMessage {
     static fromUntaggedCbor(cbor: Cbor): SealedMessage {
         const elements = cbor.toArray();
         if (elements.length !== 2) {
-            throw new Error('SealedMessage must have two elements');
+            throw BCComponentsError.invalidData(
+                'SealedMessage',
+                'must have two elements',
+            );
         }
         const message = EncryptedMessage.fromCbor(elements[0]!);
         const key = EncapsulationCiphertext.fromCbor(elements[1]!);

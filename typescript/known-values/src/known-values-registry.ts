@@ -7,7 +7,7 @@
 
 import { KnownValue } from './known-value.js';
 import { KnownValuesStore } from './known-values-store.js';
-import { lockConfig } from './config-state.js';
+import { getAndLockConfig, loadFromConfig } from './directory-loader.js';
 
 // ---------------------------------------------------------------------------
 // Helper to define a known value constant pair
@@ -593,12 +593,18 @@ let _knownValues: KnownValuesStore | undefined;
  * Gets the global KnownValuesStore, initializing it if necessary.
  *
  * On first access, the store is initialized with 102 hardcoded known values
- * and the configuration is locked.
+ * and then merged with any directory-loaded overrides from the configured
+ * search paths. Configuration is locked once initialization begins.
  */
 function initKnownValues(): KnownValuesStore {
     if (_knownValues === undefined) {
-        _knownValues = new KnownValuesStore(INITIAL_KNOWN_VALUES);
-        lockConfig();
+        const store = new KnownValuesStore(INITIAL_KNOWN_VALUES);
+        const config = getAndLockConfig();
+        const result = loadFromConfig(config);
+        for (const value of result.values.values()) {
+            store.insert(value);
+        }
+        _knownValues = store;
     }
     return _knownValues;
 }

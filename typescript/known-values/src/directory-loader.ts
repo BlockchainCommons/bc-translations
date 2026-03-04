@@ -11,7 +11,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 
 import { KnownValue } from './known-value.js';
-import { isConfigLocked } from './config-state.js';
+import { isConfigLocked, lockConfig } from './config-state.js';
 
 // ---------------------------------------------------------------------------
 // Registry JSON types
@@ -290,4 +290,17 @@ export function addSearchPaths(paths: string[]): void {
     for (const p of paths) {
         _customConfig.addPath(p);
     }
+}
+
+/**
+ * Gets the current directory configuration, locking it for future
+ * modifications.
+ *
+ * This is called internally during KNOWN_VALUES initialization.
+ */
+export function getAndLockConfig(): DirectoryConfig {
+    lockConfig();
+    const config = _customConfig;
+    _customConfig = undefined;
+    return config ?? DirectoryConfig.defaultOnly();
 }

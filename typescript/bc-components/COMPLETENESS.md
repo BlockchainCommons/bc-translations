@@ -41,6 +41,8 @@
 - [x] tests/symmetric.test.ts — symmetric tests
 - [x] tests/private-keys.test.ts — private key collection tests
 - [x] tests/public-keys.test.ts — public key collection tests
+- [x] tests/private-key-base.test.ts — private key base tests
+- [x] tests/key-containers.test.ts — key container roundtrip tests
 - [x] tests/encrypted-key.test.ts — encrypted key tests
 - [x] tests/encapsulation.test.ts — encapsulation tests
 - [x] tests/id-xid.test.ts — XID tests

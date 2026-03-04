@@ -50,7 +50,7 @@ export class JSON {
         return this.#data.length === 0;
     }
 
-    get hex(): string {
+    hex(): string {
         return hexEncode(this.#data);
     }
 

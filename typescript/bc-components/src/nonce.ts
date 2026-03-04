@@ -23,10 +23,6 @@ export class Nonce {
         this.#data = requireLength(data, Nonce.NONCE_SIZE, 'Nonce');
     }
 
-    static get nonceSize(): number {
-        return Nonce.NONCE_SIZE;
-    }
-
     static new(): Nonce {
         return new Nonce();
     }

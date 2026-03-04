@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { bytesToHex } from '@bc/dcbor';
 
 import {
     EncapsulationScheme,
@@ -16,7 +17,7 @@ describe('Encapsulation and SealedMessage', () => {
 
         const sealed = SealedMessage.new(plaintext, bobPublic);
 
-        expectBytes(sealed.decrypt(bobPrivate), Buffer.from(plaintext).toString('hex'));
+        expectBytes(sealed.decrypt(bobPrivate), bytesToHex(plaintext));
         expect(() => sealed.decrypt(alicePrivate)).toThrow();
         expect(() => sealed.decrypt(carolPrivate)).toThrow();
     });
@@ -30,7 +31,7 @@ describe('Encapsulation and SealedMessage', () => {
 
         const sealed = SealedMessage.new(plaintext, bobPublic);
 
-        expectBytes(sealed.decrypt(bobPrivate), Buffer.from(plaintext).toString('hex'));
+        expectBytes(sealed.decrypt(bobPrivate), bytesToHex(plaintext));
         expect(() => sealed.decrypt(alicePrivate)).toThrow();
         expect(() => sealed.decrypt(carolPrivate)).toThrow();
     });

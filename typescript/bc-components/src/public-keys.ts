@@ -43,10 +43,6 @@ export class PublicKeys implements Verifier, Encrypter, ReferenceProvider {
         return this.#signingPublicKey;
     }
 
-    enapsulationPublicKey(): EncapsulationPublicKey {
-        return this.#encapsulationPublicKey;
-    }
-
     verify(signature: Signature, message: Uint8Array): boolean {
         return this.#signingPublicKey.verify(signature, message);
     }

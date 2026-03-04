@@ -44,10 +44,6 @@ export class PrivateKeys implements Signer, Decrypter, ReferenceProvider {
         return this.#signingPrivateKey;
     }
 
-    enapsulationPrivateKey(): EncapsulationPrivateKey {
-        return this.#encapsulationPrivateKey;
-    }
-
     publicKeys(): Result<PublicKeys> {
         return PublicKeys.new(
             this.#signingPrivateKey.publicKey(),

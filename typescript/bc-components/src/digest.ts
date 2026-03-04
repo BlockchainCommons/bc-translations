@@ -31,10 +31,6 @@ export class Digest {
         this.#data = requireLength(data, Digest.DIGEST_SIZE, 'Digest');
     }
 
-    static get digestSize(): number {
-        return Digest.DIGEST_SIZE;
-    }
-
     static fromData(data: Uint8Array): Digest {
         return new Digest(new Uint8Array(data));
     }
@@ -78,7 +74,7 @@ export class Digest {
         return this.data;
     }
 
-    get hex(): string {
+    hex(): string {
         return hexEncode(this.#data);
     }
 
@@ -115,7 +111,7 @@ export class Digest {
     }
 
     toString(): string {
-        return `Digest(${this.shortDescription})`;
+        return `Digest(${this.hex()})`;
     }
 
     static cborTags(): Tag[] {

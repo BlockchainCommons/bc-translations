@@ -39,3 +39,30 @@ STARTED
 COMPLETED
 - Applied fluency/correctness cleanup (notably AAD CBOR decode behavior in `EncryptedMessage`) and aligned diagnostics/UR interfaces for idiomatic TS usage.
 - Re-ran verification after critique changes: `npm run build` and `npm test` pass (32/32 tests).
+
+## 2026-03-03 — Stage 3: Check (Cross-Model)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translation by GPT Codex).
+
+## 2026-03-03 — Stage 3: Check (Cross-Model)
+COMPLETED
+- Verified all manifest-listed types, functions, constants present and exported.
+- Found missing `KeyDerivation` interface export from index.ts.
+- All 32 tests pass.
+- API coverage: complete.
+
+## 2026-03-03 — Stage 4: Critique (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6.
+
+## 2026-03-03 — Stage 4: Critique (Cross-Model)
+COMPLETED
+- 10 issues found, 10 fixed:
+  - Removed duplicate `enapsulationPrivateKey()` typo methods from PrivateKeys and PublicKeys (left correct `encapsulationPrivateKey()`/`encapsulationPublicKey()` methods).
+  - Replaced `Buffer.from` usage with `@bc/dcbor` hex utilities in SSKRShare, test helpers, and test files.
+  - Replaced bare `Error` with `BCComponentsError` in EncryptedMessage and SealedMessage CBOR decoders.
+  - Fixed `Digest.toString()` to use full hex (matching Rust `Display` impl).
+  - Unified `hex` as method (not getter) on Digest and JSON for consistency with package pattern.
+  - Removed redundant static getter aliases (`digestSize`, `nonceSize`).
+  - Added missing `KeyDerivation` type export to index.ts.
+- Final verification: `npm run build` and `npm test` pass (32/32 tests).

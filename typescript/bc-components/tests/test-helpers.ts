@@ -1,7 +1,8 @@
 import { expect } from 'vitest';
+import { bytesToHex, hexToBytes as dcborHexToBytes } from '@bc/dcbor';
 
 export function hexToBytes(hex: string): Uint8Array {
-    return Uint8Array.from(Buffer.from(hex, 'hex'));
+    return dcborHexToBytes(hex);
 }
 
 export function utf8(value: string): Uint8Array {
@@ -9,5 +10,5 @@ export function utf8(value: string): Uint8Array {
 }
 
 export function expectBytes(actual: Uint8Array, expectedHex: string): void {
-    expect(Buffer.from(actual).toString('hex')).toBe(expectedHex.toLowerCase());
+    expect(bytesToHex(actual)).toBe(expectedHex.toLowerCase());
 }

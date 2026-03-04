@@ -6,7 +6,7 @@ describe('JSON', () => {
     test('string and hex conversion', () => {
         const json = BCJSON.fromString('{"k":"v"}');
         expect(json.stringValue).toBe('{"k":"v"}');
-        expect(BCJSON.fromHex(json.hex).equals(json)).toBe(true);
+        expect(BCJSON.fromHex(json.hex()).equals(json)).toBe(true);
     });
 
     test('cbor roundtrip', () => {

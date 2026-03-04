@@ -7,6 +7,7 @@ import {
     XID,
     registerTags,
 } from '../src/index.js';
+import { bytesToHex } from '@bc/dcbor';
 import { hexToBytes } from './test-helpers.js';
 
 describe('XID', () => {
@@ -43,10 +44,10 @@ describe('XID', () => {
         const digest = Digest.fromImage(keyCborData);
         const xid = XID.new(publicKey);
 
-        expect(Buffer.from(digest.data).toString('hex')).toBe(
+        expect(bytesToHex(digest.data)).toBe(
             'd40e0602674df1b732f5e025d04c45f2e74ed1652c5ae1740f6a5502dbbdcd47',
         );
-        expect(Buffer.from(xid.data).toString('hex')).toBe(
+        expect(bytesToHex(xid.data)).toBe(
             'd40e0602674df1b732f5e025d04c45f2e74ed1652c5ae1740f6a5502dbbdcd47',
         );
         expect(xid.validate(publicKey)).toBe(true);
