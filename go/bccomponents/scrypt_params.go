@@ -44,6 +44,9 @@ func (p *ScryptParams) R() uint32 { return p.r }
 // P returns the parallelism parameter.
 func (p *ScryptParams) P() uint32 { return p.p }
 
+// Method returns the key derivation method discriminator.
+func (sp *ScryptParams) Method() KeyDerivationMethod { return KDMethodScrypt }
+
 // Lock derives a key from the secret, then encrypts contentKey.
 func (sp *ScryptParams) Lock(contentKey SymmetricKey, secret []byte) (EncryptedMessage, error) {
 	derivedKeyData := bccrypto.ScryptWithParams(secret, sp.salt.Bytes(), SymmetricKeySize, sp.logN, sp.r, sp.p)

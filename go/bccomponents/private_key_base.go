@@ -121,6 +121,16 @@ func (k *PrivateKeyBase) ECDSAPublicKeys() PublicKeys {
 	return k.ECDSAPrivateKeys().PublicKeys()
 }
 
+// PrivateKeys returns the default private key bundle (Schnorr + X25519).
+func (k *PrivateKeyBase) PrivateKeys() PrivateKeys {
+	return k.SchnorrPrivateKeys()
+}
+
+// PublicKeys returns the default public key bundle (Schnorr + X25519).
+func (k *PrivateKeyBase) PublicKeys() PublicKeys {
+	return k.SchnorrPublicKeys()
+}
+
 // String returns a human-readable representation.
 func (k *PrivateKeyBase) String() string {
 	ref := ReferenceForCBORTaggedEncodable(k)
@@ -146,7 +156,7 @@ func PrivateKeyBaseCBORTags() []dcbor.Tag {
 	return dcbor.TagsForValues([]dcbor.TagValue{bctags.TagPrivateKeyBase})
 }
 
-func (k *PrivateKeyBase) CBORTags() []dcbor.Tag   { return PrivateKeyBaseCBORTags() }
+func (k *PrivateKeyBase) CBORTags() []dcbor.Tag    { return PrivateKeyBaseCBORTags() }
 func (k *PrivateKeyBase) UntaggedCBOR() dcbor.CBOR { return dcbor.ToByteString(k.data) }
 
 func (k *PrivateKeyBase) TaggedCBOR() dcbor.CBOR {

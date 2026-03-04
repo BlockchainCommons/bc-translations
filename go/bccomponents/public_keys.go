@@ -10,7 +10,7 @@ import (
 
 // PublicKeys bundles a signing public key and an encapsulation public key.
 type PublicKeys struct {
-	signing      SigningPublicKey
+	signing       SigningPublicKey
 	encapsulation EncapsulationPublicKey
 }
 
@@ -34,6 +34,9 @@ func (k PublicKeys) Verify(sig Signature, message []byte) bool {
 func (k PublicKeys) EncapsulateNewSharedSecret() (SymmetricKey, EncapsulationCiphertext, error) {
 	return k.encapsulation.EncapsulateNewSharedSecret()
 }
+
+// PublicKeys returns the complete public key bundle.
+func (k PublicKeys) PublicKeys() PublicKeys { return k }
 
 // String returns a human-readable representation.
 func (k PublicKeys) String() string {

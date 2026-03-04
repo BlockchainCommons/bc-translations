@@ -49,6 +49,9 @@ func (k ECPublicKey) UncompressedPublicKey() ECUncompressedPublicKey {
 	return ECUncompressedPublicKey{data: uncompressed}
 }
 
+// PublicKey returns the compressed public key.
+func (k ECPublicKey) PublicKey() ECPublicKey { return k }
+
 // Verify verifies an ECDSA signature over a message.
 func (k ECPublicKey) Verify(signature [bccrypto.ECDSASignatureSize]byte, message []byte) bool {
 	return bccrypto.ECDSAVerify(k.data, signature, message)
@@ -150,6 +153,16 @@ func (k ECUncompressedPublicKey) Hex() string { return hex.EncodeToString(k.data
 func (k ECUncompressedPublicKey) CompressedPublicKey() ECPublicKey {
 	compressed := bccrypto.ECDSACompressPublicKey(k.data)
 	return ECPublicKey{data: compressed}
+}
+
+// PublicKey returns the compressed 33-byte public key.
+func (k ECUncompressedPublicKey) PublicKey() ECPublicKey {
+	return k.CompressedPublicKey()
+}
+
+// UncompressedPublicKey returns the uncompressed public key.
+func (k ECUncompressedPublicKey) UncompressedPublicKey() ECUncompressedPublicKey {
+	return k
 }
 
 // String returns a human-readable representation.

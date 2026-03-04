@@ -10,7 +10,7 @@ import (
 
 // PrivateKeys bundles a signing private key and an encapsulation private key.
 type PrivateKeys struct {
-	signing      SigningPrivateKey
+	signing       SigningPrivateKey
 	encapsulation EncapsulationPrivateKey
 }
 
@@ -46,6 +46,9 @@ func (k PrivateKeys) SignWithOptions(message []byte, options *SigningOptions) (S
 func (k PrivateKeys) DecapsulateSharedSecret(ct EncapsulationCiphertext) (SymmetricKey, error) {
 	return k.encapsulation.DecapsulateSharedSecret(ct)
 }
+
+// PrivateKeys returns the complete private key bundle.
+func (k PrivateKeys) PrivateKeys() PrivateKeys { return k }
 
 // String returns a human-readable representation.
 func (k PrivateKeys) String() string {

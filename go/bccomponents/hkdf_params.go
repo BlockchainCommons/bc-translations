@@ -35,6 +35,9 @@ func (p *HKDFParams) Salt() Salt { return p.salt }
 // HashType returns the hash type.
 func (p *HKDFParams) HashType() HashType { return p.hashType }
 
+// Method returns the key derivation method discriminator.
+func (p *HKDFParams) Method() KeyDerivationMethod { return KDMethodHKDF }
+
 // Lock derives a key from the secret, then encrypts contentKey using that
 // derived key. The CBOR encoding of the params is used as AAD.
 func (p *HKDFParams) Lock(contentKey SymmetricKey, secret []byte) (EncryptedMessage, error) {

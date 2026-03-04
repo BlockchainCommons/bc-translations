@@ -16,6 +16,7 @@ type (
 	SSKRSpec      = sskr.Spec
 	SSKRGroupSpec = sskr.GroupSpec
 	SSKRSecret    = sskr.Secret
+	SSKRError     = error
 )
 
 // SSKRShare is a share of a secret split using Sharded Secret Key

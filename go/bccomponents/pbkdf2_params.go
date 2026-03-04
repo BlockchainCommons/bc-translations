@@ -38,6 +38,9 @@ func (p *PBKDF2Params) Iterations() uint32 { return p.iterations }
 // HashType returns the hash type.
 func (p *PBKDF2Params) HashType() HashType { return p.hashType }
 
+// Method returns the key derivation method discriminator.
+func (p *PBKDF2Params) Method() KeyDerivationMethod { return KDMethodPBKDF2 }
+
 // Lock derives a key from the secret, then encrypts contentKey.
 func (p *PBKDF2Params) Lock(contentKey SymmetricKey, secret []byte) (EncryptedMessage, error) {
 	derivedKeyData := p.deriveKey(secret)

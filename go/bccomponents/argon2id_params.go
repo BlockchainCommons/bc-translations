@@ -26,6 +26,9 @@ func NewArgon2idParamsOpt(salt Salt) Argon2idParams {
 // Salt returns the salt.
 func (p *Argon2idParams) Salt() Salt { return p.salt }
 
+// Method returns the key derivation method discriminator.
+func (p *Argon2idParams) Method() KeyDerivationMethod { return KDMethodArgon2id }
+
 // Lock derives a key from the secret, then encrypts contentKey.
 func (p *Argon2idParams) Lock(contentKey SymmetricKey, secret []byte) (EncryptedMessage, error) {
 	derivedKeyData := bccrypto.Argon2ID(secret, p.salt.Bytes(), SymmetricKeySize)

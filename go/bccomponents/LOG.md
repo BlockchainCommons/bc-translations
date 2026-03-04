@@ -66,3 +66,30 @@ COMPLETED
 - Root LOG.md: Translation + Fluency rows appended
 - COMPLETENESS.md: created with all items checked
 - FLUENCY_NEEDED.md: refreshed via update script
+
+## 2026-03-04 — Stage 3: Check Completeness
+STARTED
+- Cross-model completeness pass (GPT Codex) for `go/bccomponents`
+- Restoring missing `MANIFEST.md` and re-validating API/tests against Rust `bc-components` 0.31.1
+
+## 2026-03-04 — Stage 3: Check Completeness
+COMPLETED
+- API coverage: 100% against `go/bccomponents/MANIFEST.md` and Rust `lib.rs` public exports
+- Test coverage: 30/30 translated Go tests passing (`go test ./...`)
+- Signature/protocol parity fixes applied: `KeyDerivation`, `PrivateKeysProvider`, `PublicKeysProvider`, `ECKey*` interfaces, `SSKRError` alias
+- Documentation coverage: package/module docs present; exported API docs retained for primary surface
+- Verdict: COMPLETE
+
+## 2026-03-04 — Stage 4: Critique (Fluency Review)
+STARTED
+- Cross-model fluency pass (GPT Codex) on `go/bccomponents` using Go idiom checklist
+- Reviewing naming, interface design, and API naturalness after Stage 3 parity fixes
+
+## 2026-03-04 — Stage 4: Critique (Fluency Review)
+COMPLETED
+- Issues found: 0 additional fluency issues after Stage 3 API parity updates
+- Issues fixed: 0 (no further fluency-only changes required)
+- Blocked by completeness gaps: 0
+- Final API parity refinement: `ECUncompressedPublicKey` now also satisfies `ECPublicKeyBase`
+- Verification: `go test -count=1 ./...` passed; `go vet ./...` passed
+- Final fluency verdict: IDIOMATIC

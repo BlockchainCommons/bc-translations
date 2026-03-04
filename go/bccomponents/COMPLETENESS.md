@@ -77,3 +77,12 @@
 - [x] go.mod
 - [x] go.sum
 - [x] .gitignore
+- [x] MANIFEST.md
+
+## Cross-Check API Parity (Stage 3)
+- [x] `KeyDerivation` interface exposed and implemented by HKDF/PBKDF2/Scrypt/Argon2id params
+- [x] `PrivateKeysProvider` and `PublicKeysProvider` interfaces exposed
+- [x] `PrivateKeyBase` implements provider interfaces with default Schnorr + X25519 semantics
+- [x] `PrivateKeys` and `PublicKeys` implement provider interfaces
+- [x] `ECKeyBase`, `ECKey`, and `ECPublicKeyBase` interfaces exposed with concrete implementations
+- [x] `SSKRError` alias exposed for SSKR domain parity

@@ -66,6 +66,11 @@ func (k ECPrivateKey) ECDSAPublicKey() ECPublicKey {
 	return ECPublicKey{data: pub}
 }
 
+// PublicKey returns the corresponding compressed ECDSA public key.
+func (k ECPrivateKey) PublicKey() ECPublicKey {
+	return k.ECDSAPublicKey()
+}
+
 // SchnorrPublicKey derives the corresponding x-only Schnorr public key.
 func (k ECPrivateKey) SchnorrPublicKey() SchnorrPublicKey {
 	pub := bccrypto.SchnorrPublicKeyFromPrivateKey(k.data)
