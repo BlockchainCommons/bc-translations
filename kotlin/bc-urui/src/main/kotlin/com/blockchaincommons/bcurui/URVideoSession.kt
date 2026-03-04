@@ -36,6 +36,13 @@ class URVideoSession(
 ) {
     private val executor = Executors.newSingleThreadExecutor()
     private val scanner = BarcodeScanning.getClient()
+
+    /// The aspect ratio (width / height) of the camera image in the current
+    /// device orientation. Used by overlays to correct for resizeAspectFill crop.
+    @Volatile
+    var orientedImageAspectRatio: Float = 1.0f
+        private set
+
     private val textRecognizer: TextRecognizer? =
         if (onTextRecognized != null) TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         else null
@@ -101,6 +108,14 @@ class URVideoSession(
         }
 
         val baseDegrees = imageProxy.imageInfo.rotationDegrees
+
+        // Update oriented aspect ratio for overlay crop correction.
+        orientedImageAspectRatio = if (baseDegrees == 90 || baseDegrees == 270) {
+            imageProxy.height.toFloat() / imageProxy.width.toFloat()
+        } else {
+            imageProxy.width.toFloat() / imageProxy.height.toFloat()
+        }
+
         val baseInputImage = InputImage.fromMediaImage(mediaImage, baseDegrees)
 
         val barcodeTask = scanner.process(baseInputImage)

@@ -39,6 +39,10 @@ public final class URVideoSession {
         }
     }
 
+    /// The aspect ratio (width / height) of the camera image in the current
+    /// device orientation. Used by overlays to correct for `resizeAspectFill` crop.
+    public private(set) var orientedImageAspectRatio: CGFloat = 1.0
+
     public private(set) var captureDevices: [AVCaptureDevice] = []
     public private(set) var currentCaptureDevice: AVCaptureDevice?
 
@@ -63,6 +67,7 @@ public final class URVideoSession {
             captureSession.commitConfiguration()
             currentCaptureDevice = newDevice
             Self.configureAutofocus(for: newDevice)
+            updateOrientedAspectRatio()
         } catch {
             logger.error("⛔️ \(error.localizedDescription)")
         }
@@ -118,6 +123,7 @@ public final class URVideoSession {
 
             videoDataDelegate = VideoDataDelegate(videoSession: self)
             videoDataDelegate.textRecognitionRotations = textRecognitionRotations
+            updateOrientedAspectRatio()
             let videoDataOutput = AVCaptureVideoDataOutput()
             videoDataOutput.setSampleBufferDelegate(videoDataDelegate, queue: videoDataQueue)
             videoDataOutput.alwaysDiscardsLateVideoFrames = true
@@ -172,6 +178,22 @@ public final class URVideoSession {
 
     func updateTextRecognitionOrientation(_ orientation: CGImagePropertyOrientation) {
         videoDataDelegate?.imageOrientation = orientation
+        updateOrientedAspectRatio()
+    }
+
+    private func updateOrientedAspectRatio() {
+        guard let device = currentCaptureDevice else { return }
+        let dims = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription)
+        let sensorW = CGFloat(dims.width)
+        let sensorH = CGFloat(dims.height)
+        // Sensor dimensions are landscape. For portrait orientations, swap.
+        let orientation = videoDataDelegate?.imageOrientation ?? .right
+        switch orientation {
+        case .left, .right, .leftMirrored, .rightMirrored:
+            orientedImageAspectRatio = sensorH / sensorW
+        default:
+            orientedImageAspectRatio = sensorW / sensorH
+        }
     }
 
     fileprivate func deliverCodes(_ codes: Swift.Set<String>) {
