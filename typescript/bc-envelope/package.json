@@ -1,0 +1,36 @@
+{
+  "name": "@bc/envelope",
+  "version": "0.43.0",
+  "description": "Gordian Envelope for TypeScript.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bc/components": "file:../bc-components",
+    "@bc/crypto": "file:../bc-crypto",
+    "@bc/dcbor": "file:../dcbor",
+    "@bc/known-values": "file:../known-values",
+    "@bc/rand": "file:../bc-rand",
+    "@bc/tags": "file:../bc-tags",
+    "@bc/ur": "file:../bc-ur",
+    "@bc/sskr": "file:../sskr"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
