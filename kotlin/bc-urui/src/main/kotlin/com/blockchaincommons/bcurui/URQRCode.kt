@@ -25,7 +25,7 @@ fun URQRCode(
     val bitmap = remember(data, foregroundColor, backgroundColor, logo) {
         makeQRCodeBitmap(
             message = data,
-            correctionLevel = if (logo != null) QRCorrectionLevel.Quartile else QRCorrectionLevel.Low,
+            correctionLevel = if (logo != null) QRCorrectionLevel.High else QRCorrectionLevel.Low,
             foregroundColor = foregroundColor.toArgb(),
             backgroundColor = backgroundColor.toArgb(),
             logo = logo
