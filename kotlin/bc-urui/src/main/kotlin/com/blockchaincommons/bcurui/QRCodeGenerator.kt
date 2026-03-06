@@ -18,6 +18,7 @@ import kotlin.math.roundToInt
  *
  * @param maxModules If non-null, throws [QRGenerationException.QRCodeTooDense] when the
  *   QR code exceeds this module count.
+ * @param quietZone Number of background-colored modules around the QR data area (default 1).
  */
 fun makeQRCodeBitmap(
     message: ByteArray,
@@ -26,7 +27,8 @@ fun makeQRCodeBitmap(
     foregroundColor: Int = Color.BLACK,
     backgroundColor: Int = Color.TRANSPARENT,
     logo: QRLogo? = null,
-    maxModules: Int? = null
+    maxModules: Int? = null,
+    quietZone: Int = 1
 ): Bitmap {
     val effectiveCorrection = if (logo != null) QRCorrectionLevel.High else correctionLevel
 
@@ -50,26 +52,36 @@ fun makeQRCodeBitmap(
         checkQRDensity(moduleCount, maxModules)
     }
 
-    // Calculate module-aligned compositing size when logo is present
-    val compositingSize = if (logo != null) {
-        val pixelsPerModule = max(1, size / moduleCount)
-        moduleCount * pixelsPerModule
-    } else {
-        size
-    }
+    // Calculate module-aligned compositing size including quiet zone
+    val totalModules = moduleCount + 2 * quietZone
+    val pixelsPerModule = max(1, size / totalModules)
+    val compositingSize = totalModules * pixelsPerModule
+    val qzPx = quietZone * pixelsPerModule
 
+    // Render QR modules at exactly moduleCount pixels (no margin from ZXing)
+    val qrSize = moduleCount * pixelsPerModule
     val matrix = QRCodeWriter().encode(
         String(message, Charsets.UTF_8),
         BarcodeFormat.QR_CODE,
-        compositingSize,
-        compositingSize,
+        qrSize,
+        qrSize,
         hints
     )
 
-    val bitmap = Bitmap.createBitmap(matrix.width, matrix.height, Bitmap.Config.ARGB_8888)
+    // Create bitmap at compositing size and fill with background
+    val bitmap = Bitmap.createBitmap(compositingSize, compositingSize, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val bgPaint = Paint().apply { color = backgroundColor; style = Paint.Style.FILL }
+    canvas.drawRect(0f, 0f, compositingSize.toFloat(), compositingSize.toFloat(), bgPaint)
+
+    // Draw QR modules offset by quiet zone
     for (x in 0 until matrix.width) {
         for (y in 0 until matrix.height) {
-            bitmap.setPixel(x, y, if (matrix.get(x, y)) foregroundColor else backgroundColor)
+            if (matrix.get(x, y)) {
+                val px = qzPx + x
+                val py = qzPx + y
+                bitmap.setPixel(px, py, foregroundColor)
+            }
         }
     }
 
@@ -91,10 +103,7 @@ fun makeQRCodeBitmap(
         }
     }
 
-    val pixelsPerModule = max(1, compositingSize / moduleCount)
-    val canvas = Canvas(bitmap)
-
-    // 1. Clear center area
+    // 1. Clear center area (within the QR data area, offset by quiet zone)
     val clearColor = if (Color.alpha(backgroundColor) < 3) Color.WHITE else backgroundColor
     val clearPaint = Paint().apply { color = clearColor; style = Paint.Style.FILL }
     val centerModule = moduleCount / 2.0f
@@ -102,7 +111,7 @@ fun makeQRCodeBitmap(
     when (logo.clearShape) {
         QRLogoClearShape.Square -> {
             val clearPixels = layout.clearedModules * pixelsPerModule
-            val clearOrigin = (compositingSize - clearPixels) / 2
+            val clearOrigin = qzPx + (qrSize - clearPixels) / 2
             canvas.drawRect(
                 clearOrigin.toFloat(),
                 clearOrigin.toFloat(),
@@ -121,8 +130,8 @@ fun makeQRCodeBitmap(
                     val dx = mx - centerModule
                     val dy = my - centerModule
                     if (dx * dx + dy * dy <= radius * radius) {
-                        val px = (startModule + col) * pixelsPerModule
-                        val py = (startModule + row) * pixelsPerModule
+                        val px = qzPx + (startModule + col) * pixelsPerModule
+                        val py = qzPx + (startModule + row) * pixelsPerModule
                         canvas.drawRect(
                             px.toFloat(),
                             py.toFloat(),
@@ -136,9 +145,9 @@ fun makeQRCodeBitmap(
         }
     }
 
-    // 2. Draw logo centered within the cleared area
+    // 2. Draw logo centered within the QR data area
     val logoPixels = layout.logoModules * pixelsPerModule
-    val logoOrigin = (compositingSize - logoPixels) / 2
+    val logoOrigin = qzPx + (qrSize - logoPixels) / 2
     val logoSrc = Rect(0, 0, logo.bitmap.width, logo.bitmap.height)
     val logoDst = Rect(logoOrigin, logoOrigin, logoOrigin + logoPixels, logoOrigin + logoPixels)
     val logoPaint = Paint().apply { isFilterBitmap = true }

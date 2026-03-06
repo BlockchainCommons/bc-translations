@@ -19,6 +19,8 @@ export interface QRCodeResult {
   readonly backgroundColor: string;
   /** Logo overlay info, if a logo was provided and large enough to render. */
   readonly logo?: QRCodeLogoInfo;
+  /** Number of background-colored quiet zone modules on each side. */
+  readonly quietZone: number;
 }
 
 /** Metadata for rendering a logo overlay on a QR code. */
@@ -40,6 +42,8 @@ export interface MakeQRCodeOptions {
   backgroundColor?: string;
   logo?: QRLogo;
   maxModules?: number;
+  /** Number of background-colored modules around the QR data area (default 1). */
+  quietZone?: number;
 }
 
 /**
@@ -93,6 +97,7 @@ export function makeQRCode(
     backgroundColor = "transparent",
     logo,
     maxModules,
+    quietZone = 1,
   } = options;
 
   const effectiveCorrection = logo ? QRCorrectionLevel.High : correctionLevel;
@@ -138,6 +143,7 @@ export function makeQRCode(
     foregroundColor,
     backgroundColor,
     logo: logoInfo,
+    quietZone,
   };
 }
 
@@ -156,10 +162,12 @@ export async function renderToCanvas(
   ctx: CanvasRenderingContext2D,
   size: number,
 ): Promise<void> {
-  const { modules, moduleCount, foregroundColor, backgroundColor, logo } = result;
-  const pixelsPerModule = size / moduleCount;
+  const { modules, moduleCount, foregroundColor, backgroundColor, logo, quietZone } = result;
+  const totalModules = moduleCount + 2 * quietZone;
+  const pixelsPerModule = size / totalModules;
+  const qzPx = quietZone * pixelsPerModule;
 
-  // Fill background
+  // Fill background (covers quiet zone and QR area)
   if (backgroundColor !== "transparent") {
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, size, size);
@@ -167,30 +175,31 @@ export async function renderToCanvas(
     ctx.clearRect(0, 0, size, size);
   }
 
-  // Draw QR modules — snap to integer pixel boundaries to avoid sub-pixel gaps
+  // Draw QR modules — offset by quiet zone, snap to integer pixel boundaries
   ctx.fillStyle = foregroundColor;
   for (let row = 0; row < moduleCount; row++) {
     for (let col = 0; col < moduleCount; col++) {
       if (modules[row]?.[col]) {
-        const x = Math.floor(col * pixelsPerModule);
-        const y = Math.floor(row * pixelsPerModule);
-        const w = Math.floor((col + 1) * pixelsPerModule) - x;
-        const h = Math.floor((row + 1) * pixelsPerModule) - y;
+        const x = Math.floor(qzPx + col * pixelsPerModule);
+        const y = Math.floor(qzPx + row * pixelsPerModule);
+        const w = Math.floor(qzPx + (col + 1) * pixelsPerModule) - x;
+        const h = Math.floor(qzPx + (row + 1) * pixelsPerModule) - y;
         ctx.fillRect(x, y, w, h);
       }
     }
   }
 
-  // Draw logo overlay if present
+  // Draw logo overlay if present (centered within the QR data area)
   if (logo) {
     const clearColor = backgroundColor === "transparent" ? "#ffffff" : backgroundColor;
     const centerModule = moduleCount / 2;
+    const qrPixels = moduleCount * pixelsPerModule;
 
     // Clear center area — snap to integer pixels
     ctx.fillStyle = clearColor;
     if (logo.clearShape === QRLogoClearShape.Square) {
       const clearPixels = logo.clearedModules * pixelsPerModule;
-      const clearOrigin = Math.floor((size - clearPixels) / 2);
+      const clearOrigin = Math.floor(qzPx + (qrPixels - clearPixels) / 2);
       const clearSize = Math.ceil(clearPixels);
       ctx.fillRect(clearOrigin, clearOrigin, clearSize, clearSize);
     } else {
@@ -204,19 +213,19 @@ export async function renderToCanvas(
           const dx = mx - centerModule;
           const dy = my - centerModule;
           if (dx * dx + dy * dy <= radius * radius) {
-            const x = Math.floor((startModule + col) * pixelsPerModule);
-            const y = Math.floor((startModule + row) * pixelsPerModule);
-            const w = Math.floor((startModule + col + 1) * pixelsPerModule) - x;
-            const h = Math.floor((startModule + row + 1) * pixelsPerModule) - y;
+            const x = Math.floor(qzPx + (startModule + col) * pixelsPerModule);
+            const y = Math.floor(qzPx + (startModule + row) * pixelsPerModule);
+            const w = Math.floor(qzPx + (startModule + col + 1) * pixelsPerModule) - x;
+            const h = Math.floor(qzPx + (startModule + row + 1) * pixelsPerModule) - y;
             ctx.fillRect(x, y, w, h);
           }
         }
       }
     }
 
-    // Draw logo image centered in the cleared area
+    // Draw logo image centered within the QR data area
     const logoPixels = logo.logoModules * pixelsPerModule;
-    const logoOrigin = (size - logoPixels) / 2;
+    const logoOrigin = qzPx + (qrPixels - logoPixels) / 2;
 
     if (QRLogo.isSVG(logo.source)) {
       await drawLogoSVG(ctx, logo.source.svgSource, logoOrigin, logoOrigin, logoPixels, logoPixels);

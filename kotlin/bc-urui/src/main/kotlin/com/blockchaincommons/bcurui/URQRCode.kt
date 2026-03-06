@@ -18,17 +18,19 @@ fun URQRCode(
     modifier: Modifier = Modifier,
     foregroundColor: Color = Color.Black,
     backgroundColor: Color = Color.Transparent,
-    logo: QRLogo? = null
+    logo: QRLogo? = null,
+    quietZone: Int = 1
 ) {
     if (data.isEmpty()) return
 
-    val bitmap = remember(data, foregroundColor, backgroundColor, logo) {
+    val bitmap = remember(data, foregroundColor, backgroundColor, logo, quietZone) {
         makeQRCodeBitmap(
             message = data,
             correctionLevel = if (logo != null) QRCorrectionLevel.High else QRCorrectionLevel.Low,
             foregroundColor = foregroundColor.toArgb(),
             backgroundColor = backgroundColor.toArgb(),
-            logo = logo
+            logo = logo,
+            quietZone = quietZone
         )
     }
 

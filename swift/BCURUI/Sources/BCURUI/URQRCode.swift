@@ -10,18 +10,21 @@ public struct URQRCode: View {
     let foregroundColor: Color
     let backgroundColor: Color
     let logo: QRLogo?
+    let quietZone: Int
     @Environment(\.colorScheme) private var colorScheme
 
     public init(
         data: Binding<Data>,
         foregroundColor: Color = .primary,
         backgroundColor: Color = .clear,
-        logo: QRLogo? = nil
+        logo: QRLogo? = nil,
+        quietZone: Int = 1
     ) {
         self._data = data
         self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
         self.logo = logo
+        self.quietZone = quietZone
     }
 
     public var body: some View {
@@ -33,12 +36,13 @@ public struct URQRCode: View {
                 correctionLevel: .high,
                 foregroundColor: UIColor(foregroundColor),
                 backgroundColor: UIColor(backgroundColor),
-                logo: logo
+                logo: logo,
+                quietZone: quietZone
             )
             .resizable()
             .aspectRatio(contentMode: .fit)
         } else {
-            try! makeQRCode(data, correctionLevel: .low)
+            try! makeQRCode(data, correctionLevel: .low, quietZone: quietZone)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .background(backgroundColor)
@@ -58,13 +62,15 @@ public enum QRCorrectionLevel: String {
 ///
 /// - Parameter maxModules: If non-nil, throws ``QRGenerationError/qrCodeTooDense(moduleCount:maxModules:)``
 ///   when the QR code exceeds this module count.
+/// - Parameter quietZone: Number of background-colored modules around the QR data area (default 1).
 public func makeQRCode(
     _ message: Data,
     correctionLevel: QRCorrectionLevel = .medium,
     foregroundColor: UIColor? = nil,
     backgroundColor: UIColor? = nil,
     logo: QRLogo? = nil,
-    maxModules: Int? = nil
+    maxModules: Int? = nil,
+    quietZone: Int = 1
 ) throws -> Image {
     let effectiveCorrection = logo != nil ? .high : correctionLevel
     let uiImage = try makeQRCodeImage(
@@ -73,7 +79,8 @@ public func makeQRCode(
         foregroundColor: foregroundColor ?? .black,
         backgroundColor: backgroundColor ?? .clear,
         logo: logo,
-        maxModules: maxModules
+        maxModules: maxModules,
+        quietZone: quietZone
     )
     if logo != nil {
         // Baked-in colors: no template rendering
@@ -90,13 +97,15 @@ public func makeQRCode(
 ///
 /// - Parameter maxModules: If non-nil, throws ``QRGenerationError/qrCodeTooDense(moduleCount:maxModules:)``
 ///   when the QR code exceeds this module count.
+/// - Parameter quietZone: Number of background-colored modules around the QR data area (default 1).
 public func makeQRCodeImage(
     _ message: Data,
     correctionLevel: QRCorrectionLevel = .medium,
     foregroundColor: UIColor = .black,
     backgroundColor: UIColor = .clear,
     logo: QRLogo? = nil,
-    maxModules: Int? = nil
+    maxModules: Int? = nil,
+    quietZone: Int = 1
 ) throws -> UIImage {
     let qrCodeGenerator = CIFilter.qrCodeGenerator()
     qrCodeGenerator.correctionLevel = correctionLevel.rawValue
@@ -108,54 +117,51 @@ public func makeQRCodeImage(
     falseColor.color1 = backgroundColor.ciColorValue
 
     let output = falseColor.outputImage!
+    let moduleCount = Int(output.extent.width)
 
     // Check density if a limit was specified.
     if let maxModules {
-        let moduleCount = Int(output.extent.width)
         try checkQRDensity(moduleCount: moduleCount, maxModules: maxModules)
-    }
-
-    guard let logo else {
-        // No logo: return the QR image directly (original behavior)
-        let cgImage = CIContext().createCGImage(output, from: output.extent)!
-        return UIImage(cgImage: cgImage, scale: 1, orientation: .up)
-    }
-
-    // With logo: composite at module-aligned resolution
-    let moduleCount = Int(output.extent.width)
-    let logoLayout = LogoLayout(moduleCount: moduleCount, requestedFraction: logo.requestedFraction, clearBorder: logo.clearBorder)
-
-    guard logoLayout.logoModules >= 3 else {
-        // QR too small for a logo — return without overlay
-        let cgImage = CIContext().createCGImage(output, from: output.extent)!
-        return UIImage(cgImage: cgImage, scale: 1, orientation: .up)
     }
 
     // Determine compositing resolution (crisp, module-aligned pixels)
     let targetSize = 512
-    let pixelsPerModule = max(1, targetSize / moduleCount)
-    let compositingSize = moduleCount * pixelsPerModule
+    let totalModules = moduleCount + 2 * quietZone
+    let pixelsPerModule = max(1, targetSize / totalModules)
+    let compositingSize = totalModules * pixelsPerModule
+    let qzPx = CGFloat(quietZone * pixelsPerModule)
 
     let cgImage = CIContext().createCGImage(output, from: output.extent)!
     let size = CGSize(width: compositingSize, height: compositingSize)
+    let qrPixels = CGFloat(moduleCount * pixelsPerModule)
     let renderer = UIGraphicsImageRenderer(size: size)
 
     return renderer.image { ctx in
         let context = ctx.cgContext
 
-        // 1. Draw QR scaled up with nearest-neighbor interpolation (crisp modules)
-        context.interpolationQuality = .none
-        UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: size))
+        // 1. Fill entire image with background (covers quiet zone)
+        let bgClearColor = backgroundColorForClearing(backgroundColor)
+        context.setFillColor(backgroundColor.cgColor)
+        context.fill(CGRect(origin: .zero, size: size))
 
-        // 2. Clear center area
-        let clearColor = backgroundColorForClearing(backgroundColor)
-        context.setFillColor(clearColor.cgColor)
+        // 2. Draw QR modules offset by quiet zone with nearest-neighbor interpolation
+        context.interpolationQuality = .none
+        let qrRect = CGRect(x: qzPx, y: qzPx, width: qrPixels, height: qrPixels)
+        UIImage(cgImage: cgImage).draw(in: qrRect)
+
+        // 3. Logo overlay (if present and large enough)
+        guard let logo else { return }
+        let logoLayout = LogoLayout(moduleCount: moduleCount, requestedFraction: logo.requestedFraction, clearBorder: logo.clearBorder)
+        guard logoLayout.logoModules >= 3 else { return }
+
+        // Clear center area (within the QR data area)
+        context.setFillColor(bgClearColor.cgColor)
         let centerModule = CGFloat(moduleCount) / 2.0
 
         switch logo.clearShape {
         case .square:
             let clearPixels = CGFloat(logoLayout.clearedModules * pixelsPerModule)
-            let clearOrigin = (CGFloat(compositingSize) - clearPixels) / 2
+            let clearOrigin = qzPx + (qrPixels - clearPixels) / 2
             let clearRect = CGRect(x: clearOrigin, y: clearOrigin, width: clearPixels, height: clearPixels)
             context.fill(clearRect)
 
@@ -169,17 +175,17 @@ public func makeQRCodeImage(
                     let dx = mx - centerModule
                     let dy = my - centerModule
                     if dx * dx + dy * dy <= radius * radius {
-                        let px = CGFloat((startModule + col) * pixelsPerModule)
-                        let py = CGFloat((startModule + row) * pixelsPerModule)
+                        let px = qzPx + CGFloat((startModule + col) * pixelsPerModule)
+                        let py = qzPx + CGFloat((startModule + row) * pixelsPerModule)
                         context.fill(CGRect(x: px, y: py, width: CGFloat(pixelsPerModule), height: CGFloat(pixelsPerModule)))
                     }
                 }
             }
         }
 
-        // 3. Draw logo centered within the cleared area
+        // Draw logo centered within the QR data area
         let logoPixels = CGFloat(logoLayout.logoModules * pixelsPerModule)
-        let logoOrigin = (CGFloat(compositingSize) - logoPixels) / 2
+        let logoOrigin = qzPx + (qrPixels - logoPixels) / 2
         let logoRect = CGRect(x: logoOrigin, y: logoOrigin, width: logoPixels, height: logoPixels)
 
         context.interpolationQuality = .high
