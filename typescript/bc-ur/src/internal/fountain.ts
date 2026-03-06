@@ -314,6 +314,7 @@ export class FountainEncoder {
   readonly #messageLength: number;
   readonly #checksum: number;
   #currentSequence: number;
+  #lastFragmentIndexes: number[] = [];
 
   constructor(message: Uint8Array, maxFragmentLength: number) {
     if (message.length === 0) {
@@ -337,6 +338,7 @@ export class FountainEncoder {
       this.#parts.length,
       this.#checksum,
     );
+    this.#lastFragmentIndexes = indexes;
 
     const mixed = new Uint8Array(this.#parts[0]?.length ?? 0);
     for (const index of indexes) {
@@ -362,6 +364,10 @@ export class FountainEncoder {
 
   fragmentCount(): number {
     return this.#parts.length;
+  }
+
+  lastFragmentIndexes(): number[] {
+    return this.#lastFragmentIndexes;
   }
 
   complete(): boolean {

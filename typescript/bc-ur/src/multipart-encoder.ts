@@ -51,4 +51,11 @@ export class MultipartEncoder {
   get partCount(): number {
     return this.#encoder.fragmentCount();
   }
+
+  /**
+   * Returns the fragment indexes used in the most recently emitted part.
+   */
+  get lastFragmentIndexes(): number[] {
+    return this.#encoder.lastFragmentIndexes();
+  }
 }
