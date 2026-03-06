@@ -66,3 +66,28 @@ COMPLETED
 - 3 NICE TO HAVE skipped with reasons: target-typed new (not widely applicable), collection expressions (cosmetic only), primary constructors (conflicts with factory method pattern)
 - 132/132 tests passing after all fixes
 - 63 source files (was 55; +8 from EncryptedKey split)
+
+## 2026-03-04 — Stage 3: Check
+STARTED
+- Cross-model completeness check for C# `BCComponents` against Rust `bc-components` v0.31.1 and manifest catalog
+
+## 2026-03-04 — Stage 3: Check
+COMPLETED
+- Added missing target manifest at `csharp/BCComponents/MANIFEST.md`
+- API coverage: 100% of cataloged top-level exports verified (type/function/constant mappings present)
+- Signature compatibility: 0 semantic mismatches found in sampled critical APIs (`Keypair`, `SSKRShare`, KDF/encapsulation paths)
+- Test coverage: C# `132/132` passing; Rust inventory `97` accounted for with documented SSH/metadata exclusions
+- Documentation/package coverage: public XML docs and package description present
+- Verdict: COMPLETE
+
+## 2026-03-04 — Stage 4: Fluency Review
+STARTED
+- Cross-model fluency review pass (GPT Codex) on `BlockchainCommons.BCComponents` source and tests
+
+## 2026-03-04 — Stage 4: Fluency Review
+COMPLETED
+- Issues found: 0 additional MUST/SHOULD/NICE findings beyond prior Stage 4 work
+- Issues fixed: 0 code changes required in `BCComponents` or `BCComponents.Tests`
+- Blocked by completeness gaps: none
+- Verification: `dotnet build -warnaserror` and `dotnet test` both pass
+- Final fluency verdict: IDIOMATIC

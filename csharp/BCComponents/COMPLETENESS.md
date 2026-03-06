@@ -87,10 +87,17 @@
 - [x] URITests.cs — URI creation, CBOR roundtrip
 
 ## Build & Config
+- [x] MANIFEST.md — crate translation manifest for checker workflow
 - [x] BCComponents.csproj — .NET 10, BouncyCastle 2.5.1
 - [x] BCComponents.Tests.csproj — xUnit 2.9.3
-- [x] BCComponents.sln — solution file
 - [x] .gitignore
+
+## Cross-Model Check (2026-03-04)
+- [x] API coverage: verified top-level Rust exports against C# equivalents (including trait-to-interface/exception mappings)
+- [x] Signature compatibility: no semantic mismatches found in spot checks (`Keypair`, `SSKRShare`, `TagsRegistry`, provider interfaces)
+- [x] Test coverage: `132/132` C# tests passing; Rust test inventory (`97`) covered with documented SSH/metadata exclusions
+- [x] Documentation coverage: public API XML docs present, package description present
+- [x] Verdict: COMPLETE
 
 ## Fluency Review
 - [x] MUST FIX: Sealed BCComponentsException
