@@ -61,3 +61,31 @@ COMPLETED
 - No legacy/compatibility symbols detected in `@bc/lifehash` public API
 - Verification: `npm run build` and `npm test` pass (41/41 tests)
 - VERDICT: IDIOMATIC
+
+## 2026-03-06 — Stage 3: Check Completeness
+STARTED
+- Additional cross-check rerun requested for `typescript/bc-lifehash`
+- Re-verify manifest coverage, Rust public API, derives/protocol mappings, and translated test inventory
+
+## 2026-03-06 — Stage 3: Check Completeness
+COMPLETED
+- API Coverage: 5/5 (100%) — Version, Image, makeFromUtf8, makeFromData, makeFromDigest
+- Test Coverage: 2/2 (100%) — vector parity (35 vectors + count assertion) and PNG generation
+- Signature Mismatches: 0
+- Derive/Protocol Gaps: 0
+- Documentation Gaps: 0
+- VERDICT: COMPLETE
+
+## 2026-03-06 — Stage 4: Fluency Review
+STARTED
+- Additional TypeScript-only fluency pass requested for `typescript/bc-lifehash`
+- Audit naming, package structure, and test/build ergonomics without consulting Rust during this stage
+
+## 2026-03-06 — Stage 4: Fluency Review
+COMPLETED
+- Issues found: 1 (0 MUST FIX, 1 SHOULD FIX, 0 NICE TO HAVE)
+- Fixed 1/1:
+  1. Added package-local `.gitignore` so generated `node_modules/`, `dist/`, `out/`, and coverage artifacts are ignored inside the package
+- No API or behavior changes were required
+- Verification: `npm run build` and `npm test` pass (41/41 tests)
+- VERDICT: IDIOMATIC
