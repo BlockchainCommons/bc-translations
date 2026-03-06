@@ -65,6 +65,9 @@ import { sha256, sha256Prefix, SHA256_SIZE, obfuscate } from './crypto-utils.js'
 import { bytesToHex, bytesEqual, concatBytes, toBase64, fromBase64 } from './utils.js';
 import { ValidationReport } from './validate.js';
 
+/** The 🅟 (U+1F15F) prefix used to visually tag provenance-mark identifiers. */
+export const PROVENANCE_MARK_PREFIX = '\u{1F15F}';
+
 // ---- ProvenanceMark ----
 
 export class ProvenanceMark
@@ -287,7 +290,7 @@ export class ProvenanceMark
   bytewordsIdentifier(prefix: boolean): string {
     const first4 = this.#hash.slice(0, 4);
     const s = bwIdentifier(first4).toUpperCase();
-    return prefix ? `\u{1F160} ${s}` : s;
+    return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
   }
 
   /**
@@ -296,7 +299,7 @@ export class ProvenanceMark
   bytemojiIdentifier(prefix: boolean): string {
     const first4 = this.#hash.slice(0, 4);
     const s = bwBytemojiIdentifier(first4).toUpperCase();
-    return prefix ? `\u{1F160} ${s}` : s;
+    return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
   }
 
   /**
@@ -330,7 +333,7 @@ export class ProvenanceMark
       }
     }
 
-    return prefix ? `\u{1F160} ${out}` : out;
+    return prefix ? `${PROVENANCE_MARK_PREFIX} ${out}` : out;
   }
 
   // ---- Sequence validation ----

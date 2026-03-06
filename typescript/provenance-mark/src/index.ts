@@ -58,7 +58,7 @@ export { PROVENANCE_SEED_LENGTH, ProvenanceSeed } from './seed.js';
 export { RNG_STATE_LENGTH, RngState } from './rng-state.js';
 export { Xoshiro256StarStar } from './xoshiro256starstar.js';
 export { parseSeed, parseDate } from './util.js';
-export { ProvenanceMark } from './provenance-mark.js';
+export { ProvenanceMark, PROVENANCE_MARK_PREFIX } from './provenance-mark.js';
 export { ProvenanceMarkInfo } from './provenance-mark-info.js';
 export { ProvenanceMarkGenerator } from './provenance-mark-generator.js';
 
