@@ -4,9 +4,9 @@ Running queue of translated targets that still need at least one fluency pass by
 
 Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
-- Last updated: 2026-03-04
-- Targets translated: 61
-- Targets with cross-model fluency complete: 61
+- Last updated: 2026-03-05
+- Targets translated: 63
+- Targets with cross-model fluency complete: 63
 - Targets still needing cross-model fluency: 0
 
 All translated targets have a cross-model fluency pass.

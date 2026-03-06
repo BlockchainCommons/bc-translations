@@ -1,0 +1,33 @@
+{
+  "name": "@bc/provenance-mark",
+  "version": "0.23.0",
+  "description": "Provenance marks for TypeScript — a cryptographically-secured system for establishing and verifying the authenticity of works.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bc/dcbor": "file:../dcbor",
+    "@bc/rand": "file:../bc-rand",
+    "@bc/tags": "file:../bc-tags",
+    "@bc/ur": "file:../bc-ur",
+    "@bc/envelope": "file:../bc-envelope"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

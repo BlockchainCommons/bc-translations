@@ -170,3 +170,9 @@ Chronological record of all translation activity in this repository.
 | 2026-03-04 | bc-components | 0.31.1 | Go | bccomponents | 🎻 Claude Opus 4.6 | Translation |
 | 2026-03-04 | bc-components | 0.31.1 | Go | bccomponents | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-04 | bc-components | 0.31.1 | Go | bccomponents | 📖 GPT Codex | Fluency |
+| 2026-03-04 | bc-envelope | 0.43.0 | TypeScript | @bc/envelope | 📖 GPT Codex | Translation |
+| 2026-03-04 | bc-envelope | 0.43.0 | TypeScript | @bc/envelope | 📖 GPT Codex | Fluency |
+| 2026-03-05 | bc-envelope | 0.43.0 | TypeScript | @bc/envelope | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-05 | provenance-mark | 0.23.0 | TypeScript | @bc/provenance-mark | 🎻 Claude Opus 4.6 | Translation |
+| 2026-03-05 | provenance-mark | 0.23.0 | TypeScript | @bc/provenance-mark | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-06 | provenance-mark | 0.23.0 | TypeScript | @bc/provenance-mark | 📖 GPT Codex | Fluency |
