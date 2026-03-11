@@ -288,11 +288,20 @@ function drawLogoImageData(
 }
 
 /**
+ * Cache of loaded SVG Image elements, keyed by SVG source string.
+ *
+ * Once an SVG logo has been loaded into an Image (via Blob URL), we cache it
+ * so subsequent frames can draw it synchronously — eliminating the flicker
+ * caused by re-loading the SVG asynchronously every frame.
+ */
+const svgImageCache = new Map<string, HTMLImageElement>();
+
+/**
  * Draw an SVG logo onto a canvas context at the exact pixel size needed.
  *
- * Creates a Blob URL from the SVG markup, loads it into an Image element,
- * and draws it with `drawImage` — the browser rasterizes the vector at
- * exactly `dw x dh` pixels, producing crisp output at any size.
+ * On the first call for a given SVG source, creates a Blob URL, loads it into
+ * an Image element, caches the Image, and draws it. On subsequent calls, the
+ * cached Image is drawn synchronously — no flicker between frames.
  */
 function drawLogoSVG(
   ctx: CanvasRenderingContext2D,
@@ -302,15 +311,24 @@ function drawLogoSVG(
   dw: number,
   dh: number,
 ): Promise<void> {
+  const cached = svgImageCache.get(svgSource);
+  if (cached) {
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(cached, dx, dy, dw, dh);
+    return Promise.resolve();
+  }
+
   return new Promise((resolve, reject) => {
     const blob = new Blob([svgSource], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const img = new Image();
     img.onload = () => {
+      URL.revokeObjectURL(url);
+      svgImageCache.set(svgSource, img);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, dx, dy, dw, dh);
-      URL.revokeObjectURL(url);
       resolve();
     };
     img.onerror = () => {
