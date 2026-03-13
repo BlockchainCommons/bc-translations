@@ -55,6 +55,18 @@ const MINIMAL_TO_INDEX: Map<string, number> = new Map();
 /** Minimal (2-char) form for each byte index. */
 const MINIMALS: string[] = [];
 
+/** Set of all 256 bytemojis for validation. */
+const BYTEMOJI_SET: Set<string> = new Set();
+
+/** Maps 2-letter first+last abbreviation → full 4-letter word. */
+const FIRST_LAST_TO_WORD: Map<string, string> = new Map();
+
+/** Maps first 3 letters → full 4-letter word. */
+const FIRST_THREE_TO_WORD: Map<string, string> = new Map();
+
+/** Maps last 3 letters → full 4-letter word. */
+const LAST_THREE_TO_WORD: Map<string, string> = new Map();
+
 const initLookups = (): void => {
   for (let i = 0; i < BYTEWORDS.length; i++) {
     const word = BYTEWORDS[i]!;
@@ -62,6 +74,12 @@ const initLookups = (): void => {
     const minimal = word[0]! + word[word.length - 1]!;
     MINIMAL_TO_INDEX.set(minimal, i);
     MINIMALS.push(minimal);
+    FIRST_LAST_TO_WORD.set(minimal, word);
+    FIRST_THREE_TO_WORD.set(word.slice(0, 3), word);
+    LAST_THREE_TO_WORD.set(word.slice(1), word);
+  }
+  for (const emoji of BYTEMOJIS) {
+    BYTEMOJI_SET.add(emoji);
   }
 };
 
@@ -196,6 +214,33 @@ export const bytemojiIdentifier = (data: Uint8Array): string => {
   }
 
   return Array.from(data, (value) => lookupWord(BYTEMOJIS, value)).join(" ");
+};
+
+// --- Validation & canonicalization ---
+
+/** Returns `true` if `word` (lowercase) is a valid byteword. */
+export const isValidWord = (word: string): boolean => WORD_TO_INDEX.has(word);
+
+/** Returns `true` if `emoji` is one of the 256 bytemojis. */
+export const isValidBytemoji = (emoji: string): boolean => BYTEMOJI_SET.has(emoji);
+
+/**
+ * Canonicalizes a byteword token (2–4 ASCII letters, case-insensitive) to its
+ * full 4-letter lowercase form. Returns `null` if the token is not a valid
+ * byteword or any of its short forms.
+ */
+export const canonicalizeByteword = (token: string): string | null => {
+  const lower = token.toLowerCase();
+  switch (lower.length) {
+    case 4:
+      return WORD_TO_INDEX.has(lower) ? lower : null;
+    case 2:
+      return FIRST_LAST_TO_WORD.get(lower) ?? null;
+    case 3:
+      return FIRST_THREE_TO_WORD.get(lower) ?? LAST_THREE_TO_WORD.get(lower) ?? null;
+    default:
+      return null;
+  }
 };
 
 // --- Word tables ---

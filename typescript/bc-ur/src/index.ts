@@ -19,6 +19,9 @@ export {
   decode,
   identifier,
   bytemojiIdentifier,
+  isValidWord,
+  isValidBytemoji,
+  canonicalizeByteword,
   BYTEWORDS,
   BYTEMOJIS,
 } from "./bytewords.js";

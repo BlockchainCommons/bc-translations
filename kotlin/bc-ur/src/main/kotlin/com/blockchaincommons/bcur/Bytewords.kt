@@ -86,6 +86,31 @@ object Bytewords {
     fun isValidWord(word: String): Boolean =
         BytewordsConstants.WORD_INDEXES.containsKey(word)
 
+    /** Returns `true` if [emoji] is one of the 256 bytemojis. */
+    fun isValidBytemoji(emoji: String): Boolean =
+        BytewordsConstants.BYTEMOJI_SET.contains(emoji)
+
+    /**
+     * Canonicalizes a byteword token (2–4 ASCII letters, case-insensitive) to its
+     * full 4-letter lowercase form. Returns `null` if the token is not a valid byteword
+     * or any of its short forms.
+     *
+     * Accepted forms:
+     * - 4 letters: full byteword (e.g., "wolf" or "WOLF")
+     * - 2 letters: first+last abbreviation (e.g., "wf")
+     * - 3 letters: first-three (e.g., "wol") or last-three (e.g., "olf")
+     */
+    fun canonicalizeByteword(token: String): String? {
+        val lower = token.lowercase()
+        return when (lower.length) {
+            4 -> if (BytewordsConstants.WORD_INDEXES.containsKey(lower)) lower else null
+            2 -> BytewordsConstants.FIRST_LAST_TO_WORD[lower]
+            3 -> BytewordsConstants.FIRST_THREE_TO_WORD[lower]
+                ?: BytewordsConstants.LAST_THREE_TO_WORD[lower]
+            else -> null
+        }
+    }
+
     private fun decodeMinimal(encoded: String): ByteArray {
         if (encoded.length % 2 != 0) {
             throw URException.BytewordsError("invalid length")

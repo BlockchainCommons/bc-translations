@@ -147,4 +147,23 @@ internal object BytewordsConstants {
     val MINIMAL_INDEXES: Map<String, Int> by lazy {
         MINIMALS.withIndex().associate { (i, m) -> m to i }
     }
+
+    val BYTEMOJI_SET: Set<String> by lazy {
+        BYTEMOJIS.toSet()
+    }
+
+    /** Maps 2-letter first+last abbreviation → full 4-letter word (lowercase). */
+    val FIRST_LAST_TO_WORD: Map<String, String> by lazy {
+        WORDS.associate { word -> "${word.first()}${word.last()}" to word }
+    }
+
+    /** Maps first 3 letters → full 4-letter word (lowercase). */
+    val FIRST_THREE_TO_WORD: Map<String, String> by lazy {
+        WORDS.associate { word -> word.take(3) to word }
+    }
+
+    /** Maps last 3 letters → full 4-letter word (lowercase). */
+    val LAST_THREE_TO_WORD: Map<String, String> by lazy {
+        WORDS.associate { word -> word.takeLast(3) to word }
+    }
 }

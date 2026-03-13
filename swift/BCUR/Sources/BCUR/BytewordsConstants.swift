@@ -78,4 +78,32 @@ internal enum BytewordsConstants {
             (minimal, UInt8(index))
         })
     }()
+
+    static let bytemojiSet: Swift.Set<String> = {
+        Swift.Set(bytemojis)
+    }()
+
+    /// Maps 2-letter first+last abbreviation → full 4-letter word (lowercase).
+    static let firstLastToWord: [String: String] = {
+        Dictionary(uniqueKeysWithValues: words.map { word in
+            let abbr = "\(word.first!)\(word.last!)"
+            return (abbr, word)
+        })
+    }()
+
+    /// Maps first 3 letters → full 4-letter word (lowercase).
+    static let firstThreeToWord: [String: String] = {
+        Dictionary(uniqueKeysWithValues: words.map { word in
+            let prefix = String(word.prefix(3))
+            return (prefix, word)
+        })
+    }()
+
+    /// Maps last 3 letters → full 4-letter word (lowercase).
+    static let lastThreeToWord: [String: String] = {
+        Dictionary(uniqueKeysWithValues: words.map { word in
+            let suffix = String(word.suffix(3))
+            return (suffix, word)
+        })
+    }()
 }

@@ -52,6 +52,34 @@ public enum Bytewords {
         BytewordsConstants.wordIndexes[word] != nil
     }
 
+    /// Returns `true` if `emoji` is one of the 256 bytemojis.
+    public static func isValidBytemoji(_ emoji: String) -> Bool {
+        BytewordsConstants.bytemojiSet.contains(emoji)
+    }
+
+    /// Canonicalizes a byteword token (2–4 ASCII letters, case-insensitive) to its
+    /// full 4-letter lowercase form. Returns `nil` if the token is not a valid byteword
+    /// or any of its short forms.
+    ///
+    /// Accepted forms:
+    /// - 4 letters: full byteword (e.g., "wolf" or "WOLF")
+    /// - 2 letters: first+last abbreviation (e.g., "wf")
+    /// - 3 letters: first-three (e.g., "wol") or last-three (e.g., "olf")
+    public static func canonicalizeByteword(_ token: String) -> String? {
+        let lower = token.lowercased()
+        switch lower.count {
+        case 4:
+            return BytewordsConstants.wordIndexes[lower] != nil ? lower : nil
+        case 2:
+            return BytewordsConstants.firstLastToWord[lower]
+        case 3:
+            return BytewordsConstants.firstThreeToWord[lower]
+                ?? BytewordsConstants.lastThreeToWord[lower]
+        default:
+            return nil
+        }
+    }
+
     static func decodeRaw(_ encoded: String, style: BytewordsStyle) throws -> [UInt8] {
         guard encoded.isASCII else {
             throw BytewordsCodecError.nonAscii
