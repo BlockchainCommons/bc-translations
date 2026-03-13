@@ -28,7 +28,9 @@ public struct URQRCode: View {
     }
 
     public var body: some View {
-        if let logo {
+        if data.isEmpty {
+            Color.clear
+        } else if let logo {
             // Baked-in colors, no template rendering (logo needs real colors)
             // maxModules is nil here so this won't throw.
             try! makeQRCode(
