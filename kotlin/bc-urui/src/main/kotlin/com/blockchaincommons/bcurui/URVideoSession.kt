@@ -162,34 +162,43 @@ class URVideoSession(
             val textTasks = textRecognitionRotations.map { extraRotation ->
                 val totalRotation = (baseDegrees + extraRotation) % 360
                 val rotatedInput = InputImage.fromMediaImage(mediaImage, totalRotation)
-                val imageWidth = rotatedInput.width.toFloat()
-                val imageHeight = rotatedInput.height.toFloat()
+                // InputImage.width/height return pre-rotation dimensions, but
+                // ML Kit returns bounding boxes in the rotated coordinate space.
+                // Swap for 90°/270° so normalization uses the correct axes.
+                val (imageWidth, imageHeight) = if (totalRotation == 90 || totalRotation == 270) {
+                    rotatedInput.height.toFloat() to rotatedInput.width.toFloat()
+                } else {
+                    rotatedInput.width.toFloat() to rotatedInput.height.toFloat()
+                }
 
                 recognizer!!.process(rotatedInput)
                     .addOnSuccessListener { visionText ->
                         if (visionText.textBlocks.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
-                            val texts = visionText.textBlocks.mapNotNull { block ->
-                                val box = block.boundingBox ?: return@mapNotNull null
-                                val blockConfidence = block.lines
-                                    .mapNotNull { line -> line.confidence?.takeIf { it > 0f } }
-                                    .minOrNull() ?: 1.0f
-                                if (blockConfidence < 0.5f) return@mapNotNull null
-                                val normalizedBox = RectF(
-                                    box.left / imageWidth,
-                                    box.top / imageHeight,
-                                    box.right / imageWidth,
-                                    box.bottom / imageHeight
-                                )
-                                val displayBox = transformToDisplay(normalizedBox, extraRotation)
-                                // extraRotation is how much we rotated the *image*;
-                                // the physical display angle is its inverse.
-                                val displayRotation = (360 - extraRotation) % 360
-                                URRecognizedText(
-                                    text = block.text,
-                                    boundingBox = displayBox,
-                                    confidence = blockConfidence,
-                                    rotation = displayRotation
-                                )
+                            // Iterate per-line (not per-block) so each
+                            // URRecognizedText has a single-line bounding box,
+                            // matching iOS Vision's per-observation output.
+                            val texts = visionText.textBlocks.flatMap { block ->
+                                block.lines.mapNotNull { line ->
+                                    val box = line.boundingBox ?: return@mapNotNull null
+                                    val lineConfidence = line.confidence?.takeIf { it > 0f } ?: 1.0f
+                                    if (lineConfidence < 0.5f) return@mapNotNull null
+                                    val normalizedBox = RectF(
+                                        box.left / imageWidth,
+                                        box.top / imageHeight,
+                                        box.right / imageWidth,
+                                        box.bottom / imageHeight
+                                    )
+                                    val displayBox = transformToDisplay(normalizedBox, extraRotation)
+                                    // extraRotation is how much we rotated the *image*;
+                                    // the physical display angle is its inverse.
+                                    val displayRotation = (360 - extraRotation) % 360
+                                    URRecognizedText(
+                                        text = line.text,
+                                        boundingBox = displayBox,
+                                        confidence = lineConfidence,
+                                        rotation = displayRotation
+                                    )
+                                }
                             }
                             synchronized(allTexts) {
                                 allTexts.addAll(texts)
@@ -204,7 +213,15 @@ class URVideoSession(
                     imageProxy.close()
                     val snapshot = synchronized(allTexts) { allTexts.toList() }
                     if (snapshot.isNotEmpty()) {
-                        onTextRecognized?.invoke(snapshot)
+                        // ML Kit recognizes the same text at multiple rotations
+                        // (unlike iOS Vision which only finds text in the correct
+                        // orientation). Deduplicate by keeping the highest-confidence
+                        // entry for each unique text string.
+                        val deduped = snapshot
+                            .groupBy { it.text }
+                            .values
+                            .map { group -> group.maxBy { it.confidence } }
+                        onTextRecognized?.invoke(deduped)
                     }
                 }
         } else {
