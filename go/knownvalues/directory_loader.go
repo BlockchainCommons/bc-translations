@@ -2,10 +2,11 @@ package knownvalues
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 	"sync"
 	"sync/atomic"
 )
@@ -60,41 +61,30 @@ func (e LoadError) Unwrap() error {
 	return e.Err
 }
 
-// FileLoadError ties a load error to the file or directory that produced it.
-type FileLoadError struct {
-	Path  string
-	Error LoadError
-}
-
 // LoadResult is the tolerant multi-directory loading result.
 type LoadResult struct {
-	Values         map[uint64]KnownValue
+	ValuesMap      map[uint64]KnownValue
 	FilesProcessed []string
-	Errors         []FileLoadError
+	Errors         []LoadError
 }
 
 // NewLoadResult creates an empty load result with initialized collections.
 func NewLoadResult() LoadResult {
 	return LoadResult{
-		Values:         make(map[uint64]KnownValue),
+		ValuesMap:      make(map[uint64]KnownValue),
 		FilesProcessed: make([]string, 0),
-		Errors:         make([]FileLoadError, 0),
+		Errors:         make([]LoadError, 0),
 	}
 }
 
 // ValuesCount returns the number of unique loaded values.
 func (r LoadResult) ValuesCount() int {
-	return len(r.Values)
+	return len(r.ValuesMap)
 }
 
-// ValuesIter returns the loaded values in ascending raw-value order.
-func (r LoadResult) ValuesIter() []KnownValue {
-	return knownValuesFromMap(r.Values)
-}
-
-// IntoValues returns the loaded values in ascending raw-value order.
-func (r LoadResult) IntoValues() []KnownValue {
-	return knownValuesFromMap(r.Values)
+// Values returns the loaded values in ascending raw-value order.
+func (r LoadResult) Values() []KnownValue {
+	return knownValuesFromMap(r.ValuesMap)
 }
 
 // HasErrors reports whether any non-fatal errors were recorded.
@@ -142,7 +132,7 @@ func DefaultDirectory() string {
 	if err != nil || home == "" {
 		home = "."
 	}
-	return normalizePath(filepath.Join(home, ".known-values"))
+	return filepath.Join(home, ".known-values")
 }
 
 // Clone returns a copy of the directory configuration.
@@ -157,7 +147,7 @@ func (c DirectoryConfig) Paths() []string {
 
 // AddPath appends a path to the configuration.
 func (c *DirectoryConfig) AddPath(path string) {
-	c.paths = append(c.paths, normalizePath(path))
+	c.paths = append(c.paths, path)
 }
 
 // LoadFromDirectory strictly loads all JSON files in a single directory.
@@ -202,15 +192,12 @@ func LoadFromConfig(config DirectoryConfig) LoadResult {
 	for _, dirPath := range config.Paths() {
 		values, errors, err := loadFromDirectoryTolerant(dirPath)
 		if err != nil {
-			result.Errors = append(result.Errors, FileLoadError{
-				Path:  dirPath,
-				Error: ensureLoadError(dirPath, err),
-			})
+			result.Errors = append(result.Errors, ensureLoadError(dirPath, err))
 			continue
 		}
 
 		for _, value := range values {
-			result.Values[value.Value()] = value
+			result.ValuesMap[value.Value()] = value
 		}
 		result.Errors = append(result.Errors, errors...)
 		result.FilesProcessed = append(result.FilesProcessed, dirPath)
@@ -219,7 +206,7 @@ func LoadFromConfig(config DirectoryConfig) LoadResult {
 	return result
 }
 
-func loadFromDirectoryTolerant(path string) ([]KnownValue, []FileLoadError, error) {
+func loadFromDirectoryTolerant(path string) ([]KnownValue, []LoadError, error) {
 	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -237,7 +224,7 @@ func loadFromDirectoryTolerant(path string) ([]KnownValue, []FileLoadError, erro
 	}
 
 	values := make([]KnownValue, 0)
-	errors := make([]FileLoadError, 0)
+	var loadErrors []LoadError
 	for _, entry := range entries {
 		if entry.IsDir() || filepath.Ext(entry.Name()) != ".json" {
 			continue
@@ -245,16 +232,13 @@ func loadFromDirectoryTolerant(path string) ([]KnownValue, []FileLoadError, erro
 		filePath := filepath.Join(path, entry.Name())
 		fileValues, err := loadSingleFile(filePath)
 		if err != nil {
-			errors = append(errors, FileLoadError{
-				Path:  filePath,
-				Error: ensureLoadError(filePath, err),
-			})
+			loadErrors = append(loadErrors, ensureLoadError(filePath, err))
 			continue
 		}
 		values = append(values, fileValues...)
 	}
 
-	return values, errors, nil
+	return values, loadErrors, nil
 }
 
 func loadSingleFile(path string) ([]KnownValue, error) {
@@ -284,7 +268,15 @@ func knownValuesFromMap(values map[uint64]KnownValue) []KnownValue {
 	for key := range values {
 		keys = append(keys, key)
 	}
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+	slices.SortFunc(keys, func(a, b uint64) int {
+		if a < b {
+			return -1
+		}
+		if a > b {
+			return 1
+		}
+		return 0
+	})
 
 	ordered := make([]KnownValue, 0, len(keys))
 	for _, key := range keys {
@@ -294,17 +286,11 @@ func knownValuesFromMap(values map[uint64]KnownValue) []KnownValue {
 }
 
 func ensureLoadError(path string, err error) LoadError {
-	if loadErr, ok := err.(LoadError); ok {
+	var loadErr LoadError
+	if errors.As(err, &loadErr) {
 		return loadErr
 	}
 	return LoadError{Path: path, Err: err}
-}
-
-func normalizePath(path string) string {
-	if absPath, err := filepath.Abs(path); err == nil {
-		return absPath
-	}
-	return filepath.Clean(path)
 }
 
 var (

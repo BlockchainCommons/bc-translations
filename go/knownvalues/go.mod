@@ -4,6 +4,7 @@ go 1.22.0
 
 require (
 	github.com/nickel-blockchaincommons/bccomponents-go v0.0.0
+	github.com/nickel-blockchaincommons/bctags-go v0.0.0
 	github.com/nickel-blockchaincommons/dcbor-go v0.0.0
 )
 
@@ -15,7 +16,6 @@ require (
 	github.com/nickel-blockchaincommons/bccrypto-go v0.0.0 // indirect
 	github.com/nickel-blockchaincommons/bcrand-go v0.0.0 // indirect
 	github.com/nickel-blockchaincommons/bcshamir-go v0.0.0 // indirect
-	github.com/nickel-blockchaincommons/bctags-go v0.0.0 // indirect
 	github.com/nickel-blockchaincommons/bcur-go v0.0.0 // indirect
 	github.com/nickel-blockchaincommons/sskr-go v0.0.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect

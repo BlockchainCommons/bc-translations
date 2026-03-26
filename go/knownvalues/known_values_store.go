@@ -130,7 +130,7 @@ func (s *KnownValuesStore) LoadFromDirectory(path string) (int, error) {
 // LoadFromConfig loads known values from all configured directories.
 func (s *KnownValuesStore) LoadFromConfig(config DirectoryConfig) LoadResult {
 	result := LoadFromConfig(config)
-	for _, value := range result.IntoValues() {
+	for _, value := range result.Values() {
 		s.Insert(value)
 	}
 	return result

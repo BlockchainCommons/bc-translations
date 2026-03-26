@@ -4,10 +4,9 @@ import (
 	"strconv"
 
 	bccomponents "github.com/nickel-blockchaincommons/bccomponents-go"
+	bctags "github.com/nickel-blockchaincommons/bctags-go"
 	dcbor "github.com/nickel-blockchaincommons/dcbor-go"
 )
-
-const knownValueTagValue dcbor.TagValue = 40000
 
 // KnownValue is a compact identifier for a stand-alone ontological concept.
 //
@@ -32,9 +31,9 @@ func NewKnownValueWithName(value uint64, assignedName string) KnownValue {
 	}
 }
 
-// NewKnownValueWithStaticName creates a known value with a registry-backed
-// assigned name.
-func NewKnownValueWithStaticName(value uint64, name string) KnownValue {
+// newKnownValueWithStaticName creates a known value with a registry-backed
+// assigned name. Used internally by registry constants.
+func newKnownValueWithStaticName(value uint64, name string) KnownValue {
 	return NewKnownValueWithName(value, name)
 }
 
@@ -46,11 +45,6 @@ func KnownValueFromInt32(value int32) KnownValue {
 // KnownValueFromInt converts a native-width integer into a known value.
 func KnownValueFromInt(value int) KnownValue {
 	return NewKnownValue(uint64(value))
-}
-
-// Clone returns a copy of the known value.
-func (k KnownValue) Clone() KnownValue {
-	return k
 }
 
 // Value returns the raw numeric value.
@@ -91,7 +85,7 @@ func (k KnownValue) Digest() bccomponents.Digest {
 
 // KnownValueCBORTags returns the accepted CBOR tags for known values.
 func KnownValueCBORTags() []dcbor.Tag {
-	return []dcbor.Tag{dcbor.TagWithValue(knownValueTagValue)}
+	return dcbor.TagsForValues([]dcbor.TagValue{bctags.TagKnownValue})
 }
 
 // CBORTags returns the accepted CBOR tags for known values.

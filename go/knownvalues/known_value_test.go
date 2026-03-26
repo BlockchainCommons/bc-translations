@@ -31,19 +31,20 @@ func TestNewKnownValueWithAndWithoutName(t *testing.T) {
 	}
 }
 
-func TestEqualityAndCloneIgnoreAssignedName(t *testing.T) {
+func TestEqualityAndCopyIgnoreAssignedName(t *testing.T) {
 	first := NewKnownValueWithName(1, "isA")
 	second := NewKnownValueWithName(1, "different")
 	if !first.Equal(second) {
 		t.Fatalf("expected equal raw values despite different assigned names")
 	}
 
-	clone := first.Clone()
-	if !first.Equal(clone) {
-		t.Fatalf("clone mismatch")
+	// Value types copy on assignment in Go.
+	copied := first
+	if !first.Equal(copied) {
+		t.Fatalf("copy mismatch")
 	}
-	if got, want := clone.Name(), "isA"; got != want {
-		t.Fatalf("clone name mismatch: got %q want %q", got, want)
+	if got, want := copied.Name(), "isA"; got != want {
+		t.Fatalf("copy name mismatch: got %q want %q", got, want)
 	}
 }
 

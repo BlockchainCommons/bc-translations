@@ -46,3 +46,36 @@ COMPLETED
 - Registry constants, lazy global store, error handling, and test organization already follow the repo's Go conventions
 - Tests remain green: 36/36 passing with `GOTOOLCHAIN=local go test ./...`
 - VERDICT: IDIOMATIC
+
+## 2026-03-26 — Stage 3: Check (Cross-Model)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translation by GPT Codex)
+
+## 2026-03-26 — Stage 3: Check (Cross-Model)
+COMPLETED
+- API Coverage: 100% — all types, functions, methods, and 104 registry constants verified against Rust source and MANIFEST.md
+- Test Coverage: 22/22 Rust tests translated, plus 14 Go-specific tests (36 total), all passing
+- Global store omissions (Value and Self) correctly preserved
+- VERDICT: COMPLETE
+
+## 2026-03-26 — Stage 4: Critique (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6 (original translation by GPT Codex)
+
+## 2026-03-26 — Stage 4: Critique (Cross-Model)
+COMPLETED
+- 10 issues found, all fixed:
+  - MUST FIX: Use bctags.TagKnownValue instead of hardcoded 40000 (consistency with bccomponents pattern)
+  - MUST FIX: Remove normalizePath — paths stored as-is matching Rust behavior
+  - MUST FIX: Unexport NewKnownValueWithStaticName (Go has no const fn distinction)
+  - SHOULD FIX: Remove KnownValue.Clone() — value type copies on assignment
+  - SHOULD FIX: Consolidate IntoValues/ValuesIter into single Values() method
+  - SHOULD FIX: Remove redundant FileLoadError wrapper — LoadError already carries Path
+  - SHOULD FIX: Rename LoadResult.Values field to ValuesMap (avoids method/field collision)
+  - NICE TO HAVE: Use errors.As consistently in ensureLoadError
+  - NICE TO HAVE: Use slices.SortFunc instead of sort.Slice (Go 1.22)
+  - NICE TO HAVE: Promote bctags-go from indirect to direct dependency in go.mod
+- 0 issues blocked by completeness gaps
+- Tests remain green: 36/36 passing, go vet clean
+- No downstream Go dependents to repair (bc-envelope and provenance-mark not yet translated for Go)
+- VERDICT: IDIOMATIC

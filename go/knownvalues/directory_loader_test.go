@@ -121,10 +121,10 @@ func TestDirectoryConfigCustomPaths(t *testing.T) {
 	if got, want := len(paths), 2; got != want {
 		t.Fatalf("path count mismatch: got %d want %d", got, want)
 	}
-	if got, want := paths[0], filepath.Clean("/a"); got != want {
+	if got, want := paths[0], "/a"; got != want {
 		t.Fatalf("first path mismatch: got %q want %q", got, want)
 	}
-	if got, want := paths[1], filepath.Clean("/b"); got != want {
+	if got, want := paths[1], "/b"; got != want {
 		t.Fatalf("second path mismatch: got %q want %q", got, want)
 	}
 
@@ -140,7 +140,7 @@ func TestDirectoryConfigWithDefault(t *testing.T) {
 	if got, want := len(paths), 2; got != want {
 		t.Fatalf("path count mismatch: got %d want %d", got, want)
 	}
-	if got, want := paths[0], filepath.Clean("/custom"); got != want {
+	if got, want := paths[0], "/custom"; got != want {
 		t.Fatalf("first path mismatch: got %q want %q", got, want)
 	}
 	if got := filepath.Base(paths[1]); got != ".known-values" {
@@ -167,7 +167,7 @@ func TestLoadResultMethods(t *testing.T) {
 		t.Fatalf("HasErrors should be false for empty result")
 	}
 
-	result.Values[1] = NewKnownValueWithName(1, "test")
+	result.ValuesMap[1] = NewKnownValueWithName(1, "test")
 	if got, want := result.ValuesCount(), 1; got != want {
 		t.Fatalf("ValuesCount mismatch after insert: got %d want %d", got, want)
 	}
@@ -328,7 +328,7 @@ func TestTolerantLoadingContinuesOnError(t *testing.T) {
 	config := DirectoryConfigWithPaths([]string{tempDir})
 	result := LoadFromConfig(config)
 
-	if _, ok := result.Values[40001]; !ok {
+	if _, ok := result.ValuesMap[40001]; !ok {
 		t.Fatalf("expected validValue to be present in tolerant result")
 	}
 	if !result.HasErrors() {
@@ -404,8 +404,8 @@ func TestLoadResultMethodsOnConfiguredLoad(t *testing.T) {
 	if got, want := len(result.FilesProcessed), 1; got != want {
 		t.Fatalf("FilesProcessed length mismatch: got %d want %d", got, want)
 	}
-	if got, want := len(result.ValuesIter()), 2; got != want {
-		t.Fatalf("ValuesIter length mismatch: got %d want %d", got, want)
+	if got, want := len(result.Values()), 2; got != want {
+		t.Fatalf("Values length mismatch: got %d want %d", got, want)
 	}
 }
 
@@ -495,7 +495,7 @@ func TestAddSearchPathsUsesDefaultDirectoryWhenNoConfigurationExists(t *testing.
 	if got := filepath.Base(paths[0]); got != ".known-values" {
 		t.Fatalf("default path mismatch: got %q", paths[0])
 	}
-	if got, want := paths[1], filepath.Clean("/custom/path"); got != want {
+	if got, want := paths[1], "/custom/path"; got != want {
 		t.Fatalf("custom path mismatch: got %q want %q", got, want)
 	}
 }
