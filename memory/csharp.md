@@ -5,3 +5,4 @@
 - For Rust crates that rely on macro-generated constant surfaces, derive C# constants and registration lists directly from source declarations to prevent silent omissions or value/name drift.
 - For Rust algorithms over `usize` ranges (for example Fisher-Yates shuffle indices), prefer the 64-bit RNG path (`NextWithUpperBound(ulong)`) in C# tests to preserve deterministic vector parity with Rust on 64-bit targets.
 - When exposing Rust slice-like collections from immutable C# models, avoid returning raw arrays typed as `IReadOnlyList<T>`; wrap with `Array.AsReadOnly(...)` to prevent mutation leaks.
+- For Rust crates that deserialize JSON with lowercase or snake_case keys, put `[JsonPropertyName(...)]` on every mapped C# DTO property instead of relying on serializer defaults; exact registry fixtures can otherwise fail even when property names look close enough.

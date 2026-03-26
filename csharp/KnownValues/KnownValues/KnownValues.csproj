@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BlockchainCommons.KnownValues</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Blockchain Commons Known Values.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="KnownValues.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BCComponents\BCComponents\BCComponents.csproj" />
+    <ProjectReference Include="..\..\BCTags\BCTags\BCTags.csproj" />
+    <ProjectReference Include="..\..\DCbor\DCbor\DCbor.csproj" />
+  </ItemGroup>
+
+</Project>

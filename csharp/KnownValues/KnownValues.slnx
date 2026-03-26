@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="KnownValues/KnownValues.csproj" />
+  <Project Path="KnownValues.Tests/KnownValues.Tests.csproj" />
+</Solution>

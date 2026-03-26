@@ -177,3 +177,5 @@ Chronological record of all translation activity in this repository.
 | 2026-03-05 | provenance-mark | 0.23.0 | TypeScript | @bc/provenance-mark | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-06 | provenance-mark | 0.23.0 | TypeScript | @bc/provenance-mark | 📖 GPT Codex | Fluency |
 | 2026-03-06 | bc-lifehash | 0.1.0 | TypeScript | @bc/lifehash | 📖 GPT Codex | Fluency |
+| 2026-03-26 | known-values | 0.15.5 | C# | KnownValues | 📖 GPT Codex | Translation |
+| 2026-03-26 | known-values | 0.15.5 | C# | KnownValues | 📖 GPT Codex | Fluency |
