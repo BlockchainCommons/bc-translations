@@ -159,44 +159,72 @@ public sealed class LoadError : Exception
 }
 
 /// <summary>
+/// A non-fatal error encountered during directory loading, associating a file
+/// or directory path with its <see cref="LoadError"/>.
+/// </summary>
+public sealed class LoadErrorEntry
+{
+    /// <summary>
+    /// Creates a new <see cref="LoadErrorEntry"/>.
+    /// </summary>
+    public LoadErrorEntry(string path, LoadError error)
+    {
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(error);
+
+        Path = path;
+        Error = error;
+    }
+
+    /// <summary>
+    /// The file or directory path that caused the error.
+    /// </summary>
+    public string Path { get; }
+
+    /// <summary>
+    /// The error that occurred.
+    /// </summary>
+    public LoadError Error { get; }
+}
+
+/// <summary>
 /// Result of a directory-loading operation.
 /// </summary>
 public sealed class LoadResult
 {
+    internal Dictionary<ulong, KnownValue> ValuesByCodepoint { get; } = new();
+    internal List<string> ProcessedFiles { get; } = [];
+    internal List<LoadErrorEntry> ErrorEntries { get; } = [];
+
     /// <summary>
     /// Known values loaded, keyed by codepoint.
     /// </summary>
-    public Dictionary<ulong, KnownValue> Values { get; } = new();
+    public IReadOnlyDictionary<ulong, KnownValue> Values => ValuesByCodepoint;
 
     /// <summary>
     /// Directories that were successfully processed.
     /// </summary>
-    public List<string> FilesProcessed { get; } = [];
+    public IReadOnlyList<string> FilesProcessed => ProcessedFiles;
 
     /// <summary>
     /// Non-fatal errors encountered during loading.
     /// </summary>
-    public List<(string Path, LoadError Error)> Errors { get; } = [];
+    public IReadOnlyList<LoadErrorEntry> Errors => ErrorEntries;
 
     /// <summary>
-    /// Returns the number of unique values loaded.
+    /// The number of unique values loaded.
     /// </summary>
-    public int ValuesCount() => Values.Count;
-
-    /// <summary>
-    /// Returns the loaded known values.
-    /// </summary>
-    public IEnumerable<KnownValue> ValuesIter() => Values.Values;
+    public int Count => ValuesByCodepoint.Count;
 
     /// <summary>
     /// Returns the loaded known values.
     /// </summary>
-    public IEnumerable<KnownValue> IntoValues() => Values.Values;
+    public IEnumerable<KnownValue> GetValues() => ValuesByCodepoint.Values;
 
     /// <summary>
-    /// Returns <c>true</c> if any errors occurred during loading.
+    /// <c>true</c> if any errors occurred during loading.
     /// </summary>
-    public bool HasErrors() => Errors.Count != 0;
+    public bool HasErrors => ErrorEntries.Count != 0;
 }
 
 /// <summary>
@@ -218,11 +246,6 @@ public sealed class DirectoryConfig : IEquatable<DirectoryConfig>
     {
         _paths = paths.Select(Path.GetFullPath).ToList();
     }
-
-    /// <summary>
-    /// Creates a new empty configuration.
-    /// </summary>
-    public static DirectoryConfig New() => new();
 
     /// <summary>
     /// Creates configuration with only the default directory.
@@ -267,9 +290,9 @@ public sealed class DirectoryConfig : IEquatable<DirectoryConfig>
     }
 
     /// <summary>
-    /// Returns the configured search paths.
+    /// The configured search paths.
     /// </summary>
-    public IReadOnlyList<string> Paths() => _paths;
+    public IReadOnlyList<string> Paths => _paths;
 
     /// <summary>
     /// Adds a path to the configuration.
@@ -404,7 +427,7 @@ public static class DirectoryLoader
 
         var result = new LoadResult();
 
-        foreach (var dirPath in config.Paths())
+        foreach (var dirPath in config.Paths)
         {
             var normalizedPath = Path.GetFullPath(dirPath);
 
@@ -414,23 +437,23 @@ public static class DirectoryLoader
 
                 foreach (var value in values)
                 {
-                    result.Values[value.Value] = value;
+                    result.ValuesByCodepoint[value.Value] = value;
                 }
 
                 if (errors.Count != 0)
                 {
-                    result.Errors.AddRange(errors);
+                    result.ErrorEntries.AddRange(errors);
                 }
 
-                result.FilesProcessed.Add(normalizedPath);
+                result.ProcessedFiles.Add(normalizedPath);
             }
             catch (IOException exception)
             {
-                result.Errors.Add((normalizedPath, LoadError.FromIo(exception)));
+                result.ErrorEntries.Add(new LoadErrorEntry(normalizedPath, LoadError.FromIo(exception)));
             }
             catch (UnauthorizedAccessException exception)
             {
-                result.Errors.Add((normalizedPath, LoadError.FromIo(exception)));
+                result.ErrorEntries.Add(new LoadErrorEntry(normalizedPath, LoadError.FromIo(exception)));
             }
         }
 
@@ -478,11 +501,11 @@ public static class DirectoryLoader
         }
     }
 
-    private static (List<KnownValue> Values, List<(string Path, LoadError Error)> Errors)
+    private static (List<KnownValue> Values, List<LoadErrorEntry> Errors)
         LoadFromDirectoryTolerant(string path)
     {
         var values = new List<KnownValue>();
-        var errors = new List<(string Path, LoadError Error)>();
+        var errors = new List<LoadErrorEntry>();
 
         if (!Directory.Exists(path))
         {
@@ -497,7 +520,7 @@ public static class DirectoryLoader
             }
             catch (LoadError exception)
             {
-                errors.Add((filePath, exception));
+                errors.Add(new LoadErrorEntry(filePath, exception));
             }
         }
 

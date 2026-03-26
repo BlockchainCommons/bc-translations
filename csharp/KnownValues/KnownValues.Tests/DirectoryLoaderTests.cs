@@ -71,17 +71,17 @@ public sealed class DirectoryLoaderTests : IDisposable
     public void TestDirectoryConfigDefault()
     {
         var config = DirectoryConfig.DefaultOnly();
-        Assert.Single(config.Paths());
-        Assert.EndsWith(".known-values", config.Paths()[0], StringComparison.Ordinal);
+        Assert.Single(config.Paths);
+        Assert.EndsWith(".known-values", config.Paths[0], StringComparison.Ordinal);
     }
 
     [Fact]
     public void TestDirectoryConfigCustomPaths()
     {
         var config = DirectoryConfig.WithPaths(["/a", "/b"]);
-        Assert.Equal(2, config.Paths().Count);
-        Assert.Equal(Path.GetFullPath("/a"), config.Paths()[0]);
-        Assert.Equal(Path.GetFullPath("/b"), config.Paths()[1]);
+        Assert.Equal(2, config.Paths.Count);
+        Assert.Equal(Path.GetFullPath("/a"), config.Paths[0]);
+        Assert.Equal(Path.GetFullPath("/b"), config.Paths[1]);
 
         var clone = config.Clone();
         Assert.Equal(config, clone);
@@ -91,9 +91,9 @@ public sealed class DirectoryLoaderTests : IDisposable
     public void TestDirectoryConfigWithDefault()
     {
         var config = DirectoryConfig.WithPathsAndDefault(["/custom"]);
-        Assert.Equal(2, config.Paths().Count);
-        Assert.Equal(Path.GetFullPath("/custom"), config.Paths()[0]);
-        Assert.EndsWith(".known-values", config.Paths()[1], StringComparison.Ordinal);
+        Assert.Equal(2, config.Paths.Count);
+        Assert.Equal(Path.GetFullPath("/custom"), config.Paths[0]);
+        Assert.EndsWith(".known-values", config.Paths[1], StringComparison.Ordinal);
     }
 
     [Fact]
@@ -107,11 +107,11 @@ public sealed class DirectoryLoaderTests : IDisposable
     public void TestLoadResultMethods()
     {
         var result = new LoadResult();
-        Assert.Equal(0, result.ValuesCount());
-        Assert.False(result.HasErrors());
+        Assert.Equal(0, result.Count);
+        Assert.False(result.HasErrors);
 
-        result.Values[1ul] = KnownValue.NewWithName(1u, "test");
-        Assert.Equal(1, result.ValuesCount());
+        result.ValuesByCodepoint[1ul] = KnownValue.NewWithName(1u, "test");
+        Assert.Equal(1, result.Count);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public sealed class DirectoryLoaderTests : IDisposable
         var store = new KnownValuesStore();
         var result = store.LoadFromConfig(config);
 
-        Assert.Equal(2, result.ValuesCount());
+        Assert.Equal(2, result.Count);
         Assert.NotNull(store.KnownValueNamed("fromDirOne"));
         Assert.NotNull(store.KnownValueNamed("fromDirTwo"));
     }
@@ -251,7 +251,7 @@ public sealed class DirectoryLoaderTests : IDisposable
         var result = DirectoryLoader.LoadFromConfig(config);
 
         Assert.True(result.Values.ContainsKey(40001ul));
-        Assert.True(result.HasErrors());
+        Assert.True(result.HasErrors);
     }
 
     [Fact]
@@ -319,10 +319,10 @@ public sealed class DirectoryLoaderTests : IDisposable
         var config = DirectoryConfig.WithPaths([tempDir.Path]);
         var result = DirectoryLoader.LoadFromConfig(config);
 
-        Assert.Equal(2, result.ValuesCount());
-        Assert.False(result.HasErrors());
+        Assert.Equal(2, result.Count);
+        Assert.False(result.HasErrors);
         Assert.Single(result.FilesProcessed);
-        Assert.Equal(2, result.ValuesIter().Count());
+        Assert.Equal(2, result.GetValues().Count());
     }
 
     [Fact]
@@ -382,9 +382,9 @@ public sealed class DirectoryLoaderTests : IDisposable
         DirectoryLoader.AddSearchPaths(["/custom/path"]);
 
         var config = DirectoryLoader.GetAndLockConfig();
-        Assert.Equal(2, config.Paths().Count);
-        Assert.EndsWith(".known-values", config.Paths()[0], StringComparison.Ordinal);
-        Assert.Equal(Path.GetFullPath("/custom/path"), config.Paths()[1]);
+        Assert.Equal(2, config.Paths.Count);
+        Assert.EndsWith(".known-values", config.Paths[0], StringComparison.Ordinal);
+        Assert.Equal(Path.GetFullPath("/custom/path"), config.Paths[1]);
     }
 
     private static void WriteJson(string directory, string fileName, string json)

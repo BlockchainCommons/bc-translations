@@ -63,11 +63,6 @@ public sealed class KnownValue
     public string Name => _assignedName ?? Value.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>
-    /// Creates a new <see cref="KnownValue"/> with the given numeric value.
-    /// </summary>
-    public static KnownValue New(ulong value) => new(value);
-
-    /// <summary>
     /// Creates a new <see cref="KnownValue"/> with the given numeric value and
     /// assigned name.
     /// </summary>

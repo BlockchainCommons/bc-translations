@@ -146,7 +146,7 @@ public sealed class KnownValuesStore
 
         var result = DirectoryLoader.LoadFromConfig(config);
 
-        foreach (var value in result.Values.Values)
+        foreach (var value in result.GetValues())
         {
             Insert(value);
         }

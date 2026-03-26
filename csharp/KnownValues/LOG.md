@@ -45,3 +45,36 @@ COMPLETED
 - Preserved Rust-shaped names where they are part of the crate API; constructors and XML docs keep the package usable as native C#
 - Tests remain green: 36/36 passing with `dotnet test csharp/KnownValues/KnownValues.slnx`
 - VERDICT: IDIOMATIC
+
+## 2026-03-26 — Stage 3: Check (Cross-Model)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translation by GPT Codex)
+
+## 2026-03-26 — Stage 3: Check (Cross-Model)
+COMPLETED
+- Verified all 104 registry constants (52 raw + 52 KnownValue) match Rust source
+- Verified all public types: KnownValue, KnownValuesStore, LazyKnownValues, RegistryEntry, OntologyInfo, RegistryFile, GeneratedInfo, LoadError, LoadResult, DirectoryConfig, ConfigError
+- Verified DefaultRegistryValues excludes VALUE and SELF (matches Rust KNOWN_VALUES initializer)
+- All 22 Rust tests translated, plus 14 C#-specific tests (36 total)
+- Signature mismatches: 0
+- Derive/protocol gaps: 0
+- VERDICT: COMPLETE
+
+## 2026-03-26 — Stage 4: Critique (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6
+
+## 2026-03-26 — Stage 4: Critique (Cross-Model)
+COMPLETED
+- Issues found: 7
+- Issues fixed: 7
+  - Replaced public tuple `(string Path, LoadError Error)` with proper `LoadErrorEntry` class
+  - Changed `LoadResult` collections from mutable public to read-only public (`IReadOnlyDictionary`, `IReadOnlyList`) with internal mutable backing
+  - Renamed `ValuesCount()` method to `Count` property (C# convention)
+  - Renamed `HasErrors()` method to `HasErrors` property (C# convention)
+  - Changed `Paths()` method to `Paths` property on `DirectoryConfig` (C# convention)
+  - Consolidated `ValuesIter()`/`IntoValues()` into single `GetValues()` method (no ownership transfer in C#)
+  - Removed redundant `KnownValue.New()` and `DirectoryConfig.New()` static factories (constructors suffice)
+- Issues blocked by completeness gaps: 0
+- Tests: 36/36 passing after all changes
+- VERDICT: IDIOMATIC

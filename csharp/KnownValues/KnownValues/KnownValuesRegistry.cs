@@ -485,7 +485,7 @@ public static class KnownValuesRegistry
         var config = DirectoryLoader.GetAndLockConfig();
         var result = DirectoryLoader.LoadFromConfig(config);
 
-        foreach (var value in result.IntoValues())
+        foreach (var value in result.GetValues())
         {
             store.Insert(value);
         }
