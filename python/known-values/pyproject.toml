@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "known-values"
+version = "0.15.5"
+description = "Blockchain Commons Known Values."
+requires-python = ">=3.10"
+license = "BSD-2-Clause-Patent"
+keywords = ["blockchain", "cbor", "registry"]
+dependencies = [
+  "bc-components==0.31.1",
+  "dcbor==0.25.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/known_values"]
