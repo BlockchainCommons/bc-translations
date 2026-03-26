@@ -68,7 +68,7 @@ class URVideoSession(
             Camera2Interop.Extender(previewBuilder)
                 .setCaptureRequestOption(
                     CaptureRequest.CONTROL_AF_MODE,
-                    CameraMetadata.CONTROL_AF_MODE_MACRO
+                    CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO
                 )
             val preview = previewBuilder.build().also {
                 it.surfaceProvider = previewView.surfaceProvider
@@ -79,7 +79,7 @@ class URVideoSession(
             Camera2Interop.Extender(analysisBuilder)
                 .setCaptureRequestOption(
                     CaptureRequest.CONTROL_AF_MODE,
-                    CameraMetadata.CONTROL_AF_MODE_MACRO
+                    CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO
                 )
             val analysis = analysisBuilder.build()
 
