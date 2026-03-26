@@ -15,6 +15,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.tasks.Tasks
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
@@ -35,7 +36,11 @@ class URVideoSession(
     private val onCodesScanned: (Set<String>) -> Unit
 ) {
     private val executor = Executors.newSingleThreadExecutor()
-    private val scanner = BarcodeScanning.getClient()
+    private val scanner = BarcodeScanning.getClient(
+        BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+    )
 
     /// The aspect ratio (width / height) of the camera image in the current
     /// device orientation. Used by overlays to correct for resizeAspectFill crop.
@@ -43,10 +48,24 @@ class URVideoSession(
     var orientedImageAspectRatio: Float = 1.0f
         private set
 
+    /**
+     * Controls whether text recognition runs on each frame.
+     *
+     * Set to `false` once QR-based scanning begins to free the analysis
+     * pipeline for barcode-only processing. The image proxy is closed
+     * immediately after the barcode task, maximising QR capture throughput.
+     */
+    @Volatile
+    var isTextRecognitionEnabled: Boolean = true
+
     private val textRecognizer: TextRecognizer? =
         if (onTextRecognized != null) TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         else null
     private var lastFound: Set<String> = emptySet()
+    private var lastTextRecognitionTime: Long = 0
+    /// Minimum interval between text recognition passes (~6-7 fps),
+    /// matching the iOS throttle to keep CPU usage low.
+    private val textRecognitionMinInterval: Long = 150
 
     /**
      * Binds the camera preview and QR analysis to the given lifecycle owner.
@@ -132,7 +151,13 @@ class URVideoSession(
             }
 
         val recognizer = textRecognizer
-        if (recognizer != null) {
+        val now = System.currentTimeMillis()
+        val shouldRunText = recognizer != null &&
+            isTextRecognitionEnabled &&
+            (now - lastTextRecognitionTime >= textRecognitionMinInterval)
+
+        if (shouldRunText) {
+            lastTextRecognitionTime = now
             val allTexts = mutableListOf<URRecognizedText>()
             val textTasks = textRecognitionRotations.map { extraRotation ->
                 val totalRotation = (baseDegrees + extraRotation) % 360
@@ -140,7 +165,7 @@ class URVideoSession(
                 val imageWidth = rotatedInput.width.toFloat()
                 val imageHeight = rotatedInput.height.toFloat()
 
-                recognizer.process(rotatedInput)
+                recognizer!!.process(rotatedInput)
                     .addOnSuccessListener { visionText ->
                         if (visionText.textBlocks.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
                             val texts = visionText.textBlocks.mapNotNull { block ->
@@ -183,7 +208,7 @@ class URVideoSession(
                     }
                 }
         } else {
-            // Text recognition not requested — close after barcode completes.
+            // Text recognition skipped (disabled or throttled) — close after barcode.
             barcodeTask.addOnCompleteListener { imageProxy.close() }
         }
     }
