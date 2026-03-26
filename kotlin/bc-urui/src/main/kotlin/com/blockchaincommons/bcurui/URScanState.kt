@@ -26,14 +26,10 @@ class URScanState(
     val hapticEvents: SharedFlow<URHapticEvent> = _hapticEvents.asSharedFlow()
 
     private var decoder = MultipartDecoder()
-    private var expectedFragmentCount: Int? = null
-    private var receivedCount: Int = 0
     private var hasReceivedFirstPart: Boolean = false
 
     fun restart() {
         decoder = MultipartDecoder()
-        expectedFragmentCount = null
-        receivedCount = 0
         hasReceivedFirstPart = false
         lastResult = null
     }
@@ -77,12 +73,16 @@ class URScanState(
 
     private val progress: URScanProgress
         get() {
-            val count = expectedFragmentCount ?: 1
-            val percent = if (count > 0) minOf(receivedCount.toDouble() / count, 1.0) else 0.0
+            val count = decoder.expectedFragmentCount.takeIf { it > 0 } ?: 1
+            val decodedCount = decoder.decodedFragmentCount
+            val percent = minOf(
+                (decodedCount + decoder.bufferContribution) / count, 1.0
+            )
+            val filledCount = (percent * count).toInt()
             val states = (0 until count).map { i ->
                 when {
-                    i < receivedCount -> FragmentState.Highlighted
-                    i == receivedCount -> FragmentState.On
+                    i < filledCount -> FragmentState.Highlighted
+                    i == filledCount -> FragmentState.On
                     else -> FragmentState.Off
                 }
             }
@@ -110,12 +110,10 @@ class URScanState(
 
             // Multi-part UR
             if (!hasReceivedFirstPart) {
-                expectedFragmentCount = extractFragmentCount(trimmed)
                 hasReceivedFirstPart = true
             }
 
             decoder.receive(trimmed)
-            receivedCount++
 
             if (decoder.isComplete) {
                 val ur = decoder.message()
@@ -161,13 +159,4 @@ class URScanState(
         return true
     }
 
-    /** Extracts the total fragment count from a multipart UR sequence ID. */
-    private fun extractFragmentCount(ur: String): Int? {
-        val withoutScheme = ur.removePrefix("ur:").removePrefix("UR:")
-        val components = withoutScheme.split('/')
-        if (components.size < 2) return null
-        val seqParts = components[1].split('-')
-        if (seqParts.size != 2) return null
-        return seqParts[1].toIntOrNull()
-    }
 }

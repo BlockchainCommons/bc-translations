@@ -15,6 +15,25 @@ internal class FountainDecoder {
     val isComplete: Boolean
         get() = messageLength != 0 && decoded.size == sequenceCount
 
+    /** Number of fragments that have been fully decoded. */
+    val decodedCount: Int get() = decoded.size
+
+    /** Total number of fragments needed. Returns 0 before the first part is received. */
+    val expectedCount: Int get() = sequenceCount
+
+    /** Set of fragment indexes that have been fully decoded. */
+    val decodedIndexes: Set<Int> get() = decoded.keys
+
+    /**
+     * Partial progress credit from buffered mixed-degree parts.
+     *
+     * Each buffered part with reduced degree d contributes 1/d,
+     * reflecting that it will deliver one full decoded fragment
+     * once d-1 of its unknowns are resolved from other sources.
+     */
+    val bufferContribution: Double
+        get() = buffer.keys.sumOf { 1.0 / it.size }
+
     /** Validates a part against previously received metadata. */
     fun validate(part: FountainPart): Boolean {
         if (received.isEmpty()) return false

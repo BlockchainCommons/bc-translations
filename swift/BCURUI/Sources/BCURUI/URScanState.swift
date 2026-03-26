@@ -33,8 +33,6 @@ public final class URScanState: URCodesReceiver {
     public let hapticFeedback: Bool
 
     private var decoder: MultipartDecoder
-    private var expectedFragmentCount: Int?
-    private var receivedCount: Int = 0
     private var hasReceivedFirstPart: Bool = false
 
     private let impactGenerator: UIImpactFeedbackGenerator?
@@ -54,8 +52,6 @@ public final class URScanState: URCodesReceiver {
 
     public func restart() {
         decoder = MultipartDecoder()
-        expectedFragmentCount = nil
-        receivedCount = 0
         hasReceivedFirstPart = false
         lastResult = nil
         if hapticFeedback {
@@ -98,12 +94,16 @@ public final class URScanState: URCodesReceiver {
     }
 
     private var progress: URScanProgress {
-        let count = expectedFragmentCount ?? 1
-        let percent = count > 0 ? min(Double(receivedCount) / Double(count), 1.0) : 0.0
+        let count = decoder.expectedFragmentCount > 0 ? decoder.expectedFragmentCount : 1
+        let decodedCount = decoder.decodedFragmentCount
+        let percent = min(
+            (Double(decodedCount) + decoder.bufferContribution) / Double(count), 1.0
+        )
+        let filledCount = Int(percent * Double(count))
         let fragmentStates: [URFragmentBar.FragmentState] = (0..<count).map { i in
-            if i < receivedCount {
+            if i < filledCount {
                 return .highlighted
-            } else if i == receivedCount {
+            } else if i == filledCount {
                 return .on
             } else {
                 return .off
@@ -133,12 +133,10 @@ public final class URScanState: URCodesReceiver {
 
             // Multi-part UR
             if !hasReceivedFirstPart {
-                expectedFragmentCount = extractFragmentCount(from: trimmed)
                 hasReceivedFirstPart = true
             }
 
             try decoder.receive(trimmed)
-            receivedCount += 1
 
             if decoder.isComplete {
                 if let ur = try decoder.message() {
@@ -183,13 +181,4 @@ public final class URScanState: URCodesReceiver {
         return true
     }
 
-    /// Extracts the total fragment count from a multipart UR sequence ID.
-    private func extractFragmentCount(from ur: String) -> Int? {
-        let withoutScheme = ur.dropFirst(3)
-        let components = withoutScheme.split(separator: "/")
-        guard components.count >= 2 else { return nil }
-        let seqParts = components[1].split(separator: "-")
-        guard seqParts.count == 2, let count = Int(seqParts[1]) else { return nil }
-        return count
-    }
 }

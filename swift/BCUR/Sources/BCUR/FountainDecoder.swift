@@ -14,6 +14,24 @@ internal struct FountainDecoder: Sendable {
         messageLength != 0 && decoded.count == sequenceCount
     }
 
+    /// Number of fragments that have been fully decoded.
+    var decodedCount: Int { decoded.count }
+
+    /// Total number of fragments needed. Returns 0 before the first part is received.
+    var expectedCount: Int { sequenceCount }
+
+    /// Set of fragment indexes that have been fully decoded.
+    var decodedIndexes: Swift.Set<Int> { Swift.Set(decoded.keys) }
+
+    /// Partial progress credit from buffered mixed-degree parts.
+    ///
+    /// Each buffered part with reduced degree d contributes 1/d,
+    /// reflecting that it will deliver one full decoded fragment
+    /// once d-1 of its unknowns are resolved from other sources.
+    var bufferContribution: Double {
+        buffer.keys.reduce(0.0) { sum, indexes in sum + 1.0 / Double(indexes.count) }
+    }
+
     func validate(_ part: FountainPart) -> Bool {
         if received.isEmpty {
             return false

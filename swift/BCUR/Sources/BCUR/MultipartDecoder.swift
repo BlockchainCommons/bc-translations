@@ -54,6 +54,18 @@ public final class MultipartDecoder {
         decoder.complete
     }
 
+    /// Number of fragments that have been fully decoded.
+    public var decodedFragmentCount: Int { decoder.decodedCount }
+
+    /// Total number of fragments needed. Returns 0 before the first part is received.
+    public var expectedFragmentCount: Int { decoder.expectedCount }
+
+    /// Set of fragment indexes that have been fully decoded.
+    public var decodedFragmentIndexes: Swift.Set<Int> { decoder.decodedIndexes }
+
+    /// Partial progress credit from buffered mixed-degree parts.
+    public var bufferContribution: Double { decoder.bufferContribution }
+
     /// Returns the reconstructed UR if complete, else `nil`.
     public func message() throws -> UR? {
         let messageData: [UInt8]?

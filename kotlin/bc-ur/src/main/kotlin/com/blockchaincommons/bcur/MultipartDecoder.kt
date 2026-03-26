@@ -37,6 +37,18 @@ class MultipartDecoder {
     /** Returns whether the decoder has received all fragments. */
     val isComplete: Boolean get() = decoder.isComplete
 
+    /** Number of fragments that have been fully decoded. */
+    val decodedFragmentCount: Int get() = decoder.decodedCount
+
+    /** Total number of fragments needed. Returns 0 before the first part is received. */
+    val expectedFragmentCount: Int get() = decoder.expectedCount
+
+    /** Set of fragment indexes that have been fully decoded. */
+    val decodedFragmentIndexes: Set<Int> get() = decoder.decodedIndexes
+
+    /** Partial progress credit from buffered mixed-degree parts. */
+    val bufferContribution: Double get() = decoder.bufferContribution
+
     /** Returns the decoded UR if complete, or null. */
     fun message(): UR? {
         val data = decoder.message() ?: return null
