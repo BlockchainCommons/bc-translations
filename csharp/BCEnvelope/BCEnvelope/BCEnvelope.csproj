@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BlockchainCommons.BCEnvelope</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Gordian Envelope for .NET — hierarchical binary data format built on deterministic CBOR with Merkle-like digest tree.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BCEnvelope.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BCRand\BCRand\BCRand.csproj" />
+    <ProjectReference Include="..\..\BCCrypto\BCCrypto\BCCrypto.csproj" />
+    <ProjectReference Include="..\..\DCbor\DCbor\DCbor.csproj" />
+    <ProjectReference Include="..\..\BCTags\BCTags\BCTags.csproj" />
+    <ProjectReference Include="..\..\BCUR\BCUR\BCUR.csproj" />
+    <ProjectReference Include="..\..\SSKR\SSKR\SSKR.csproj" />
+    <ProjectReference Include="..\..\BCComponents\BCComponents\BCComponents.csproj" />
+    <ProjectReference Include="..\..\KnownValues\KnownValues\KnownValues.csproj" />
+  </ItemGroup>
+
+</Project>

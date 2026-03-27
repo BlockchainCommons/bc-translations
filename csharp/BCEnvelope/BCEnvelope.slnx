@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="../BCComponents/BCComponents/BCComponents.csproj" />
+  <Project Path="../BCCrypto/BCCrypto/BCCrypto.csproj" />
+  <Project Path="../BCRand/BCRand/BCRand.csproj" />
+  <Project Path="../BCShamir/BCShamir/BCShamir.csproj" />
+  <Project Path="../BCTags/BCTags/BCTags.csproj" />
+  <Project Path="../BCUR/BCUR/BCUR.csproj" />
+  <Project Path="../DCbor/DCbor/DCbor.csproj" />
+  <Project Path="../KnownValues/KnownValues/KnownValues.csproj" />
+  <Project Path="../SSKR/SSKR/SSKR.csproj" />
+  <Project Path="BCEnvelope.Tests/BCEnvelope.Tests.csproj" />
+  <Project Path="BCEnvelope/BCEnvelope.csproj" />
+</Solution>

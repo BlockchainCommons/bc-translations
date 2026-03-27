@@ -33,7 +33,7 @@ The following model markers indicate which AI model was used for each translatio
 | ✅ sskr             | 0.12.0  | ✅📖 SSKR         | ✅📖 sskr         | ✅📖 sskr            | ✅📖 sskr          | ✅🎻 SSKR           | ✅🎻 @bc/sskr            |
 | ✅ bc-components    | 0.31.1  | ✅🎻 BCComponents | ✅🎻 bccomponents | ✅🎻 bc-components   | ✅🎻 bc-components | ✅📖 BCComponents   | ✅📖 @bc/components      |
 | ✅ known-values     | 0.15.5  | ✅📖 KnownValues  | ✅📖 knownvalues  | ✅📖 known-values    | ✅📖 known-values  | ✅🎻 KnownValues    | ✅🎻 @bc/known-values    |
-| 🚧 bc-envelope     | 0.43.0  | ⏳ BCEnvelope     | ⏳ bcenvelope     | ✅🎻 bc-envelope     | ⏳ bc-envelope     | ✅📖 BCEnvelope     | ✅📖 @bc/envelope        |
+| 🚧 bc-envelope     | 0.43.0  | ✅🎻 BCEnvelope    | ⏳ bcenvelope     | ✅🎻 bc-envelope     | ⏳ bc-envelope     | ✅📖 BCEnvelope     | ✅📖 @bc/envelope        |
 | 🚧 provenance-mark | 0.23.0  | ⏳ ProvenanceMark | ⏳ provenancemark | ✅📖 provenance-mark | ⏳ provenance-mark | ✅🎻 ProvenanceMark | ✅🎻 @bc/provenance-mark |
 
 ## Translations from Old Swift Codebase

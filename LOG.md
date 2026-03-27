@@ -186,3 +186,5 @@ Chronological record of all translation activity in this repository.
 | 2026-03-26 | known-values | 0.15.5 | C# | KnownValues | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-26 | known-values | 0.15.5 | Go | knownvalues | 🎻 Claude Opus 4.6 | Fluency |
 | 2026-03-26 | known-values | 0.15.5 | Python | known-values | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-26 | bc-envelope | 0.43.0 | C# | BCEnvelope | 🎻 Claude Opus 4.6 | Translation |
+| 2026-03-26 | bc-envelope | 0.43.0 | C# | BCEnvelope | 🎻 Claude Opus 4.6 | Fluency |
