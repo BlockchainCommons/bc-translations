@@ -77,26 +77,26 @@
 - [x] SshTests.cs — 1/1 test
 - [x] SskrTests.cs — 1/1 test
 
-## Tests — Inline (0/19 translated)
+## Tests — Inline (19/19 translated)
 
-The Rust crate has 19 inline unit tests in source files. These are NOT translated as separate C# test methods. They test:
-- envelope.rs (6): constructor equivalence (leaf, known value, assertion, encrypted, compressed, cbor)
-- expression.rs (2): expression creation and parsing
-- request.rs (3): basic request, request with metadata, parameter format
-- response.rs (4): success OK, success result, early failure, failure
-- event.rs (1): event creation and parsing
-- sskr.rs (1): SSKR split and join inline
-- seal.rs (2): seal/unseal, seal with options
-
-These are exercised indirectly by the integration tests but do not have explicit test coverage in C#.
+- [x] InlineTests.cs — 19/19 translated inline tests covering:
+  - envelope.rs (6): constructor equivalence (leaf, known value, assertion, encrypted, compressed, cbor)
+  - expression.rs (2): expression creation and parsing
+  - request.rs (3): basic request, request with metadata, parameter format
+  - response.rs (4): success OK, success result, early failure, failure
+  - event.rs (1): event creation and parsing
+  - sskr.rs (1): SSKR split and join inline
+  - seal.rs (2): seal/unseal, seal with options
+- [x] InlineTests.cs — 2 additional C# regression tests for generic envelope conversion helpers (`TryAs`, `TryObjectForPredicate`, `TryOptionalObjectForPredicate`, `TryObjectsForPredicate`)
 
 ## API Gaps (Minor)
 
-The following 4 public methods exist in Rust but are not translated. They are NOT used in any Rust test and are only used internally by each other:
-- [ ] `TryAs<T>()` — TryFrom<Envelope>-based extraction
-- [ ] `TryObjectForPredicate<T>()` — TryFrom<Envelope>-based object extraction
-- [ ] `TryOptionalObjectForPredicate<T>()` — optional variant
-- [ ] `TryObjectsForPredicate<T>()` — multi-result variant
+- [x] `TryAs<T>()` — TryFrom<Envelope>-based extraction
+- [x] `TryObjectForPredicate<T>()` — TryFrom<Envelope>-based object extraction
+- [x] `TryOptionalObjectForPredicate<T>()` — optional variant
+- [x] `TryObjectsForPredicate<T>()` — multi-result variant
+
+No remaining public API omissions were found in this pass.
 
 Note: `SigningOptions` is from BCComponents, not BCEnvelope (correctly not a separate file here).
 Note: `ExpressionBehavior`, `RequestBehavior`, `ResponseBehavior`, `EventBehavior` are Rust traits that are integrated into the C# classes directly rather than as separate interfaces (Expression, Request, Response, Event each implement their own behavior inline). This is idiomatic C#.

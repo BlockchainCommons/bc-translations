@@ -136,6 +136,60 @@ public sealed class InlineTests
         Assert.Equal(expression, parsedExpression);
     }
 
+    [Fact]
+    public void TestTryAs()
+    {
+        TagsRegistry.RegisterTags();
+
+        var textEnvelope = Envelope.Create("Hello");
+        Assert.Equal("Hello", textEnvelope.TryAs<string>());
+
+        var expression = new Expression(Functions.Add)
+            .WithParameter(Parameters.Lhs, 2)
+            .WithParameter(Parameters.Rhs, 3);
+
+        var parsedExpression = expression.ToEnvelope().TryAs<Expression>();
+
+        Assert.Equal(expression.Function, parsedExpression.Function);
+        Assert.Equal(2, parsedExpression.ExtractObjectForParameter<int>(Parameters.Lhs));
+        Assert.Equal(3, parsedExpression.ExtractObjectForParameter<int>(Parameters.Rhs));
+        Assert.Equal(expression, parsedExpression);
+    }
+
+    [Fact]
+    public void TestTryObjectHelpers()
+    {
+        TagsRegistry.RegisterTags();
+
+        var singleExpression = new Expression(Functions.Add)
+            .WithParameter(Parameters.Lhs, 2)
+            .WithParameter(Parameters.Rhs, 3);
+
+        var singleEnvelope = Envelope.Create("container")
+            .AddAssertion("expr", singleExpression.ToEnvelope());
+
+        var parsedSingle = singleEnvelope.TryObjectForPredicate<Expression>("expr");
+        Assert.Equal(singleExpression, parsedSingle);
+        Assert.Null(singleEnvelope.TryOptionalObjectForPredicate<Expression>("missing"));
+
+        var firstExpression = new Expression(Functions.Add)
+            .WithParameter(Parameters.Lhs, 5)
+            .WithParameter(Parameters.Rhs, 8);
+        var secondExpression = new Expression(Functions.Sub)
+            .WithParameter(Parameters.Lhs, 9)
+            .WithParameter(Parameters.Rhs, 4);
+
+        var multiEnvelope = Envelope.Create("container")
+            .AddAssertion("expr", firstExpression.ToEnvelope())
+            .AddAssertion("expr", secondExpression.ToEnvelope());
+
+        var parsedExpressions = multiEnvelope.TryObjectsForPredicate<Expression>("expr");
+
+        Assert.Equal(2, parsedExpressions.Count);
+        Assert.Contains(firstExpression, parsedExpressions);
+        Assert.Contains(secondExpression, parsedExpressions);
+    }
+
     // ===================================================================
     // Section 3: extension/expressions/request.rs — Request tests
     // ===================================================================

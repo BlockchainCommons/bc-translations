@@ -505,6 +505,26 @@ public sealed partial class Envelope : IDigestProvider
         };
     }
 
+    /// <summary>
+    /// Converts this envelope to the specified envelope-backed or leaf-decoded type.
+    /// </summary>
+    /// <typeparam name="T">The target type.</typeparam>
+    /// <returns>The decoded value.</returns>
+    /// <exception cref="EnvelopeException">Thrown if the envelope cannot be converted to the requested type.</exception>
+    public T TryAs<T>()
+    {
+        var targetType = typeof(T);
+
+        if (targetType == typeof(Expression))
+            return (T)(object)Expression.FromEnvelope(this);
+        if (targetType == typeof(Request))
+            return (T)(object)Request.FromEnvelope(this);
+        if (targetType == typeof(Response))
+            return (T)(object)Response.FromEnvelope(this);
+
+        return ExtractSubject<T>();
+    }
+
     private static T ExtractType<T, U>(U value)
     {
         if (value is T result)
@@ -684,6 +704,14 @@ public sealed partial class Envelope : IDigestProvider
     }
 
     /// <summary>
+    /// Returns the object of the assertion with the given predicate, decoded as the given envelope-backed type.
+    /// </summary>
+    public T TryObjectForPredicate<T>(object predicate)
+    {
+        return ObjectForPredicate(predicate).TryAs<T>();
+    }
+
+    /// <summary>
     /// Returns the object for the predicate decoded as T, or default if none exists.
     /// </summary>
     public T? ExtractOptionalObjectForPredicate<T>(object predicate)
@@ -692,6 +720,17 @@ public sealed partial class Envelope : IDigestProvider
         if (obj is null)
             return default;
         return obj.ExtractSubject<T>();
+    }
+
+    /// <summary>
+    /// Returns the object of the assertion with the given predicate, decoded as the given envelope-backed type, or default if none exists.
+    /// </summary>
+    public T? TryOptionalObjectForPredicate<T>(object predicate)
+    {
+        var obj = OptionalObjectForPredicate(predicate);
+        if (obj is null)
+            return default;
+        return obj.TryAs<T>();
     }
 
     /// <summary>
@@ -710,6 +749,16 @@ public sealed partial class Envelope : IDigestProvider
     {
         return ObjectsForPredicate(predicate)
             .Select(o => o.ExtractSubject<T>())
+            .ToList();
+    }
+
+    /// <summary>
+    /// Returns all objects for the given predicate, decoded as the given envelope-backed type.
+    /// </summary>
+    public List<T> TryObjectsForPredicate<T>(object predicate)
+    {
+        return ObjectsForPredicate(predicate)
+            .Select(o => o.TryAs<T>())
             .ToList();
     }
 

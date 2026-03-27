@@ -72,3 +72,30 @@ COMPLETED
   - `Using` suffix on RNG-accepting methods is consistent across codebase
 - Tests: 158/158 passing, 0 compiler warnings
 - VERDICT: IDIOMATIC
+
+## 2026-03-27 — Stage 3: Check
+STARTED
+- Running cross-model completeness check against Rust bc-envelope 0.43.0
+- Revalidating public API coverage, translated test inventory, and current `COMPLETENESS.md` accuracy
+
+## 2026-03-27 — Stage 3: Check
+COMPLETED
+- API Coverage: 49/49 translation units present; restored the 4 generic envelope-conversion helpers (`TryAs`, `TryObjectForPredicate`, `TryOptionalObjectForPredicate`, `TryObjectsForPredicate`)
+- Test Coverage: 158/158 Rust tests translated (139 integration + 19 inline), plus 2 extra C# regression tests for the restored helpers
+- Signature Mismatches: 0
+- Derive/Protocol Coverage: IDigestProvider, ICborTaggedEncodable, ICborTaggedDecodable, Equals/GetHashCode, ToString — all present
+- Doc Coverage: Public API XML docs and package description present
+- Tests: 160/160 passing
+- VERDICT: COMPLETE
+
+## 2026-03-27 — Stage 4: Fluency
+STARTED
+- Running cross-model C# fluency review on BCEnvelope after completeness repair
+
+## 2026-03-27 — Stage 4: Fluency
+COMPLETED
+- Issues found: 0
+- Issues fixed: 0
+- Notes: The restored `TryAs` helper family matches the package's existing exception-throwing `Try*` naming pattern and does not require downstream C# repair
+- Tests: 160/160 passing, 0 compiler warnings
+- VERDICT: IDIOMATIC
