@@ -32,13 +32,13 @@ func (s SignatureScheme) String() string {
 	case SchemeMLDSA87:
 		return "MLDSA87"
 	case SchemeSSHEd25519:
-		return "SSH-Ed25519"
+		return "SshEd25519"
 	case SchemeSSHDSA:
-		return "SSH-DSA"
+		return "SshDsa"
 	case SchemeSSHEcdsaP256:
-		return "SSH-ECDSA-P256"
+		return "SshEcdsaP256"
 	case SchemeSSHEcdsaP384:
-		return "SSH-ECDSA-P384"
+		return "SshEcdsaP384"
 	default:
 		return "Unknown"
 	}

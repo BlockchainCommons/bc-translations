@@ -4,14 +4,14 @@ Running queue of translated targets that still need at least one fluency pass by
 
 Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
-- Last updated: 2026-03-26
-- Targets translated: 67
-- Targets with cross-model fluency complete: 66
+- Last updated: 2026-03-27
+- Targets translated: 68
+- Targets with cross-model fluency complete: 67
 - Targets still needing cross-model fluency: 1
 
 | Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
 |-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
-| bc-envelope | 0.43.0 | C# | BCEnvelope | 🎻 Claude Opus 4.6 | 📖 GPT Codex | Fluency logged, but only by the translation model |
+| bc-envelope | 0.43.0 | Go | bcenvelope | 🎻 Claude Opus 4.6 | 📖 GPT Codex | No fluency pass logged |
 
 ## Update Rule
 

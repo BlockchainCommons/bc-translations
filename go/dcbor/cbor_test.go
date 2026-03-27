@@ -92,9 +92,12 @@ func TestDiagnosticExpectedTextOutput(t *testing.T) {
 
 	// expected-text-output-rubric:
 	const expected = `{
-    "name": "Alice",
-    "roles": ["admin", "operator"],
-    "active": true
+    "name":
+    "Alice",
+    "roles":
+    ["admin", "operator"],
+    "active":
+    true
 }`
 
 	assertActualExpected(t, actual, expected)

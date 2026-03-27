@@ -108,6 +108,14 @@ func RegisterTagsIn(tagsStore *dcbor.TagsStore) {
 		return r.String(), nil
 	})
 
+	tagsStore.SetSummarizer(bctags.TagEncryptedKey, func(untagged dcbor.CBOR, _ bool) (string, error) {
+		ek, err := DecodeEncryptedKey(untagged)
+		if err != nil {
+			return "", err
+		}
+		return ek.String(), nil
+	})
+
 	tagsStore.SetSummarizer(bctags.TagPrivateKeyBase, func(untagged dcbor.CBOR, _ bool) (string, error) {
 		k, err := DecodePrivateKeyBase(untagged)
 		if err != nil {

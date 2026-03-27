@@ -57,75 +57,139 @@ func normalizeDiagOpts(opts DiagFormatOpts) DiagFormatOpts {
 	return opts
 }
 
+// diagParts holds the main diagnostic string and an optional trailing annotation.
+// This separation allows array commas and map colons to be placed between the
+// value and its annotation, matching the Rust dcbor annotated output format.
+type diagParts struct {
+	main       string
+	annotation string // e.g. "   / leaf /"
+}
+
+func (d diagParts) String() string {
+	return d.main + d.annotation
+}
+
 func (c CBOR) diagnosticAtLevel(level int, opts DiagFormatOpts) string {
+	return c.diagnosticPartsAtLevel(level, opts).String()
+}
+
+func (c CBOR) diagnosticPartsAtLevel(level int, opts DiagFormatOpts) diagParts {
 	if opts.summarize && c.kind == CBORKindTagged {
 		tagged := c.value.(TaggedValue)
 		if summarizer, ok := lookupSummarizer(opts.tags, tagged.Tag.Value()); ok {
 			if summary, err := summarizer(tagged.Value.Clone(), opts.flat); err == nil {
-				return summary
+				return diagParts{main: summary}
 			}
 		}
 	}
 
 	switch c.kind {
 	case CBORKindUnsigned:
-		return fmt.Sprintf("%d", c.value.(uint64))
+		return diagParts{main: fmt.Sprintf("%d", c.value.(uint64))}
 	case CBORKindNegative:
-		return formatNegativeDisplay(c.value.(uint64))
+		return diagParts{main: formatNegativeDisplay(c.value.(uint64))}
 	case CBORKindByteString:
-		return fmt.Sprintf("h'%x'", c.value.(ByteString).Data())
+		return diagParts{main: fmt.Sprintf("h'%x'", c.value.(ByteString).Data())}
 	case CBORKindText:
-		return fmt.Sprintf("%q", c.value.(string))
+		return diagParts{main: fmt.Sprintf("%q", c.value.(string))}
 	case CBORKindSimple:
-		return c.value.(Simple).Name()
+		return diagParts{main: c.value.(Simple).Name()}
 	case CBORKindTagged:
 		tagged := c.value.(TaggedValue)
 		tagPrefix := fmt.Sprintf("%d", tagged.Tag.Value())
+		innerStr := tagged.Value.diagnosticAtLevel(level+1, opts)
 		if opts.annotate {
 			if name, ok := lookupTagName(opts.tags, tagged.Tag); ok {
-				return fmt.Sprintf("%d(%s)   / %s /", tagged.Tag.Value(), tagged.Value.diagnosticAtLevel(level+1, opts), name)
+				ann := fmt.Sprintf("   / %s /", name)
+				if taggedNeedsMultiline(tagged.Value, innerStr) {
+					indent := strings.Repeat("    ", level+1)
+					main := fmt.Sprintf("%s(%s\n%s%s\n%s)", tagPrefix, ann, indent, innerStr, strings.Repeat("    ", level))
+					return diagParts{main: main}
+				}
+				return diagParts{main: fmt.Sprintf("%s(%s)", tagPrefix, innerStr), annotation: ann}
 			}
 		}
-		return fmt.Sprintf("%s(%s)", tagPrefix, tagged.Value.diagnosticAtLevel(level+1, opts))
+		return diagParts{main: fmt.Sprintf("%s(%s)", tagPrefix, innerStr)}
 	case CBORKindArray:
 		items := c.value.([]CBOR)
 		if len(items) == 0 {
-			return "[]"
+			return diagParts{main: "[]"}
 		}
 		if opts.flat || !containsNestedCollection(items) {
 			parts := make([]string, 0, len(items))
 			for _, item := range items {
 				parts = append(parts, item.diagnosticAtLevel(level+1, opts))
 			}
-			return fmt.Sprintf("[%s]", strings.Join(parts, ", "))
+			return diagParts{main: fmt.Sprintf("[%s]", strings.Join(parts, ", "))}
 		}
-		indent := strings.Repeat(" ", (level+1)*4)
-		parts := make([]string, 0, len(items))
-		for _, item := range items {
-			parts = append(parts, indent+item.diagnosticAtLevel(level+1, opts))
+		indent := strings.Repeat("    ", level+1)
+		var sb strings.Builder
+		sb.WriteString("[\n")
+		for i, item := range items {
+			p := item.diagnosticPartsAtLevel(level+1, opts)
+			sb.WriteString(indent)
+			sb.WriteString(p.main)
+			if i < len(items)-1 {
+				sb.WriteString(",")
+			}
+			sb.WriteString(p.annotation)
+			sb.WriteString("\n")
 		}
-		return fmt.Sprintf("[\n%s\n%s]", strings.Join(parts, ",\n"), strings.Repeat(" ", level*4))
+		sb.WriteString(strings.Repeat("    ", level))
+		sb.WriteString("]")
+		return diagParts{main: sb.String()}
 	case CBORKindMap:
 		m := c.value.(Map)
 		entries := m.AsEntries()
 		if len(entries) == 0 {
-			return "{}"
+			return diagParts{main: "{}"}
 		}
 		if opts.flat || !mapContainsNestedCollection(entries) {
 			parts := make([]string, 0, len(entries))
 			for _, entry := range entries {
 				parts = append(parts, fmt.Sprintf("%s: %s", entry.Key.diagnosticAtLevel(level+1, opts), entry.Value.diagnosticAtLevel(level+1, opts)))
 			}
-			return fmt.Sprintf("{%s}", strings.Join(parts, ", "))
+			return diagParts{main: fmt.Sprintf("{%s}", strings.Join(parts, ", "))}
 		}
-		indent := strings.Repeat(" ", (level+1)*4)
-		parts := make([]string, 0, len(entries))
-		for _, entry := range entries {
-			parts = append(parts, fmt.Sprintf("%s%s: %s", indent, entry.Key.diagnosticAtLevel(level+1, opts), entry.Value.diagnosticAtLevel(level+1, opts)))
+		indent := strings.Repeat("    ", level+1)
+		var sb strings.Builder
+		sb.WriteString("{\n")
+		for i, entry := range entries {
+			keySep := ":"
+			valSep := ","
+			if i == len(entries)-1 {
+				valSep = ""
+			}
+			kp := entry.Key.diagnosticPartsAtLevel(level+1, opts)
+			vp := entry.Value.diagnosticPartsAtLevel(level+1, opts)
+			sb.WriteString(indent)
+			sb.WriteString(kp.main)
+			sb.WriteString(keySep)
+			sb.WriteString(kp.annotation)
+			sb.WriteString("\n")
+			sb.WriteString(indent)
+			sb.WriteString(vp.main)
+			sb.WriteString(vp.annotation)
+			sb.WriteString(valSep)
+			sb.WriteString("\n")
 		}
-		return fmt.Sprintf("{\n%s\n%s}", strings.Join(parts, ",\n"), strings.Repeat(" ", level*4))
+		sb.WriteString(strings.Repeat("    ", level))
+		sb.WriteString("}")
+		return diagParts{main: sb.String()}
 	default:
-		return "<unknown>"
+		return diagParts{main: "<unknown>"}
+	}
+}
+
+// taggedNeedsMultiline checks if an annotated tagged value should use multi-line format.
+// Multi-line is used when the inner value is a tagged, array, or map type,
+// or when the inner diagnostic string is longer than 20 characters (matching Rust dcbor).
+func taggedNeedsMultiline(inner CBOR, innerStr string) bool {
+	switch inner.kind {
+	case CBORKindTagged, CBORKindArray, CBORKindMap:
+		return true
+	default:
+		return len(innerStr) > 20
 	}
 }
 

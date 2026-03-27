@@ -325,14 +325,22 @@ func TestFormatMapKeyOrderAndDateParity(t *testing.T) {
 	m.Insert(NewCBORArray([]CBOR{MustFromAny(100)}), MustFromAny(6))
 	mapCBOR := NewCBORMap(m)
 	const keyOrderDiagnostic = `{
-    10: 1,
-    100: 2,
-    -1: 3,
-    "z": 4,
-    "aa": 5,
-    [100]: 6,
-    [-1]: 7,
-    false: 8
+    10:
+    1,
+    100:
+    2,
+    -1:
+    3,
+    "z":
+    4,
+    "aa":
+    5,
+    [100]:
+    6,
+    [-1]:
+    7,
+    false:
+    8
 }`
 
 	runFormatCheck(
@@ -472,17 +480,25 @@ func TestFormatComplexStructuresParity(t *testing.T) {
 	const structure2Debug = `tagged(300, map({0x01: (unsigned(1), bytes(59f2293a5bce7d4de59e71b4207ac5d2)), 0x02: (unsigned(2), tagged(1, unsigned(1614124800))), 0x03: (unsigned(3), text("Dark Purple Aqua Love")), 0x04: (unsigned(4), text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))}))`
 	// expected-text-output-rubric:
 	const structure2Diagnostic = `300({
-        1: h'59f2293a5bce7d4de59e71b4207ac5d2',
-        2: 1(1614124800),
-        3: "Dark Purple Aqua Love",
-        4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        1:
+        h'59f2293a5bce7d4de59e71b4207ac5d2',
+        2:
+        1(1614124800),
+        3:
+        "Dark Purple Aqua Love",
+        4:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     })`
 	// expected-text-output-rubric:
 	const structure2DiagnosticAnnotated = `300({
-        1: h'59f2293a5bce7d4de59e71b4207ac5d2',
-        2: 1(1614124800)   / date /,
-        3: "Dark Purple Aqua Love",
-        4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        1:
+        h'59f2293a5bce7d4de59e71b4207ac5d2',
+        2:
+        1(1614124800)   / date /,
+        3:
+        "Dark Purple Aqua Love",
+        4:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     })`
 	const structure2Summary = `300({1: h'59f2293a5bce7d4de59e71b4207ac5d2', 2: 2021-02-24, 3: "Dark Purple Aqua Love", 4: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."})`
 	runFormatCheck(
