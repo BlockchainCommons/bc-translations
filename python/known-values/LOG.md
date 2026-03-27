@@ -42,3 +42,31 @@ STARTED
 COMPLETED
 - Replaced an internal dependency import with the public `bc_components` surface for `Digest`.
 - Verification after fluency cleanup: `41 passed`; no behavioral regressions introduced.
+
+## 2026-03-26 — Stage 3: Check Completeness (cross-check)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translator: GPT Codex).
+- Compare translation against MANIFEST.md and Rust source of truth.
+
+## 2026-03-26 — Stage 3: Check Completeness (cross-check)
+COMPLETED
+- All 104 registry constant pairs verified byte-for-byte against Rust source.
+- All 102 KNOWN_VALUES initial entries match Rust (VALUE and SELF correctly excluded).
+- All 22 Rust tests accounted for in 41-test Python suite.
+- All public types, methods, free functions, and singleton state present.
+- No completeness gaps found.
+
+## 2026-03-26 — Stage 4: Review Fluency (cross-check)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6.
+- Review Python code for idiomaticness without referencing Rust source.
+
+## 2026-03-26 — Stage 4: Review Fluency (cross-check)
+COMPLETED
+- 14 fluency issues identified; all 14 fixed:
+  - MUST FIX (9): Converted `KnownValue.value()`, `.assigned_name()`, `.name()` from methods to properties. Removed redundant `KnownValue.new()`, `.new_with_name()`, `.new_with_static_name()` classmethods (constructor suffices). Removed redundant `KnownValuesStore.new()`, `DirectoryConfig.new()`. Eliminated double-validation in removed classmethods.
+  - SHOULD FIX (2): Renamed `KnownValuesStore.assigned_name()` -> `.assigned_name_for()` and `.name()` -> `.name_for()` to disambiguate from `KnownValue` properties. Converted `LoadResult.values_count()` to `__len__`, `has_errors()` to property, removed `into_values()` Rust-ism, added `__iter__`.
+  - NICE TO HAVE (3): Added `KnownValuesStore.__len__` and `__contains__`. Added `DirectoryConfig.__repr__`. Converted `DirectoryConfig.paths()` to property.
+- 2 new tests added: `test_store_len_and_contains`, `test_directory_config_repr`.
+- No downstream Python dependents require repair.
+- Verification: `43 passed`; no regressions.

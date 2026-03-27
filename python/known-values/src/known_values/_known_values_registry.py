@@ -120,10 +120,7 @@ _REGISTRY_RAW_NAMES = tuple(f"{name}_RAW" for name in _REGISTRY_BASE_NAMES)
 
 for raw_value, const_name, display_name in _REGISTRY_ENTRIES:
     globals()[f"{const_name}_RAW"] = raw_value
-    globals()[const_name] = KnownValue.new_with_static_name(
-        raw_value,
-        display_name,
-    )
+    globals()[const_name] = KnownValue(raw_value, display_name)
 
 _KNOWN_VALUES_INITIAL_NAMES: tuple[str, ...] = (
     "UNIT",
@@ -248,11 +245,11 @@ class LazyKnownValues:
 
         with self._lock:
             if self._data is None:
-                store = KnownValuesStore.new(
+                store = KnownValuesStore(
                     globals()[name] for name in _KNOWN_VALUES_INITIAL_NAMES
                 )
                 result = load_from_config(_get_and_lock_config())
-                for value in result.into_values():
+                for value in result:
                     store.insert(value)
                 self._data = store
             return self._data

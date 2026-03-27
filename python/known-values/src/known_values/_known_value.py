@@ -18,7 +18,11 @@ def _ensure_u64(value: int) -> int:
 
 
 class KnownValue:
-    """A value in a namespace of unsigned integers representing an ontological concept."""
+    """A value in a namespace of unsigned integers representing an ontological concept.
+
+    Construct with ``KnownValue(value)`` for an unnamed value or
+    ``KnownValue(value, assigned_name)`` for a named value.
+    """
 
     __slots__ = ("_value", "_assigned_name")
 
@@ -26,31 +30,19 @@ class KnownValue:
         self._value = _ensure_u64(value)
         self._assigned_name = assigned_name
 
-    @classmethod
-    def new(cls, value: int) -> KnownValue:
-        """Create a new KnownValue with no assigned name."""
-        return cls(value)
-
-    @classmethod
-    def new_with_name(cls, value: int, assigned_name: str) -> KnownValue:
-        """Create a KnownValue with a dynamic assigned name."""
-        return cls(_ensure_u64(value), assigned_name)
-
-    @classmethod
-    def new_with_static_name(cls, value: int, name: str) -> KnownValue:
-        """Create a KnownValue with a static assigned name."""
-        return cls(_ensure_u64(value), name)
-
+    @property
     def value(self) -> int:
-        """Return the numeric value."""
+        """The numeric code point."""
         return self._value
 
+    @property
     def assigned_name(self) -> str | None:
-        """Return the assigned name if present."""
+        """The assigned human-readable name, or ``None``."""
         return self._assigned_name
 
+    @property
     def name(self) -> str:
-        """Return the assigned name or the numeric value as decimal text."""
+        """The assigned name if present, otherwise the decimal string of the value."""
         if self._assigned_name is not None:
             return self._assigned_name
         return str(self._value)
@@ -84,7 +76,7 @@ class KnownValue:
         value = cbor.try_int()
         if value < 0:
             raise OutOfRange()
-        return cls.new(value)
+        return cls(value)
 
     @classmethod
     def from_tagged_cbor(cls, cbor: CBOR) -> KnownValue:
@@ -121,4 +113,4 @@ class KnownValue:
         return f"KnownValue({self._value}, {self._assigned_name!r})"
 
     def __str__(self) -> str:
-        return self.name()
+        return self.name

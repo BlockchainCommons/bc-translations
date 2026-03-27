@@ -45,8 +45,8 @@ def test_parse_registry_json() -> None:
         )
     )
 
-    assert registry.values_count() == 1
-    assert registry.values[9999].name() == "testValue"
+    assert len(registry) == 1
+    assert registry.values[9999].name == "testValue"
 
 
 def test_parse_minimal_registry() -> None:
@@ -56,7 +56,7 @@ def test_parse_minimal_registry() -> None:
         )
     )
     assert len(values) == 1
-    assert values[0].value() == 1
+    assert values[0].value == 1
 
 
 def test_parse_full_entry() -> None:
@@ -79,21 +79,21 @@ def test_parse_full_entry() -> None:
             ]
         )
     )
-    assert result.values[100].name() == "fullEntry"
+    assert result.values[100].name == "fullEntry"
 
 
 def test_directory_config_default() -> None:
     config = DirectoryConfig.default_only()
-    assert len(config.paths()) == 1
-    assert config.paths()[0].name == ".known-values"
+    assert len(config.paths) == 1
+    assert config.paths[0].name == ".known-values"
 
 
 def test_directory_config_new_and_add_path(monkeypatch: pytest.MonkeyPatch) -> None:
-    config = directory_loader.DirectoryConfig.new()
-    assert config.paths() == []
+    config = directory_loader.DirectoryConfig()
+    assert config.paths == []
 
     config.add_path(Path("/tmp/known-values"))
-    assert config.paths() == [Path("/tmp/known-values")]
+    assert config.paths == [Path("/tmp/known-values")]
 
     monkeypatch.setattr(
         Path,
@@ -110,16 +110,16 @@ def test_directory_config_new_and_add_path(monkeypatch: pytest.MonkeyPatch) -> N
 
 def test_directory_config_custom_paths_unit() -> None:
     config = DirectoryConfig.with_paths([Path("/a"), Path("/b")])
-    assert len(config.paths()) == 2
-    assert config.paths()[0] == Path("/a")
-    assert config.paths()[1] == Path("/b")
+    assert len(config.paths) == 2
+    assert config.paths[0] == Path("/a")
+    assert config.paths[1] == Path("/b")
 
 
 def test_directory_config_with_default() -> None:
     config = DirectoryConfig.with_paths_and_default([Path("/custom")])
-    assert len(config.paths()) == 2
-    assert config.paths()[0] == Path("/custom")
-    assert config.paths()[1].name == ".known-values"
+    assert len(config.paths) == 2
+    assert config.paths[0] == Path("/custom")
+    assert config.paths[1].name == ".known-values"
 
 
 def test_load_from_nonexistent_directory() -> None:
@@ -129,11 +129,11 @@ def test_load_from_nonexistent_directory() -> None:
 
 def test_load_result_methods_unit() -> None:
     result = LoadResult()
-    assert result.values_count() == 0
-    assert not result.has_errors()
+    assert len(result) == 0
+    assert not result.has_errors
 
     result.values[1] = KnownValuesStore.known_value_for_raw_value(1, None)
-    assert result.values_count() == 1
+    assert len(result) == 1
 
 
 def test_load_error_helper_messages() -> None:
@@ -151,12 +151,19 @@ def test_load_error_helper_messages() -> None:
     )
 
 
+def test_directory_config_repr() -> None:
+    config = DirectoryConfig.with_paths([Path("/a"), Path("/b")])
+    r = repr(config)
+    assert "DirectoryConfig" in r
+    assert "/a" in r
+
+
 def test_global_registry_still_works() -> None:
     store = KNOWN_VALUES.get()
 
     is_a = store.known_value_named("isA")
     assert is_a is not None
-    assert is_a.value() == 1
+    assert is_a.value == 1
     assert KNOWN_VALUES.get() is store
 
 
@@ -171,7 +178,7 @@ def test_global_registry_loads_custom_config_before_first_access() -> None:
     store = known_values_registry.KNOWN_VALUES.get()
 
     assert store.known_value_named("customLoaded") is not None
-    assert store.known_value_named("customLoaded").value() == 80001
+    assert store.known_value_named("customLoaded").value == 80001
 
 
 def test_load_from_temp_directory() -> None:
@@ -185,13 +192,13 @@ def test_load_from_temp_directory() -> None:
         }
     )
 
-    store = KnownValuesStore.new([IS_A, NOTE])
+    store = KnownValuesStore([IS_A, NOTE])
     count = store.load_from_directory(temp_dir)
 
     assert count == 1
     loaded = store.known_value_named("integrationTestValue")
     assert loaded is not None
-    assert loaded.value() == 99999
+    assert loaded.value == 99999
     assert store.known_value_named("isA") is not None
     assert store.known_value_named("note") is not None
 
@@ -207,13 +214,13 @@ def test_override_hardcoded_value() -> None:
         }
     )
 
-    store = KnownValuesStore.new([IS_A])
+    store = KnownValuesStore([IS_A])
     store.load_from_directory(temp_dir)
 
     assert store.known_value_named("isA") is None
     overridden = store.known_value_named("overriddenIsA")
     assert overridden is not None
-    assert overridden.value() == 1
+    assert overridden.value == 1
 
 
 def test_multiple_files_in_directory() -> None:
@@ -244,7 +251,7 @@ def test_directory_config_custom_paths_integration() -> None:
     store = KnownValuesStore()
     result = store.load_from_config(config)
 
-    assert result.values_count() == 2
+    assert len(result) == 2
     assert store.known_value_named("fromDirOne") is not None
     assert store.known_value_named("fromDirTwo") is not None
 
@@ -263,7 +270,7 @@ def test_later_directory_overrides_earlier() -> None:
 
     value = store.known_value_named("secondVersion")
     assert value is not None
-    assert value.value() == 30000
+    assert value.value == 30000
     assert store.known_value_named("firstVersion") is None
 
 
@@ -293,7 +300,7 @@ def test_tolerant_loading_continues_on_error() -> None:
     result = load_from_config(config)
 
     assert 40001 in result.values
-    assert result.has_errors()
+    assert result.has_errors
 
 
 def test_full_registry_format() -> None:
@@ -351,13 +358,12 @@ def test_load_result_methods_integration() -> None:
     config = DirectoryConfig.with_paths([temp_dir])
     result = load_from_config(config)
 
-    assert result.values_count() == 2
-    assert not result.has_errors()
+    assert len(result) == 2
+    assert not result.has_errors
     assert len(result.files_processed) == 1
 
-    values = list(result.values_iter())
+    values = list(result)
     assert len(values) == 2
-    assert len(list(result.into_values())) == 2
 
 
 def test_empty_entries_array() -> None:
@@ -389,7 +395,7 @@ def test_add_search_paths_creates_default_config() -> None:
     directory_loader._CUSTOM_CONFIG = None
     directory_loader.add_search_paths([Path("/tmp/extra-known-values")])
     assert directory_loader._CUSTOM_CONFIG is not None
-    assert Path("/tmp/extra-known-values") in directory_loader._CUSTOM_CONFIG.paths()
+    assert Path("/tmp/extra-known-values") in directory_loader._CUSTOM_CONFIG.paths
 
 
 def test_directory_iteration_errors_are_reported(
@@ -409,7 +415,7 @@ def test_directory_iteration_errors_are_reported(
         load_from_directory(tmp_path)
 
     result = load_from_config(DirectoryConfig.with_paths([tmp_path]))
-    assert result.has_errors()
+    assert result.has_errors
     assert result.files_processed == []
 
 
@@ -460,7 +466,7 @@ def test_get_and_lock_config_defaults_when_unset() -> None:
     directory_loader._CUSTOM_CONFIG = None
     directory_loader._CONFIG_LOCKED = False
     config = directory_loader._get_and_lock_config()
-    assert config.paths()[0].name == ".known-values"
+    assert config.paths[0].name == ".known-values"
 
 
 def test_tolerant_loader_handles_missing_and_non_json_paths() -> None:

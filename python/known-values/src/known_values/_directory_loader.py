@@ -89,20 +89,17 @@ class LoadResult:
     files_processed: list[Path] = field(default_factory=list)
     errors: list[tuple[Path, LoadError]] = field(default_factory=list)
 
-    def values_count(self) -> int:
+    def __len__(self) -> int:
         """Return the number of unique values loaded."""
         return len(self.values)
 
-    def values_iter(self) -> Iterator[KnownValue]:
-        """Return an iterator over loaded KnownValue instances."""
+    def __iter__(self) -> Iterator[KnownValue]:
+        """Iterate over loaded KnownValue instances."""
         return iter(self.values.values())
 
-    def into_values(self) -> Iterator[KnownValue]:
-        """Return an iterator over loaded KnownValue instances."""
-        return iter(self.values.values())
-
+    @property
     def has_errors(self) -> bool:
-        """Return ``True`` if any errors were recorded."""
+        """Whether any errors were recorded during loading."""
         return bool(self.errors)
 
 
@@ -113,11 +110,6 @@ class DirectoryConfig:
 
     def __init__(self, paths: list[Path] | None = None) -> None:
         self._paths = list(paths or [])
-
-    @classmethod
-    def new(cls) -> DirectoryConfig:
-        """Create a new empty configuration."""
-        return cls()
 
     @classmethod
     def default_only(cls) -> DirectoryConfig:
@@ -145,13 +137,17 @@ class DirectoryConfig:
             home = Path(".")
         return home / ".known-values"
 
+    @property
     def paths(self) -> list[Path]:
-        """Return the configured search paths."""
+        """The configured search paths (copy)."""
         return list(self._paths)
 
     def add_path(self, path: Path) -> None:
         """Append a search path so it takes precedence over earlier paths."""
         self._paths.append(Path(path))
+
+    def __repr__(self) -> str:
+        return f"DirectoryConfig(paths={self._paths!r})"
 
 
 class ConfigError(Exception):
@@ -199,11 +195,11 @@ def load_from_config(config: DirectoryConfig) -> LoadResult:
     """Load known values from all directories in the given configuration."""
     result = LoadResult()
 
-    for dir_path in config.paths():
+    for dir_path in config.paths:
         try:
             values, errors = _load_from_directory_tolerant(dir_path)
             for value in values:
-                result.values[value.value()] = value
+                result.values[value.value] = value
             if errors:
                 result.errors.extend(errors)
             result.files_processed.append(dir_path)
@@ -277,7 +273,7 @@ def _load_single_file(path: Path) -> list[KnownValue]:
         raise LoadError.json(path, error) from error
 
     return [
-        KnownValue.new_with_name(entry.codepoint, entry.name)
+        KnownValue(entry.codepoint, entry.name)
         for entry in registry.entries
     ]
 
