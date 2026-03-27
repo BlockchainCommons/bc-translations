@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 import BCUR
 import Observation
+import AudioToolbox
 
 public enum URScanResult: Sendable {
     /// A complete UR was decoded.
@@ -30,23 +31,89 @@ public struct URScanProgress: Sendable {
 @Observable
 public final class URScanState: URCodesReceiver {
     public private(set) var lastResult: URScanResult?
-    public let hapticFeedback: Bool
+
+    public var feedbackConfig: URScanFeedbackConfig {
+        didSet { reloadSounds() }
+    }
+
+    public var hapticFeedback: Bool { feedbackConfig.hapticEnabled }
 
     private var decoder: MultipartDecoder
     private var hasReceivedFirstPart: Bool = false
 
-    private let impactGenerator: UIImpactFeedbackGenerator?
-    private let notificationGenerator: UINotificationFeedbackGenerator?
+    private let impactGenerator = UIImpactFeedbackGenerator(style: .light)
+    private let notificationGenerator = UINotificationFeedbackGenerator()
 
-    public init(hapticFeedback: Bool = true) {
-        self.hapticFeedback = hapticFeedback
+    @ObservationIgnored private var clickSoundID: SystemSoundID = 0
+    @ObservationIgnored private var successSoundID: SystemSoundID = 0
+    @ObservationIgnored private var failureSoundID: SystemSoundID = 0
+
+    public init(feedbackConfig: URScanFeedbackConfig = .default) {
+        self.feedbackConfig = feedbackConfig
         self.decoder = MultipartDecoder()
-        if hapticFeedback {
-            self.impactGenerator = UIImpactFeedbackGenerator(style: .light)
-            self.notificationGenerator = UINotificationFeedbackGenerator()
-        } else {
-            self.impactGenerator = nil
-            self.notificationGenerator = nil
+        loadSounds()
+    }
+
+    public convenience init(hapticFeedback: Bool) {
+        self.init(feedbackConfig: .hapticOnly(hapticFeedback))
+    }
+
+    deinit {
+        MainActor.assumeIsolated {
+            disposeSounds()
+        }
+    }
+
+    // MARK: - Sound Management
+
+    private func loadSounds() {
+        guard feedbackConfig.soundEnabled else { return }
+        if let url = feedbackConfig.clickSoundURL {
+            AudioServicesCreateSystemSoundID(url as CFURL, &clickSoundID)
+        }
+        if let url = feedbackConfig.successSoundURL {
+            AudioServicesCreateSystemSoundID(url as CFURL, &successSoundID)
+        }
+        if let url = feedbackConfig.failureSoundURL {
+            AudioServicesCreateSystemSoundID(url as CFURL, &failureSoundID)
+        }
+    }
+
+    private func disposeSounds() {
+        if clickSoundID != 0 {
+            AudioServicesDisposeSystemSoundID(clickSoundID)
+            clickSoundID = 0
+        }
+        if successSoundID != 0 {
+            AudioServicesDisposeSystemSoundID(successSoundID)
+            successSoundID = 0
+        }
+        if failureSoundID != 0 {
+            AudioServicesDisposeSystemSoundID(failureSoundID)
+            failureSoundID = 0
+        }
+    }
+
+    private func reloadSounds() {
+        disposeSounds()
+        loadSounds()
+    }
+
+    private func playClick() {
+        if feedbackConfig.soundEnabled && clickSoundID != 0 {
+            AudioServicesPlaySystemSound(clickSoundID)
+        }
+    }
+
+    private func playSuccess() {
+        if feedbackConfig.soundEnabled && successSoundID != 0 {
+            AudioServicesPlaySystemSound(successSoundID)
+        }
+    }
+
+    private func playFailure() {
+        if feedbackConfig.soundEnabled && failureSoundID != 0 {
+            AudioServicesPlaySystemSound(failureSoundID)
         }
     }
 
@@ -54,9 +121,9 @@ public final class URScanState: URCodesReceiver {
         decoder = MultipartDecoder()
         hasReceivedFirstPart = false
         lastResult = nil
-        if hapticFeedback {
-            impactGenerator?.prepare()
-            notificationGenerator?.prepare()
+        if feedbackConfig.hapticEnabled {
+            impactGenerator.prepare()
+            notificationGenerator.prepare()
         }
     }
 
@@ -68,9 +135,10 @@ public final class URScanState: URCodesReceiver {
 
     public func receiveError(_ error: Error) {
         lastResult = .failure(error)
-        if hapticFeedback {
-            notificationGenerator?.notificationOccurred(.error)
+        if feedbackConfig.hapticEnabled {
+            notificationGenerator.notificationOccurred(.error)
         }
+        playFailure()
     }
 
     /// Signals a successful non-QR scan result (e.g., text recognition match).
@@ -78,9 +146,10 @@ public final class URScanState: URCodesReceiver {
     /// Fires success haptic feedback but does not set `lastResult` — the host
     /// manages its own result state for non-QR outcomes.
     public func completeWithSuccess() {
-        if hapticFeedback {
-            notificationGenerator?.notificationOccurred(.success)
+        if feedbackConfig.hapticEnabled {
+            notificationGenerator.notificationOccurred(.success)
         }
+        playSuccess()
     }
 
     /// Signals a failed non-QR scan result.
@@ -88,9 +157,10 @@ public final class URScanState: URCodesReceiver {
     /// Sets `lastResult` to `.failure(error)` and fires error haptic feedback.
     public func completeWithFailure(_ error: Error) {
         lastResult = .failure(error)
-        if hapticFeedback {
-            notificationGenerator?.notificationOccurred(.error)
+        if feedbackConfig.hapticEnabled {
+            notificationGenerator.notificationOccurred(.error)
         }
+        playFailure()
     }
 
     private var progress: URScanProgress {
@@ -113,6 +183,8 @@ public final class URScanState: URCodesReceiver {
     }
 
     private func processCode(_ code: String) {
+        if case .ur = lastResult { return }
+
         let trimmed = code.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard trimmed.lowercased().hasPrefix("ur:") else {
@@ -125,9 +197,10 @@ public final class URScanState: URCodesReceiver {
             if isSinglePartUR(trimmed) {
                 let ur = try UR(urString: trimmed)
                 lastResult = .ur(ur)
-                if hapticFeedback {
-                    notificationGenerator?.notificationOccurred(.success)
+                if feedbackConfig.hapticEnabled {
+                    notificationGenerator.notificationOccurred(.success)
                 }
+                playSuccess()
                 return
             }
 
@@ -141,14 +214,18 @@ public final class URScanState: URCodesReceiver {
             if decoder.isComplete {
                 if let ur = try decoder.message() {
                     lastResult = .ur(ur)
-                    if hapticFeedback {
-                        notificationGenerator?.notificationOccurred(.success)
+                    if feedbackConfig.hapticEnabled {
+                        notificationGenerator.notificationOccurred(.success)
                     }
+                    playSuccess()
                 }
             } else {
                 lastResult = .progress(progress)
-                if hapticFeedback && hasReceivedFirstPart {
-                    impactGenerator?.impactOccurred()
+                if feedbackConfig.hapticEnabled && hasReceivedFirstPart {
+                    impactGenerator.impactOccurred()
+                }
+                if hasReceivedFirstPart {
+                    playClick()
                 }
             }
         } catch {
@@ -156,9 +233,10 @@ public final class URScanState: URCodesReceiver {
                 lastResult = .reject
             } else {
                 lastResult = .failure(error)
-                if hapticFeedback {
-                    notificationGenerator?.notificationOccurred(.error)
+                if feedbackConfig.hapticEnabled {
+                    notificationGenerator.notificationOccurred(.error)
                 }
+                playFailure()
                 restart()
             }
         }

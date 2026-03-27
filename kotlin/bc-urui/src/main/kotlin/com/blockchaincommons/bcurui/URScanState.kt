@@ -22,8 +22,11 @@ class URScanState(
     var lastResult: URScanResult? by mutableStateOf(null)
         private set
 
-    private val _hapticEvents = MutableSharedFlow<URHapticEvent>(extraBufferCapacity = 64)
-    val hapticEvents: SharedFlow<URHapticEvent> = _hapticEvents.asSharedFlow()
+    private val _scanEvents = MutableSharedFlow<URHapticEvent>(extraBufferCapacity = 64)
+    val scanEvents: SharedFlow<URHapticEvent> = _scanEvents.asSharedFlow()
+
+    @Deprecated("Use scanEvents", ReplaceWith("scanEvents"))
+    val hapticEvents: SharedFlow<URHapticEvent> get() = scanEvents
 
     private var decoder = MultipartDecoder()
     private var hasReceivedFirstPart: Boolean = false
@@ -42,9 +45,7 @@ class URScanState(
 
     fun receiveError(error: Throwable) {
         lastResult = URScanResult.Failure(error)
-        if (hapticFeedback) {
-            _hapticEvents.tryEmit(URHapticEvent.Failure)
-        }
+        _scanEvents.tryEmit(URHapticEvent.Failure)
     }
 
     /**
@@ -54,9 +55,7 @@ class URScanState(
      * manages its own result state for non-QR outcomes.
      */
     fun completeWithSuccess() {
-        if (hapticFeedback) {
-            _hapticEvents.tryEmit(URHapticEvent.Success)
-        }
+        _scanEvents.tryEmit(URHapticEvent.Success)
     }
 
     /**
@@ -66,9 +65,7 @@ class URScanState(
      */
     fun completeWithFailure(error: Throwable) {
         lastResult = URScanResult.Failure(error)
-        if (hapticFeedback) {
-            _hapticEvents.tryEmit(URHapticEvent.Failure)
-        }
+        _scanEvents.tryEmit(URHapticEvent.Failure)
     }
 
     private val progress: URScanProgress
@@ -90,6 +87,8 @@ class URScanState(
         }
 
     private fun processCode(code: String) {
+        if (lastResult is URScanResult.Ur) return
+
         val trimmed = code.trim()
 
         if (!trimmed.lowercase().startsWith("ur:")) {
@@ -102,9 +101,7 @@ class URScanState(
             if (isSinglePartUR(trimmed)) {
                 val ur = UR.fromUrString(trimmed)
                 lastResult = URScanResult.Ur(ur)
-                if (hapticFeedback) {
-                    _hapticEvents.tryEmit(URHapticEvent.Success)
-                }
+                _scanEvents.tryEmit(URHapticEvent.Success)
                 return
             }
 
@@ -119,14 +116,12 @@ class URScanState(
                 val ur = decoder.message()
                 if (ur != null) {
                     lastResult = URScanResult.Ur(ur)
-                    if (hapticFeedback) {
-                        _hapticEvents.tryEmit(URHapticEvent.Success)
-                    }
+                    _scanEvents.tryEmit(URHapticEvent.Success)
                 }
             } else {
                 lastResult = URScanResult.Progress(progress)
-                if (hapticFeedback && hasReceivedFirstPart) {
-                    _hapticEvents.tryEmit(URHapticEvent.Progress)
+                if (hasReceivedFirstPart) {
+                    _scanEvents.tryEmit(URHapticEvent.Progress)
                 }
             }
         } catch (e: Exception) {
@@ -134,9 +129,7 @@ class URScanState(
                 lastResult = URScanResult.Reject
             } else {
                 lastResult = URScanResult.Failure(e)
-                if (hapticFeedback) {
-                    _hapticEvents.tryEmit(URHapticEvent.Failure)
-                }
+                _scanEvents.tryEmit(URHapticEvent.Failure)
                 restart()
             }
         }
