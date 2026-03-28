@@ -45,6 +45,12 @@ public enum Bytewords {
         data.map { BytewordsConstants.bytemojis[Int($0)] }.joined(separator: " ")
     }
 
+    /// Encodes an arbitrary byte slice as minimal bytewords (first+last letter
+    /// of each word, concatenated without separator).
+    public static func encodeToMinimalBytewords(_ data: [UInt8]) -> String {
+        data.map { BytewordsConstants.minimals[Int($0)] }.joined()
+    }
+
     /// Encodes a 4-byte identifier as space-separated bytewords.
     public static func identifier(_ data: [UInt8]) -> String {
         precondition(data.count == 4, "Expected exactly 4 bytes")

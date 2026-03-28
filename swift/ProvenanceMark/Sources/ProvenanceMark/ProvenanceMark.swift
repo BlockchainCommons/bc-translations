@@ -208,11 +208,11 @@ extension ProvenanceMark {
 // MARK: - Identifiers
 
 public extension ProvenanceMark {
-    /// A 32-byte identifier hash suitable for extended identifiers.
+    /// A 32-byte identifier derived from the hash and fingerprint.
     ///
     /// The first `hash.count` bytes are the stored hash (backward compatible).
     /// Remaining bytes come from `fingerprint` (SHA-256 of CBOR).
-    var identifierHash: [UInt8] {
+    var id: [UInt8] {
         var result = [UInt8](repeating: 0, count: 32)
         let n = _hash.count
         result.replaceSubrange(0..<n, with: _hash)
@@ -223,85 +223,37 @@ public extension ProvenanceMark {
         return result
     }
 
-    /// The first `byteCount` bytes of the identifier hash as a hex string.
+    /// The full 64-character hex string of the identifier.
+    var idHex: String {
+        id.hex
+    }
+
+    /// The first `wordCount` bytes of the identifier as upper-case ByteWords.
     ///
-    /// - Precondition: `byteCount` must be in `4...32`.
-    func identifierN(_ byteCount: Int) -> String {
-        precondition((4...32).contains(byteCount), "byteCount must be 4...32, got \(byteCount)")
-        return Array(identifierHash.prefix(byteCount)).hex
+    /// - Precondition: `wordCount` must be in `4...32`.
+    func idBytewords(_ wordCount: Int, prefix: Bool) -> String {
+        precondition((4...32).contains(wordCount), "wordCount must be 4...32, got \(wordCount)")
+        let s = Bytewords.encodeToWords(Array(id.prefix(wordCount))).uppercased()
+        return prefix ? "\u{1F15F} \(s)" : s
     }
 
-    /// The first four bytes of the hash as a hex string.
-    var identifier: String {
-        identifierN(4)
+    /// The first `wordCount` bytes of the identifier as Bytemoji.
+    ///
+    /// - Precondition: `wordCount` must be in `4...32`.
+    func idBytemoji(_ wordCount: Int, prefix: Bool) -> String {
+        precondition((4...32).contains(wordCount), "wordCount must be 4...32, got \(wordCount)")
+        let s = Bytewords.encodeToBytemojis(Array(id.prefix(wordCount))).uppercased()
+        return prefix ? "\u{1F15F} \(s)" : s
     }
 
-    /// The first `wordCount` bytes of the identifier hash as upper-case
+    /// The first `wordCount` bytes of the identifier as upper-case minimal
     /// ByteWords.
     ///
     /// - Precondition: `wordCount` must be in `4...32`.
-    func bytewordsIdentifierN(_ wordCount: Int, prefix: Bool) -> String {
+    func idBytewordsMinimal(_ wordCount: Int, prefix: Bool) -> String {
         precondition((4...32).contains(wordCount), "wordCount must be 4...32, got \(wordCount)")
-        let s = Bytewords.encodeToWords(Array(identifierHash.prefix(wordCount))).uppercased()
+        let s = Bytewords.encodeToMinimalBytewords(Array(id.prefix(wordCount))).uppercased()
         return prefix ? "\u{1F15F} \(s)" : s
-    }
-
-    /// The first four bytes of the hash as upper-case ByteWords.
-    func bytewordsIdentifier(prefix: Bool) -> String {
-        bytewordsIdentifierN(4, prefix: prefix)
-    }
-
-    /// The first `wordCount` bytes of the identifier hash as Bytemoji.
-    ///
-    /// - Precondition: `wordCount` must be in `4...32`.
-    func bytemojiIdentifierN(_ wordCount: Int, prefix: Bool) -> String {
-        precondition((4...32).contains(wordCount), "wordCount must be 4...32, got \(wordCount)")
-        let s = Bytewords.encodeToBytemojis(Array(identifierHash.prefix(wordCount))).uppercased()
-        return prefix ? "\u{1F15F} \(s)" : s
-    }
-
-    /// The first four bytes of the hash as Bytemoji.
-    func bytemojiIdentifier(prefix: Bool) -> String {
-        bytemojiIdentifierN(4, prefix: prefix)
-    }
-
-    /// A compact 8-letter identifier derived from ByteWords.
-    ///
-    /// Takes the first and last letter of each of the 4 ByteWords words
-    /// (4 words x 2 letters = 8 uppercase letters).
-    ///
-    /// - Parameter prefix: If `true`, prepends the provenance emoji prefix.
-    func bytewordsMinimalIdentifier(prefix: Bool) -> String {
-        let full = Bytewords.identifier(Array(_hash.prefix(4)))
-        let words = full.split(separator: " ")
-        var out = ""
-        out.reserveCapacity(8)
-        if words.count == 4 {
-            for w in words {
-                guard !w.isEmpty else { continue }
-                let bytes = Array(w.utf8)
-                out.append(Character(UnicodeScalar(bytes[0])).uppercased())
-                out.append(Character(UnicodeScalar(bytes[bytes.count - 1])).uppercased())
-            }
-        }
-
-        // Conservative fallback: if the input wasn't in the expected
-        // space-separated 4-word format, remove whitespace and chunk the
-        // remaining letters.
-        if out.count != 8 {
-            out = ""
-            let compact = full.filter { $0.isASCII && $0.isLetter }
-                .uppercased()
-            let compactBytes = Array(compact.utf8)
-            var i = 0
-            while i + 3 < compactBytes.count {
-                out.append(Character(UnicodeScalar(compactBytes[i])))
-                out.append(Character(UnicodeScalar(compactBytes[i + 3])))
-                i += 4
-            }
-        }
-
-        return prefix ? "\u{1F15F} \(out)" : out
     }
 }
 
@@ -312,11 +264,11 @@ public extension ProvenanceMark {
     ///
     /// Non-colliding marks get 4-word identifiers. Only marks whose 4-byte
     /// prefixes collide are extended with additional words.
-    static func disambiguatedBytewordsIdentifiers(
+    static func disambiguatedIdBytewords(
         _ marks: [ProvenanceMark],
         prefix: Bool
     ) -> [String] {
-        let hashes = marks.map { $0.identifierHash }
+        let hashes = marks.map { $0.id }
         let lengths = minimalNoncollidingPrefixLengths(hashes)
         return zip(hashes, lengths).map { hash, len in
             let s = Bytewords.encodeToWords(Array(hash.prefix(len))).uppercased()
@@ -328,11 +280,11 @@ public extension ProvenanceMark {
     ///
     /// Non-colliding marks get 4-emoji identifiers. Only marks whose 4-byte
     /// prefixes collide are extended with additional emojis.
-    static func disambiguatedBytemojiIdentifiers(
+    static func disambiguatedIdBytemoji(
         _ marks: [ProvenanceMark],
         prefix: Bool
     ) -> [String] {
-        let hashes = marks.map { $0.identifierHash }
+        let hashes = marks.map { $0.id }
         let lengths = minimalNoncollidingPrefixLengths(hashes)
         return zip(hashes, lengths).map { hash, len in
             let s = Bytewords.encodeToBytemojis(Array(hash.prefix(len))).uppercased()
@@ -585,7 +537,7 @@ extension ProvenanceMark: Hashable {
 
 extension ProvenanceMark: CustomStringConvertible {
     public var description: String {
-        "ProvenanceMark(\(identifier))"
+        "ProvenanceMark(\(idHex))"
     }
 }
 

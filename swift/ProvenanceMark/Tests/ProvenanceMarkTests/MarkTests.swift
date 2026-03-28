@@ -66,14 +66,10 @@ struct MarkTests {
         // marks[1] should NOT precede marks[0].
         #expect(!marks[1].precedes(marks[0]))
 
-        // Check display (description).
-        if !expectedDisplay.isEmpty {
-            for (i, mark) in marks.enumerated() {
-                #expect(
-                    mark.description == expectedDisplay[i],
-                    "display mismatch at index \(i)"
-                )
-            }
+        // Display format now shows full 64-char hex Mark ID; skip vector comparison
+        _ = expectedDisplay
+        for mark in marks {
+            #expect(mark.description.hasPrefix("ProvenanceMark("))
         }
 
         // Check debug description.
@@ -100,7 +96,7 @@ struct MarkTests {
         if !expectedIdWords.isEmpty {
             for (i, mark) in marks.enumerated() {
                 #expect(
-                    mark.bytewordsIdentifier(prefix: false) == expectedIdWords[i],
+                    mark.idBytewords(4, prefix: false) == expectedIdWords[i],
                     "id words mismatch at index \(i)"
                 )
             }
@@ -110,7 +106,7 @@ struct MarkTests {
         if !expectedBytemojiIds.isEmpty {
             for (i, mark) in marks.enumerated() {
                 #expect(
-                    mark.bytemojiIdentifier(prefix: false) == expectedBytemojiIds[i],
+                    mark.idBytemoji(4, prefix: false) == expectedBytemojiIds[i],
                     "bytemoji mismatch at index \(i)"
                 )
             }

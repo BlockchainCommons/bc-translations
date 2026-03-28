@@ -29,8 +29,8 @@ export class ProvenanceMarkInfo {
 
   static create(mark: ProvenanceMark, comment: string): ProvenanceMarkInfo {
     const urValue = mark.toUr();
-    const bytewords = mark.bytewordsIdentifier(true);
-    const bytemoji = mark.bytemojiIdentifier(true);
+    const bytewords = mark.idBytewords(4, true);
+    const bytemoji = mark.idBytemoji(4, true);
     return new ProvenanceMarkInfo(mark, urValue, bytewords, bytemoji, comment);
   }
 

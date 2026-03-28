@@ -25,9 +25,9 @@ import {
   Style,
   encode as encodeBytewords,
   decode as decodeBytewords,
-  identifier as bwIdentifier,
   encodeToWords as bwEncodeToWords,
   encodeToBytemojis as bwEncodeToBytemojis,
+  encodeToMinimalBytewords as bwEncodeToMinimalBytewords,
   ur,
   urString,
   fromUr,
@@ -279,10 +279,10 @@ export class ProvenanceMark
   // ---- Identifiers ----
 
   /**
-   * A 32-byte identifier hash. First `hash.length` bytes are the stored hash;
+   * A 32-byte identifier. First `hash.length` bytes are the stored hash;
    * remaining bytes come from `fingerprint()` (SHA-256 of CBOR).
    */
-  identifierHash(): Uint8Array {
+  id(): Uint8Array {
     const result = new Uint8Array(32);
     const n = this.#hash.length;
     result.set(this.#hash);
@@ -294,93 +294,46 @@ export class ProvenanceMark
   }
 
   /**
-   * The first `byteCount` bytes of the identifier hash as a hex string.
-   * @throws if `byteCount` is not in 4..32.
+   * Return the full 32-byte identifier as a 64-character hex string.
    */
-  identifierN(byteCount: number): string {
-    if (byteCount < 4 || byteCount > 32) {
-      throw new Error(`byteCount must be 4..32, got ${byteCount}`);
-    }
-    return bytesToHex(this.identifierHash().slice(0, byteCount));
+  idHex(): string {
+    return bytesToHex(this.id());
   }
 
   /**
-   * Return the first four bytes of the mark hash as a hex string.
-   */
-  identifier(): string {
-    return this.identifierN(4);
-  }
-
-  /**
-   * The first `wordCount` bytes of the identifier hash as upper-case Bytewords.
+   * The first `wordCount` bytes of the identifier as upper-case Bytewords.
    * @throws if `wordCount` is not in 4..32.
    */
-  bytewordsIdentifierN(wordCount: number, prefix: boolean): string {
+  idBytewords(wordCount: number, prefix: boolean): string {
     if (wordCount < 4 || wordCount > 32) {
       throw new Error(`wordCount must be 4..32, got ${wordCount}`);
     }
-    const s = bwEncodeToWords(this.identifierHash().slice(0, wordCount)).toUpperCase();
+    const s = bwEncodeToWords(this.id().slice(0, wordCount)).toUpperCase();
     return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
   }
 
   /**
-   * Return the first four bytes of the mark hash as upper-case Bytewords.
-   */
-  bytewordsIdentifier(prefix: boolean): string {
-    return this.bytewordsIdentifierN(4, prefix);
-  }
-
-  /**
-   * The first `wordCount` bytes of the identifier hash as Bytemoji.
+   * The first `wordCount` bytes of the identifier as Bytemoji.
    * @throws if `wordCount` is not in 4..32.
    */
-  bytemojiIdentifierN(wordCount: number, prefix: boolean): string {
+  idBytemoji(wordCount: number, prefix: boolean): string {
     if (wordCount < 4 || wordCount > 32) {
       throw new Error(`wordCount must be 4..32, got ${wordCount}`);
     }
-    const s = bwEncodeToBytemojis(this.identifierHash().slice(0, wordCount)).toUpperCase();
+    const s = bwEncodeToBytemojis(this.id().slice(0, wordCount)).toUpperCase();
     return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
   }
 
   /**
-   * Return the first four bytes of the mark hash as Bytemoji.
+   * The first `wordCount` bytes of the identifier as upper-case minimal Bytewords.
+   * @throws if `wordCount` is not in 4..32.
    */
-  bytemojiIdentifier(prefix: boolean): string {
-    return this.bytemojiIdentifierN(4, prefix);
-  }
-
-  /**
-   * Return an 8-letter identifier derived from the Bytewords identifier.
-   */
-  bytewordsMinimalIdentifier(prefix: boolean): string {
-    const first4 = this.#hash.slice(0, 4);
-    const full = bwIdentifier(first4);
-
-    const words = full.split(/\s+/);
-    let out = '';
-    if (words.length === 4) {
-      for (const w of words) {
-        if (w.length === 0) continue;
-        out += w[0]!.toUpperCase();
-        out += w[w.length - 1]!.toUpperCase();
-      }
+  idBytewordsMinimal(wordCount: number, prefix: boolean): string {
+    if (wordCount < 4 || wordCount > 32) {
+      throw new Error(`wordCount must be 4..32, got ${wordCount}`);
     }
-
-    // Conservative fallback
-    if (out.length !== 8) {
-      out = '';
-      const compact = full
-        .split('')
-        .filter((c) => /[a-zA-Z]/.test(c))
-        .map((c) => c.toUpperCase())
-        .join('');
-      for (let i = 0; i + 3 < compact.length; i += 4) {
-        out += compact[i]!;
-        out += compact[i + 3]!;
-      }
-    }
-
-    return prefix ? `${PROVENANCE_MARK_PREFIX} ${out}` : out;
+    const s = bwEncodeToMinimalBytewords(this.id().slice(0, wordCount)).toUpperCase();
+    return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
   }
 
   // ---- Disambiguation ----
@@ -389,14 +342,14 @@ export class ProvenanceMark
    * Returns disambiguated upper-case Bytewords identifiers for a set of marks.
    * Non-colliding marks get 4-word identifiers; only colliders are extended.
    */
-  static disambiguatedBytewordsIdentifiers(
+  static disambiguatedIdBytewords(
     marks: ProvenanceMark[],
     prefix: boolean,
   ): string[] {
-    const hashes = marks.map((m) => m.identifierHash());
-    const lengths = ProvenanceMark.minimalNoncollidingPrefixLengths(hashes);
-    return hashes.map((hash, i) => {
-      const s = bwEncodeToWords(hash.slice(0, lengths[i]!)).toUpperCase();
+    const ids = marks.map((m) => m.id());
+    const lengths = ProvenanceMark.minimalNoncollidingPrefixLengths(ids);
+    return ids.map((id, i) => {
+      const s = bwEncodeToWords(id.slice(0, lengths[i]!)).toUpperCase();
       return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
     });
   }
@@ -405,41 +358,41 @@ export class ProvenanceMark
    * Returns disambiguated Bytemoji identifiers for a set of marks.
    * Non-colliding marks get 4-emoji identifiers; only colliders are extended.
    */
-  static disambiguatedBytemojiIdentifiers(
+  static disambiguatedIdBytemoji(
     marks: ProvenanceMark[],
     prefix: boolean,
   ): string[] {
-    const hashes = marks.map((m) => m.identifierHash());
-    const lengths = ProvenanceMark.minimalNoncollidingPrefixLengths(hashes);
-    return hashes.map((hash, i) => {
-      const s = bwEncodeToBytemojis(hash.slice(0, lengths[i]!)).toUpperCase();
+    const ids = marks.map((m) => m.id());
+    const lengths = ProvenanceMark.minimalNoncollidingPrefixLengths(ids);
+    return ids.map((id, i) => {
+      const s = bwEncodeToBytemojis(id.slice(0, lengths[i]!)).toUpperCase();
       return prefix ? `${PROVENANCE_MARK_PREFIX} ${s}` : s;
     });
   }
 
   private static minimalNoncollidingPrefixLengths(
-    hashes: Uint8Array[],
+    ids: Uint8Array[],
   ): number[] {
-    const lengths = new Array<number>(hashes.length).fill(4);
+    const lengths = new Array<number>(ids.length).fill(4);
 
     // Group by 4-byte prefix
     const groups = new Map<string, number[]>();
-    for (let i = 0; i < hashes.length; i++) {
-      const key = bytesToHex(hashes[i]!.slice(0, 4));
+    for (let i = 0; i < ids.length; i++) {
+      const key = bytesToHex(ids[i]!.slice(0, 4));
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(i);
     }
 
     for (const [, indices] of groups) {
       if (indices.length <= 1) continue;
-      ProvenanceMark.resolveCollisionGroup(hashes, indices, lengths);
+      ProvenanceMark.resolveCollisionGroup(ids, indices, lengths);
     }
 
     return lengths;
   }
 
   private static resolveCollisionGroup(
-    hashes: Uint8Array[],
+    ids: Uint8Array[],
     initialIndices: number[],
     lengths: number[],
   ): void {
@@ -448,7 +401,7 @@ export class ProvenanceMark
     for (let prefixLen = 5; prefixLen <= 32; prefixLen++) {
       const subGroups = new Map<string, number[]>();
       for (const i of unresolved) {
-        const key = bytesToHex(hashes[i]!.slice(0, prefixLen));
+        const key = bytesToHex(ids[i]!.slice(0, prefixLen));
         if (!subGroups.has(key)) subGroups.set(key, []);
         subGroups.get(key)!.push(i);
       }
@@ -602,7 +555,7 @@ export class ProvenanceMark
   // ---- Display ----
 
   toString(): string {
-    return `ProvenanceMark(${this.identifier()})`;
+    return `ProvenanceMark(${this.idHex()})`;
   }
 
   toDebugString(): string {

@@ -169,7 +169,7 @@ class ValidationReport private constructor(
             for (sequence in chain.sequences()) {
                 for (flaggedMark in sequence.marks()) {
                     val mark = flaggedMark.mark()
-                    val shortId = mark.identifier()
+                    val shortId = mark.idHex().take(8)
                     val seqNum = mark.seq()
 
                     val annotations = mutableListOf<String>()

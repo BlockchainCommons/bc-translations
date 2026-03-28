@@ -209,6 +209,14 @@ export const encodeToBytemojis = (data: Uint8Array): string => {
 };
 
 /**
+ * Encodes an arbitrary byte slice as minimal bytewords (first+last letter
+ * of each word, concatenated without separator).
+ */
+export const encodeToMinimalBytewords = (data: Uint8Array): string => {
+  return Array.from(data, (value) => lookupWord(MINIMALS, value)).join("");
+};
+
+/**
  * Encodes a 4-byte slice as space-separated bytewords for identification.
  */
 export const identifier = (data: Uint8Array): string => {

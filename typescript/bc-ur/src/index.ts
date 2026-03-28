@@ -19,6 +19,7 @@ export {
   decode,
   encodeToWords,
   encodeToBytemojis,
+  encodeToMinimalBytewords,
   identifier,
   bytemojiIdentifier,
   isValidWord,

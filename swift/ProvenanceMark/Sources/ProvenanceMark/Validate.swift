@@ -394,7 +394,7 @@ private extension ValidationReport {
 
             for seq in chain.sequences {
                 for flagged in seq.marks {
-                    let shortId = flagged.mark.identifier
+                    let shortId = String(flagged.mark.idHex.prefix(8))
                     let seqNum = flagged.mark.seq
 
                     var annotations: [String] = []

@@ -31,8 +31,8 @@ public struct ProvenanceMarkInfo: Sendable {
     ///   - comment: A human-readable comment (pass `""` for none).
     public init(mark: ProvenanceMark, comment: String = "") {
         self.ur = mark.ur()
-        self.bytewords = mark.bytewordsIdentifier(prefix: true)
-        self.bytemoji = mark.bytemojiIdentifier(prefix: true)
+        self.bytewords = mark.idBytewords(4, prefix: true)
+        self.bytemoji = mark.idBytemoji(4, prefix: true)
         self.comment = comment
         self.mark = mark
     }

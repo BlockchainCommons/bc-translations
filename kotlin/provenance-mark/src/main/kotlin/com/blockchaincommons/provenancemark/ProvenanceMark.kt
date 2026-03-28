@@ -57,7 +57,7 @@ class ProvenanceMark private constructor(
     }
 
     /**
-     * Returns a 32-byte identifier hash suitable for extended identifiers.
+     * Returns a 32-byte identifier hash.
      *
      * The first `linkLength` bytes are the mark's stored hash (preserving
      * backward compatibility with existing 4-byte identifiers). The remaining
@@ -65,7 +65,7 @@ class ProvenanceMark private constructor(
      * ensuring a full 32-byte value is always available regardless of
      * resolution.
      */
-    fun identifierHash(): ByteArray {
+    fun id(): ByteArray {
         val result = ByteArray(32)
         val n = hash.size
         hash.copyInto(result, 0, 0, n)
@@ -76,73 +76,40 @@ class ProvenanceMark private constructor(
         return result
     }
 
-    /**
-     * The first [byteCount] bytes of the identifier hash as a hex string.
-     *
-     * @throws IllegalArgumentException if [byteCount] is not in 4..32
-     */
-    fun identifierN(byteCount: Int): String {
-        require(byteCount in 4..32) { "byteCount must be 4..32, got $byteCount" }
-        return identifierHash().copyOfRange(0, byteCount).toHex()
-    }
-
-    /** The first four bytes of the mark's hash as a hex string. */
-    fun identifier(): String = identifierN(4)
+    /** The full 32-byte identifier as a hex string. */
+    fun idHex(): String = id().toHex()
 
     /**
-     * The first [wordCount] bytes of the identifier hash as upper-case ByteWords.
+     * The first [wordCount] bytes of the identifier as upper-case ByteWords.
      *
      * @throws IllegalArgumentException if [wordCount] is not in 4..32
      */
-    fun bytewordsIdentifierN(wordCount: Int, prefix: Boolean): String {
+    fun idBytewords(wordCount: Int, prefix: Boolean): String {
         require(wordCount in 4..32) { "wordCount must be 4..32, got $wordCount" }
-        val s = Bytewords.encodeToWords(identifierHash().copyOfRange(0, wordCount)).uppercase()
+        val s = Bytewords.encodeToWords(id().copyOfRange(0, wordCount)).uppercase()
         return if (prefix) "🅟 $s" else s
     }
 
-    /** The first four bytes of the mark's hash as upper-case ByteWords. */
-    fun bytewordsIdentifier(prefix: Boolean): String = bytewordsIdentifierN(4, prefix)
-
     /**
-     * The first [wordCount] bytes of the identifier hash as Bytemoji.
+     * The first [wordCount] bytes of the identifier as Bytemoji.
      *
      * @throws IllegalArgumentException if [wordCount] is not in 4..32
      */
-    fun bytemojiIdentifierN(wordCount: Int, prefix: Boolean): String {
+    fun idBytemoji(wordCount: Int, prefix: Boolean): String {
         require(wordCount in 4..32) { "wordCount must be 4..32, got $wordCount" }
-        val s = Bytewords.encodeToBytemojis(identifierHash().copyOfRange(0, wordCount)).uppercase()
+        val s = Bytewords.encodeToBytemojis(id().copyOfRange(0, wordCount)).uppercase()
         return if (prefix) "🅟 $s" else s
     }
 
-    /** The first four bytes of the mark's hash as Bytemoji. */
-    fun bytemojiIdentifier(prefix: Boolean): String = bytemojiIdentifierN(4, prefix)
-
-    fun bytewordsMinimalIdentifier(prefix: Boolean): String {
-        val full = Bytewords.identifier(hash.copyOfRange(0, 4))
-        val words = full.trim().split(Regex("\\s+"))
-        val out = StringBuilder(8)
-
-        if (words.size == 4) {
-            for (word in words) {
-                if (word.isEmpty()) continue
-                out.append(word.first().uppercaseChar())
-                out.append(word.last().uppercaseChar())
-            }
-        }
-
-        if (out.length != 8) {
-            out.clear()
-            val compact = full.filter { it.isLetter() }.uppercase()
-            for (chunk in compact.chunked(4)) {
-                if (chunk.length == 4) {
-                    out.append(chunk.first())
-                    out.append(chunk.last())
-                }
-            }
-        }
-
-        val result = out.toString()
-        return if (prefix) "🅟 $result" else result
+    /**
+     * The first [wordCount] bytes of the identifier as upper-case minimal ByteWords.
+     *
+     * @throws IllegalArgumentException if [wordCount] is not in 4..32
+     */
+    fun idBytewordsMinimal(wordCount: Int, prefix: Boolean): String {
+        require(wordCount in 4..32) { "wordCount must be 4..32, got $wordCount" }
+        val s = Bytewords.encodeToMinimalBytewords(id().copyOfRange(0, wordCount)).uppercase()
+        return if (prefix) "🅟 $s" else s
     }
 
     fun precedes(next: ProvenanceMark): Boolean {
@@ -274,7 +241,7 @@ class ProvenanceMark private constructor(
 
     fun toEnvelope(): Envelope = Envelope.from(taggedCbor())
 
-    override fun toString(): String = "ProvenanceMark(${identifier()})"
+    override fun toString(): String = "ProvenanceMark(${idHex()})"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -500,33 +467,33 @@ class ProvenanceMark private constructor(
 
         /**
          * Computes the minimum prefix length (in bytes, 4..32) each mark needs
-         * so that every mark in the set has a unique identifier hash prefix.
+         * so that every mark in the set has a unique identifier prefix.
          *
          * Non-colliding marks get the minimum of 4. Only marks whose 4-byte
          * prefixes collide are extended.
          */
-        private fun minimalNoncollidingPrefixLengths(hashes: List<ByteArray>): IntArray {
-            val n = hashes.size
+        private fun minimalNoncollidingPrefixLengths(ids: List<ByteArray>): IntArray {
+            val n = ids.size
             val lengths = IntArray(n) { 4 }
 
             // Group indices by their 4-byte prefix (fast path)
             val groups = mutableMapOf<String, MutableList<Int>>()
-            for (i in hashes.indices) {
-                val key = hashes[i].copyOfRange(0, 4).toHex()
+            for (i in ids.indices) {
+                val key = ids[i].copyOfRange(0, 4).toHex()
                 groups.getOrPut(key) { mutableListOf() }.add(i)
             }
 
             // Resolve each collision group
             for ((_, indices) in groups) {
                 if (indices.size <= 1) continue
-                resolveCollisionGroup(hashes, indices, lengths)
+                resolveCollisionGroup(ids, indices, lengths)
             }
 
             return lengths
         }
 
         private fun resolveCollisionGroup(
-            hashes: List<ByteArray>,
+            ids: List<ByteArray>,
             initialIndices: List<Int>,
             lengths: IntArray,
         ) {
@@ -535,7 +502,7 @@ class ProvenanceMark private constructor(
             for (prefixLen in 5..32) {
                 val subGroups = mutableMapOf<String, MutableList<Int>>()
                 for (i in unresolved) {
-                    val key = hashes[i].copyOfRange(0, prefixLen).toHex()
+                    val key = ids[i].copyOfRange(0, prefixLen).toHex()
                     subGroups.getOrPut(key) { mutableListOf() }.add(i)
                 }
 
@@ -565,14 +532,14 @@ class ProvenanceMark private constructor(
          * 4-byte prefixes collide are extended with additional words until each
          * identifier in the returned set is unique.
          */
-        fun disambiguatedBytewordsIdentifiers(
+        fun disambiguatedIdBytewords(
             marks: List<ProvenanceMark>,
             prefix: Boolean,
         ): List<String> {
-            val hashes = marks.map { it.identifierHash() }
-            val lengths = minimalNoncollidingPrefixLengths(hashes)
-            return hashes.zip(lengths.toList()).map { (hash, len) ->
-                val s = Bytewords.encodeToWords(hash.copyOfRange(0, len)).uppercase()
+            val ids = marks.map { it.id() }
+            val lengths = minimalNoncollidingPrefixLengths(ids)
+            return ids.zip(lengths.toList()).map { (id, len) ->
+                val s = Bytewords.encodeToWords(id.copyOfRange(0, len)).uppercase()
                 if (prefix) "🅟 $s" else s
             }
         }
@@ -584,14 +551,14 @@ class ProvenanceMark private constructor(
          * 4-byte prefixes collide are extended with additional emojis until each
          * identifier in the returned set is unique.
          */
-        fun disambiguatedBytemojiIdentifiers(
+        fun disambiguatedIdBytemoji(
             marks: List<ProvenanceMark>,
             prefix: Boolean,
         ): List<String> {
-            val hashes = marks.map { it.identifierHash() }
-            val lengths = minimalNoncollidingPrefixLengths(hashes)
-            return hashes.zip(lengths.toList()).map { (hash, len) ->
-                val s = Bytewords.encodeToBytemojis(hash.copyOfRange(0, len)).uppercase()
+            val ids = marks.map { it.id() }
+            val lengths = minimalNoncollidingPrefixLengths(ids)
+            return ids.zip(lengths.toList()).map { (id, len) ->
+                val s = Bytewords.encodeToBytemojis(id.copyOfRange(0, len)).uppercase()
                 if (prefix) "🅟 $s" else s
             }
         }

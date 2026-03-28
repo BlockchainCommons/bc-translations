@@ -73,6 +73,14 @@ object Bytewords {
             .joinToString(" ")
 
     /**
+     * Encodes an arbitrary byte slice as minimal bytewords (first+last letter
+     * of each word, concatenated without separator or checksum).
+     */
+    fun encodeToMinimalBytewords(data: ByteArray): String =
+        data.map { BytewordsConstants.MINIMALS[it.toInt() and 0xFF] }
+            .joinToString("")
+
+    /**
      * Encodes a 4-byte identifier as space-separated bytewords.
      *
      * @param data exactly 4 bytes

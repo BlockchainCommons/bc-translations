@@ -60,8 +60,8 @@ class ProvenanceMarkInfo private constructor(
     companion object {
         fun new(mark: ProvenanceMark, comment: String): ProvenanceMarkInfo {
             val ur = mark.ur()
-            val bytewords = mark.bytewordsIdentifier(prefix = true)
-            val bytemoji = mark.bytemojiIdentifier(prefix = true)
+            val bytewords = mark.idBytewords(4, prefix = true)
+            val bytemoji = mark.idBytemoji(4, prefix = true)
             return ProvenanceMarkInfo(ur, bytewords, bytemoji, comment, mark)
         }
 
