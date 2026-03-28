@@ -188,10 +188,21 @@ class URVideoSession(
                                         box.right / imageWidth,
                                         box.bottom / imageHeight
                                     )
+
                                     val displayBox = transformToDisplay(normalizedBox, extraRotation)
-                                    // extraRotation is how much we rotated the *image*;
-                                    // the physical display angle is its inverse.
-                                    val displayRotation = (360 - extraRotation) % 360
+                                    // ML Kit ignores the InputImage rotation parameter
+                                    // for detection (GitHub mlkit#937), so line.angle
+                                    // always reports the text angle in the raw sensor
+                                    // space. Adding baseDegrees converts to display space.
+                                    // On old Google Play Services, angle returns exactly
+                                    // 0f; fall back to the extraRotation-based estimate.
+                                    val rawAngle = try { line.angle } catch (_: Throwable) { 0f }
+                                    val displayRotation = if (rawAngle == 0f) {
+                                        (360 - extraRotation) % 360
+                                    } else {
+                                        val displayAngle = rawAngle + baseDegrees
+                                        ((Math.round(displayAngle / 90f).toInt() * 90) % 360 + 360) % 360
+                                    }
                                     URRecognizedText(
                                         text = line.text,
                                         boundingBox = displayBox,
