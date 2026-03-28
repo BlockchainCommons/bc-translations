@@ -1,6 +1,6 @@
 # Completeness: bc-envelope → Go (bcenvelope)
 
-Checked: 2026-03-27. All 156 tests pass.
+Checked: 2026-03-28. All 156 tests pass.
 
 ## Source Files — Base
 - [x] envelope.go — Main Envelope type, EnvelopeCase sealed interface, 8 case types, constructors
@@ -86,6 +86,7 @@ Checked: 2026-03-27. All 156 tests pass.
 ## Build & Config
 - [x] .gitignore
 - [x] go.mod
+- [x] doc.go — package-level documentation mirroring the Rust crate overview
 - [x] test_helpers_test.go — assertActualExpected, checkEncoding, test data helpers
 
 ## Bugs Fixed During Check
@@ -95,4 +96,6 @@ Checked: 2026-03-27. All 156 tests pass.
 - **Integration tests**: 139 of 139 translated (100%)
 - **Inline tests**: 17 of 18 non-trivial Rust inline tests translated (1 skipped: test_any_encrypted is a todo in Rust)
 - **Public API**: All public types, methods, constants, and convenience wrappers translated
+- **Documentation**: package-level Go docs now present alongside existing public API doc comments
+- **Verification**: `go test ./...` and `go vet ./...` pass
 - **All 156 tests pass**
