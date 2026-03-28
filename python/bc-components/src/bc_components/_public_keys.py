@@ -85,6 +85,14 @@ class PublicKeys(ReferenceProvider):
     def encapsulation_public_key_for_encryption(self) -> EncapsulationPublicKey:
         return self._encapsulation_public_key
 
+    def encapsulation_public_key(self) -> EncapsulationPublicKey:
+        """Return the encapsulation public key for this key set."""
+        return self._encapsulation_public_key
+
+    def encapsulate_new_shared_secret(self):
+        """Generate and encapsulate a new shared secret using the encapsulation public key."""
+        return self._encapsulation_public_key.encapsulate_new_shared_secret()
+
     # --- ReferenceProvider ---
 
     def reference(self) -> Reference:

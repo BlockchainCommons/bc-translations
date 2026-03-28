@@ -213,6 +213,10 @@ class PrivateKeyBase(ReferenceProvider):
         """Return the X25519 encapsulation private key."""
         return EncapsulationPrivateKey.from_x25519(self.x25519_private_key())
 
+    def decapsulate_shared_secret(self, ciphertext):
+        """Decapsulate a shared secret from a ciphertext."""
+        return self.encapsulation_private_key().decapsulate_shared_secret(ciphertext)
+
     # --- ReferenceProvider ---
 
     def reference(self) -> Reference:

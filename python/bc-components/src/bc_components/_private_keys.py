@@ -96,6 +96,14 @@ class PrivateKeys(ReferenceProvider):
     def encapsulation_private_key_for_decryption(self) -> EncapsulationPrivateKey:
         return self._encapsulation_private_key
 
+    def encapsulation_private_key(self) -> EncapsulationPrivateKey:
+        """Return the encapsulation private key for decryption."""
+        return self._encapsulation_private_key
+
+    def decapsulate_shared_secret(self, ciphertext):
+        """Decapsulate a shared secret from a ciphertext."""
+        return self._encapsulation_private_key.decapsulate_shared_secret(ciphertext)
+
     # --- ReferenceProvider ---
 
     def reference(self) -> Reference:

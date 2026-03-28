@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bc-envelope"
+version = "0.43.0"
+description = "Gordian Envelope – hierarchical binary data format with selective disclosure"
+requires-python = ">=3.10"
+license = "BSD-2-Clause"
+dependencies = [
+    "bc-rand",
+    "bc-crypto",
+    "dcbor",
+    "bc-ur",
+    "bc-components",
+    "known-values",
+    "sskr",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bc_envelope"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]

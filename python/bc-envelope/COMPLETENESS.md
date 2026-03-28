@@ -1,0 +1,78 @@
+# Completeness: bc-envelope → Python (bc-envelope)
+
+## Source Files
+- [x] _error.py — EnvelopeError hierarchy (~30 variants)
+- [x] _envelope_case.py — EnvelopeCase discriminated union (8 variants)
+- [x] _assertion.py — Assertion class with digest
+- [x] _envelope.py — Envelope class + envelope_encodable
+- [x] _envelope_encodable.py — extract_subject + auto-detection
+- [x] _queries.py — Query methods (assertions_with_predicate, etc.)
+- [x] _leaf.py — Leaf helpers
+- [x] _cbor.py — CBOR encoding/decoding
+- [x] _digest_ops.py — Digest operations
+- [x] _walk.py — EdgeType + walk/visitor
+- [x] _elide.py — ObscureAction/Type + elision
+- [x] _assertions.py — Assertion management
+- [x] _wrap.py — Wrap/unwrap
+- [x] _string_utils.py — flanked_by utility
+- [x] _format_context.py — FormatContext + tag registration
+- [x] _notation.py — Envelope notation rendering
+- [x] _tree_format.py — Tree format output
+- [x] _envelope_summary.py — Envelope summary
+- [x] _diagnostic.py — CBOR diagnostic output
+- [x] _hex_format.py — Hex format output
+- [x] _mermaid.py — Mermaid diagram output
+- [x] _encrypt.py — Encryption extension
+- [x] _compress.py — Compression extension
+- [x] _salt.py — Salt extension
+- [x] _signature.py — Signature extension
+- [x] _signature_metadata.py — SignatureMetadata/SigningOptions
+- [x] _recipient.py — Recipient extension
+- [x] _secret.py — Secret/password lock extension
+- [x] _sskr.py — SSKR split/join extension
+- [x] _proof.py — Inclusion proof extension
+- [x] _types_ext.py — Type assertion extension
+- [x] _attachment.py — Attachment extension
+- [x] _edge.py — Edge extension
+- [x] _function.py — Function type
+- [x] _functions.py — Well-known functions + store
+- [x] _parameter.py — Parameter type
+- [x] _parameters.py — Well-known parameters + store
+- [x] _expression.py — Expression class
+- [x] _request.py — Request class
+- [x] _response.py — Response class
+- [x] _event.py — Event class
+- [x] _seal.py — Seal/unseal
+
+## Tests (150 total, all passing)
+- [x] test_core.py — 15 tests
+- [x] test_core_nesting.py — 6 tests
+- [x] test_core_encoding.py — 4 tests
+- [x] test_format.py — 13 tests
+- [x] test_elision.py — 17 tests
+- [x] test_obscuring.py — 6 tests
+- [x] test_crypto.py — 10 tests
+- [x] test_signature.py — 3 tests
+- [x] test_compression.py — 2 tests
+- [x] test_ed25519.py — 1 test
+- [x] test_keypair_signing.py — 2 tests
+- [x] test_encrypted.py — 1 test
+- [x] test_encapsulation.py — 1 test
+- [x] test_non_correlation.py — 3 tests
+- [x] test_type.py — 4 tests
+- [x] test_attachment.py — 1 test
+- [x] test_edge.py — 44 tests
+- [x] test_proof.py — 3 tests
+- [x] test_sskr.py — 1 test
+- [x] test_ssh.py — 1 test
+- [x] test_multi_permit.py — 1 test
+- [x] test_expression.py — 2 tests
+- [x] test_request.py — 3 tests
+- [x] test_response.py — 4 tests
+- [x] test_event.py — 1 test
+- [x] test_seal.py — 2 tests
+
+## Build & Config
+- [x] pyproject.toml
+- [x] .gitignore
+- [x] __init__.py — package init with monkey-patching
