@@ -35,16 +35,26 @@ public enum Bytewords {
         }
     }
 
+    /// Encodes an arbitrary byte slice as space-separated bytewords.
+    public static func encodeToWords(_ data: [UInt8]) -> String {
+        data.map { BytewordsConstants.words[Int($0)] }.joined(separator: " ")
+    }
+
+    /// Encodes an arbitrary byte slice as space-separated bytemojis.
+    public static func encodeToBytemojis(_ data: [UInt8]) -> String {
+        data.map { BytewordsConstants.bytemojis[Int($0)] }.joined(separator: " ")
+    }
+
     /// Encodes a 4-byte identifier as space-separated bytewords.
     public static func identifier(_ data: [UInt8]) -> String {
         precondition(data.count == 4, "Expected exactly 4 bytes")
-        return data.map { BytewordsConstants.words[Int($0)] }.joined(separator: " ")
+        return encodeToWords(data)
     }
 
     /// Encodes a 4-byte identifier as space-separated bytemojis.
     public static func bytemojiIdentifier(_ data: [UInt8]) -> String {
         precondition(data.count == 4, "Expected exactly 4 bytes")
-        return data.map { BytewordsConstants.bytemojis[Int($0)] }.joined(separator: " ")
+        return encodeToBytemojis(data)
     }
 
     /// Returns `true` if `word` (lowercase) is a valid byteword.

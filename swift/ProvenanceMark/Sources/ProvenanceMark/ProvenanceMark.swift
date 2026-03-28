@@ -208,25 +208,61 @@ extension ProvenanceMark {
 // MARK: - Identifiers
 
 public extension ProvenanceMark {
+    /// A 32-byte identifier hash suitable for extended identifiers.
+    ///
+    /// The first `hash.count` bytes are the stored hash (backward compatible).
+    /// Remaining bytes come from `fingerprint` (SHA-256 of CBOR).
+    var identifierHash: [UInt8] {
+        var result = [UInt8](repeating: 0, count: 32)
+        let n = _hash.count
+        result.replaceSubrange(0..<n, with: _hash)
+        if n < 32 {
+            let fp = fingerprint
+            result.replaceSubrange(n..<32, with: fp.prefix(32 - n))
+        }
+        return result
+    }
+
+    /// The first `byteCount` bytes of the identifier hash as a hex string.
+    ///
+    /// - Precondition: `byteCount` must be in `4...32`.
+    func identifierN(_ byteCount: Int) -> String {
+        precondition((4...32).contains(byteCount), "byteCount must be 4...32, got \(byteCount)")
+        return Array(identifierHash.prefix(byteCount)).hex
+    }
+
     /// The first four bytes of the hash as a hex string.
     var identifier: String {
-        Array(_hash.prefix(4)).hex
+        identifierN(4)
+    }
+
+    /// The first `wordCount` bytes of the identifier hash as upper-case
+    /// ByteWords.
+    ///
+    /// - Precondition: `wordCount` must be in `4...32`.
+    func bytewordsIdentifierN(_ wordCount: Int, prefix: Bool) -> String {
+        precondition((4...32).contains(wordCount), "wordCount must be 4...32, got \(wordCount)")
+        let s = Bytewords.encodeToWords(Array(identifierHash.prefix(wordCount))).uppercased()
+        return prefix ? "\u{1F15F} \(s)" : s
     }
 
     /// The first four bytes of the hash as upper-case ByteWords.
-    ///
-    /// - Parameter prefix: If `true`, prepends the provenance emoji prefix.
     func bytewordsIdentifier(prefix: Bool) -> String {
-        let s = Bytewords.identifier(Array(_hash.prefix(4))).uppercased()
+        bytewordsIdentifierN(4, prefix: prefix)
+    }
+
+    /// The first `wordCount` bytes of the identifier hash as Bytemoji.
+    ///
+    /// - Precondition: `wordCount` must be in `4...32`.
+    func bytemojiIdentifierN(_ wordCount: Int, prefix: Bool) -> String {
+        precondition((4...32).contains(wordCount), "wordCount must be 4...32, got \(wordCount)")
+        let s = Bytewords.encodeToBytemojis(Array(identifierHash.prefix(wordCount))).uppercased()
         return prefix ? "\u{1F15F} \(s)" : s
     }
 
     /// The first four bytes of the hash as Bytemoji.
-    ///
-    /// - Parameter prefix: If `true`, prepends the provenance emoji prefix.
     func bytemojiIdentifier(prefix: Bool) -> String {
-        let s = Bytewords.bytemojiIdentifier(Array(_hash.prefix(4))).uppercased()
-        return prefix ? "\u{1F15F} \(s)" : s
+        bytemojiIdentifierN(4, prefix: prefix)
     }
 
     /// A compact 8-letter identifier derived from ByteWords.
@@ -266,6 +302,92 @@ public extension ProvenanceMark {
         }
 
         return prefix ? "\u{1F15F} \(out)" : out
+    }
+}
+
+// MARK: - Disambiguation
+
+public extension ProvenanceMark {
+    /// Returns disambiguated upper-case ByteWords identifiers for a set of marks.
+    ///
+    /// Non-colliding marks get 4-word identifiers. Only marks whose 4-byte
+    /// prefixes collide are extended with additional words.
+    static func disambiguatedBytewordsIdentifiers(
+        _ marks: [ProvenanceMark],
+        prefix: Bool
+    ) -> [String] {
+        let hashes = marks.map { $0.identifierHash }
+        let lengths = minimalNoncollidingPrefixLengths(hashes)
+        return zip(hashes, lengths).map { hash, len in
+            let s = Bytewords.encodeToWords(Array(hash.prefix(len))).uppercased()
+            return prefix ? "\u{1F15F} \(s)" : s
+        }
+    }
+
+    /// Returns disambiguated Bytemoji identifiers for a set of marks.
+    ///
+    /// Non-colliding marks get 4-emoji identifiers. Only marks whose 4-byte
+    /// prefixes collide are extended with additional emojis.
+    static func disambiguatedBytemojiIdentifiers(
+        _ marks: [ProvenanceMark],
+        prefix: Bool
+    ) -> [String] {
+        let hashes = marks.map { $0.identifierHash }
+        let lengths = minimalNoncollidingPrefixLengths(hashes)
+        return zip(hashes, lengths).map { hash, len in
+            let s = Bytewords.encodeToBytemojis(Array(hash.prefix(len))).uppercased()
+            return prefix ? "\u{1F15F} \(s)" : s
+        }
+    }
+
+    private static func minimalNoncollidingPrefixLengths(
+        _ hashes: [[UInt8]]
+    ) -> [Int] {
+        var lengths = [Int](repeating: 4, count: hashes.count)
+
+        var groups: [[UInt8]: [Int]] = [:]
+        for (i, hash) in hashes.enumerated() {
+            let key = Array(hash.prefix(4))
+            groups[key, default: []].append(i)
+        }
+
+        for (_, indices) in groups where indices.count > 1 {
+            resolveCollisionGroup(hashes, indices: indices, lengths: &lengths)
+        }
+
+        return lengths
+    }
+
+    private static func resolveCollisionGroup(
+        _ hashes: [[UInt8]],
+        indices initialIndices: [Int],
+        lengths: inout [Int]
+    ) {
+        var unresolved = initialIndices
+
+        for prefixLen in 5...32 {
+            var subGroups: [[UInt8]: [Int]] = [:]
+            for i in unresolved {
+                let key = Array(hashes[i].prefix(prefixLen))
+                subGroups[key, default: []].append(i)
+            }
+
+            var nextUnresolved: [Int] = []
+            for (_, subIndices) in subGroups {
+                if subIndices.count == 1 {
+                    lengths[subIndices[0]] = prefixLen
+                } else {
+                    nextUnresolved.append(contentsOf: subIndices)
+                }
+            }
+
+            if nextUnresolved.isEmpty { return }
+            unresolved = nextUnresolved
+        }
+
+        for i in unresolved {
+            lengths[i] = 32
+        }
     }
 }
 

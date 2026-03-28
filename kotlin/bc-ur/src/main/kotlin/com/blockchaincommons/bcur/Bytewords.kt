@@ -59,6 +59,20 @@ object Bytewords {
     }
 
     /**
+     * Encodes an arbitrary byte slice as space-separated bytewords (no checksum).
+     */
+    fun encodeToWords(data: ByteArray): String =
+        data.map { BytewordsConstants.WORDS[it.toInt() and 0xFF] }
+            .joinToString(" ")
+
+    /**
+     * Encodes an arbitrary byte slice as space-separated bytemojis (no checksum).
+     */
+    fun encodeToBytemojis(data: ByteArray): String =
+        data.map { BytewordsConstants.BYTEMOJIS[it.toInt() and 0xFF] }
+            .joinToString(" ")
+
+    /**
      * Encodes a 4-byte identifier as space-separated bytewords.
      *
      * @param data exactly 4 bytes
@@ -66,8 +80,7 @@ object Bytewords {
      */
     fun identifier(data: ByteArray): String {
         require(data.size == 4) { "Expected 4 bytes, got ${data.size}" }
-        return data.map { BytewordsConstants.WORDS[it.toInt() and 0xFF] }
-            .joinToString(" ")
+        return encodeToWords(data)
     }
 
     /**
@@ -78,8 +91,7 @@ object Bytewords {
      */
     fun bytemojiIdentifier(data: ByteArray): String {
         require(data.size == 4) { "Expected 4 bytes, got ${data.size}" }
-        return data.map { BytewordsConstants.BYTEMOJIS[it.toInt() and 0xFF] }
-            .joinToString(" ")
+        return encodeToBytemojis(data)
     }
 
     /** Returns `true` if [word] (lowercase) is a valid byteword. */

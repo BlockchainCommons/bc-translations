@@ -17,6 +17,8 @@ export {
   type Style as BytewordsStyle,
   encode,
   decode,
+  encodeToWords,
+  encodeToBytemojis,
   identifier,
   bytemojiIdentifier,
   isValidWord,

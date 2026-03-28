@@ -195,6 +195,20 @@ const lookupWord = (table: readonly string[], value: number): string => {
 };
 
 /**
+ * Encodes an arbitrary byte slice as space-separated bytewords.
+ */
+export const encodeToWords = (data: Uint8Array): string => {
+  return Array.from(data, (value) => lookupWord(BYTEWORDS, value)).join(" ");
+};
+
+/**
+ * Encodes an arbitrary byte slice as space-separated bytemojis.
+ */
+export const encodeToBytemojis = (data: Uint8Array): string => {
+  return Array.from(data, (value) => lookupWord(BYTEMOJIS, value)).join(" ");
+};
+
+/**
  * Encodes a 4-byte slice as space-separated bytewords for identification.
  */
 export const identifier = (data: Uint8Array): string => {
@@ -202,7 +216,7 @@ export const identifier = (data: Uint8Array): string => {
     throw URError.bytewords("identifier input must be exactly 4 bytes");
   }
 
-  return Array.from(data, (value) => lookupWord(BYTEWORDS, value)).join(" ");
+  return encodeToWords(data);
 };
 
 /**
@@ -213,7 +227,7 @@ export const bytemojiIdentifier = (data: Uint8Array): string => {
     throw URError.bytewords("bytemoji identifier input must be exactly 4 bytes");
   }
 
-  return Array.from(data, (value) => lookupWord(BYTEMOJIS, value)).join(" ");
+  return encodeToBytemojis(data);
 };
 
 // --- Validation & canonicalization ---

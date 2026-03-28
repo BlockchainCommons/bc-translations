@@ -56,17 +56,66 @@ class ProvenanceMark private constructor(
         return Cbor.tryFromData(infoBytes)
     }
 
-    fun identifier(): String = hash.copyOfRange(0, 4).toHex()
+    /**
+     * Returns a 32-byte identifier hash suitable for extended identifiers.
+     *
+     * The first `linkLength` bytes are the mark's stored hash (preserving
+     * backward compatibility with existing 4-byte identifiers). The remaining
+     * bytes come from the mark's fingerprint (SHA-256 of CBOR encoding),
+     * ensuring a full 32-byte value is always available regardless of
+     * resolution.
+     */
+    fun identifierHash(): ByteArray {
+        val result = ByteArray(32)
+        val n = hash.size
+        hash.copyInto(result, 0, 0, n)
+        if (n < 32) {
+            val fp = fingerprint()
+            fp.copyInto(result, n, 0, 32 - n)
+        }
+        return result
+    }
 
-    fun bytewordsIdentifier(prefix: Boolean): String {
-        val s = Bytewords.identifier(hash.copyOfRange(0, 4)).uppercase()
+    /**
+     * The first [byteCount] bytes of the identifier hash as a hex string.
+     *
+     * @throws IllegalArgumentException if [byteCount] is not in 4..32
+     */
+    fun identifierN(byteCount: Int): String {
+        require(byteCount in 4..32) { "byteCount must be 4..32, got $byteCount" }
+        return identifierHash().copyOfRange(0, byteCount).toHex()
+    }
+
+    /** The first four bytes of the mark's hash as a hex string. */
+    fun identifier(): String = identifierN(4)
+
+    /**
+     * The first [wordCount] bytes of the identifier hash as upper-case ByteWords.
+     *
+     * @throws IllegalArgumentException if [wordCount] is not in 4..32
+     */
+    fun bytewordsIdentifierN(wordCount: Int, prefix: Boolean): String {
+        require(wordCount in 4..32) { "wordCount must be 4..32, got $wordCount" }
+        val s = Bytewords.encodeToWords(identifierHash().copyOfRange(0, wordCount)).uppercase()
         return if (prefix) "🅟 $s" else s
     }
 
-    fun bytemojiIdentifier(prefix: Boolean): String {
-        val s = Bytewords.bytemojiIdentifier(hash.copyOfRange(0, 4)).uppercase()
+    /** The first four bytes of the mark's hash as upper-case ByteWords. */
+    fun bytewordsIdentifier(prefix: Boolean): String = bytewordsIdentifierN(4, prefix)
+
+    /**
+     * The first [wordCount] bytes of the identifier hash as Bytemoji.
+     *
+     * @throws IllegalArgumentException if [wordCount] is not in 4..32
+     */
+    fun bytemojiIdentifierN(wordCount: Int, prefix: Boolean): String {
+        require(wordCount in 4..32) { "wordCount must be 4..32, got $wordCount" }
+        val s = Bytewords.encodeToBytemojis(identifierHash().copyOfRange(0, wordCount)).uppercase()
         return if (prefix) "🅟 $s" else s
     }
+
+    /** The first four bytes of the mark's hash as Bytemoji. */
+    fun bytemojiIdentifier(prefix: Boolean): String = bytemojiIdentifierN(4, prefix)
 
     fun bytewordsMinimalIdentifier(prefix: Boolean): String {
         val full = Bytewords.identifier(hash.copyOfRange(0, 4))
@@ -448,6 +497,104 @@ class ProvenanceMark private constructor(
         }
 
         fun validate(marks: List<ProvenanceMark>): ValidationReport = ValidationReport.validate(marks)
+
+        /**
+         * Computes the minimum prefix length (in bytes, 4..32) each mark needs
+         * so that every mark in the set has a unique identifier hash prefix.
+         *
+         * Non-colliding marks get the minimum of 4. Only marks whose 4-byte
+         * prefixes collide are extended.
+         */
+        private fun minimalNoncollidingPrefixLengths(hashes: List<ByteArray>): IntArray {
+            val n = hashes.size
+            val lengths = IntArray(n) { 4 }
+
+            // Group indices by their 4-byte prefix (fast path)
+            val groups = mutableMapOf<String, MutableList<Int>>()
+            for (i in hashes.indices) {
+                val key = hashes[i].copyOfRange(0, 4).toHex()
+                groups.getOrPut(key) { mutableListOf() }.add(i)
+            }
+
+            // Resolve each collision group
+            for ((_, indices) in groups) {
+                if (indices.size <= 1) continue
+                resolveCollisionGroup(hashes, indices, lengths)
+            }
+
+            return lengths
+        }
+
+        private fun resolveCollisionGroup(
+            hashes: List<ByteArray>,
+            initialIndices: List<Int>,
+            lengths: IntArray,
+        ) {
+            var unresolved = initialIndices.toMutableList()
+
+            for (prefixLen in 5..32) {
+                val subGroups = mutableMapOf<String, MutableList<Int>>()
+                for (i in unresolved) {
+                    val key = hashes[i].copyOfRange(0, prefixLen).toHex()
+                    subGroups.getOrPut(key) { mutableListOf() }.add(i)
+                }
+
+                val nextUnresolved = mutableListOf<Int>()
+                for ((_, subIndices) in subGroups) {
+                    if (subIndices.size == 1) {
+                        lengths[subIndices[0]] = prefixLen
+                    } else {
+                        nextUnresolved.addAll(subIndices)
+                    }
+                }
+
+                if (nextUnresolved.isEmpty()) return
+                unresolved = nextUnresolved
+            }
+
+            // At 32 bytes, truly identical hashes remain -- assign 32
+            for (i in unresolved) {
+                lengths[i] = 32
+            }
+        }
+
+        /**
+         * Returns disambiguated upper-case ByteWords identifiers for a set of marks.
+         *
+         * Non-colliding marks get the standard 4-word identifier. Marks whose
+         * 4-byte prefixes collide are extended with additional words until each
+         * identifier in the returned set is unique.
+         */
+        fun disambiguatedBytewordsIdentifiers(
+            marks: List<ProvenanceMark>,
+            prefix: Boolean,
+        ): List<String> {
+            val hashes = marks.map { it.identifierHash() }
+            val lengths = minimalNoncollidingPrefixLengths(hashes)
+            return hashes.zip(lengths.toList()).map { (hash, len) ->
+                val s = Bytewords.encodeToWords(hash.copyOfRange(0, len)).uppercase()
+                if (prefix) "🅟 $s" else s
+            }
+        }
+
+        /**
+         * Returns disambiguated Bytemoji identifiers for a set of marks.
+         *
+         * Non-colliding marks get the standard 4-emoji identifier. Marks whose
+         * 4-byte prefixes collide are extended with additional emojis until each
+         * identifier in the returned set is unique.
+         */
+        fun disambiguatedBytemojiIdentifiers(
+            marks: List<ProvenanceMark>,
+            prefix: Boolean,
+        ): List<String> {
+            val hashes = marks.map { it.identifierHash() }
+            val lengths = minimalNoncollidingPrefixLengths(hashes)
+            return hashes.zip(lengths.toList()).map { (hash, len) ->
+                val s = Bytewords.encodeToBytemojis(hash.copyOfRange(0, len)).uppercase()
+                if (prefix) "🅟 $s" else s
+            }
+        }
     }
 }
 
