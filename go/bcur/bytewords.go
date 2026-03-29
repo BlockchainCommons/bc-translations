@@ -125,20 +125,40 @@ func stripChecksum(data []byte) ([]byte, error) {
 	return result, nil
 }
 
-// BytewordsIdentifier returns a 4-byte identifier as space-separated bytewords.
-func BytewordsIdentifier(data [4]byte) string {
-	words := make([]string, 4)
+// EncodeToWords encodes raw bytes as space-separated bytewords without a CRC suffix.
+func EncodeToWords(data []byte) string {
+	words := make([]string, len(data))
 	for i, b := range data {
 		words[i] = Bytewords[b]
 	}
 	return strings.Join(words, " ")
 }
 
-// BytemojiIdentifier returns a 4-byte identifier as space-separated bytemojis.
-func BytemojiIdentifier(data [4]byte) string {
-	words := make([]string, 4)
+// EncodeToBytemojis encodes raw bytes as space-separated bytemojis without a CRC suffix.
+func EncodeToBytemojis(data []byte) string {
+	words := make([]string, len(data))
 	for i, b := range data {
 		words[i] = Bytemojis[b]
 	}
 	return strings.Join(words, " ")
+}
+
+// EncodeToMinimalBytewords encodes raw bytes as concatenated minimal bytewords without a CRC suffix.
+func EncodeToMinimalBytewords(data []byte) string {
+	var builder strings.Builder
+	builder.Grow(len(data) * 2)
+	for _, b := range data {
+		builder.WriteString(minimals[b])
+	}
+	return builder.String()
+}
+
+// BytewordsIdentifier returns a 4-byte identifier as space-separated bytewords.
+func BytewordsIdentifier(data [4]byte) string {
+	return EncodeToWords(data[:])
+}
+
+// BytemojiIdentifier returns a 4-byte identifier as space-separated bytemojis.
+func BytemojiIdentifier(data [4]byte) string {
+	return EncodeToBytemojis(data[:])
 }
