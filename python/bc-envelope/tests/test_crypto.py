@@ -331,7 +331,7 @@ def test_secret_with_hkdf():
 
     envelope = hello_envelope().lock(KeyDerivationMethod.HKDF, bob_password)
     check_encoding(envelope)
-    cbor = envelope.tagged_cbor()
+    ur = envelope.ur()
 
     expected_format = (
         "ENCRYPTED [\n"
@@ -341,7 +341,7 @@ def test_secret_with_hkdf():
     assert envelope.format() == expected_format
 
     # Alice -> Bob, Eve
-    received_envelope = Envelope.from_tagged_cbor(cbor)
+    received_envelope = Envelope.from_ur(ur)
 
     # Bob decrypts and reads the message
     bob_received_plaintext = extract_subject(
@@ -376,7 +376,7 @@ def test_secret_with_scrypt():
         .add_secret(KeyDerivationMethod.SCRYPT, carol_password, content_key)
         .add_secret(KeyDerivationMethod.ARGON2ID, gracy_password, content_key)
     )
-    cbor = envelope.tagged_cbor()
+    ur = envelope.ur()
 
     expected_format = (
         "ENCRYPTED [\n"
@@ -388,7 +388,7 @@ def test_secret_with_scrypt():
     assert envelope.format() == expected_format
 
     # Alice -> Bob, Carol, Gracy, Eve
-    received_envelope = Envelope.from_tagged_cbor(cbor)
+    received_envelope = Envelope.from_ur(ur)
 
     # Bob decrypts and reads
     bob_received_plaintext = extract_subject(

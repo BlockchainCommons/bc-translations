@@ -6,9 +6,9 @@
 - [x] _assertion.py — Assertion class with digest
 - [x] _envelope.py — Envelope class + envelope_encodable
 - [x] _envelope_encodable.py — extract_subject + auto-detection
-- [x] _queries.py — Query methods (assertions_with_predicate, etc.)
+- [x] _queries.py — Query methods (assertions_with_predicate, position helpers, etc.)
 - [x] _leaf.py — Leaf helpers
-- [x] _cbor.py — CBOR encoding/decoding
+- [x] _cbor.py — CBOR/UR encoding, decoding, and convenience helpers
 - [x] _digest_ops.py — Digest operations
 - [x] _walk.py — EdgeType + walk/visitor
 - [x] _elide.py — ObscureAction/Type + elision
@@ -44,12 +44,12 @@
 - [x] _event.py — Event class
 - [x] _seal.py — Seal/unseal
 
-## Tests (150 total, all passing)
-- [x] test_core.py — 15 tests
+## Tests (158 total, all passing; covers 150/150 effective Rust tests plus 8 Python-only regressions)
+- [x] test_core.py — 22 tests
 - [x] test_core_nesting.py — 6 tests
 - [x] test_core_encoding.py — 4 tests
 - [x] test_format.py — 13 tests
-- [x] test_elision.py — 17 tests
+- [x] test_elision.py — 16 tests
 - [x] test_obscuring.py — 6 tests
 - [x] test_crypto.py — 10 tests
 - [x] test_signature.py — 3 tests
@@ -63,7 +63,7 @@
 - [x] test_attachment.py — 1 test
 - [x] test_edge.py — 44 tests
 - [x] test_proof.py — 3 tests
-- [x] test_sskr.py — 1 test
+- [x] test_sskr.py — 2 tests
 - [x] test_ssh.py — 1 test
 - [x] test_multi_permit.py — 1 test
 - [x] test_expression.py — 2 tests

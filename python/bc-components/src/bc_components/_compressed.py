@@ -59,8 +59,9 @@ class Compressed:
         If compression would increase the size, the original data is stored.
         """
         decompressed_data = bytes(decompressed_data)
-        # Raw DEFLATE with wbits=-15, level 6 to match Rust miniz_oxide level 6
-        compressed_data = zlib.compress(decompressed_data, level=6, wbits=-15)
+        # Use a raw DEFLATE stream to match Rust's miniz_oxide configuration.
+        compressor = zlib.compressobj(level=6, wbits=-15)
+        compressed_data = compressor.compress(decompressed_data) + compressor.flush()
         checksum = crc32(decompressed_data)
         decompressed_size = len(decompressed_data)
         compressed_size = len(compressed_data)

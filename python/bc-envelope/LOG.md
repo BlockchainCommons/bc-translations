@@ -50,3 +50,28 @@ COMPLETED
 - Updated AGENTS.md: ⏳ → ✅🎻
 - Updated root LOG.md with Translation row
 - Refreshed FLUENCY_NEEDED.md
+
+## 2026-03-28 — Stage 3: Check
+STARTED
+- Re-ran completeness against the live Rust crate, manifest, and Python package.
+- Verified the Rust test inventory and checked the translated API surface for missing helpers.
+
+## 2026-03-28 — Stage 3: Check
+COMPLETED
+- Fixed completeness gaps discovered during cross-check: restored Envelope UR helpers, position helpers, and missing re-export coverage for `SigningOptions`.
+- Added the missing Rust-aligned tests for `Envelope` construction, unknown-leaf UR decoding, position assertions, and inline SSKR split/join coverage.
+- API surface: 42/42 source files verified, including corrected `_queries.py` and `_cbor.py` helper coverage.
+- Test coverage: 150/150 effective Rust tests translated (excluding Rust's placeholder `test_any_encrypted`), plus 8 Python-only regression tests; full suite `158 passed`.
+- Verdict: COMPLETE
+
+## 2026-03-28 — Stage 4: Critique
+STARTED
+- Reviewed the Python package surface for idiomatic naming, exports, and convenience APIs after the completeness fixes.
+- Checked that the corrected UR/CBOR helpers and query APIs still fit the established Python package conventions.
+
+## 2026-03-28 — Stage 4: Critique
+COMPLETED
+- Issues found: 0 fluency-only issues after the completeness corrections.
+- Issues fixed: 0 additional fluency changes required beyond the correctness/API repairs made during Stage 3.
+- Final fluency verdict: IDIOMATIC
+- Verification: `python/bc-envelope/tests` `158 passed`; `python/bc-components/tests/test_compressed.py` `4 passed`.

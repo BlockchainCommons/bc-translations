@@ -154,3 +154,44 @@ def extract_predicate_method(self: Any, type_class: type[T]) -> T:
     from ._envelope_encodable import extract_subject
     pred = self.try_predicate()
     return extract_subject(pred, type_class)
+
+
+def set_position(self: Any, position: int) -> Any:
+    """Return a copy of the envelope with a single ``'position'`` assertion."""
+    import known_values
+
+    from ._error import InvalidFormat
+
+    position_assertions = assertions_with_predicate(self, known_values.POSITION)
+    if len(position_assertions) > 1:
+        raise InvalidFormat()
+
+    envelope = (
+        self.remove_assertion(position_assertions[0])
+        if position_assertions
+        else self
+    )
+    return envelope.add_assertion(known_values.POSITION, position)
+
+
+def position(self: Any) -> int:
+    """Extract the envelope's ``'position'`` assertion value."""
+    import known_values
+
+    from ._envelope_encodable import extract_subject
+
+    return extract_subject(object_for_predicate(self, known_values.POSITION), int)
+
+
+def remove_position(self: Any) -> Any:
+    """Return a copy of the envelope without its ``'position'`` assertion."""
+    import known_values
+
+    from ._error import InvalidFormat
+
+    position_assertions = assertions_with_predicate(self, known_values.POSITION)
+    if len(position_assertions) > 1:
+        raise InvalidFormat()
+    if position_assertions:
+        return self.remove_assertion(position_assertions[0])
+    return self

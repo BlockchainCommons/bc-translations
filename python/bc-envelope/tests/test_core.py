@@ -4,8 +4,9 @@ Translated from rust/bc-envelope/tests/core_tests.rs
 """
 
 import dcbor
-from bc_components import Digest
-from bc_envelope import Envelope, extract_subject
+import pytest
+from bc_components import Compressed, Digest
+from bc_envelope import Assertion, Envelope, extract_subject
 from known_values import KnownValue, NOTE, UNIT
 
 from tests.common.check_encoding import check_encoding
@@ -298,3 +299,79 @@ def test_unit():
 
     subject = extract_subject(e, KnownValue)
     assert subject == UNIT
+
+
+def test_any_envelope():
+    e1 = Envelope.new_leaf("Hello")
+    e2 = Envelope("Hello")
+    assert e1.format() == e2.format()
+    assert e1.digest() == e2.digest()
+
+
+def test_any_known_value():
+    known_value = KnownValue(100)
+    e1 = Envelope.new_with_known_value(known_value)
+    e2 = Envelope(known_value)
+    assert e1.format() == e2.format()
+    assert e1.digest() == e2.digest()
+
+
+def test_any_assertion():
+    assertion = Assertion(Envelope("knows"), Envelope("Bob"))
+    e1 = Envelope.new_with_assertion(assertion)
+    e2 = Envelope(assertion)
+    assert e1.format() == e2.format()
+    assert e1.digest() == e2.digest()
+
+
+def test_any_compressed():
+    data = b"Hello"
+    digest = Digest.from_image(data)
+    compressed = Compressed.from_decompressed_data(data, digest)
+    e1 = Envelope.new_with_compressed(compressed)
+    e2 = Envelope(compressed)
+    assert e1.format() == e2.format()
+    assert e1.digest() == e2.digest()
+
+
+def test_any_cbor_encodable():
+    e1 = Envelope.new_leaf(1)
+    e2 = Envelope(1)
+    assert e1.format() == e2.format()
+    assert e1.digest() == e2.digest()
+
+
+def test_unknown_leaf():
+    unknown_ur = (
+        "ur:envelope/"
+        "tpsotaaodnoyadgdjlssmkcklgoskseodnyteofwwfylkiftaydpdsjz"
+    )
+    e = Envelope.from_ur_string(unknown_ur)
+    assert e.format() == "555({1: h'6fc4981e8da778332bf93342f3f77d3a'})"
+
+
+def test_position():
+    e = Envelope("Hello")
+    with pytest.raises(Exception):
+        e.position()
+
+    e = e.set_position(42)
+    assert e.position() == 42
+    assert e.format() == (
+        '"Hello" [\n'
+        "    'position': 42\n"
+        "]"
+    )
+
+    e = e.set_position(0)
+    assert e.position() == 0
+    assert e.format() == (
+        '"Hello" [\n'
+        "    'position': 0\n"
+        "]"
+    )
+
+    e = e.remove_position()
+    with pytest.raises(Exception):
+        e.position()
+    assert e.format() == '"Hello"'

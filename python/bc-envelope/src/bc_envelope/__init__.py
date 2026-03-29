@@ -151,6 +151,9 @@ Envelope.extract_optional_object_for_predicate = _queries.extract_optional_objec
 Envelope.extract_object_for_predicate_with_default = _queries.extract_object_for_predicate_with_default  # type: ignore[attr-defined]
 Envelope.extract_objects_for_predicate = _queries.extract_objects_for_predicate  # type: ignore[attr-defined]
 Envelope.elements_count = _queries.elements_count  # type: ignore[attr-defined]
+Envelope.set_position = _queries.set_position  # type: ignore[attr-defined]
+Envelope.position = _queries.position  # type: ignore[attr-defined]
+Envelope.remove_position = _queries.remove_position  # type: ignore[attr-defined]
 
 # Attach wrap/unwrap methods
 from . import _wrap
@@ -237,6 +240,8 @@ Envelope.mermaid_format = _mermaid.mermaid_format  # type: ignore[attr-defined]
 # Extension Units 20-33 (salt, signature, recipient, secret, sskr, proof,
 # types, attachment, edge, expression system, seal)
 # ---------------------------------------------------------------------------
+
+from bc_components import SigningOptions
 
 from . import _salt
 from . import _signature
@@ -444,6 +449,7 @@ __all__ = [
     "digest_ops",
     # Extension types (units 20-33)
     "SignatureMetadata",
+    "SigningOptions",
     "Attachments",
     "Attachable",
     "Edges",

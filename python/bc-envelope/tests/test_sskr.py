@@ -65,3 +65,25 @@ def test_sskr():
         assert False, "Expected error with insufficient shares"
     except Exception:
         pass
+
+
+def test_sskr_split_and_join():
+    original = (
+        Envelope("Secret message")
+        .add_assertion("metadata", "This is a test")
+    )
+
+    content_key = SymmetricKey.generate()
+    wrapped_original = original.wrap()
+    encrypted = wrapped_original.encrypt_subject(content_key)
+
+    group = SSKRGroupSpec(2, 3)
+    spec = SSKRSpec(1, [group])
+
+    shares = encrypted.sskr_split(spec, content_key)
+    assert len(shares[0]) == 3
+
+    recovered_wrapped = Envelope.sskr_join([shares[0][0], shares[0][1]])
+    recovered = recovered_wrapped.try_unwrap()
+
+    assert recovered.is_identical_to(original)

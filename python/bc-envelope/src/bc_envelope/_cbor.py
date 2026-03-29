@@ -84,6 +84,11 @@ def cbor_data(envelope: Envelope) -> bytes:
     return tagged_cbor(envelope).to_cbor_data()
 
 
+def tagged_cbor_data(envelope: Envelope) -> bytes:
+    """Encode *envelope* to tagged CBOR bytes."""
+    return cbor_data(envelope)
+
+
 # ---------------------------------------------------------------------------
 # Decoding
 # ---------------------------------------------------------------------------
@@ -152,6 +157,39 @@ def from_cbor_data(data: bytes | bytearray) -> Envelope:
     return from_tagged_cbor(cbor)
 
 
+def from_tagged_cbor_data(data: bytes | bytearray) -> Envelope:
+    """Decode an Envelope from tagged CBOR bytes."""
+    return from_cbor_data(data)
+
+
+def to_ur(envelope: Envelope):
+    """Encode *envelope* to a UR value."""
+    from bc_ur import to_ur as encode_to_ur
+
+    return encode_to_ur(envelope)
+
+
+def ur_string(envelope: Envelope) -> str:
+    """Encode *envelope* to a UR string."""
+    from bc_ur import to_ur_string
+
+    return to_ur_string(envelope)
+
+
+def from_ur(ur) -> Envelope:
+    """Decode an Envelope from a UR value."""
+    from bc_ur import from_ur as decode_from_ur
+
+    return decode_from_ur(Envelope, ur)
+
+
+def from_ur_string(ur_value: str) -> Envelope:
+    """Decode an Envelope from a UR string."""
+    from bc_ur import from_ur_string as decode_from_ur_string
+
+    return decode_from_ur_string(Envelope, ur_value)
+
+
 # ---------------------------------------------------------------------------
 # Monkey-patch Envelope with CBOR methods
 # ---------------------------------------------------------------------------
@@ -168,9 +206,29 @@ def _env_cbor_data(self: Envelope) -> bytes:
     return cbor_data(self)
 
 
+def _env_tagged_cbor_data(self: Envelope) -> bytes:
+    return tagged_cbor_data(self)
+
+
+def _env_to_ur(self: Envelope):
+    return to_ur(self)
+
+
+def _env_ur_string(self: Envelope) -> str:
+    return ur_string(self)
+
+
+Envelope.cbor_tags = staticmethod(envelope_tags)  # type: ignore[attr-defined]
 Envelope.untagged_cbor = _env_untagged_cbor  # type: ignore[attr-defined]
 Envelope.tagged_cbor = _env_tagged_cbor  # type: ignore[attr-defined]
 Envelope.cbor_data = _env_cbor_data  # type: ignore[attr-defined]
+Envelope.tagged_cbor_data = _env_tagged_cbor_data  # type: ignore[attr-defined]
+Envelope.to_ur = _env_to_ur  # type: ignore[attr-defined]
+Envelope.ur = _env_to_ur  # type: ignore[attr-defined]
+Envelope.ur_string = _env_ur_string  # type: ignore[attr-defined]
 Envelope.from_tagged_cbor = staticmethod(from_tagged_cbor)  # type: ignore[attr-defined]
 Envelope.from_untagged_cbor = staticmethod(from_untagged_cbor)  # type: ignore[attr-defined]
 Envelope.from_cbor_data = staticmethod(from_cbor_data)  # type: ignore[attr-defined]
+Envelope.from_tagged_cbor_data = staticmethod(from_tagged_cbor_data)  # type: ignore[attr-defined]
+Envelope.from_ur = staticmethod(from_ur)  # type: ignore[attr-defined]
+Envelope.from_ur_string = staticmethod(from_ur_string)  # type: ignore[attr-defined]
