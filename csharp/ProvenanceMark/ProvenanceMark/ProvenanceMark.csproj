@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BlockchainCommons.ProvenanceMark</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Provenance Marks for .NET — cryptographically secured sequential authenticity marks with CBOR, UR, and Gordian Envelope support.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ProvenanceMark.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BCRand\BCRand\BCRand.csproj" />
+    <ProjectReference Include="..\..\DCbor\DCbor\DCbor.csproj" />
+    <ProjectReference Include="..\..\BCUR\BCUR\BCUR.csproj" />
+    <ProjectReference Include="..\..\BCTags\BCTags\BCTags.csproj" />
+    <ProjectReference Include="..\..\BCEnvelope\BCEnvelope\BCEnvelope.csproj" />
+  </ItemGroup>
+
+</Project>
