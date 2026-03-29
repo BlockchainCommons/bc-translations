@@ -200,3 +200,6 @@ Chronological record of all translation activity in this repository.
 | 2026-03-29 | provenance-mark | 0.24.0 | Python | provenance-mark | 📖 GPT Codex | Fluency |
 | 2026-03-29 | provenance-mark | 0.24.0 | C# | ProvenanceMark | 📖 GPT Codex | Translation |
 | 2026-03-29 | provenance-mark | 0.24.0 | C# | ProvenanceMark | 📖 GPT Codex | Fluency |
+| 2026-03-29 | provenance-mark | 0.24.0 | C# | ProvenanceMark | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-29 | provenance-mark | 0.24.0 | Go | provenancemark | 🎻 Claude Opus 4.6 | Fluency |
+| 2026-03-29 | provenance-mark | 0.24.0 | Python | provenance-mark | 🎻 Claude Opus 4.6 | Fluency |

@@ -18,7 +18,7 @@ from bc_ur import (
     to_ur_string,
 )
 from bc_ur._bytewords_constants import BYTEMOJIS, BYTEWORDS, MINIMALS
-from dcbor import CBOR, Tag
+from dcbor import CBOR, Date, Tag
 
 from ._crypto_utils import SHA256_SIZE, obfuscate, sha256, sha256_prefix
 from ._error import Error
@@ -64,7 +64,7 @@ class ProvenanceMark:
     _date_bytes: bytes
     _info_bytes: bytes
     _seq: int
-    _date: object
+    _date: Date
 
     @staticmethod
     def new(
@@ -73,7 +73,7 @@ class ProvenanceMark:
         next_key: bytes | bytearray,
         chain_id: bytes | bytearray,
         seq: int,
-        date: object,
+        date: Date,
         info: object | None = None,
     ) -> ProvenanceMark:
         key_bytes = bytes(key)
@@ -210,7 +210,7 @@ class ProvenanceMark:
     def seq(self) -> int:
         return self._seq
 
-    def date(self):
+    def date(self) -> Date:
         return self._date
 
     def message(self) -> bytes:

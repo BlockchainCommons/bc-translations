@@ -6,14 +6,10 @@ Generated from `LOG.md` by `scripts/update-fluency-needed.sh`.
 
 - Last updated: 2026-03-29
 - Targets translated: 72
-- Targets with cross-model fluency complete: 69
-- Targets still needing cross-model fluency: 3
+- Targets with cross-model fluency complete: 72
+- Targets still needing cross-model fluency: 0
 
-| Crate | Version | Language | Package | Model To Avoid (Original Translation) | Recommended Cross-Check Model | Pending Reason |
-|-------|---------|----------|---------|----------------------------------------|--------------------------------|----------------|
-| provenance-mark | 0.24.0 | C# | ProvenanceMark | 📖 GPT Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
-| provenance-mark | 0.24.0 | Go | provenancemark | 📖 GPT Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
-| provenance-mark | 0.24.0 | Python | provenance-mark | 📖 GPT Codex | 🎻 Claude Opus | Fluency logged, but only by the translation model |
+All translated targets have a cross-model fluency pass.
 
 ## Update Rule
 

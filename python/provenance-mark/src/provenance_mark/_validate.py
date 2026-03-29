@@ -6,7 +6,14 @@ import json
 from dataclasses import dataclass
 from enum import Enum
 
+from typing import TYPE_CHECKING
+
+from dcbor import Date
+
 from ._error import Error
+
+if TYPE_CHECKING:
+    from ._mark import ProvenanceMark
 
 
 class ValidationReportFormat(Enum):
@@ -73,15 +80,15 @@ def validation_issue_to_string(issue: ValidationIssue) -> str:
 class FlaggedMark:
     """A mark plus its validation issues."""
 
-    mark: object
+    mark: ProvenanceMark
     issues: tuple[ValidationIssue, ...] = ()
 
     @staticmethod
-    def new(mark: object) -> FlaggedMark:
+    def new(mark: ProvenanceMark) -> FlaggedMark:
         return FlaggedMark(mark)
 
     @staticmethod
-    def with_issue(mark: object, issue: ValidationIssue) -> FlaggedMark:
+    def with_issue(mark: ProvenanceMark, issue: ValidationIssue) -> FlaggedMark:
         return FlaggedMark(mark, (issue,))
 
     def to_json_obj(self) -> dict[str, object]:
@@ -113,7 +120,7 @@ class ChainReport:
 
     chain_id: bytes
     has_genesis: bool
-    marks: tuple[object, ...]
+    marks: tuple[ProvenanceMark, ...]
     sequences: tuple[SequenceReport, ...]
 
     def chain_id_hex(self) -> str:
@@ -132,19 +139,19 @@ class ChainReport:
 class ValidationReport:
     """Full validation report for a set of provenance marks."""
 
-    marks: tuple[object, ...]
+    marks: tuple[ProvenanceMark, ...]
     chains: tuple[ChainReport, ...]
 
     @staticmethod
-    def validate(marks: list[object]) -> ValidationReport:
-        seen: set[object] = set()
-        deduplicated: list[object] = []
+    def validate(marks: list[ProvenanceMark]) -> ValidationReport:
+        seen: set[ProvenanceMark] = set()
+        deduplicated: list[ProvenanceMark] = []
         for mark in marks:
             if mark not in seen:
                 seen.add(mark)
                 deduplicated.append(mark)
 
-        chain_bins: dict[bytes, list[object]] = {}
+        chain_bins: dict[bytes, list[ProvenanceMark]] = {}
         for mark in deduplicated:
             chain_bins.setdefault(mark.chain_id(), []).append(mark)
 
@@ -258,11 +265,11 @@ def _hash_mismatch(expected: bytes, actual: bytes) -> ValidationIssue:
     return ValidationIssue("HashMismatch", {"expected": expected, "actual": actual})
 
 
-def _date_ordering(previous: object, next_: object) -> ValidationIssue:
+def _date_ordering(previous: Date, next_: Date) -> ValidationIssue:
     return ValidationIssue("DateOrdering", {"previous": previous, "next": next_})
 
 
-def _build_sequence_bins(marks: list[object]) -> list[SequenceReport]:
+def _build_sequence_bins(marks: list[ProvenanceMark]) -> list[SequenceReport]:
     sequences: list[SequenceReport] = []
     current: list[FlaggedMark] = []
     for index, mark in enumerate(marks):

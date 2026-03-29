@@ -57,3 +57,29 @@ COMPLETED
 COMPLETED
 - Recorded the Python environment lesson about using an existing repo venv for `bc-envelope` dependency graphs with transitive crypto extras.
 - Recorded the translation lesson about verifying shared bytemoji tables in dependency packages against Rust vectors before debugging the crate translation itself.
+
+## 2026-03-29 — Stage 3: Check (Cross-Model)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translation by GPT Codex).
+
+## 2026-03-29 — Stage 3: Check (Cross-Model)
+COMPLETED
+- API coverage verified: all 13 source modules, package exports, identifier/disambiguation APIs, validation engine, envelope support.
+- Test coverage: 65/65 tests passing, full Rust test inventory covered.
+- Verdict: COMPLETE
+
+## 2026-03-29 — Stage 4: Fluency (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6.
+
+## 2026-03-29 — Stage 4: Fluency (Cross-Model)
+COMPLETED
+- Issues found: 2 (type annotation improvements)
+- Issues fixed: 2
+  - Replaced `object` type hints with proper `Date` and `ProvenanceMark` types in `_mark.py` and `_validate.py` using TYPE_CHECKING guard for circular import avoidance.
+  - `_date` field on `ProvenanceMark` dataclass now annotated as `Date` instead of `object`.
+  - `_date_ordering()` helper now annotated with `Date` parameters.
+  - `FlaggedMark.mark`, `ChainReport.marks`, `ValidationReport.marks`, and `validate()` parameter now typed as `ProvenanceMark`.
+- No behavioral changes; all fixes are type annotation only.
+- Verification: 65/65 tests passing.
+- Verdict: IDIOMATIC

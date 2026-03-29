@@ -66,3 +66,26 @@ COMPLETED
 ## 2026-03-29 — Stage 6: Capture Lessons (Rule One)
 COMPLETED
 - Recorded the C# lesson about byte-array payloads inside record-like validation models requiring explicit content equality.
+
+## 2026-03-29 — Stage 3: Check (Cross-Model)
+STARTED
+- Cross-model completeness check by Claude Opus 4.6 (original translation by GPT Codex).
+
+## 2026-03-29 — Stage 3: Check (Cross-Model)
+COMPLETED
+- API coverage verified: all 13 manifest source units, CBOR/UR/URL/envelope conversions, identifier/disambiguation APIs, validation engine.
+- Test coverage: 65/65 tests passing, matching Rust test inventory plus C#-specific support tests.
+- Verdict: COMPLETE
+
+## 2026-03-29 — Stage 4: Fluency (Cross-Model)
+STARTED
+- Cross-model fluency review by Claude Opus 4.6.
+
+## 2026-03-29 — Stage 4: Fluency (Cross-Model)
+COMPLETED
+- Issues found: 0 actionable
+- The C# translation is highly idiomatic: sealed classes with defensive cloning, records for validation issues, proper IEquatable<T> implementations, ReadOnlySpan<byte> usage, ArgumentNullException.ThrowIfNull guards, and clean switch expressions.
+- ProvenanceMarkResolution as a sealed class with static instances is a good C# pattern that enables associated methods while maintaining value semantics.
+- No code changes required.
+- Verification: 65/65 tests passing.
+- Verdict: IDIOMATIC
