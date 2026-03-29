@@ -41,9 +41,9 @@ completeness and fluency. All translations pass the same tests.
 
 ## Translations from Old Swift Codebase
 
-| swift-old/ | version | kotlin/  | swift/ | typescript/ |
-| ---------- | ------- | -------- | ------ | ----------- |
-| URUI       | 12.0.0  | bc-urui  | BCURUI | bc-urui     |
+| swift-old/ | version | kotlin/  | swift/ | typescript/  |
+| ---------- | ------- | -------- | ------ | ------------ |
+| URUI       | 12.0.0  | bc-urui  | BCURUI | @bc/urui     |
 
 - The URUI Kotlin translation is for Android UI components.
 - The URUI Swift translation is for iOS with SwiftUI components.
