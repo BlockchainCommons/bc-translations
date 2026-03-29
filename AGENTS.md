@@ -19,17 +19,20 @@ The following model markers indicate which AI model was used for each translatio
 - 🎻 Claude Opus
 - 📖 GPT Codex
 
+Translations performed by one model were then reviewed by the other model for
+completeness and fluency. All translations pass the same tests.
+
 ## Translations from Rust
 
-| rust/              | version | 🚧 csharp/       | 🚧 go/           | 🚧 kotlin/          | 🚧 python/        | 🚧 swift/          | 🚧 typescript/          |
+| rust/              | version | ✅ csharp/        | ✅ go/            | ✅ kotlin/           | ✅ python/         | ✅ swift/           | ✅ typescript/           |
 |--------------------|---------|------------------|------------------|---------------------|-------------------|--------------------|-------------------------|
 | ✅ bc-lifehash      | 0.1.0   | ✅🎻 BCLifeHash   | ✅🎻 bclifehash   | ✅📖 bc-lifehash     | ✅🎻 bc-lifehash   | ✅📖 BCLifeHash     | ✅🎻 @bc/lifehash        |
 | ✅ bc-rand          | 0.5.0   | ✅🎻 BCRand       | ✅🎻 bcrand       | ✅🎻 bc-rand         | ✅🎻 bc-rand       | ✅🎻 BCRand         | ✅🎻 @bc/rand            |
 | ✅ bc-crypto        | 0.14.0  | ✅🎻 BCCrypto     | ✅📖 bccrypto     | ✅🎻 bc-crypto       | ✅🎻 bc-crypto     | ✅📖 BCCrypto       | ✅📖 @bc/crypto          |
 | ✅ bc-shamir        | 0.13.0  | ✅📖 BCShamir     | ✅🎻 bcshamir     | ✅📖 bc-shamir       | ✅📖 bc-shamir     | ✅🎻 BCShamir       | ✅🎻 @bc/shamir          |
-| ✅ dcbor            | 0.25.1  | ✅🎻 DCbor        | ✅📖 dcbor        | ✅🎻 dcbor           | ✅🎻 dcbor         | ✅📖 DCBOR          | ✅📖 @bc/dcbor           |
+| ✅ dcbor            | 0.25.2  | ✅🎻 DCbor        | ✅📖 dcbor        | ✅🎻 dcbor           | ✅🎻 dcbor         | ✅📖 DCBOR          | ✅📖 @bc/dcbor           |
 | ✅ bc-tags          | 0.12.0  | ✅📖 BCTags       | ✅🎻 bctags       | ✅📖 bc-tags         | ✅📖 bc-tags       | ✅🎻 BCTags         | ✅🎻 @bc/tags            |
-| ✅ bc-ur            | 0.19.0  | ✅🎻 BCUR         | ✅🎻 bcur         | ✅🎻 bc-ur           | ✅🎻 bc-ur         | ✅📖 BCUR           | ✅📖 @bc/ur              |
+| ✅ bc-ur            | 0.19.2  | ✅🎻 BCUR         | ✅🎻 bcur         | ✅🎻 bc-ur           | ✅🎻 bc-ur         | ✅📖 BCUR           | ✅📖 @bc/ur              |
 | ✅ sskr             | 0.12.0  | ✅📖 SSKR         | ✅📖 sskr         | ✅📖 sskr            | ✅📖 sskr          | ✅🎻 SSKR           | ✅🎻 @bc/sskr            |
 | ✅ bc-components    | 0.31.1  | ✅🎻 BCComponents | ✅🎻 bccomponents | ✅🎻 bc-components   | ✅🎻 bc-components | ✅📖 BCComponents   | ✅📖 @bc/components      |
 | ✅ known-values     | 0.15.5  | ✅📖 KnownValues  | ✅📖 knownvalues  | ✅📖 known-values    | ✅📖 known-values  | ✅🎻 KnownValues    | ✅🎻 @bc/known-values    |
@@ -38,12 +41,14 @@ The following model markers indicate which AI model was used for each translatio
 
 ## Translations from Old Swift Codebase
 
-| swift-old/ | version | kotlin/ | swift/ |
-| ---------- | ------- | ------- | ------ |
-| URUI       | 12.0.0  | bc-urui | BCURUI |
+| swift-old/ | version | kotlin/  | swift/ | typescript/ |
+| ---------- | ------- | -------- | ------ | ----------- |
+| URUI       | 12.0.0  | bc-urui  | BCURUI | bc-urui     |
 
 - The URUI Kotlin translation is for Android UI components.
 - The URUI Swift translation is for iOS with SwiftUI components.
+- The parts of URUI that deal with QR code generation and in particular multipart
+  animated QR code generation were translated into Rust as `bc-mur`.
 
 ## Internal Dependencies
 
